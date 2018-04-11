@@ -1,0 +1,140 @@
+# Makefile default variables
+#
+# Copyright (C) 2008 Wellcome Trust Centre for Neuroimaging
+#
+# $Id: Makefile.var 4136 2010-12-09 22:22:28Z guillaume $
+#
+###############################################################################
+#
+# This file defines variables used in Makefile and has been tested under 
+# Linux, Windows and MacOS.
+# 
+# If you have to tweak this file to compile the SPM mex-files for your 
+# platform, please send the details to <spm@fil.ion.ucl.ac.uk> so they can be 
+# included here. 
+#
+# You can find some more help online on the SPM wikibook:
+#  * Linux:
+#      http://en.wikibooks.org/wiki/SPM/Installation_on_Linux
+#      http://en.wikibooks.org/wiki/SPM/Installation_on_64bit_Linux 
+#  * Windows:
+#      http://en.wikibooks.org/wiki/SPM/Installation_on_Windows
+#      http://en.wikibooks.org/wiki/SPM/Installation_on_64bit_Windows
+#      MinGW: http://www.mingw.org/
+#      Gnumex: http://gnumex.sourceforge.net/
+#      MinGW-w64: http://mingw-w64.sourceforge.net/
+#      WPG System64: http://www.horizonchess.com/wpg64/
+#  * MacOS:
+#      http://en.wikibooks.org/wiki/SPM/Installation_on_Mac_OS
+#      http://en.wikibooks.org/wiki/SPM/Installation_on_Mac_OS_(Intel)
+#      http://en.wikibooks.org/wiki/SPM/Installation_on_64bit_Mac_OS_(Intel)
+#
+###############################################################################
+
+SHELL          = /bin/sh
+MAKE           = make
+MEXBIN         = mex
+MEXOPTS        = -O
+MEXEND         = 
+MOSUF          = o # mex output object suffix
+UNAME          = uname
+ISAINFO        = isainfo # SunOS only
+AR             = ar rcs
+COPY           = cp -f
+DEL            = rm -f
+MOVE           = mv -f
+TAR            = tar
+ZIP            = gzip -f
+
+ifndef SUF
+  ifndef PLATFORM
+    PLATFORM   = $(shell $(UNAME))
+  endif
+  ##### Linux #####
+  ifeq (Linux,$(PLATFORM))
+    HARDWARE   = $(shell $(UNAME) -m)
+    ifeq (i386,$(HARDWARE))
+      SUF      = mexglx
+    endif
+    ifeq (i686,$(HARDWARE))
+      SUF      = mexglx
+    endif
+    ifeq (x86_64,$(HARDWARE))
+      SUF      = mexa64
+    endif
+    ifndef SUF
+      $(error Unknowm platform $(PLATFORM)-$(HARDWARE))
+    endif
+  endif
+  ##### MacOS #####
+  ifeq (Darwin,$(PLATFORM))
+    HARDWARE   = $(shell $(UNAME) -p)
+    ifeq (i386,$(HARDWARE))
+      ifeq (1,$(MACI64))
+        SUF    = mexmaci64
+      else
+        SUF    = mexmaci
+      endif
+    endif
+    ifeq (powerpc,$(HARDWARE))
+      SUF      = mexmac
+      MEXOPTS  = -O -DSPM_BIGENDIAN
+    endif
+    ifndef SUF
+      $(error Unknowm platform $(PLATFORM)-$(HARDWARE))
+    endif
+  endif
+  ##### Windows #####
+  ifeq (windows,$(PLATFORM))
+    override PLATFORM = MINGW32
+  endif
+  ifeq (MINGW32,$(word 1,$(subst _, ,$(PLATFORM))))
+    SUF        = mexw32
+    MEXBIN     = cmd /c "mex.bat
+    MEXOPTS    = -O -DSPM_WIN32
+    MEXEND     = "
+    MOSUF      = obj
+  endif
+  ifeq (WPGSystem64,$(word 2,$(subst _, ,$(PLATFORM))))
+    SUF        = mexw64
+    MEXBIN     = cmd /c "mex.bat
+    MEXOPTS    = -O -DSPM_WIN32
+    MEXEND     = "
+    MOSUF      = obj
+  endif
+  ifeq (win64,$(PLATFORM))
+    SUF        = mexw64
+    MEXBIN     = cmd /c "mex.bat
+    MEXOPTS    = -O -DSPM_WIN32
+    MEXEND     = "
+    MOSUF      = obj
+    AR         = lib.exe /out:
+  endif
+  ##### SunOS #####
+  ifeq (SunOS,$(PLATFORM))
+    SUNBIT     = $(shell $(ISAINFO) -b)
+    ifeq (32,$(SUNBIT))
+      SUF      = mexsol
+      MEXOPTS  = -O -DSPM_BIGENDIAN
+    endif
+    ifeq (64,$(SUNBIT))
+      SUF      = mexs64
+      MEXOPTS  = -O -DSPM_BIGENDIAN
+    endif
+    ifndef SUF
+      $(error Unknowm platform $(PLATFORM)-$(SUNBIT))
+    endif
+  endif
+  #### Octave ####
+  ifeq (octave,$(PLATFORM))
+    MEXBIN     = mkoctfile
+    MEXOPTS    = --mex
+    SUF        = mex
+    override PLATFORM = $(shell $(UNAME))
+  endif
+  ifndef SUF
+    $(error Unknowm platform $(PLATFORM))
+  endif
+endif
+
+MEX            = $(MEXBIN) $(MEXOPTS)
