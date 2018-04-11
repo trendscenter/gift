@@ -1,0 +1,295 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<body>
+<h4>Batch Script</h4>
+<hr>
+Batch script is an alternative way to run the group ICA. We have provided two 
+example input files like 'Input_data_subjects_1.m' and 'Input_data_subjects_2.m' 
+in folder icatb/icatb_batch_files. The function for running the batch file is 
+'icatb_batch_file_run'. Type icatb_batch_file_run(inputFile) at the MATLAB 
+command prompt where inputFile is the full file path of the input file. We 
+explain below the parameters in the input file.
+
+<ul>
+
+<li> which_analysis - Options are 1 and 2. If you select 2, group ICA is run 
+using ICASSSO. The following are the options available:
+
+<ul> 
+<li> icasso_opts.sel_mode - Selection mode. Options are 'randinit', 'bootstrap' 
+and 'both'. </li>
+<li> icasso_opts.num_ica_runs - Number of times you want ICA to be run. </li>
+</ul>
+
+</li>
+<li> dataSelectionMethod - Options are 1, 2, 3 and 4. Each 
+option is explained below: 
+
+<ul>
+
+<li> 1 - Data will be selected automatically if you specify the root folder for 
+subjects and sessions, file pattern, a flag and file numbers to include. Options 
+for flag are 'data_in_subject_folder' and 'data_in_subject_subfolder'. 
+
+<ul>
+<li> 'data_in_subject_subfolder' - Data is selected from the subject 
+sub-folders. Number of sessions is equal to the number of sub-folders containing 
+the specified file pattern. </li>
+
+<li> 'data_in_subject_folder' - Data is selected from the subject folders. The 
+number of sessions is 1 and the number of subjects is equal to the number of 
+subject folders containing the specified file pattern. </li>
+
+<li> spmDesignFilter - Specify design matrix filter pattern here if you have 
+selected 'diff_sub_diff_sess' option for variable keyword_designMatrix. It looks 
+for the design matrix in the respective subject folder or session folders.</li>
+
+</ul>
+
+</li> 
+
+<li> 2 - This option can be used when all the data is not in one directory. You 
+need to specify the data directory for each subject and session followed by file 
+pattern. The required variables are selectedSubjects and numOfSess. 
+selectedSubjects contains the arbitrary names of subjects (s1 refers to 
+subject1, s2 refers to subject 2, etc) and numOfSess contains the number of 
+sessions. Subject 1 session 1 data information must be entered in variable s1_s1 
+and subject 2 session 2 information must be entered in variable s1_s2. Design 
+matrix information must be entered in _designMat variable.
+</li>
+
+<li> 
+
+3 - This option uses regular expressions to get the data set directories. The 
+required variables are as follows:
+
+<ul> 
+
+<li> input_directory_name - Full path of the directory where the subjects and 
+sessions are located. </li>
+
+<li> subject_dir_regexp - Regular expression used for matching subject 
+directories. This variable accepts nested paths. For example, to match single 
+slice data in the example subjects directory, you can use 'Sub\w+; single\w+' 
+regular expression where semi-colon is used as a delimiter. If there are no 
+subject directories inside the input directory, leave it as empty.</li>
+
+<li> session_dir_regexp - Regular expression used for getting the session 
+directories inside the subject directories. Unlike subject_dir_regexp variable 
+this cannot contain nested paths. If there are no session directories, leave 
+this as empty. </li>
+
+<li> data_file_pattern - File pattern used for getting data. Use wild card not 
+regular expressions.</li>
+
+<li> file_numbers_to_include - This option will let you work on a subset of 
+files. Enter the file numbers to include. Leave it as empty if you want to 
+include all the files.</li>
+
+<li> spm_stats_dir - SPM stats directory name relative to subject or session 
+directories. GIFT will automatically search in the appropriate directories to 
+get SPM.mat file for the subject. Please note that this variable will be read 
+only when you use diff_sub_diff_sess value for the variable 
+keyword_designMatrix.</li>
+
+</ul>
+
+</li>
+
+<li> 
+
+4 - This option is useful when you want to specify the file names directly. Each 
+variable is explained below:
+
+<ul> 
+
+<li> input_data_file_patterns - File patterns in a cell of dimensions equal to 
+number of subjects and sessions. Each new subject must be entered in a new row.</li>
+
+<li> input_design_matrices - This variable will be read only when you are using 
+a different design between subjects and sessions.</li>
+
+<li> dummy_scans - Enter number of dummy scans to exclude from the analysis.</li>
+
+</ul>
+
+</ul>
+
+</li>
+
+<li> keyword_designMatrix - Design matrix is used for sorting the components 
+temporally during display and will not be used during the analysis stage except 
+for semi-blind ICA. There are four options like 'no', 'same_sub_same_sess', 
+'same_sub_diff_sess' and 'diff_sub_diff_sess'.
+<ul> 
+<li> 'no' - SPM design matrix is not specified for the analysis. </li>
+<li> 'same_sub_same_sess' - All the subjects and sessions will share the same 
+regressors. Specify location of the SPM design matrix in variable OnedesignMat. </li>
+<li> 'same_sub_diff_sess' - Different regressors can be specified over sessions 
+but same over subjects. Specify location of the SPM design matrix in variable 
+OnedesignMat. </li>
+<li> 'diff_sub_diff_sess' - Different regressors can be specified over subjects 
+and sessions.</li>
+</ul>
+</li>
+
+
+<li> outputDir - Output directory of the analysis. </li>
+
+<li> prefix - All the output files will be pre-pended with this prefix. </li>
+
+<li> maskFile - Specify the location of the mask file or leave it as empty 
+(Default mask). </li>
+
+
+<li> preproc_type - Specify type of data pre-processing.
+
+<ul>
+<li> 1 - Remove mean per time point</li>
+<li>2 - Remove mean per voxel</li>
+<li>3 - Intensity normalization</li>
+<li>4 - Variance normalization</li>
+</ul>
+
+</li>
+<li>pcaType - Specify PCA type.
+<ul> 
+<li>1 - Standard</li>
+<li> 2 - Expectation Maximization</li>
+	<li> 3 - SVD</li>
+
+</ul>
+</li>
+
+<li>
+pca_opts - Optional parameters for PCA.</li>
+
+<ul> 
+
+<li>
+	Standard PCA:</li>
+
+<ul> 
+
+<li> pca_opts.stack_data - Options are as follows:</li>
+
+<ul> 
+<li>'Yes' - Data sets are stacked to compute covariance matrix.
+This option assumes that there is enough RAM to stack the data sets and for computing the covariance matrix.
+Full storage of covariance matrix is used.</li>
+<li> 'No' - A pair of data sets are loaded at a time to compute
+covariance matrix. This option uses less memory usage but slower
+than the other option. You also have the option to store only the
+lower triangular portion of the covariance matrix (packed storage)
+when using this option.</li>
+</ul>
+
+<li>pca_opts.storage - Options are 'Full' and 'Packed'. Packed
+storage scheme uses only lower triangular portion of symmetric
+matrix to compute eigen values.</li>
+
+<li>pca_opts.precision - Options are 'Double' and 'Single'. Single
+precision is accurate up to 7 digits after decimal place and uses
+50\% less memory usage when compared to double precision.</li>
+
+<li>pca_opts.eig_solver - Options are 'Selective' and 'All'. These
+options will be used only when you use packed storage scheme. Use
+option 'All' only when there are convergence issues with the option
+'Selective'.</li>
+
+</ul>
+
+<li> Expectation Maximization:
+
+
+<ul> 
+<li> pca_opts.stack_data - Options are as follows:</li>
+
+
+<ul>
+
+<li> 'Yes' - This option assumes that there is enough RAM to stack the data sets.</li>
+<li> 'No' - A data-set is loaded at a time to compute the transformation matrix.</li>
+
+</ul>
+
+<li>pca_opts.precision - Options are 'Double' and 'Single'.</li>
+
+<li>pca_opts.tolerance - Enter stopping tolerance. Default is 1e-4.</li>
+
+<li> pca_opts.max_iter - Enter maximum number of iterations to use.</li>
+
+</ul>
+
+</ul>
+
+<li> backReconType - Options are 1, 2 and 3. 
+
+<ul>
+<li> 1 - Regular </li>
+<li> 2 - Spatial-temporal regression</li>
+<li> 3 - GICA3</li>
+	<li> 4 - GICA</li>
+
+</ul>
+
+</li>
+
+<li> numReductionSteps - The number of reduction steps used and is dependent on 
+the number of data-sets used. A maximum of three reduction steps is used. </li>
+
+<li> doEstimation - 1 means dimensionality estimation is done and PC step 
+numbers are set to this value. </li>
+
+<li> numOfPC1 - Number of PC for reduction step 1.</li>
+<li> numOfPC2 - Number of PC for reduction step 2.</li>
+<li> numOfPC3 - Number of PC for reduction step 3.</li>
+
+<li> scaleType - Options are 0, 1, 2, 3 and 4.<ul>
+	<li>0 - No scaling</li>
+	<li>1 - Scale to original data(%)</li>
+	<li>2 - Z-scores</li>
+	<li>3 - Scaling in timecourses</li>
+	<li>4 - Scaling in maps and timecourses.</li>
+</ul>
+	</li>
+	<li> algoType - Currently there are 14 ICA algorithms available in the GIFT 
+toolbox. The algorithms are as follows:
+	<ul>
+		<li>1 - Infomax </li>
+		<li>2 - FastICA </li>
+		<li>3 - ERICA</li>
+		<li>4 - SIMBEC </li>
+		<li>5 - EVD </li>
+		<li>6 - JADE OPAC </li>
+		<li>7 - AMUSE </li>
+		<li>8 - SDD ICA</li>
+		<li>9 - Semi-blind ICA</li>
+		<li>10 - Constrained ICA (Spatial) </li>
+		<li>11 - Radical ICA  </li>
+		<li>12 - Combi  </li>
+		<li>13 - ICA-EBM</li>
+		<li>14 - FBSS</li>
+	</ul>
+	</li>
+
+<li> refFunNames - Reference function or regressor names to constrain ICA time 
+courses. This is needed when using semi-blind ICA for the analysis. </li>
+
+<li> refFiles - Spatial reference or template files required to constrain the 
+ICA source maps. This variable is required when Constrained ICA (Spatial) 
+algorithm is used for doing ICA. Enter the files in a cell array.</li>
+
+</ul>
+
+<hr>
+
+</body>
+
+</html>

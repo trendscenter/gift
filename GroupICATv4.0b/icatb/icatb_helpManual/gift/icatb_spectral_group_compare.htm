@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+<h4> Spectral Group Compare </h4>
+<hr> 
+
+Group comparison of time courses is done by comparing the power
+spectra between the groups at different frequency bins. Bins are labeled using 
+the variable DEFAULT_TR_SPECTRAL_GROUP_COMPARE in &quot;icatb_defaults.m&quot;. The results
+of the power spectra comparison is saved in a MAT file having suffix
+'*comparison_frequency_bins.mat'. The variables stored in the
+file are as follows:
+
+<ul> 
+<li> mean_power_group1 - Mean power for group 1.</li>
+<li> mean_power_group2 - Mean power for group 2.</li>
+<li> tValues - T-values. This variable is used for plotting
+the bar graphs.</li>
+<li> pValues - p-values.</li>
+</ul>
+
+
+
+<p class="style1" > Figure 1 shows the T-values of the components in groupings of four at different frequency bins. </p>
+<p class="style1" > &nbsp;<img src="images/icatb_spectral_group_compare.jpg" border="0" ></p>
+
+
+<hr>
+
+</body>
+</html>

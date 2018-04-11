@@ -1,0 +1,109 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4> Data Reduction </h4>
+<hr>
+<p>Data reduction is a step to reduce the size of the subject's functional data. 
+Principal Components Analysis (PCA) is used as a technique to reduce the 
+dimensions. A single subject is reduced from 53*63*34* 220 to 53*63*34* 50, 
+where 220 refers to the time points or scans. </p>
+<p>A maximum of three data reduction steps or groups is allowed. First group 
+contains the individual data-sets and each data-set is reduced in time dimension 
+and put in another group where the data-sets are concatenated into groups and 
+put through another data reduction step. Table 1 shows how groups are formed 
+depending upon the number of data-sets. Table 2 shows the procedure involved in 
+the data-reduction steps. In addition to the tables, figure shows how the 
+data-reduction step is performed.</p>
+<p class="style1"> <b> Table 1 </b>: Shows how groups are formed depending upon 
+the number of data-sets </p>
+<table border="2">
+  <tr>
+    <td width="19%" height="19"><b>Number of Data-Sets (n)</b></td>
+    <td width="26%" height="19"><b>Number of groups or reduction steps</b></td>
+  </tr>
+  <tr>
+    <td width="19%" height="19">n = 1</td>
+    <td width="26%" height="19">1</td>
+  </tr>
+  <tr>
+    <td width="19%" height="19">n &lt; 4</td>
+    <td width="26%" height="19">2</td>
+  </tr>
+  <tr>
+    <td width="19%"  height="19">n >= 4</td>
+    <td width="26%" height="19">User specified number (2 or 3, See
+    <a href="icatb_setup_ica.htm">Setup ICA</a>)</td>
+  </tr>
+</table>
+<p class="style1"><b>Table 2:</b> Shows how many sub-groups can be formed in a 
+group</p>
+<table border="2">
+  <tr>
+    <td width="19%" height="38"> <b> Number of groups or reduction steps </b> </td>
+    <td width="81%" height="38"> <b>Procedure</b></td>
+  </tr>
+  <tr>
+    <td width="19%" height="19">1</td>
+    <td width="81%" height="19">Only one sub-group can be formed from one 
+	data-set. This data-set is reduced in time dimension (scans) to PC1 (See,
+    <a href="icatb_setup_ica.htm">Setup ICA</a>).</td>
+  </tr>
+  <tr>
+    <td width="19%" height="76">2</td>
+    <td width="81%" height="76">First group contains the number of data-sets. 
+	These data-sets are reduced in time dimension to first data-reduction number 
+	and put in second group. In the second group, the number of sub-groups (say 
+	m) is determined by ratio of number of data-sets divided by 4. The reduced 
+	data-sets from first group are placed in m groups and concatenated in each 
+	sub-group. Each concatenated sub-group is reduced to a second data-reduction 
+	number (PC2, See
+    <a href="icatb_setup_ica.htm">Setup ICA</a>).&nbsp;
+    </td>
+  </tr>
+  <tr>
+    <td width="19%" height="57">3</td>
+    <td width="81%" height="57">First step involves all the steps for two 
+	data-reduction steps. Third group contains only one sub-group. In this 
+	sub-group, the reduced sub-groups from data-reduction step 2 are 
+	concatenated. The concatenated data-set is reduced to a third data-reduction 
+	number (PC3, See <a href="icatb_setup_ica.htm">Setup ICA</a>).</td>
+  </tr>
+</table>
+<p class="style1"> <b>Figure 1</b>: Three data-sets reduced in time dimension 
+using two data-reduction steps</p>
+<p class="style1"><img border="0" src="images/icatb_data_reduction.jpg"></p>
+<p><b>Calculation involved in data-reduction step: </b></p>
+<p>The example here discussed will be for one data-set. Let us say if the data 
+is a matrix of dimensions (V by I) where V is volume and I is images or time 
+points. Covariance matrix in time dimension is calculated from the observed data 
+and eigen values are computed from the covariance matrix. The eigen values are 
+arranged in decreasing order. Only the eigen vectors that correspond to non-zero 
+and first m (Reduction parameter PC1) components are taken into account. These 
+components are orthogonal to each other and then passed to the whitening step. 
+Whitening matrix is computed by solving the square root of diagonal matrix of 
+eigen values and transpose of the eigen vectors. This matrix is then multiplied 
+to the data to make the variances equal for all the components. Thus the 
+components are orthogonal and the variances are equal. </p>
+<p><b>Note</b>: The whitening matrix, de-whitening matrix (pseudo inverse of 
+whitening matrix) are stored for future use during the
+<a href="icatb_back_reconstruct.htm">back reconstruction</a> as they contain 
+information regarding the reduced set of the concatenated groups. These are 
+stored as .mat files with suffixes as '_pca_r*' where * refers to the reduction 
+step count.</p>
+<hr>
+
+</body>
+
+</html>

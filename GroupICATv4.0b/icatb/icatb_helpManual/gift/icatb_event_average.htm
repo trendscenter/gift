@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+<h4> Event Average </h4>
+<hr>
+<p> Event average can be done in two ways: </p>
+<ul>
+  <li> Method 1: After <a href="icatb_temporal_sorting.htm">temporal sorting</a> of components, when you click on 
+  the <a href="icatb_expanded_view_tc.htm">expanded view</a> of time course and 
+	had selected "Event Average" under "Utilities" menu.
+  </li>
+  <li>
+Method 2:
+Select "Event Average" entry under <a href="icatb_getting_started.htm"> Utilities drop 
+down box</a>. This will let you select the data-sets, regressor and component required for the event average.
+ </li>
+</ul>
+
+<p> Event average of ICA time course is calculated based on the onsets of the 
+selected model time course (See Figure 1). The parameters needed for event 
+average are window size and interpolation factor (specified in
+<a href="icatb_options_window.htm"> options window</a>). The procedure for calculating 
+the event average is given below:</p>
+
+<p class="style1">Figure 1: Reference functions used during temporal sorting. </p>
+
+<p class="style1"> <img src="images/icatb_ref_func_event_avg.jpg"></p>
+<ul>
+  <li>
+  The interpolation factor is multiplied with TR (See
+  <a href="icatb_SPM_design_matrix.htm">SPM design matrix</a>). The ICA time 
+	course is interpolated by the scaled interpolation factor.</li>
+  <li>
+  Onsets of the selected model time course (Sn(1)right_visual_hemisphere*bf(1) 
+  in Figure 1) are used. If the units are in seconds, the selected onsets are 
+  divided by TR.</li>
+  <li>Window size is multiplied by the original interpolation factor. Event average 
+  is initialized to zero vector of length equal to the scaled window size.</li>
+  
+  <li>Loop is done over the length of the selected onsets. </li>
+  <li>
+  
+  Starting index corresponds to current selected onset value multiplied by 
+  scaled interpolation factor. All the indices from starting index to length of 
+  the scaled window size are used. Time course values of the corresponding 
+  indices are added to the event average.</li>
+  <li>Number of onset where ending index exceeds the size of the time course is 
+  determined. </li>
+  
+  <li>End of loop over the selected onsets</li>
+  
+  <li> Event average is divided by number of onset where index exceeds the size of 
+  the time course. </li>
+</ul>
+
+<p> Figure 2 shows the event averages of the ICA time courses with the defaults from 
+the <a href="icatb_expanded_view_tc.htm">expanded view</a> of the ICA time 
+course. Event averages of the <a href="icatb_adjust_ica.htm">adjusted</a> time courses are shown in figure 3.
+</p>
+
+<p class="style1"> Figure 2: Event average of the original ICA time courses with the defaults. </p>
+<p class="style1"> <img border="0" src="images/icatb_event_average_original.jpg"></p>
+<p class="style1">Figure 3: Event average of the adjusted ICA time courses. </p>
+
+<p class="style1"> <img src="images/icatb_event_average_adjusted.jpg"></p>
+
+<hr>
+
+</body>
+
+</html>

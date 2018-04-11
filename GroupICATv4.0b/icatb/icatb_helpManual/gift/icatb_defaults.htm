@@ -1,0 +1,129 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<body>
+
+<h4> Defaults </h4>
+
+<hr>
+          <p>Defaults are specified in icatb_defaults.m file. The following are 
+		  the main variables involved in GIFT and EEGIFT:</p>       
+          <dl>
+          <dt> Colors</dt>
+            <dd>Colors are RGB values i.e, [0 0 0] means black. Background color 
+			can be changed by changing variable values. The variable names are 
+			listed below for figures and user interface controls:<ul>
+              <li>Figure background color: BG_COLOR </li>
+              <li>User Interface controls except push button background color: 
+			  BG2_COLOR</li>
+              <li>User Interface controls except push button font color: 
+			  FONT_COLOR</li>
+              <li>BUTTON_COLOR - Push button background color</li>
+              <li>BUTTON_FONT_COLOR - Push button font color</li>
+            </ul>
+            </dd>
+          <dt> Fonts for user interface controls</dt>
+            <dd>UI_FONTNAME - font name.<br>
+            UI_FONTUNITS - font units.<br>
+            UI_FS - font size.</dd>
+            <dt>Display Defaults</dt>
+            <dd>Display defaults in display GUI can be changed by accessing 
+			defaults like:
+            <ul>
+              <li>SORT_COMPONENTS: options available are 'No' to 'Yes'.</li>
+              <li>IMAGE_VALUES: options available are 'Positive', 'Positive and 
+			  Negative', 'Absolute Value' and 'Negative'.</li>
+              <li>CONVERT_Z : options are 'Yes' and 'No'.</li>
+              <li>THRESHOLD_VALUE : Threshold value to use voxels above or equal 
+			  to the threshold </li>
+              <li>IMAGES_PER_FIGURE : Options are '1', '4', '9', '16', '25'.</li>
+              <li>ANATOMICAL_PLANE: 'axial', 'sagital' and 'coronal'.</li>
+            </ul>
+            </dd>
+            <dt>DETRENDNUMBER</dt>
+            <dd>Detrend defaults can be changed by changing the variable 
+			DETRENDNUMBER value. Options are 0, 1, 2 and 3. </dd>
+            <dt>Smoothing parameters</dt>
+            <dd>When SMOOTHPARA variable is changed to 'Yes' the time courses 
+			are smoothed by the value indicated in the variable SMOOTHINGVALUE.</dd>
+            <dt>FLAG_ACKNOWLEDGE_CREATORS:</dt>
+            <dd>FLAG_ACKNOWLEDGE_CREATORS variable used to display 
+			acknowledgement for creators. You can turn off the dialog box by 
+			changing variable to 'off'.</dd>
+            <dt>ICAOPTIONS_WINDOW_DISPLAY:</dt>
+            <dd>ICAOPTIONS_WINDOW_DISPLAY variable used to display ICA options 
+			window. You can turn off the figure window by changing variable to 
+			'off'.</dd>
+            <dt>STORE_DIRECTORY_INFORMATION:</dt>
+            <dd>When STORE_DIRECTORY_INFORMATION variable is changed to 'Yes', 
+			directories specified in cell array DIRS_TO_BE_STORED are stored in 
+			the file selection window. </dd>
+          <dt>ZIP_IMAGE_FILES: </dt>
+          <dd>When this variable is set to 'Yes', the component images will be 
+		  compressed to a zip file based on their viewing set.</dd>
+          <dt> METHOD_ENTERING_REGRESSORS: </dt>
+          <dd> Variable has three options like 'AUTOMATIC', 'GUI' and 'BATCH' 
+		  for temporal sorting. Each option is explained below: </dd>
+          <ul>
+          <li> 'AUTOMATIC' - Regressors in 'SPM.mat' file will be used directly. 
+		  For 'Different regressors over sessions' or 'Different regressors for 
+		  subjects and sessions' session related regressors will be used. </li>
+          <li> 'GUI' - Figure window will open to select regressors. </li>
+          <li> 'BATCH' - Regressors can be entered using a text file by 
+		  specifying the file name for variable TXTFILE_REGRESSORS. This is the 
+		  best way to enter regressors if you have many data-sets and if you 
+		  have selected 'Different regressors over subjects and sessions'.
+          </li>
+          </ul>
+<dt>FLIP_ANALYZE_IMAGES: </dt>
+<dd> Flip parameter for the analyze images. Default value is 0. </dd>
+<dt> NUM_RUNS_GICA:  </dt>
+<dd> Number of times ICA will be run. Default is 1. </dd>
+<dt> DEFAULT_MASK_OPTION: </dt>
+<dd> Mask is calculated by doing a Boolean AND of voxels that surpass or equal 
+the mean. By default first file for each subject is used. You can use all files 
+by changing variable value to 'all_files'.</dd>
+<dt> OPEN_DISPLAY_GUI: </dt>
+<dd> Option is provided to open the display GUI automatically after the 
+analysis. You can turn off the option by changing variable value to 0. </dd>
+
+
+<dt> CENTER_IMAGES</dt> 
+<dd> A value of 1 means subject spatial maps will be centered based on the peak 
+of the distribution.</dd>
+
+<dt> PREPROC_DEFAULT: Data pre-processing default.</dt>
+
+<dd> 1 - Remove mean per time point</dd>
+<dd> 2 - Remove mean per voxel</dd>
+<dd> 3 - Intensity normalization</dd>
+<dd> 4 - Variance normalization</dd>
+
+<dt>PCA_DEFAULT - PCA default.</dt>
+
+<dd> 1 - Standard</dd>
+<dd> 2 - Expectation Maximization</dd>
+
+<dt> BACKRECON_DEFAULT: Backreconstruction default.</dt>
+
+<dd>1 - Regular</dd>
+<dd>2 - Spatial-temporal Regression</dd>
+<dd>3 - GICA3</dd>
+<dt> SCALE_DEFAULT- Scaling components default.</dt>
+<dd> 0 - No scaling </dd>
+<dd> 1 - Percent signal change </dd>
+<dd> 2 - Z-scores</dd>
+
+
+</dl>
+
+<hr>
+
+</body>
+
+</html>

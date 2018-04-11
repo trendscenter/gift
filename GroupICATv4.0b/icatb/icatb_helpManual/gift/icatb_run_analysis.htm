@@ -1,0 +1,104 @@
+<html>
+
+<head>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+<h4>Run Analysis </h4>
+<hr>Run Analysis contains initializing parameters along with the steps involved 
+in the group ICA.
+<ul>
+	<li>After the Setup ICA analysis is done click on the <i>Run analysis</i> 
+	button, a screen will pop up asking you to select the parameters file. The 
+	parameters file is the same file where you entered all the analysis 
+	information. It is named with suffix 'ica_parameter_info.mat'. </li>
+	<li>Once the parameter file is selected a figure (Figure 1) will pop up 
+	showing the options for run analysis. The options are described below:<dl>
+		<dt>All*** </dt>
+		<dd>You can run all the group analysis steps at once or you have to 
+		select each step in the order like after initialize parameters step 
+		followed group data reduction step. </dd>
+		<dt>Initialize Parameters </dt>
+		<dd>Parameters are initialized in this step. </dd>
+		<dt><a href="icatb_data_reduction.htm">Group data reduction</a> </dt>
+		<dd>
+		<ul>
+			<li>Each subject's data is reduced. </li>
+			<li>PCA is used as the data reduction step. </li>
+			<li>After each subject's data is reduced they are concatenated into 
+			groups and put through another data reduction step. </li>
+		</ul>
+		</dd>
+		<dt><a href="icatb_calculate_ica.htm">Calculate ICA</a> </dt>
+		<dd>The reduced data from the data reduction stage is plugged into the 
+		ICA algorithm. </dd>
+		<dt><a href="icatb_back_reconstruct.htm">Back Reconstruction</a> </dt>
+		<dd>Regular - Individual subject image maps and time courses are 
+		computed using both the results from the ICA stage and from the data 
+		reduction stage. </dd>
+		<dd> Spatial-temporal regression - The aggregate components and the original data are used to compute the individual subject components. </dd>
+		<dt><a href="icatb_scaling_components.htm">Calibrate Components</a> </dt>
+		<dd>Scaled image maps and time courses are computed using the individual 
+		image maps and time courses. </dd>
+		<dt>Group Stats </dt>
+		<dd>Statistical methods are used to obtain group results. </dd>
+	</dl>
+	</li>
+	<li>Results during each of the steps are printed to the MATLAB command 
+	window. Before the group analysis can take place the parameters file must be 
+	initialized. At this stage variables that were entered through the GUI are 
+	parsed and initialized as needed for the group ICA analysis. Error checking 
+	is also performed so that mistakes can be caught before the analysis starts. </li>
+	<li>All the analysis information is also stored in a log file 
+	('_results.log'). This file gets appended each time you run the analysis 
+	with the same name to the prefix of the output files in the <a href="icatb_setup_ica.htm">
+	<em>Setup ICA</em></a> analysis step. </li>
+</ul>
+
+<b>Note:</b>
+<ul>
+	<li>You need not run the whole analysis if you have changed the scaling 
+	method or ICA algorithm as data reduction is the time consuming step for 
+	large analysis. For running the analysis with changed scaling method, you 
+	need to select 'Parameter Initialization', 'Calibrate Components' and 'Group 
+	Stats' one at a time. For running the analysis with changed ICA algorithm, 
+	you need to run all the steps except the data reduction. </li>
+	
+	<li> By default, the component spatial maps and time courses will be 
+	compressed to a zip file according to their viewing set name like subject 1 
+	session 1, mean for session 1, etc. The variable used for compressing is 
+	ZIP_IMAGE_FILES (See <a href="icatb_defaults.htm">defaults</a>).
+	</li>
+	
+	<li> <a href="icatb_displayGUI.htm">Display GUI</a> will open automatically 
+	after the stats step is completed. You can turn off this option by changing 
+	variable OPEN_DISPLAY_GUI to 0.
+	</li>
+</ul>
+
+<p class="style1"> Figure 1: Run Analysis </p>
+<p class="style1"> <img src="images/icatb_run_analysis.jpg"> </p>
+
+<p>After the analysis is complete, the analysis information can be viewed using 
+the <i><a href="icatb_analysis_info.htm">Analysis Info</a></i> 
+button.</p>
+
+<hr>
+
+</body>
+
+</html>

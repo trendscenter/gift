@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4>Stats On Time courses (Beta Weights)</h4>
+<hr>
+<p>Statistics are done on the time courses (beta weights) to determine the 
+significance of the components. To use this utility, temporal sorting must be 
+done on all data-sets. When you click on &quot;Stats On Beta Weights&quot; under <a href="icatb_getting_started.htm">
+Utilities</a> 
+drop down box, figure 1 will open to select the regression parameters text file 
+(obtained after temporal sorting). An option is provided to average beta weights 
+across runs or sessions (Figure 2). Figure 3 shows the GUI for doing statistics 
+on beta weights. The parameters in the figure are as follows:</p>
+<ul>
+	<li>Select design criteria - Design criteria used to determine the 
+	significance of components. There are six options like one sample t-test, 
+	two sample t-test, one way anova (groups), one way anova (regressors), two way anova (groups, regressors) 
+	and Multiple Regression. </li>
+	<li>Groups listbox - You can add groups using <em>+</em> button adjacent to 
+	groups listbox. Figure 4 shows the GUI for entering group name, subject and 
+	session numbers. You need to double click or press enter key on the selected 
+	group to change the group name or subject numbers. To remove a group use <em>
+	-</em> button. </li>
+	<li>Regressors listbox - This listbox is used to select the conditions or 
+	regressors. You can select only one regressor for one sample t-test and two 
+	sample t-test whereas for anova you can select multiple regressors. </li>
+	<li>Contrasts listbox - This parameter is optional. You can specify contrast 
+	names and vector using <em>+</em> button adjacent to contrasts listbox. The 
+	length of contrast vector depends on the design criteria used:
+	<ul>
+		<li>One way anova (groups) - The length of contrast vector is equal to 
+		the number of selected groups. </li>
+		<li>One way anova (regressors) - The length of contrast vector is equal 
+		to the number of selected regressors. </li>
+		<li>Two way anova (groups, regressors) - The length of contrast vector 
+		is equal to the number of selected groups and regressors. For example if 
+		you have two groups and four conditions, the first two entries 
+		correspond to groups and the next four entries correspond to regressors. </li>
+	</ul>
+	</li>
+	<li><em>Calculate</em> - Statistics are calculated after selecting design 
+	criteria, groups, regressors and contrasts (Figure 5). All the results are 
+	printed to a text file with suffix 'summary.txt'. This file also contains 
+	mean and standard deviation for each condition of a group. </li>
+</ul>
+<strong>Note:</strong> 
+
+<ul> 
+
+<li> If you have selected one way anova (groups) as the design 
+criteria, option is provided to do operation on regressors. For example, if you 
+have selected targets and novels as regressors. You can subtract novels from 
+targets and treat it as a single regressor by specifying [1 -1] for equation of 
+regressors (Figure 6). </li>
+
+<li> When you select Multiple regression tool, a figure
+window will open to select the regressor file or files like age,
+test scores, etc. After you selected the regressor files, R-square
+statistic is calculated for each component. We also report the
+slopes and partial correlations of the regressors.</li>
+
+<li> If you wish to use your favorite statistics package to do the
+statistics on the beta weights, 'icatb_parse_regression_mat.m' function is provided that will write regression parameters in a
+excel file or load it in the MATLAB command window. Type help
+'icatb_parse_regression_mat.m' for more information.</li>
+
+</ul>
+
+<br>
+<br>
+<p class="style1" >Figure 1: Figure window used to select regression parameters 
+text file. </p>
+<p class="style1" ><img border="0" src="images/icatb_stats_bw_select_file.jpg"> </p>
+<p class="style1" >Figure 2: Option for averaging beta weights across runs or 
+sessions.
+</p>
+<p class="style1" ><img border="0" src="images/icatb_stats_bw_avg_runs.jpg"> </p>
+<p class="style1" >Figure 3: GUI for doing stats on beta weights. </p>
+<p class="style1" ><img border="0" src="images/icatb_stats_bw_gui.jpg"> </p>
+<p class="style1" >Figure 4: Figure window used to enter group name, subject 
+numbers and session numbers.</p>
+<p class="style1" ><img border="0" src="images/icatb_stats_bw_select_subjects.jpg"> </p>
+<p class="style1" >Figure 5: Figure shows the completed parameters for doing 
+stats.</p>
+<p class="style1" ><img border="0" src="images/icatb_stats_bw_gui_final.jpg"> </p>
+<p class="style1" >Figure 6: Option provided for doing operation on regressors 
+when one way anova (groups) design criteria is selected. </p>
+<p class="style1" ><img border="0" src="images/icatb_stats_bw_eq_regressors.jpg"> </p>
+<hr>
+
+</body>
+
+</html>

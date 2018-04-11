@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>   
+<h4> Sorting Components </h4>
+
+<hr>
+
+<p>Sorting is a way to classify the components. For every independent 
+component spatial maps and time courses are generated. Components can be sorted 
+in two ways: </p>
+<ul>
+  <li> Temporal Sorting </li>
+  <li> Spatial Sorting </li>
+</ul>
+
+<p> Select  'Yes' for sort components in the Component Explorer and click <em>Display</em> button then a dialog box 
+will pop up that shows the information about the sorting. Click <em>Ok</em> for the 
+dialog button and then a figure will open in a new window. Figure below shows 
+the completed parameters.</p>
+
+<p class="style1"> Figure 1: Sorting GUI </p>
+<p class="style1"> <img src="images/icatb_sorting_gui.jpg"></p>
+<p>The following are the definitions of the parameters:</p>
+
+<dl>
+  <dt>Sorting Criteria </dt>
+  <dd>There are three different types of sorting criteria like Multiple 
+  Regression, Correlation, Kurtosis and Maximum Voxel. </dd>
+  <dt>What do you want to sort? </dt>
+  <dd>There are four options for temporal sorting depending upon the number of 
+  subjects and sessions you select. </dd>
+  <ul>
+    <li>Select any Subject any session - A particular subject's session is 
+    selected and correlated with the model time course. </li>
+    <li>Select a particular session of all subjects - A particular session for 
+    all subjects is selected, time courses are concatenated and correlated with 
+    the concatenated model time course. </li>
+    <li>Select a particular Subject - A particular subject's sessions are 
+    selected, time courses are concatenated and correlated with the model time 
+    course. </li>
+    <li>Select all Subjects and Sessions - All data sets are concatenated and 
+    correlated with the model time course. 
+    </li></ul>
+  <dt>Sorting Type  </dt>
+  <dd>Temporal or Spatial. 
+  </dd>
+  <dt>Reference Function </dt>
+  <dd>You have a good measure to separate the task related components depending 
+  on the model time course or spatial template. </dd></dl>
+<hr>
+
+</body>
+</html>

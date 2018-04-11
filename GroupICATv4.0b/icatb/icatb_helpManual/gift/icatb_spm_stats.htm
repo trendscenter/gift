@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+</head>
+
+<body>
+
+<h4> SPM Stats </h4>
+<hr> 
+
+You can test the significance of components by doing a one sample t-test or two 
+sample t-test on individual subject component images. We now provide an option in GIFT to do one sample 
+t-test or two sample t-test on images using SPM5. 
+
+<ul> 
+
+<li> One sample t-test - One sample t-test for each component will be automatically 
+calculated if you set variable SPM_STATS_WRITE_TAL in 
+'icatb_defaults.m' to 1 or 2. If you set variable 
+"SPM_STATS_WRITE_TAL" value to 1 only one sample t-test will be 
+calculated whereas a value of 2 will also write talairach tables for the 
+t-map. </li>
+
+<ul>
+	<li><strong>Note:</strong> An option is also provided in 
+	<a target="_self" href="icatb_getting_started.htm">Utilities</a> drop down box to calculate t-maps for the selected 
+data-sets.
+</ul>
+
+<li> Two sample t-test - When you click
+<a target="_self" href="icatb_getting_started.htm">Utilities</a> drop down box and have selected SPM Stats as the option, a 
+figure window will open to select the design criteria. When you select design as 
+"Two sample t-test", two sample t-test for a component will be calculated 
+between the selected groups by using a explicit mask. The explicit mask is 
+calculated by applying a threshold (SPM_STATS_TTEST_THRESHOLD) on t-map 
+obtained by doing a one sample t-test on data-sets. 
+
+<ul>
+	<li><strong>Note:</strong>
+When you set SPM_STATS_TTEST2_EXPLICIT_MASK variable in 
+'icatb_defaults.m' file to 0, explicit mask is not used. </li>
+</ul>
+
+</li>
+
+</ul>
+
+<hr>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+<h4> Single Trial Amplitudes </h4>
+<hr> 
+<p> 
+Single trial amplitudes are the beta weights which are obtained by
+doing a Multiple Regression of the design matrix and the convolved
+ICA time course where the design matrix is obtained by doing a
+convolution of the onsets and the event averages. This utility must
+be used after doing temporal sorting of all data-sets in the GIFT
+and using only the regressors of interest. The best regressor onsets
+for each data set are used to compute single trial amplitudes and
+event averages. We determine the best regressor for each data-set
+based on the maximum beta weight value (not the absolute value).
+Figure 1 shows the orthogonal slices
+at the maximum voxel, event average and the single trial amplitudes
+for the selected components. We also store the single trial
+amplitude results in a file having suffix
+'*single_trial_results.mat'.
+</p>
+
+<p class="style1"> Figure 1: Plot shows the orthogonal slices at the maximum voxel, event average and single trial amplitudes.</p>
+<p class="style1"> &nbsp;<img src="images/icatb_single_trial_amps.jpg" border="0" ></p>
+
+
+<hr> 
+
+</body>
+</html>
