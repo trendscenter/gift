@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4> Setup ICA Analysis </h4>
+
+<hr>
+
+<p> Before entering the parameters using <em>Setup ICA</em>, figure out how many 
+data-sets you are analyzing. Use batch script to run the analysis for large 
+data-sets. </p>
+<p><em>Setup ICA Analysis</em> step involves entering parameters for the group 
+ICA analysis. When you click <em>Setup ICA Analysis</em> button, a figure window 
+will open to select the analysis output directory. After the directory is 
+selected, parameter options figure (Figure 1) will be displayed. The parameters 
+in the figure will be explained step by step and for additional information 
+click on the link highlighted. Some of the user interface controls are shielded 
+from the user. These controls will be shown when you click <a href="icatb_eeg_setup_ica_defaults.htm">
+SetupICA-Defaults</a> menu. </p>
+<p class="style1"> Figure 1: Initial Parameter Select Window </p>
+
+<p class="style1"> <img src="images/icatb_eeg_setup_ica_initial.jpg"> </p>
+
+<p> <b> Main User Interface Controls:</b></p>
+  <dl>
+  <dt>Enter name (Prefix) of Output Files</dt>
+  <dd>All the output files created by EEGIFT will be saved using this prefix. 
+  Enter 'Oddball'.</dd>
+  <dt>Have You Selected The EEG Data Files? </dt>
+  <dd>Select<ul>
+    <li>EEG data needs to be selected. When you click this button, you can 
+	select the data using two methods. 
+    <ul>
+    <li> Method one can be used to select large data-sets. If your data is in 
+	one folder and have a common file pattern, specify the filter pattern and 
+	select the appropriate answer for the question &quot;Are session folders inside 
+	subject folders?&quot;. See <a href="icatb_eeg_select_data.htm">screen shots</a> 
+	of the example data selection.</li>
+
+	<li> Method two can be used to select data-sets that do not have data in one 
+	folder or have a common file pattern. For large data-sets use batch script 
+	for entering the data. </li>	
+	</ul>
+	
+	<li> After selecting the data files, the information is stored in a file 
+	with suffix &quot;Subject.mat&quot; and the button will be changed to pop up window 
+	with 'Yes' and 'No' as options. The explanation for 'Yes' is explained 
+	below. 'No' is used if you want to select the data files again.</li>
+  </ul>
+  </dd>
+  <dd>Yes
+  <ul>
+    <li>'Yes' option will be shown&nbsp; if you have already selected the data files 
+	based on the output prefix entered.</li>
+    <li>The data reduction parameters are updated. </li>
+    <li> If the data is entered for the first time, the numbers for the 
+	principal components are set to 20. </li>
+  </ul>
+  </dd>
+</dl>
+<dl>
+  <dt>Number of IC</dt>
+  <dd>Number of independent components extracted from the data.</dd>
+  <dt>Do You Want to Autofill Data Reduction Values?</dt>
+  <dd>Numbers for principal components are auto-filled. You can take a look at 
+  these parameters by clicking on &quot;<a href="icatb_eeg_setup_ica_defaults.htm">Setup 
+  ICA-Defaults</a>&quot; menu.</dd>
+  <dt>Which algorithm do you want to use? </dt>
+  <dd>Presently there are 10 algorithms in the toolbox that can be used for EEG 
+  data like Infomax, FastICA, Erica, Simbec, Evd, Jade Opac, Amuse, SDD ICA, 
+  Radical ICA , Combi, ICA-EBM and FBSS. A detailed explanation of algorithms like Infomax, 
+  FastICA, Erica, Simbec, Evd and Jade Opac is given in the GIFT manual and in 
+  related journal publications. By default, we employ Infomax since this 
+  algorithm has been used most frequently in electrophysiology and neuroimaging 
+  to our knowledge. The performance of the different algorithms is not 
+  remarkably different when applied to aggregate EEG time domain data </dd>
+  <dd><b>Note: </b>ICA options window (Figure 2) will popup depending on the 
+  algorithm selected. Presently, ICA options are available for Infomax, FastICA 
+  and SDD ICA. ICA options window can be turned off by replacing variable 
+  ICAOPTIONS_WINDOW_DISPLAY to 'off' (<a href="../gift/icatb_defaults.htm">Defaults</a>).</dd>
+	
+	<dt>Which Group ICA Analysis You Want To Use? </dt>
+	<dd> Options are 'Regular' and 'ICASSO'. When you select 'ICASSO', ICA is 
+	run several times and the best estimate for each component is used. </dd>
+
+</dl>
+
+<p class="style1">Figure 2: ICA Options Window</p>
+<p class="style1"> <img src="images/icatb_eeg_ica_options.jpg"> </p>
+
+<p class="style1">Figure 3: Completed Parameter Select Window</p>
+<p class="style1"> 
+<img border="0" src="images/icatb_eeg_setup_ica_final.jpg"></p>
+
+Figure 3 shows the completed parameters. Press <i>Done</i> button once the 
+answers for the parameters are entered. Parameter file for the analysis is 
+created in the working directory with the suffix '_ica_parameter_info.mat' 
+
+<p>After the parameters are saved in a file, use <i>
+<a href="icatb_eeg_run_analysis.htm">Run Analysis</a></i> button to run the 
+analysis.</p>
+
+</body>
+
+</html>

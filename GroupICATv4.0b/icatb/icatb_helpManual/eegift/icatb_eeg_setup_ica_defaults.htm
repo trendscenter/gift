@@ -1,0 +1,117 @@
+<html>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4>Setup ICA Defaults</h4>
+<hr>
+<p>The explanation of hidden user interface controls is as follows:</p>
+<dl>	
+
+<dt> Select Type Of PCA</dt>
+<dd> There are two options like 'Standard' and 'Expectation Maximization'. 
+Optional parameters for PCA are provided. Please see <a href="../icatb_pca_options.htm">
+PCA options</a> 
+page. </dd>
+
+<dt> Select The Back-Reconstruction Type</dt>
+	<dd>Options available are GICA, Regular (GICA2), GICA3 and Spatial-temporal 
+	regression. GICA2 and GICA3 are not not shown in the GUI but can be called 
+	in the batch script. GICA is a more robust tool to back reconstruct 
+	components when compared to GICA2 and GICA3 for low model order.</dd>
+	<ul>
+	<li> GICA - GICA uses PCA whitening and dewhitening information to back 
+	reconstruct the component topographies and timecourses (<a href="../gift/icatb_references.htm">[1]</a>).</li>
+<li> Spatial-temporal Regression - Back reconstruction is done using a two step 
+multiple regression (<a href="../gift/icatb_references.htm">[3]</a>). In the 
+first step, aggregate component timecourses are used as basis functions and projected on to 
+the subject's data resulting in subject component topographies. In the second 
+step, subject component topographies are used as basis functions and projected 
+on to the subject's data resulting in component timecourses for that subject. </li>
+
+</ul>
+
+<dd>
+<strong>Note:</strong>
+<ul>
+	<li>GICA, GICA2 topographies are similar to the topographies obtained using 
+	Spatial-temporal Regression.</li>
+	<li>Timecourses obtained using GICA2 are exactly equal to the GICA3 method.</li>
+	<li>All the back reconstruction methods give the same timecourses and 
+	topographies for one single subject single session analysis.</li>
+	<li>GICA and Spatial-temporal Regression component topographies are 
+	equivalent when 100% variance is retained in the first step PCA.</li>
+</ul>
+	</dd>
+
+
+	<dt> Do You Want To Scale Components? </dt>
+	<dd>Scale To Original Data	
+	<ul>
+		<li> Components will be scaled to original data units by doing a 
+		multiple regression using the time domain average of the component as 
+		model and the average of the EEG signal from the original data as 
+		observation. For each component, EEG signal from the original data is 
+		computed by selecting the electrode that has the maximum absolute value. </li>
+	</ul>
+	</dd>
+	<dd>Z-scores<ul>
+		<li>Component images and time courses are divided by their standard 
+		deviation.</li>
+	</ul>
+	</dd>
+		<dd>Scaling in Topographies<ul>
+		<li>Timecourses are normalized using the maximum amplitude and the 
+		maximum amplitude of timecourses is multiplied to the topographies.</li>
+	</ul>
+	</dd>
+
+	<dd>Scaling in Timecourses and Topographies<ul>
+		<li>Timecourses are scaled using the standard deviation of topographies 
+		and topographies are scaled using the maximum amplitude of timecourses.</li>
+	</ul>
+	</dd>
+
+	<dt>How Many Data Reduction (PCA) Steps Do You Want to Run? </dt>
+	<dd>The number of times you want to do PCA. </dd>
+	<dd><b>Note</b>: The number of data reduction steps depends on the number of 
+	data sets. A maximum of three data reduction steps is allowed. </dd>
+	<dt>Number of PC to reduce each group into </dt>
+	<dd>Each subject is reduced to the number of principal components selected.
+	<ul>
+		<li>Number of times the prompt strings requesting to enter the PC is 
+		equal to the number of data reduction steps. </li>
+	</ul>
+	</dd>
+	<dd><b>Note</b>:
+	<ol>
+		<li>Always choose a greater number for PC in the first step if you wish 
+		to choose different numbers for the principal components. </li>
+		<li>The number of principle components after the last step of data 
+		reduction (will be disabled as you already entered the number of 
+		independent components) is the same as the number of independent 
+		components you want to extract.
+		</li>
+	</ol>
+	</dd>
+</dl>
+
+<p class="style1"> Figure 1: Setup Defaults menu </p>
+<p class="style1"> 
+<img border="0" src="images/icatb_eeg_setup_ica_defaults.jpg"> </p>
+
+<hr>
+
+</body>
+
+</html>
