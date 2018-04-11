@@ -1,0 +1,80 @@
+<html>
+<head>
+<title> Group ICA of fMRI Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4> Covariance Matrix Options </h4>
+
+<hr>
+
+These options are provided for calculating covariance matrix during the second 
+and third data reduction stages. Figure 1 shows the covariance matrix options. 
+Each option is explained below:
+
+<ul>
+
+<li> Do You Want To Stack Datasets? - Options are 'Yes' and 'No'. 
+
+
+<ul> 
+<li> Yes - Data sets are stacked to compute covariance matrix. This option 
+assumes that there is enough RAM available to stack the data sets. Please note 
+that full storage of covariance matrix is required when you select this option. </li>
+
+<li> No - A pair of data sets are loaded at a time to compute covariance matrix. 
+This option uses less memory usage but it requires N*(N-1)/2 loops to compute 
+the covariance matrix where N is the number of data sets. </li>
+
+</ul>
+</li>
+
+<li> 'Select Matrix Storage Type' - Options are 'Full' and 'Packed'. You have 
+the option to store only lower triangular portion of the symmetric matrix with 
+the packed storage scheme. </li>
+
+<li> 'Select Precision' - Options are 'Double' and 'Single'. Single precision 
+uses 50% less memory required when compared to double precision. Single 
+precision is accurate up to 7 digits after decimal point. </li>
+
+<li> 'Select Eigen Solver Type' - Options are 'Selective' and 'All'. These 
+options will be used only for the packed storage scheme.
+
+<ul>
+
+<li> 'Selective' - Only a few desired eigen values are computed. This option 
+will compute eigen values faster when compared to 'All' option. However, if 
+there are convergence issues use option 'All' to compute eigen values.</li>
+
+<li> 'All' - All eigen values are computed. We recommend to use this option for 
+computing eigen values only when the selective eigen solver doesn't converge.</li>
+
+</ul>
+</li>
+</ul>
+
+<strong>Note:</strong> If you want a better performance during the data 
+reduction stage, use full storage of covariance matrix and single precision. 
+However, if you want less memory usage during the data reduction stage use 
+packed storage scheme, single precision and selective eigen solver.
+
+<p class="style1"> Figure 1: Covariance Matrix Options </p>
+
+<p class="style1">
+<img src="gift/images/icatb_covariance_options.jpg">
+
+</p>
+
+<hr>
+
+</body>
+
+</html>

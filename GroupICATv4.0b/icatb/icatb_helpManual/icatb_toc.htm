@@ -1,0 +1,358 @@
+<!--Uses Treeview concept from http://www.quantumsoftware.com.au/Support/KB/Article.aspx?ID=112-->
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="./style.css">
+
+<!-- Include Javascript -->
+
+<script type="text/javascript">
+
+/* List tree */
+function listTree(section)
+{
+	if(document.getElementById(section).style.display == 'none')
+	{
+		document.getElementById(section).style.display = 'inline';
+		document.getElementById('img' + section).src = 'minus.gif';
+	}
+	else
+	{
+		document.getElementById(section).style.display = 'none';
+		document.getElementById('img' + section).src = 'plus.gif';
+	}
+}
+/* End for listing tree */
+
+</script>
+
+<!-- End for including Javascript -->
+
+</head>
+
+
+<body>
+
+<h4> Table Of Contents </h4>
+
+<p>
+
+<!-- Introduction -->
+<a href="javascript:listTree('Introduction');">
+<img align="top" src="./plus.gif" border="0" id="imgIntroduction">
+</a>
+<a href="icatb_introduction.htm" onclick="listTree('Introduction');" target="rightframe"> 
+Introduction </a>
+
+<font id="Introduction" style="display: none"> <br>
+
+<!-- New Features -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="icatb_new_features.htm" target="rightframe">New Features </a> <br> 
+<!-- End for new features -->
+
+<!-- System Requirements -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="icatb_system_requirements.htm" target="rightframe">System Requirements</a><br>
+<!-- End for system requirements -->
+
+<!-- MEX files -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="icatb_compile_mex.htm" target="rightframe">MEX Files</a><br>
+<!-- End for MEX files -->
+
+
+
+<!-- Project Web Page -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="icatb_project_webpage.htm" target="rightframe">Project Web Page</a>
+<!-- End for project web page -->
+
+</font>
+
+<!-- End for introduction -->
+
+<br>
+
+<!-- GIFT Toolbox -->
+<a href="javascript:listTree('GIFT');">
+
+<img align="top" src="./plus.gif" border="0" id="imgGIFT" />
+</a>
+<a href ="gift/icatb_getting_started.htm" onclick="listTree('GIFT');" target="rightframe">
+Group ICA of fMRI Toolbox (GIFT) </a>
+
+<font id="GIFT" style="display: none"><br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Setup ICA -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_setup_ica.htm" target="rightframe">Setup ICA</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Run Analysis -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_run_analysis.htm" target="rightframe">Run Analysis</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Analysis Info -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_analysis_info.htm" target="rightframe">Analysis Info</a><br />
+
+<!-- Visualization Methods -->
+<a href="javascript:listTree('VisualizationMethods');">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./plus.gif" border="0" id="imgVisualizationMethods" />&nbsp;&nbsp;&nbsp;
+</a><a href="gift/icatb_visualization_options.htm" onclick="listTree('VisualizationMethods');" target="rightframe">
+Visualization Methods</a>
+
+<font  id="VisualizationMethods" style="display: none"><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Display GUI -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_displayGUI.htm" target="rightframe">Display GUI</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Component Explorer -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_component_explorer.htm" target="rightframe">Component 
+Explorer</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Subject Component Explorer -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_subject_explorer.htm" target="rightframe">Subject Component 
+Explorer</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Ortho viewer -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_ortho_viewer.htm" target="rightframe">Ortho Viewer</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Composite Viewer -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_composite_viewer.htm" target="rightframe">Composite Viewer</a>
+
+</font>
+<!-- End for Visualization Methods -->
+
+<br />
+
+<!-- Sorting Components -->
+<a href="javascript:listTree('SortingComp');">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./plus.gif" border="0" id="imgSortingComp" />&nbsp;&nbsp;&nbsp;
+</a>
+
+<!-- Types of sorting -->
+<a href="gift/icatb_sorting_components.htm" onclick="listTree('SortingComp');" target="rightframe"> 
+Sorting Components </a>
+<font  id="SortingComp" style="display: none"><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Temporal Sorting -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_temporal_sorting.htm" target="rightframe">Temporal Sorting</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Spatial Sorting -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_spatial_sorting.htm" target="rightframe">Spatial Sorting</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Stats on images and timecourses -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_statistical_testing.htm" target="rightframe">Stats On Images 
+and Timecourses</a>
+
+</font>
+
+<!-- End for Sorting Components -->
+
+<br />
+<!-- Utilities -->
+<a href="javascript:listTree('Utilities');">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./plus.gif" border="0" id="imgUtilities">&nbsp;&nbsp;&nbsp;
+</a>
+
+<font class =""> Utilities </font>
+<br />
+<font  id="Utilities" style="display: none">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Removing Artifacts -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_remove_components.htm" target="rightframe">Removing 
+Component(s)</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- ICASSO -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_icasso.htm" target="rightframe">ICASSO</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- ASCII To SPM.MAT -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_ascii_spm.htm" target="rightframe">ASCII To SPM.MAT</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Event Average -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_event_average.htm" target="rightframe">Event Average</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Calculate Stats -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_calculate_stats.htm" target="rightframe">Calculate Stats</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- SPM stats -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_spm_stats.htm" target="rightframe">SPM Stats
+</a> <br/>
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- Spectral Group Compare -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_spectral_group_compare.htm" target="rightframe">Spectral 
+Group Compare</a> <br/>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- Stats on beta weights -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_stats_on_beta_weights.htm" target="rightframe">Stats On Beta 
+Weights</a> <br/>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- Write Talairach tables -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_write_talairach.htm" target="rightframe">Write Taliarch 
+tables</a> <br/>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- Single trial amplitudes -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_single_trial_amps.htm" target="rightframe">Single Trial 
+Amplitudes</a> <br/>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- Z-shift -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_z_shift.htm" target="rightframe">Z-shift</a> <br/>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- Percent Variance -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_percent_variance.htm" target="rightframe">Percent Variance</a> <br/>
+
+
+
+</font>
+<!-- End for Utilities -->
+
+<!-- Batch script -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0" id="imgBatchAnalysis">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_batch_analysis.htm" target="rightframe"> Batch Script </a> <br>
+<!-- End for getting started -->
+
+<!-- Appendix -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_appendix.htm" target="rightframe">Appendix</a><br>
+
+<!-- References -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="gift/icatb_references.htm" target="rightframe">References</a>
+
+
+</font>
+<!-- End for GIFT Toolbox -->
+
+<br>
+
+<!-- EEGIFT Toolbox -->
+<a href="javascript:listTree('EEGIFT');">
+
+<img align="top" src="./plus.gif" border="0" id="imgEEGIFT">
+</a>
+<a href ="eegift/icatb_eeg_getting_started.htm" onclick="listTree('EEGIFT');" target="rightframe">
+Group ICA of EEG Toolbox (EEGIFT) </a>
+
+<font  id="EEGIFT" style="display: none"><br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Import Data -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_import_data.htm" target="rightframe">Import Data</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Setup ICA -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_setup_ica.htm" target="rightframe">Setup ICA</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Run Analysis -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_run_analysis.htm" target="rightframe">Run Analysis</a><br />
+
+<!-- Display GUI -->
+<a href="javascript:listTree('EEGDisplay');">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./plus.gif" border="0" id="imgEEGDisplay" />&nbsp;&nbsp;&nbsp;
+</a><a href="eegift/icatb_eeg_displayGUI.htm" onclick="listTree('EEGDisplay');" target="rightframe">
+Display GUI</a><br>
+
+<font id="EEGDisplay" style="display: none">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Component Explorer -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_component_explorer.htm" target="rightframe">Component 
+Explorer</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Subject Component Explorer -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_subject_explorer.htm" target="rightframe">Subject 
+Component Explorer</a> <br>
+
+</font>
+
+<!-- Batch Script -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_batch_analysis.htm" target="rightframe">Batch Script</a> <br>
+
+<!-- Appendix -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_appendix.htm" target="rightframe">Appendix</a> <br>
+
+<!-- References -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="eegift/icatb_eeg_references.htm" target="rightframe">References</a>
+
+
+</font>
+
+</p>
+
+</body>
+
+</html>

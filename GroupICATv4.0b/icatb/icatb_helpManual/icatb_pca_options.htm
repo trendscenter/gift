@@ -1,0 +1,134 @@
+<html>
+<head>
+<title> Group ICA of fMRI Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+.style2 {
+	background-color: #000000;
+}
+</style>
+</head>
+
+<body>
+
+<h4> PCA Options</h4>
+
+<hr>
+
+<p><span class="style2">PCA options are available when you select the PCA type.
+</span></p>
+
+<ul>
+
+<li> Standard </li>
+
+<ul>
+
+<li> Do You Want To Stack Datasets? - Options are 'Yes' and 'No'. </li>
+
+<ul> 
+
+
+<li> Yes - Data sets are stacked to compute covariance matrix. This option 
+assumes that there is enough RAM available to stack the data sets and for 
+computing covariance matrix. Please note that full storage of covariance matrix 
+is required when you select this option. </li>
+
+<li> No - A pair of data sets are loaded at a time to compute covariance matrix. 
+This option uses less memory usage but it requires N*(N-1)/2 loops to compute 
+the covariance matrix where N is the number of data sets. </li>
+
+</ul>
+
+
+<li> 'Select Matrix Storage Type' - Options are 'Full' and 'Packed'. You have 
+the option to store only lower triangular portion of the symmetric matrix with 
+the packed storage scheme. </li>
+
+<li> 'Select Precision' - Options are 'Double' and 'Single'. Single precision 
+uses 50% less memory required when compared to double precision. Single 
+precision is accurate up to 7 digits after decimal point. </li>
+
+<li> 'Select Eigen Solver Type' - Options are 'Selective' and 'All'. These 
+options will be used only for the packed storage scheme.
+
+<ul>
+
+<li> 'Selective' - Only a few desired eigen values are computed. This option 
+will compute eigen values faster when compared to 'All' option. However, if 
+there are convergence issues use option 'All' to compute eigen values.</li>
+
+<li> 'All' - All eigen values are computed. We recommend to use this option for 
+computing eigen values only when the selective eigen solver doesn't converge.</li>
+
+</ul>
+</li>
+</ul>
+
+<li> Expectation Maximization (EM PCA) has fewer memory constraints and is 
+advantageous over standard PCA when only few eigen values need to be computed 
+from a large data-set. PCA options of this approach are discussed below: </li>
+
+<ul>
+
+<li> 'Do You Want To Stack Datasets?' - Options are 'Yes' and 'No'. </li>
+
+<ul>
+
+<li> 'Yes' - This option assumes that there is enough RAM available to stack the 
+data sets. </li>
+
+<li> 'No' - A data-set is loaded at a time to compute transformation matrix at 
+each iteration. This option may take days to solve the problem if there are very 
+large data-sets. </li>
+
+</ul>
+
+
+<li> 'Select Precision' - Options are 'Double' and 'Single'.</li>
+
+<li> 'Select Stopping Tolerance' - Norm of residual error is used. Residual 
+error is computed by subtracting the transformation matrix at the current 
+iteration from the previous iteration. </li>
+
+<li> 'Enter Max No. Of Iterations' - Enter maximum number of iterations to use.</li>
+
+</ul>
+
+<strong>Note:
+
+</strong>
+
+<ul>
+
+<li> Before setting up analysis, please see &quot;icatb_mem_ica.m&quot; script to get 
+a close estimate of the RAM required for all the analysis types. In general for 
+better performance, stack data-sets using single precision. However, if memory 
+is an issue don't stack data-sets and use slower ways to compute PCA (EM PCA or 
+packed storage scheme of standard PCA).</li>
+
+<li> By default, GIFT will save MAT files in the uncompressed format 
+('-v6'). Always use uncompressed format if you want a better performance 
+during the analysis phase.</li>
+
+</ul>
+
+</ul>
+
+
+<p class="style1"> Figure 1: PCA Options </p>
+
+<p class="style1">
+<img src="gift/images/icatb_pca_options.jpg">
+
+</p>
+
+<hr>
+
+</body>
+
+</html>
