@@ -1,3 +1,22 @@
+GroupICATv4.0b Updates (Oct 19, 2018):
+
+1. Error message "Undefined function 'mtimes' for input arguments of type 'cell" is fixed when running SBM toolbox.
+
+2. Option is provided to use temporary directory when unzipping gzip files in gzip nifti reader. 
+
+3. GIFT Nipype plugin is updated to use in the latest version of Nipype.
+
+4. GIG-ICA function is optimized.
+
+The following files are updated:
+
+1. icatb/icatb_defaults.m
+2. icatb/icatb_analysis_functions/icatb_dataReduction.m
+3. icatb/icatb_analysis_functions/icatb_algorithms/icatb_gigicar.m
+4. icatb/icatb_io_data_functions/icatb_read_gzip_nii.m
+5. icatb/nipype-0.10.0/nipype/interfaces/gift/base.py
+
+
 GroupICATv4.0b Updates (Feb 09, 2018):
 
 PCA can now be done without loading the entire data when using the SBM toolbox. Please set PCA options appropriately for large data. Function icatb_dataReduction is changed.

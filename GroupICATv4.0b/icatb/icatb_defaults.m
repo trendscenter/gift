@@ -233,6 +233,9 @@ global GZIPINFO;
 %% Dimensionality estimation options
 global DIM_ESTIMATION_OPTS;
 
+%% Shuffle random numbers
+global RAND_SHUFFLE;
+
 modalityType = icatb_get_modality;
 
 %% Naming Convention Output Files( Analyze Format)
@@ -692,13 +695,18 @@ DESPIKE_SOLVER = 'lsqcurvefit';
 %% NIFTI GZ file. Options are 0 and 1. By default, .nii.gz files are read using gzipinputstream. If set to 1, files are un-archived to temp directory and read using SPM.
 NIFTI_GZ = 0;
 
-%% GZIPInfo - Additional info used when NIFTI_GZ is set to 0.
+%% GZIPInfo - Additional info 
+% Option 0:
 % isLargeFile - Options are 0 and 1. Option 0 assumes that enough heap space is
 % there. For large data, use a value of 1.
+% Option 1:
+% tempdir - Temporary directory where gzip files can be unzipped if you set
+% NIFTI_GZ = 1
 
 % buffer size - 2^14 bytes
 GZIPINFO.isLargeFile = 1;
 GZIPINFO.buffer_size = 2^14;
+GZIPINFO.tempdir = tempdir;
 
 %% MDL Dimensionality estimation
 % iid_sampling - Option are 1 and 0. By default, i.i.d sampling is run on the data. If set to 0, please provide data
@@ -706,4 +714,5 @@ GZIPINFO.buffer_size = 2^14;
 DIM_ESTIMATION_OPTS.iid_sampling = 1;
 DIM_ESTIMATION_OPTS.fwhm = [5, 5, 5];
 
-
+%% shuffle random numbers
+RAND_SHUFFLE = 1;
