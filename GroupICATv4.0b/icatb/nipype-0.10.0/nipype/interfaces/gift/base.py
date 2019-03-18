@@ -43,10 +43,7 @@ class GIFTCommand(BaseInterface):
 
     def __init__(self, **inputs):
         super(GIFTCommand, self).__init__(**inputs)
-        self.inputs.on_trait_change(self._matlab_cmd_update, ['matlab_cmd',
-                                                              'mfile',
-                                                              'paths',
-                                                              'use_mcr'])
+        self.inputs.on_trait_change(self._matlab_cmd_update, ['matlab_cmd','mfile','paths','use_mcr'])
         self._find_mlab_cmd_defaults()
         self._check_mlab_inputs()
         self._matlab_cmd_update()
@@ -59,8 +56,8 @@ class GIFTCommand(BaseInterface):
 
     def _find_mlab_cmd_defaults(self):
         # check if the user has set environment variables to enforce
-        # the standalone (MCR) version of GIFT
-        if self._use_mcr in os.environ:
+        # the standalone (MCR) version of GIFT        
+        if self._use_mcr:
             self._use_mcr = True
           
 
