@@ -42,39 +42,23 @@ function [ICOutMax,TCMax] = icatb_gigicar(FmriMatr,ICRefMax)
 %ICOutMax includes the estimated ICs;
 %TCMax is the obtained mixing matrix;
 
-
-[n,m]= size(FmriMatr);
-FmriMat=FmriMatr - repmat(mean(FmriMatr,2),[1,m]);
+thr = eps(class(FmriMatr)); %you can change the parameter. such as thr=0.02;
+[n, m] = size(FmriMatr);
+FmriMat = FmriMatr - repmat(mean(FmriMatr,2),[1,m]);
 CovFmri = (FmriMat*FmriMat') / m;
-%CovFmri=cov(FmriMat',1);
-[E,D]=eig(CovFmri);
-EsICnum=size(ICRefMax,1); %EsICnum can be a number that is less than size(ICRefMax,1)
-[eigenvalues index] = sort(diag(D));
-cols=size(E,2);
-Esort=zeros(size(E));
-dsort=zeros(size(eigenvalues));
-for i=1:cols
-    Esort(:,i) = E(:, index(cols-i+1) );
-    dsort(i)   = eigenvalues(index(cols-i+1) );
-end
+[Esort, dsort] = eig(CovFmri);
+dsort = abs(dsort);
+dsort = diag(dsort);
+[dsort, flipped_inds] = sort(dsort, 'descend');
+numpc = sum(dsort > thr);
+Esort = Esort(:, flipped_inds);
 
-thr=0; %you can change the parameter. such as thr=0.02;
-numpc=0;
-for i=1:cols
-    if dsort(i)>thr
-        numpc=numpc+1;
-    end
-end
-
-%dsum = sum(dsort);
-% dsum_extract2 = sum(dsort(1:numpc));
-% retained2=(dsum_extract2/dsum)*100;
-% fprintf('%g%% of (non-zero) eigenvalues retained.\n', retained2);
+EsICnum = size(ICRefMax, 1);
 
 Epart=Esort(:,1:numpc);
 dpart=dsort(1:numpc);
 Lambda_part=diag(dpart);
-WhitenMatrix=(inv(sqrtm(Lambda_part)))*Epart';
+WhitenMatrix = (sqrtm(Lambda_part)) \ Epart';
 Y=WhitenMatrix*FmriMat;
 
 if thr<1e-10&&numpc<n
@@ -94,6 +78,9 @@ NegeEva=zeros(EsICnum,1);
 for i=1:EsICnum
     NegeEva(i)=nege(ICRefMaxN(i,:));
 end
+
+
+YR = (1/m)*Y*ICRefMaxN';
 
 iternum=100;
 a=0.5;
@@ -118,10 +105,13 @@ for ICnum=1:EsICnum
         logCosy1=log(Cosy1);
         EGy1=mean(logCosy1);
         Negama=EGy1-EGv;
-        EYgy=(1/m)*Y*(tanh(y1))';
+        tanhy1 = tanh(y1);
+        EYgy=(1/m)*Y*(tanhy1)';       
+        %EYgy= sum(bsxfun(@times, Y,tanh(y1)/m),2);
         Jy1=(EGy1-EGv)^2;
         KwDaoshu=ErChuPai*c*(1/(1+(c*Jy1)^2));
-        Simgrad=(1/m)*Y*reference';
+        %Simgrad=(1/m)*Y*reference';
+       Simgrad = YR(:,ICnum);
         g=a*KwDaoshu*2*Negama*EYgy+b*Simgrad;
         d=g/(g'*g)^0.5;
         wx=wc+Nemda*d;
