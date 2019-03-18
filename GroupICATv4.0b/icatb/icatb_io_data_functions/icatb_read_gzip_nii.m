@@ -45,6 +45,16 @@ try
 catch
 end
 
+tmp_dir = [];
+try
+    tmp_dir = GZIPINFO.tempdir;
+catch
+end
+
+if (isempty(tmp_dir))
+    GZIPINFO.tempdir = tempdir;
+end
+
 isSPMRead = NIFTI_GZ;
 if (isempty(isSPMRead))
     isSPMRead = 0;
@@ -133,6 +143,21 @@ else
     
     if (~isSPMRead)
         [inByteArray, hdr, doSwapBytes] = readGzip(fileIn, buffer_size, isLargeFile);
+        if (isempty(inByteArray))
+            if (~isdeployed)
+                clear zclass;
+                javarmpath(fullfile(jar_p, 'icatb_gz.jar'));
+            end
+            msk = [];
+            if (exist('mask', 'var') && ~isempty(mask))
+                msk = mask;
+            end
+            [data, HInfo, gzV] = icatb_read_gzip_nii(fileIn, 'read_hdr_only', 0, 'use_spm', 1, 'slices', slices, 'timepoints', timeNo, 'mask', msk);
+            varargout{1} = data;
+            varargout{2} = HInfo;
+            varargout{3} = gzV;
+            return;
+        end
         gzV = getVol(fileIn, hdr);
     else
         % Uncompress file and read header
@@ -387,74 +412,87 @@ import icatb_gz.*;
 zclass = icatb_gz.read_gzip();
 hdrSize = 348;
 
-tmpFileInfo = dir(fileIn);
-tmpGBytes = tmpFileInfo(1).bytes/1024/1024/1024;
+%tmpFileInfo = dir(fileIn);
+%tmpGBytes = tmpFileInfo(1).bytes/1024/1024/1024;
 
 % if (tmpGBytes > 0.5)
 %     isLargeFile = 1;
 % end
 
-
-if (isLargeFile)
+try
     
-    fid  = java.io.FileInputStream(fileIn);
-    zid  = java.util.zip.GZIPInputStream(fid);
-    
-    try
-        
-        hdrBytes = zclass.read(zid, hdrSize);
-        
-        [hdr, doSwapBytes] = read_hdr(typecast(hdrBytes, 'uint8'));
-        
-        voxel_offset = hdr.vox_offset;
-        bytesA = hdr.bitpix/8;
-        byte_array_size = voxel_offset + prod(hdr.dim(2:5))*bytesA;
-        inByteArray = zeros(byte_array_size, 1, 'int8');
-        inByteArray(1:hdrSize) = hdrBytes;
-        zid.close();
-        fid.close();
+    if (isLargeFile)
         
         fid  = java.io.FileInputStream(fileIn);
         zid  = java.util.zip.GZIPInputStream(fid);
-        zid.skip(voxel_offset);
-        count = voxel_offset;
-        while 1
+        
+        try
             
-            count = count + 1;
+            hdrBytes = zclass.read(zid, hdrSize);
             
-            tmp = zclass.read(zid, buffer_size);
+            [hdr, doSwapBytes] = read_hdr(typecast(hdrBytes, 'uint8'));
             
-            len = length(tmp);
+            voxel_offset = hdr.vox_offset;
+            bytesA = hdr.bitpix/8;
+            byte_array_size = voxel_offset + prod(hdr.dim(2:5))*bytesA;
+            inByteArray = zeros(byte_array_size, 1, 'int8');
+            inByteArray(1:hdrSize) = hdrBytes;
+            zid.close();
+            fid.close();
             
-            if (len == 0)
-                break;
+            fid  = java.io.FileInputStream(fileIn);
+            zid  = java.util.zip.GZIPInputStream(fid);
+            zid.skip(voxel_offset);
+            count = voxel_offset;
+            while 1
+                
+                count = count + 1;
+                
+                tmp = zclass.read(zid, buffer_size);
+                
+                len = length(tmp);
+                
+                if (len == 0)
+                    break;
+                end
+                
+                endCount = count + len - 1;
+                inByteArray(count:endCount) = tmp;
+                count = endCount;
+                
             end
             
-            endCount = count + len - 1;
-            inByteArray(count:endCount) = tmp;
-            count = endCount;
+            inByteArray = typecast(inByteArray, 'uint8');
+            
+            zid.close();
+            fid.close();
+            
+        catch
+            
+            
+            zid.close();
+            fid.close();
+            
+            rethrow(lasterror);
             
         end
         
+        
+    else
+        
+        inByteArray = zclass.read(fileIn, buffer_size);
         inByteArray = typecast(inByteArray, 'uint8');
-        
-        zid.close();
-        fid.close();
-        
-    catch
-        
-        
-        zid.close();
-        fid.close();
+        [hdr, doSwapBytes] = read_hdr(inByteArray);
         
     end
     
+catch
     
-else
-    
-    inByteArray = zclass.read(fileIn, buffer_size);
-    inByteArray = typecast(inByteArray, 'uint8');
-    [hdr, doSwapBytes] = read_hdr(inByteArray);
+    disp('Unzipping gzip file to temporary directory and using spm volume functions for very large gzip data-sets.');
+    disp(' ');
+    inByteArray  = [];
+    hdr = [];
+    doSwapBytes = [];
     
 end
 
@@ -467,7 +505,9 @@ fname_i = fname;
 extn = strrep(lower(extn), '.gz', '');
 fname = fullfile(pathstr, [fn, extn]);
 
-mat = decode_qform0(hdr);
+%mat = decode_qform0(hdr);
+
+mat = getqform(hdr);
 
 V   = struct('fname', fname,...
     'dim',   hdr.dim(2:4),...
@@ -596,7 +636,9 @@ function varargout = getSpmVol(fileIn, timeNo)
 %% Unzip file and read info
 %
 
-gzfn = gunzip (fileIn, tempdir);
+global GZIPINFO;
+
+gzfn = gunzip (fileIn, GZIPINFO.tempdir);
 orig_gzfn = char(gzfn);
 
 if (nargout > 2)
@@ -657,3 +699,210 @@ while ((tmp ~= -1) && (count < nBytesToRead))
     tmp = uint8(read(zid));
     inByteArray(count) = tmp;
 end
+
+
+
+function entry = findindict(c,dcode)
+% Look up an entry in the dictionary
+% _______________________________________________________________________
+% Copyright (C) 2008 Wellcome Trust Centre for Neuroimaging
+
+%
+% $Id: findindict.m 1143 2008-02-07 19:33:33Z spm $
+
+
+entry = [];
+d = getdict;
+d = d.(dcode);
+if ischar(c)
+    for i=1:length(d),
+        if strcmpi(d(i).label,c),
+            entry = d(i);
+            break;
+        end;
+    end;
+elseif isnumeric(c) && numel(c)==1
+    for i=1:length(d),
+        if d(i).code==c,
+            entry = d(i);
+            break;
+        end;
+    end;
+else
+    error(['Inappropriate code for ' dcode '.']);
+end;
+if isempty(entry)
+    fprintf('\nThis is not an option.  Try one of these:\n');
+    for i=1:length(d)
+        fprintf('%5d) %s\n', d(i).code, d(i).label);
+    end;
+    %fprintf('\nNO CHANGES MADE\n');
+end;
+
+function d = getdict
+% Dictionary of NIFTI stuff
+% _______________________________________________________________________
+% Copyright (C) 2008 Wellcome Trust Centre for Neuroimaging
+
+%
+% $Id: getdict.m 1143 2008-02-07 19:33:33Z spm $
+
+
+persistent dict;
+if ~isempty(dict),
+    d = dict;
+    return;
+end;
+
+% Datatype
+t = true;
+f = false;
+table = {...
+    0   ,'UNKNOWN'   ,'uint8'   ,@uint8  ,1,1  ,t,t,f
+    1   ,'BINARY'    ,'uint1'   ,@logical,1,1/8,t,t,f
+    256 ,'INT8'      ,'int8'    ,@int8   ,1,1  ,t,f,t
+    2   ,'UINT8'     ,'uint8'   ,@uint8  ,1,1  ,t,t,t
+    4   ,'INT16'     ,'int16'   ,@int16  ,1,2  ,t,f,t
+    512 ,'UINT16'    ,'uint16'  ,@uint16 ,1,2  ,t,t,t
+    8   ,'INT32'     ,'int32'   ,@int32  ,1,4  ,t,f,t
+    768 ,'UINT32'    ,'uint32'  ,@uint32 ,1,4  ,t,t,t
+    1024,'INT64'     ,'int64'   ,@int64  ,1,8  ,t,f,f
+    1280,'UINT64'    ,'uint64'  ,@uint64 ,1,8  ,t,t,f
+    16  ,'FLOAT32'   ,'float32' ,@single ,1,4  ,f,f,t
+    64  ,'FLOAT64'   ,'double'  ,@double ,1,8  ,f,f,t
+    1536,'FLOAT128'  ,'float128',@crash  ,1,16 ,f,f,f
+    32  ,'COMPLEX64' ,'float32' ,@single ,2,4  ,f,f,f
+    1792,'COMPLEX128','double'  ,@double ,2,8  ,f,f,f
+    2048,'COMPLEX256','float128',@crash  ,2,16 ,f,f,f
+    128 ,'RGB24'     ,'uint8'   ,@uint8  ,3,1  ,t,t,f};
+
+dtype = struct(...
+    'code'     ,table(:,1),...
+    'label'    ,table(:,2),...
+    'prec'     ,table(:,3),...
+    'conv'     ,table(:,4),...
+    'nelem'    ,table(:,5),...
+    'size'     ,table(:,6),...
+    'isint'    ,table(:,7),...
+    'unsigned' ,table(:,8),...
+    'min',-Inf,'max',Inf',...
+    'supported',table(:,9));
+for i=1:length(dtype),
+    if dtype(i).isint
+        if dtype(i).unsigned
+            dtype(i).min =  0;
+            dtype(i).max =  2^(8*dtype(i).size)-1;
+        else
+            dtype(i).min = -2^(8*dtype(i).size-1);
+            dtype(i).max =  2^(8*dtype(i).size-1)-1;
+        end;
+    end;
+end;
+% Intent
+table = {...
+    0   ,'NONE'         ,'None',{}
+    2   ,'CORREL'       ,'Correlation statistic',{'DOF'}
+    3   ,'TTEST'        ,'T-statistic',{'DOF'}
+    4   ,'FTEST'        ,'F-statistic',{'numerator DOF','denominator DOF'}
+    5   ,'ZSCORE'       ,'Z-score',{}
+    6   ,'CHISQ'        ,'Chi-squared distribution',{'DOF'}
+    7   ,'BETA'         ,'Beta distribution',{'a','b'}
+    8   ,'BINOM'        ,'Binomial distribution',...
+    {'number of trials','probability per trial'}
+    9   ,'GAMMA'        ,'Gamma distribution',{'shape','scale'}
+    10  ,'POISSON'      ,'Poisson distribution',{'mean'}
+    11  ,'NORMAL'       ,'Normal distribution',{'mean','standard deviation'}
+    12  ,'FTEST_NONC'   ,'F-statistic noncentral',...
+    {'numerator DOF','denominator DOF','numerator noncentrality parameter'}
+    13  ,'CHISQ_NONC'   ,'Chi-squared noncentral',{'DOF','noncentrality parameter'}
+    14  ,'LOGISTIC'     ,'Logistic distribution',{'location','scale'}
+    15  ,'LAPLACE'      ,'Laplace distribution',{'location','scale'}
+    16  ,'UNIFORM'      ,'Uniform distribition',{'lower end','upper end'}
+    17  ,'TTEST_NONC'   ,'T-statistic noncentral',{'DOF','noncentrality parameter'}
+    18  ,'WEIBULL'      ,'Weibull distribution',{'location','scale','power'}
+    19  ,'CHI'          ,'Chi distribution',{'DOF'}
+    20  ,'INVGAUSS'     ,'Inverse Gaussian distribution',{'mu','lambda'}
+    21  ,'EXTVAL'       ,'Extreme Value distribution',{'location','scale'}
+    22  ,'PVAL'         ,'P-value',{}
+    23  ,'LOGPVAL'      ,'Log P-value',{}
+    24  ,'LOG10PVAL'    ,'Log_10 P-value',{}
+    1001,'ESTIMATE'     ,'Estimate',{}
+    1002,'LABEL'        ,'Label index',{}
+    1003,'NEURONAMES'   ,'NeuroNames index',{}
+    1004,'MATRIX'       ,'General matrix',{'M','N'}
+    1005,'MATRIX_SYM'   ,'Symmetric matrix',{}
+    1006,'DISPLACEMENT' ,'Displacement vector',{}
+    1007,'VECTOR'       ,'Vector',{}
+    1008,'POINTS'       ,'Pointset',{}
+    1009,'TRIANGLE'     ,'Triangle',{}
+    1010,'QUATERNION'   ,'Quaternion',{}
+    1011,'DIMLESS'      ,'Dimensionless',{}
+    };
+intent = struct('code',table(:,1),'label',table(:,2),...
+    'fullname',table(:,3),'param',table(:,4));
+
+% Units
+table = {...
+    0,   1,'UNKNOWN'
+    1,1000,'m'
+    2,   1,'mm'
+    3,1e-3,'um'
+    8,   1,'s'
+    16,1e-3,'ms'
+    24,1e-6,'us'
+    32,   1,'Hz'
+    40,   1,'ppm'
+    48,   1,'rads'};
+units = struct('code',table(:,1),'label',table(:,3),'rescale',table(:,2));
+
+% Reference space
+% code  = {0,1,2,3,4};
+table = {...
+    0,'UNKNOWN'
+    1,'Scanner Anat'
+    2,'Aligned Anat'
+    3,'Talairach'
+    4,'MNI_152'};
+anat  = struct('code',table(:,1),'label',table(:,2));
+
+% Slice Ordering
+table = {...
+    0,'UNKNOWN'
+    1,'sequential_increasing'
+    2,'sequential_decreasing'
+    3,'alternating_increasing'
+    4,'alternating_decreasing'};
+sliceorder = struct('code',table(:,1),'label',table(:,2));
+
+% Q/S Form Interpretation
+table = {...
+    0,'UNKNOWN'
+    1,'Scanner'
+    2,'Aligned'
+    3,'Talairach'
+    4,'MNI152'};
+xform = struct('code',table(:,1),'label',table(:,2));
+
+dict = struct('dtype',dtype,'intent',intent,'units',units,...
+    'space',anat,'sliceorder',sliceorder,'xform',xform);
+
+d = dict;
+return;
+
+function varargout = crash(varargin)
+error('There is a NIFTI-1 data format problem (an invalid datatype).');
+
+
+function t = getqform(h)
+
+if h.sform_code > 0
+    t = double([h.srow_x ; h.srow_y ; h.srow_z ; 0 0 0 1]);
+    t = t * [eye(4,3) [-1 -1 -1 1]'];
+else
+    t = decode_qform0(h);
+end
+s = double(bitand(h.xyzt_units,7));
+if s
+    d = findindict(s,'units');
+    t = diag([d.rescale*[1 1 1] 1])*t;
+end;
