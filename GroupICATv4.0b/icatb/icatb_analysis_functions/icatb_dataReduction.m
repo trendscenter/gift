@@ -294,9 +294,9 @@ if (intermediatePCA)
                     icatb_save(pcaout, 'V', 'Lambda');
                 end
                 
-                if (strcmpi(modalityType, 'smri'))
-                    sesInfo.pca_variances = compute_var(data, V, Lambda);
-                end
+                %if (strcmpi(modalityType, 'smri'))
+                 %   sesInfo.pca_variances = compute_var(data, V, %Lambda);
+                %end
                 
                 fprintf('\n\n');
                 
