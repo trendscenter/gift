@@ -1,5 +1,5 @@
 # gift
-Group ICA software (MATLAB)
+Group ICA/IVA software (MATLAB)
 
 GIFT is an application supported by the NIH under grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali. It is a MATLAB toolbox which implements multiple algorithms for independent 
 component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT works on MATLAB R2008a and higher. Many ICA algorithms were 
