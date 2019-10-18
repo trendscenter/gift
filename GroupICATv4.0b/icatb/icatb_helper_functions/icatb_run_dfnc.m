@@ -467,12 +467,12 @@ for nSub = 1:numOfSub
     for nSess = 1:numOfSess
         tmp = tcs{nSub, nSess};
         tmp = squeeze(tmp);
-        tp = size(tmp, 1);
-        if (tp ~= nT)
-            interpFactor = nT/tp;
-            [num, denom] = rat(interpFactor);
-            tmp = resample(tmp, num, denom);
-        end
-        tc(nSub, nSess, :, :) = tmp;
+        % tp = size(tmp, 1);
+        %         if (tp ~= nT)
+        %             %             interpFactor = nT/tp;
+        %             %             [num, denom] = rat(interpFactor);
+        %             %             tmp = resample(tmp, num, denom);
+        %         end
+        tc(nSub, nSess, :, :) = tmp(1:nT, :);
     end
 end
