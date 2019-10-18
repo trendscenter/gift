@@ -1,3 +1,10 @@
+GroupICATv4.0b Updates (Oct 18, 2019):
+
+Subject timecourses are truncated to the least dimension across subjects to match the timepoints. The following files are fixed:
+
+1. icatb/icatb_helper_functions/icatb_loadAndInterpTC.m
+2. icatb/icatb_helper_functions/icatb_run_dfnc.m
+
 GroupICATv4.0b Updates (Oct 19, 2018):
 
 1. Error message "Undefined function 'mtimes' for input arguments of type 'cell" is fixed when running SBM toolbox.
