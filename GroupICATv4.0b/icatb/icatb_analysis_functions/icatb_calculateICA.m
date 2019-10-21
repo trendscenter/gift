@@ -71,15 +71,17 @@ if (strcmpi(algorithmName, 'moo-icar'))
     algorithmName = 'gig-ica';
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'gig-ica') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'gig-ica') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
     if (which_analysis == 1)
         disp('STARTING GROUP ICA STEP ');
     elseif (which_analysis == 2)
         disp('STARTING GROUP ICA STEP USING ICASSO');
-    else
+    elseif (which_analysis == 3)
         disp('STARTING GROUP ICA STEP USING MST');
+    else
+        disp('STARTING GROUP ICA STEP USING Cross ISI');
     end
-elseif (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'iva-l'))
+elseif (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'iva-l') || strcmpi(algorithmName, 'iva-l-sos'))
     disp('STARTING GROUP IVA STEP');
 else
     disp(['STARTING ', upper(algorithmName)]);
@@ -183,13 +185,13 @@ if (strcmpi(modalityType, 'fmri'))
     end
     
     if (useTemporalICA)
-        if (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'iva-l') || strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
+        if (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'iva-l') || strcmpi(algorithmName, 'iva-l-sos') || strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
                 strcmpi(algorithmName, 'semi-blind infomax'))
             error(['Temporal ica cannot be run using algorithm ', algorithmName]);
         end
         disp('Using temporal ica ...');
     else
-        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l'))
+        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
             disp('Using spatial ica ...');
         end
     end
@@ -228,7 +230,7 @@ if strcmpi(algorithmName, 'semi-blind infomax')
     sesInfo.userInput.ICA_Options = ICA_Options;
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l'))
+if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
     
     if (which_analysis == 1)
         
@@ -391,6 +393,29 @@ if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l'))
         
         clear sR;
         
+        
+    elseif (which_analysis == 4)
+        % Cross isi
+        WR = zeros(size(data, 1), size(data, 1), sesInfo.cross_isi_opts.num_ica_runs);
+        parfor nRI = 1:sesInfo.cross_isi_opts.num_ica_runs
+            fprintf('\n\n%s\n\n',['Randomization using ', algorithmName, ': Round ' num2str(nRI) '/' ...
+                num2str(sesInfo.cross_isi_opts.num_ica_runs)]);
+            [icaAlgoxx, WR(:, :, nRI), Axx, icxx] = icatb_icaAlgorithm(algorithmName, data, ICA_Options);
+        end
+        
+        [bestRun, W, A, icasig, cross_isi] = RunSelection_crossISIidx(WR, data);
+        
+        
+        criResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_cross_isi_results.mat']);
+        try
+            if (sesInfo.write_analysis_steps_in_dirs)
+                criResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_ica_files', filesep, 'cross_isi_results.mat']);
+            end
+        catch
+        end
+        
+        icatb_save(criResultsFile, 'A', 'W', 'icasig', 'WR', 'algorithmName', 'bestRun', 'cross_isi');
+        
     else
         % MST
         if (strcmpi(parallel_info.mode, 'serial') || parallelCluster)
@@ -443,45 +468,79 @@ else
         
     else
         
+        if (useTemporalICA)
+            which_analysis = 3;
+        end
+        
         if (which_analysis == 2)
             numRuns = icasso_opts.num_ica_runs;
             disp('ICASSO is not implemented when using IVA algorithm. Using MST instead ...');
-        else
+        elseif (which_analysis == 3)
             % MST
             numRuns =  sesInfo.mst_opts.num_ica_runs;
+        else
+            % disp('Cross ISI is not implemented when using IVA algorithm. Using MST instead ...');
+            numRuns =  sesInfo.cross_isi_opts.num_ica_runs;
         end
         
-        % Run IVA several times using MST
-        if (strcmpi(parallel_info.mode, 'serial') || parallelCluster)
-            if (strcmpi(parallel_info.mode, 'serial'))
-                icasigR = icatb_parMST(sesInfo, algorithmName, numRuns, '', data);
+        if (which_analysis ~= 4)
+            % Run IVA several times using MST
+            if (strcmpi(parallel_info.mode, 'serial') || parallelCluster)
+                if (strcmpi(parallel_info.mode, 'serial'))
+                    icasigR = icatb_parMST(sesInfo, algorithmName, numRuns, '', data);
+                else
+                    icasigR = icatb_parMST_cluster(sesInfo, algorithmName, numRuns, data);
+                end
             else
-                icasigR = icatb_parMST_cluster(sesInfo, algorithmName, numRuns, data);
+                icasigR = parallel_mstEst(sesInfo, algorithmName, numRuns);
             end
-        else
-            icasigR = parallel_mstEst(sesInfo, algorithmName, numRuns);
-        end
-        
-        [corrMetric, W, A, icasig, bestRun] = icatb_bestRunSelection(icasigR, data);
-        icasig = squeeze(mean(icasig, 3));
-        
-        mstResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_mst_results.mat']);
-        try
-            if (sesInfo.write_analysis_steps_in_dirs)
-                mstResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_ica_files', filesep, 'mst_results.mat']);
+            
+            [corrMetric, W, A, icasig, bestRun] = icatb_bestRunSelection(icasigR, data);
+            icasig = squeeze(mean(icasig, 3));
+            
+            mstResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_mst_results.mat']);
+            try
+                if (sesInfo.write_analysis_steps_in_dirs)
+                    mstResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_ica_files', filesep, 'mst_results.mat']);
+                end
+            catch
             end
-        catch
-        end
-        
-        if (~useTemporalICA)
-            icatb_save(mstResultsFile, 'A', 'W', 'icasig', 'icasigR', 'algorithmName', 'corrMetric', 'bestRun');
+            
+            if (~useTemporalICA)
+                icatb_save(mstResultsFile, 'A', 'W', 'icasig', 'icasigR', 'algorithmName', 'corrMetric', 'bestRun');
+            else
+                temporal_icasig = icasig;
+                clear icasig;
+                icatb_save(mstResultsFile, 'A', 'W', 'temporal_icasig', 'icasigR', 'algorithmName', 'corrMetric', 'bestRun');
+            end
+            
+            clear icasigR;
+            
+            
         else
-            temporal_icasig = icasig;
-            clear icasig;
-            icatb_save(mstResultsFile, 'A', 'W', 'temporal_icasig', 'icasigR', 'algorithmName', 'corrMetric', 'bestRun');
+            % Cross ISI
+            WR = cell(1, sesInfo.cross_isi_opts.num_ica_runs);
+            parfor nRI = 1:sesInfo.cross_isi_opts.num_ica_runs
+                fprintf('\n\n%s\n\n',['Randomization using ', algorithmName, ': Round ' num2str(nRI) '/' ...
+                    num2str(sesInfo.cross_isi_opts.num_ica_runs)]);
+                [icaAlgoxx, WR{nRI}, Axx, icxx] = icatb_icaAlgorithm(algorithmName, data, ICA_Options);
+            end
+            
+            [selected_run, cross_isi_joint] = run_selection_crossJointISI(WR);
+            
+            bestRun = selected_run(1);
+            [W, A, icasig]  = getIVASig(WR{bestRun}, data);
+            
+            criResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_cross_isi_results.mat']);
+            try
+                if (sesInfo.write_analysis_steps_in_dirs)
+                    criResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_ica_files', filesep, 'cross_isi_results.mat']);
+                end
+            catch
+            end
+            
+            icatb_save(criResultsFile, 'A', 'W', 'icasig', 'algorithmName', 'cross_isi_joint', 'bestRun');
         end
-        
-        clear icasigR;
         
     end
     
@@ -513,7 +572,7 @@ icaout = fullfile(outputDir, icaout);
 if (strcmpi(modalityType, 'fmri'))
     if (~useTemporalICA)
         skew = zeros(1, numOfIC);
-        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l'))
+        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
             [A, W, icasig, skew] = changeSignOfComponents(A, icasig);
         end
     else
@@ -547,7 +606,7 @@ end
 
 msgStr = 'DONE CALCULATING GROUP IVA';
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l'))
+if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
     msgStr = 'DONE CALCULATING GROUP ICA';
     icatb_save(icaout, 'A', '-append');
     
@@ -980,3 +1039,471 @@ end
 
 
 
+function [consistentRunidx, W, A, icasig, crossISIW] = RunSelection_crossISIidx(W, data)
+%% Select the most consistent run based on Cross ISI.
+% Input:
+% W - demixing matrices of different runs, with dimension as the number of components x the number of
+% components x the number of runs.
+% Outputs:
+% consistentRun_idx - index of the run with the lowest average pairwise
+% cross ISI values
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Code by Chunying Jia.
+% Reference:
+% Q. Long, C. Jia, Z. Boukouvalas, B. Gabrielson, D. Emge, and T. Adali, "CONSISTENT RUN SELECTION FOR INDEPENDENT COMPONENT ANALYSIS:
+% APPLICATION TO FMRI ANALYSIS", 2018 IEEE International Conference on Acoustics, Speech and Signal Processing.
+% Please contact chunyin1@umbc.edu or qunfang1@umbc.edu.
+N_run = size(W,3);
+crossISIW = zeros(N_run,1);
+
+for i = 1:N_run
+    crossISI_ij = 0;
+    for j = 1:N_run
+        if j==i
+            continue;
+        end
+        crossISI_ij = crossISI_ij + calculate_ISI(W(:,:,j),inv(W(:,:,i)));
+    end
+    crossISIW(i,1) = crossISI_ij / (N_run -1);
+end
+[~,consistentRunidx] = min(crossISIW);
+
+
+W = squeeze(W(:, :, consistentRunidx));
+A = pinv(W);
+icasig = W*data;
+
+function ISI = calculate_ISI(W,A)
+
+p = W*A;
+p = abs(p);
+
+N = size(p,1);
+
+b1 = 0;
+for i = 1:N
+    a1 = 0;
+    max_pij = max(p(i,:));
+    for j = 1:N
+        
+        pij = p(i,j);
+        a1 = pij/max_pij + a1;
+    end
+    b1 = a1 - 1 + b1;
+end
+
+b2 = 0;
+for j = 1:N
+    a2 = 0;
+    max_pij = max(p(:,j));
+    for i = 1:N
+        
+        pij = p(i,j);
+        a2 = pij/max_pij + a2;
+    end
+    b2 = a2 - 1 + b2;
+end
+
+ISI = (b1+b2)/((N-1)*N*2);
+
+
+
+
+function [selected_run, crossisi_jnt, crossisi_avg] = run_selection_crossJointISI(W)
+
+% Input:
+%       W : cell array of length equal to number of runs,
+%           where each cell is a N x N x K matrix, where N is the number of
+%           components, K is the number of datasets
+% Output:
+%       selected_run(1) : run selected using cross joint ISI
+%       selected_run(2) : run selected using cross average ISI
+%
+% Code written by Suchita Bhinge (suchita1 at umbc.edu)
+%
+% References
+%
+%[1] Long, Q., C. Jia, Z. Boukouvalas, B. Gabrielson, D. Emge, and T. Adali.
+%    "Consistent run selection for independent component analysis: Application
+%    to fMRI analysis." IEEE International Conference on Acoustics, Speech and
+%    Signal Processing (ICASSP), 2018.
+
+MaxRuns = length(W);
+
+for runs = 1 : MaxRuns
+    for k = 1 : size(W{1},3)
+        A{runs}(:,:,k) = inv(W{runs}(:,:,k));
+    end
+end
+for runs = 1 : MaxRuns
+    idx = setdiff(1:MaxRuns,runs);
+    for j = 1: length(idx)
+        [isi(j),isiGrp(j)]=bss_isi(W{runs},A{idx(j)});
+    end
+    crossisi_avg(runs) = mean(isi);clear isi
+    crossisi_jnt(runs) = mean(isiGrp);clear isiGrp idx
+end
+
+[~,idx] = min(crossisi_jnt);
+selected_run(1) = idx;
+[~,idx] = min(crossisi_avg);
+selected_run(2) = idx;
+clear idx
+
+function [isi,isiGrp,success,G]=bss_isi(W,A,s,Nuse)
+% Non-cell inputs:
+% isi=bss_isi(W,A) - user provides W & A where x=A*s, y=W*x=W*A*s
+% isi=bss_isi(W,A,s) - user provides W, A, & s
+%
+% Cell array of matrices:
+% [isi,isiGrp]=bss_isi(W,A) - W & A are cell array of matrices
+% [isi,isiGrp]=bss_isi(W,A,s) - W, A, & s are cell arrays
+%
+% 3-d Matrices:
+% [isi,isiGrp]=bss_isi(W,A) - W is NxMxK and A is MxNxK
+% [isi,isiGrp]=bss_isi(W,A,s) - S is NxTxK (N=#sources, M=#sensors, K=#datasets)
+%
+% Measure of quality of separation for blind source separation algorithms.
+% W is the estimated demixing matrix and A is the true mixing matrix.  It should be noted
+% that rows of the mixing matrix should be scaled by the necessary constants to have each
+% source have unity variance and accordingly each row of the demixing matrix should be
+% scaled such that each estimated source has unity variance.
+%
+% ISI is the performance index given in Complex-valued ICA using second order statisitcs
+% Proceedings of the 2004 14th IEEE Signal Processing Society Workshop, 2004, 183-192
+%
+% Normalized performance index (Amari Index) is given in Choi, S.; Cichocki, A.; Zhang, L.
+% & Amari, S. Approximate maximum likelihood source separation using the natural gradient
+% Wireless Communications, 2001. (SPAWC '01). 2001 IEEE Third Workshop on Signal
+% Processing Advances in, 2001, 235-238.
+%
+% Note that A is p x M, where p is the number of sensors and M is the number of signals
+% and W is N x p, where N is the number of estimated signals.  Ideally M=N but this is not
+% guaranteed.  So if N > M, the algorithm has estimated more sources than it "should", and
+% if M < N the algorithm has not found all of the sources.  This meaning of this metric is
+% not well defined when averaging over cases where N is changing from trial to trial or
+% algorithm to algorithm.
+
+% Some examples to consider
+% isi=bss_isi(eye(n),eye(n))=0
+%
+% isi=bss_isi([1 0 0; 0 1 0],eye(3))=NaN
+%
+
+
+% Should ideally be a permutation matrix with only one non-zero entry in any row or
+% column so that isi=0 is optimal.
+
+% generalized permutation invariant flag (default=false), only used when nargin<3
+gen_perm_inv_flag=false;
+success=true;
+
+Wcell=iscell(W);
+if nargin<2
+    Acell=false;
+else
+    Acell=iscell(A);
+end
+if ~Wcell && ~Acell
+    if ndims(W)==2 && ndims(A)==2
+        if nargin==2
+            % isi=bss_isi(W,A) - user provides W & A
+            
+            % Traditional Metric, user provided W & A separately
+            G=W*A;
+            [N,M]=size(G);
+            Gabs=abs(G);
+            if gen_perm_inv_flag
+                % normalization by row
+                max_G=max(Gabs,[],2);
+                Gabs=repmat(1./max_G,1,size(G,2)).*Gabs;
+            end
+        elseif nargin==3
+            % Equalize energy associated with each estimated source and true
+            % source.
+            %
+            % y=W*A*s;
+            % snorm=D*s; where snorm has unit variance: D=diag(1./std(s,0,2))
+            % Thus: y=W*A*inv(D)*snorm
+            % ynorm=U*y; where ynorm has unit variance: U=diag(1./std(y,0,2))
+            % Thus: ynorm=U*W*A*inv(D)*snorm=G*snorm and G=U*W*A*inv(D)
+            
+            y=W*A*s;
+            D=diag(1./std(s,0,2));
+            U=diag(1./std(y,0,2));
+            G=U*W*A/D; % A*inv(D)
+            [N,M]=size(G);
+            Gabs=abs(G);
+        else
+            error('Not acceptable.')
+        end
+        
+        isi=0;
+        for n=1:N
+            isi=isi+sum(Gabs(n,:))/max(Gabs(n,:))-1;
+        end
+        for m=1:M
+            isi=isi+sum(Gabs(:,m))/max(Gabs(:,m))-1;
+        end
+        isi=isi/(2*N*(N-1));
+        isiGrp=NaN;
+        success=NaN;
+    elseif ndims(W)==3 && ndims(A)==3
+        % IVA/GroupICA/MCCA Metrics
+        % For this we want to average over the K groups as well as provide the additional
+        % measure of solution to local permutation ambiguity (achieved by averaging the K
+        % demixing-mixing matrices and then computing the ISI of this matrix).
+        [N,M,K]=size(W);
+        if M~=N
+            error('This more general case has not been considered here.')
+        end
+        L=M;
+        
+        isi=0;
+        GabsTotal=zeros(N,M);
+        G=zeros(N,M,K);
+        for k=1:K
+            if nargin<=2
+                % Traditional Metric, user provided W & A separately
+                Gk=W(:,:,k)*A(:,:,k);
+                Gabs=abs(Gk);
+                if gen_perm_inv_flag
+                    % normalization by row
+                    max_G=max(Gabs,[],2);
+                    Gabs=repmat(1./max_G,1,size(Gabs,2)).*Gabs;
+                end
+            else %if nargin==3
+                % Equalize energy associated with each estimated source and true
+                % source.
+                %
+                % y=W*A*s;
+                % snorm=D*s; where snorm has unit variance: D=diag(1./std(s,0,2))
+                % Thus: y=W*A*inv(D)*snorm
+                % ynorm=U*y; where ynorm has unit variance: U=diag(1./std(y,0,2))
+                % Thus: ynorm=U*W*A*inv(D)*snorm=G*snorm and G=U*W*A*inv(D)
+                yk=W(:,:,k)*A(:,:,k)*s(:,:,k);
+                Dk=diag(1./std(s(:,:,k),0,2));
+                Uk=diag(1./std(yk,0,2));
+                Gk=Uk*W(:,:,k)*A(:,:,k)/Dk;
+                
+                Gabs=abs(Gk);
+            end
+            G(:,:,k)=Gk;
+            
+            if nargin>=4
+                Np=Nuse;
+                Mp=Nuse;
+                Lp=Nuse;
+            else
+                Np=N;
+                Mp=M;
+                Lp=L;
+            end
+            
+            % determine if G is success by making sure that the location of maximum magnitude in
+            % each row is unique.
+            if k==1
+                [~,colMaxG]=max(Gabs,[],2);
+                if length(unique(colMaxG))~=Np
+                    % solution is failure in strictest sense
+                    success=false;
+                end
+            else
+                [~,colMaxG_k]=max(Gabs,[],2);
+                if ~all(colMaxG_k==colMaxG)
+                    % solution is failure in strictest sense
+                    success=false;
+                end
+            end
+            
+            GabsTotal=GabsTotal+Gabs;
+            
+            for n=1:Np
+                isi=isi+sum(Gabs(n,:))/max(Gabs(n,:))-1;
+            end
+            for m=1:Mp
+                isi=isi+sum(Gabs(:,m))/max(Gabs(:,m))-1;
+            end
+        end
+        isi=isi/(2*Np*(Np-1)*K);
+        
+        Gabs=GabsTotal;
+        if gen_perm_inv_flag
+            % normalization by row
+            max_G=max(Gabs,[],2);
+            Gabs=repmat(1./max_G,1,size(Gabs,2)).*Gabs;
+        end
+        %       figure; imagesc(Gabs); colormap('bone'); colorbar
+        isiGrp=0;
+        for n=1:Np
+            isiGrp=isiGrp+sum(Gabs(n,:))/max(Gabs(n,:))-1;
+        end
+        for m=1:Mp
+            isiGrp=isiGrp+sum(Gabs(:,m))/max(Gabs(:,m))-1;
+        end
+        isiGrp=isiGrp/(2*Lp*(Lp-1));
+    else
+        error('Need inputs to all be of either dimension 2 or 3')
+    end
+elseif Wcell && Acell
+    % IVA/GroupICA/MCCA Metrics
+    % For this we want to average over the K groups as well as provide the additional
+    % measure of solution to local permutation ambiguity (achieved by averaging the K
+    % demixing-mixing matrices and then computing the ISI of this matrix).
+    
+    K=length(W);
+    N=0; M=0;
+    Nlist=zeros(K,1);
+    for k=1:K
+        Nlist(k)=size(W{k},1);
+        N=max(size(W{k},1),N);
+        M=max(size(A{k},2),M);
+    end
+    commonSources=false; % limits the ISI to first min(Nlist) sources
+    if M~=N
+        error('This more general case has not been considered here.')
+    end
+    L=M;
+    
+    % To make life easier below lets sort the datasets to have largest
+    % dataset be in k=1 and smallest at k=K;
+    [Nlist,isort]=sort(Nlist,'descend');
+    W=W(isort);
+    A=A(isort);
+    if nargin > 2
+        s=s(isort);
+    end
+    G=cell(K,1);
+    isi=0;
+    if commonSources
+        minN=min(Nlist);
+        GabsTotal=zeros(minN);
+        Gcount=zeros(minN);
+    else
+        GabsTotal=zeros(N,M);
+        Gcount=zeros(N,M);
+    end
+    for k=1:K
+        if nargin==2
+            % Traditional Metric, user provided W & A separately
+            G{k}=W{k}*A{k};
+            Gabs=abs(G{k});
+            if gen_perm_inv_flag
+                % normalization by row
+                max_G=max(Gabs,[],2);
+                Gabs=repmat(1./max_G,1,size(Gabs,2)).*Gabs;
+            end
+        elseif nargin>=3
+            % Equalize energy associated with each estimated source and true
+            % source.
+            %
+            % y=W*A*s;
+            % snorm=D*s; where snorm has unit variance: D=diag(1./std(s,0,2))
+            % Thus: y=W*A*inv(D)*snorm
+            % ynorm=U*y; where ynorm has unit variance: U=diag(1./std(y,0,2))
+            % Thus: ynorm=U*W*A*inv(D)*snorm=G*snorm and G=U*W*A*inv(D)
+            yk=W{k}*A{k}*s{k};
+            Dk=diag(1./std(s{k},0,2));
+            Uk=diag(1./std(yk,0,2));
+            G{k}=Uk*W{k}*A{k}/Dk;
+            
+            Gabs=abs(G{k});
+        else
+            error('Not acceptable.')
+        end
+        
+        if commonSources
+            Nk=minN;
+            Gabs=Gabs(1:Nk,1:Nk);
+        elseif nargin>=4
+            commonSources=true;
+            Nk=Nuse;
+            minN=Nk;
+        else
+            Nk=Nlist(k);
+        end
+        
+        if k==1
+            [~,colMaxG]=max(Gabs(1:Nk,1:Nk),[],2);
+            if length(unique(colMaxG))~=Nk
+                % solution is a failure in a strict sense
+                success=false;
+            end
+        elseif success
+            if nargin>=4
+                [~,colMaxG_k]=max(Gabs(1:Nk,1:Nk),[],2);
+            else
+                [~,colMaxG_k]=max(Gabs,[],2);
+            end
+            if ~all(colMaxG_k==colMaxG(1:Nk))
+                % solution is a failure in a strict sense
+                success=false;
+            end
+        end
+        
+        if nargin>=4
+            GabsTotal(1:Nk,1:Nk)=GabsTotal(1:Nk,1:Nk)+Gabs(1:Nk,1:Nk);
+        else
+            GabsTotal(1:Nk,1:Nk)=GabsTotal(1:Nk,1:Nk)+Gabs;
+        end
+        Gcount(1:Nk,1:Nk)=Gcount(1:Nk,1:Nk)+1;
+        for n=1:Nk
+            isi=isi+sum(Gabs(n,:))/max(Gabs(n,:))-1;
+        end
+        for m=1:Nk
+            isi=isi+sum(Gabs(:,m))/max(Gabs(:,m))-1;
+        end
+        isi=isi/(2*Nk*(Nk-1));
+    end
+    
+    if commonSources
+        Gabs=GabsTotal;
+    else
+        Gabs=GabsTotal./Gcount;
+    end
+    % normalize entries into Gabs by the number of datasets
+    % contribute to each entry
+    
+    if gen_perm_inv_flag
+        % normalization by row
+        max_G=max(Gabs,[],2);
+        Gabs=repmat(1./max_G,1,size(Gabs,2)).*Gabs;
+    end
+    isiGrp=0;
+    
+    if commonSources
+        for n=1:minN
+            isiGrp=isiGrp+sum(Gabs(n,1:minN))/max(Gabs(n,1:minN))-1;
+        end
+        for m=1:minN
+            isiGrp=isiGrp+sum(Gabs(1:minN,m))/max(Gabs(1:minN,m))-1;
+        end
+        isiGrp=isiGrp/(2*minN*(minN-1));
+    else
+        for n=1:Nk
+            isiGrp=isiGrp+sum(Gabs(n,:))/max(Gabs(n,:))-1;
+        end
+        for m=1:Nk
+            isiGrp=isiGrp+sum(Gabs(:,m))/max(Gabs(:,m))-1;
+        end
+        isiGrp=isiGrp/(2*L*(L-1));
+    end
+    
+else
+    % Have not handled when W is cell and A is single matrix or vice-versa.  Former makes
+    % sense when you want performance of multiple algorithms for one mixing matrix, while
+    % purpose of latter is unclear.
+end
+
+return
+
+
+function [W, A, SR]  = getIVASig(W, X)
+
+A = zeros(size(W));
+SR = zeros(size(X));
+
+for n = 1:size(W, 3)
+    SR(:, :, n) = squeeze(W(:, :, n)*X(:, :, n));
+    A(:, :, n) = pinv(squeeze(W(:, :, n)));
+end

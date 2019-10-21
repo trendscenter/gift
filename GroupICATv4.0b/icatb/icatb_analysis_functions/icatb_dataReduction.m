@@ -111,7 +111,7 @@ reductionStepsToRun(reductionStepsToRun > numReductionSteps) = [];
 
 
 try
-    if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l'))
+    if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos'))
         reductionStepsToRun = 1;
     end
 catch
@@ -129,7 +129,7 @@ if (strcmpi(modalityType, 'fmri'))
     
     if (useTemporalICA)
         reductionStepsToRun = 1;
-        if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'gig-ica') || strcmpi(algoName, 'constrained ica (spatial)'))
+        if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos') || strcmpi(algoName, 'gig-ica') || strcmpi(algoName, 'constrained ica (spatial)'))
             error(['Temporal ICA cannot be run using the algorithm ', algoName]);
         end
     end
@@ -139,7 +139,7 @@ end
 
 intermediatePCA = 1;
 
-if (~strcmpi(algoName, 'iva-gl') && ~strcmpi(algoName, 'iva-l'))
+if (~strcmpi(algoName, 'iva-gl') && ~strcmpi(algoName, 'iva-l') && ~strcmpi(algoName, 'iva-l-sos'))
     if ((numReductionSteps == 1) && (sesInfo.numOfSub*sesInfo.numOfSess > 1))
         intermediatePCA = 0;
     end
@@ -295,7 +295,7 @@ if (intermediatePCA)
                 end
                 
                 %if (strcmpi(modalityType, 'smri'))
-                 %   sesInfo.pca_variances = compute_var(data, V, %Lambda);
+                %   sesInfo.pca_variances = compute_var(data, V, %Lambda);
                 %end
                 
                 fprintf('\n\n');
@@ -604,7 +604,7 @@ if (sesInfo.numReductionSteps == 2)
     end
 end
 
-if ((sesInfo.numOfSub*sesInfo.numOfSess == 1) && (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l')))
+if ((sesInfo.numOfSub*sesInfo.numOfSess == 1) && (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos')))
     try
         conserve_disk_space = sesInfo.conserve_disk_space;
     catch

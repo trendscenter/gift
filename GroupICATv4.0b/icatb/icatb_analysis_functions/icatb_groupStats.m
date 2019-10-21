@@ -477,7 +477,7 @@ if (conserve_disk_space ~= 1)
     % end for switch
     
     
-    if (sesInfo.numOfSub*sesInfo.numOfSess > 1 && (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') ...
+    if (sesInfo.numOfSub*sesInfo.numOfSess > 1 && (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') ...
             && ~strcmpi(algorithmName, 'constrained ica (spatial)') && ~strcmpi(algorithmName, 'gig-ica')))
         disp('Comparing mean image with the aggregate ...');
         disp('Value shows how much the mean component is close w.r.t aggregate component');

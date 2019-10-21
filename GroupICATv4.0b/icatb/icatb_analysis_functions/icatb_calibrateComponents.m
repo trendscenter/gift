@@ -105,7 +105,7 @@ if strcmpi(algorithmName, 'moo-icar')
 end
 
 if (~useTemporalICA)
-    if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
+    if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
             && ~strcmpi(algorithmName, 'gig-ica'))
         %--load reference image
         %---------------------------------------------------------
@@ -147,7 +147,7 @@ if (isfield(sesInfo, 'backReconType'))
     backReconType = sesInfo.backReconType;
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'gig-ica') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'gig-ica') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
     if (conserve_disk_space == 1)
         if (~strcmpi(backReconType, 'spatial-temporal regression'))
             [sesInfo.tcInfo, sesInfo.icInfo] = icatb_groupBackReconInfo(sesInfo, W);
@@ -539,7 +539,7 @@ if (conserve_disk_space == 1)
         sesInfo.zipContents.files_in_zip(countZip).name = files_in_zip;
         
         
-        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l')  && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
+        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
                 && ~strcmpi(algorithmName, 'gig-ica'))
             
             disp('Comparing mean image with the aggregate ...');

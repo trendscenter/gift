@@ -21,15 +21,15 @@ function varargout = icatb_icaAlgorithm(ica_algorithm, data, ICA_Options)
 if (strcmpi(modalityType, 'fmri'))
     % all the available algorithms for fmri data
     icaAlgo = str2mat('Infomax','Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'GIG-ICA', 'IVA-L');
+        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'GIG-ICA', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS');
 elseif (strcmpi(modalityType, 'smri'))
     % all the available algorithms for EEG data
     icaAlgo = str2mat('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'GIG-ICA');
+        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'GIG-ICA', 'Sparse ICA-EBM', 'IVA-L-SOS');
 else
     % all the available algorithms for EEG data
     icaAlgo = str2mat('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L');
+        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS');
 end
 
 
@@ -90,6 +90,25 @@ if (nargin > 0 && nargin <= 3)
         
         case 'infomax'
             %% Infomax
+            
+            try
+                if (~isempty(ICA_Options))
+                    tIInd = strmatch('weights', lower(ICA_Options(1:2:end)), 'exact');
+                    if (isnumeric(ICA_Options{2*tIInd}))
+                        chkMat = ICA_Options{2*tIInd};
+                        if (numel(chkMat) == length(chkMat))
+                            % chk if zero is passed. Replace with random
+                            % initialization
+                            if (~chkMat)
+                                ICA_Options{2*tIInd} = randn(size(data, 1), size(data, 1));
+                            end
+                        end
+                    end
+                else
+                    ICA_Options = {'weights', randn(size(data, 1), size(data, 1))};
+                end
+            catch
+            end
             
             [W, sphere, icasig_tmp] = icatb_runica(data, ICA_Options{1:length(ICA_Options)});
             W = W*sphere;
@@ -271,6 +290,19 @@ if (nargin > 0 && nargin <= 3)
             ICA_Options(end+1:end+4) = {'whiten', false, 'initW', WI};
             disp('Weights from group PCA are used as initial weights in laplacian IVA. Computing laplacian IVA ...');
             W = icatb_iva_laplace(data, ICA_Options{:}); % run iva-l
+            [W, A, icasig_tmp] = correct_sign(W, data);
+            
+        case 'sparse ica-ebm'
+            %% Sparse ICA-EBM
+            W = icatb_ICA_EBM_Sparse(data, ICA_Options{:});
+            icasig_tmp = W*data;
+            A = pinv(W);
+            
+        case 'iva-l-sos'
+            %% IVA-L_SOS
+            ICA_Options{end + 1} = 'whiten';
+            ICA_Options{end + 1} = false;
+            W = icatb_iva_laplace_sos(data, ICA_Options{:});
             [W, A, icasig_tmp] = correct_sign(W, data);
             
             % Add your own ICA algorithm code below

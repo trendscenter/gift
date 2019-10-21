@@ -106,7 +106,7 @@ backReconType = 'regular';
 
 if (~useTemporalICA)
     
-    if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l'))
+    if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
         
         if isfield(sesInfo, 'backReconType')
             backReconType = sesInfo.backReconType;
@@ -189,7 +189,7 @@ end
 %% ICA back-reconstruction
 if (~strcmpi(backReconType, 'spatial-temporal regression') && ~strcmpi(backReconType, 'gig-ica') && ~useTemporalICA)
     
-    if (~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-gl') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l'))
+    if (~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-gl') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l-sos'))
         if (~isfield(sesInfo, 'tcInfo') || ~isfield(sesInfo, 'icInfo'))
             [tcInfo, icInfo] = icatb_groupBackReconInfo(sesInfo, W);
         else
@@ -240,7 +240,7 @@ if (~strcmpi(backReconType, 'spatial-temporal regression') && ~strcmpi(backRecon
         
         pcasig = pcasig';
         
-        if (~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-gl') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l'))
+        if (~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-gl') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l-sos'))
             ic = W*icInfo{j}*pcasig;
             tc = dewhiteM*tcInfo{j}*pinv(W);
         else

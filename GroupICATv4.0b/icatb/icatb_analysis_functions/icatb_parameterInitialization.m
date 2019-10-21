@@ -247,6 +247,14 @@ elseif (which_analysis == 3)
     else
         sesInfo.mst_opts.num_ica_runs = max([2, NUM_RUNS_GICA]);
     end
+    
+elseif (which_analysis == 4)
+    if isfield(sesInfo.userInput, 'cross_isi_opts')
+        sesInfo.cross_isi_opts = sesInfo.userInput.cross_isi_opts;
+    else
+        sesInfo.cross_isi_opts.num_ica_runs = max([2, NUM_RUNS_GICA]);
+    end
+    
 end
 
 %--algorithm
