@@ -200,10 +200,15 @@ for i = 3:2:nargin % for each Keyword
    Keyword = lower(Keyword); % convert upper or mixed case to lower
    
    if strcmp(Keyword,'weights') | strcmp(Keyword,'weight')
+       if (isempty(Value))
+           Value = randn(size(data, 1), size(data, 1));
+       end
       if isstr(Value)
-         fprintf(...
-            'runica(): weights value must be a weight matrix or sphere')
-         return
+          weights = eval(Value);
+          wts_passed = 1;
+%          fprintf(...
+%             'runica(): weights value must be a weight matrix or sphere')
+%          return
       else
          weights = Value;
          wts_passed =1;
@@ -615,7 +620,13 @@ elseif strcmp(sphering,'off') %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
          fprintf('Using the sphering matrix as the starting weight matrix ...\n');
          fprintf('Returning the identity matrix in variable "sphere" ...\n');
       end
-      sphere = 2.0*inv(sqrtm(cov(data'))); % find the "sphering" matrix = spher()
+      tmp_covmm = cov(data');
+      if ~strcmpi(class(tmp_covmm), 'gpuarray')
+          sphere = 2.0*inv(sqrtm(tmp_covmm)); % find the "sphering" matrix = spher()
+      else
+          sphere = 2.0*inv(sqrtm(gather(tmp_covmm)));
+      end
+      
       weights = eye(ncomps,chans)*sphere; % begin with the identity matrix
       sphere = eye(chans);                 % return the identity matrix
    else % weights ~= 0
@@ -920,7 +931,7 @@ if wts_passed == 0
    %
    %%%%%%%%%%%%%%%%%%%% Find mean variances %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %
-   meanvar  = zeros(ncomps,1);      % size of the projections
+   meanvar  = zeros(ncomps,1,class(data));      % size of the projections
    if ncomps == urchans % if weights are square . . .
       winv = inv(weights*sphere);
    else
