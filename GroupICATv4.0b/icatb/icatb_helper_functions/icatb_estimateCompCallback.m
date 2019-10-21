@@ -3,6 +3,9 @@ function [estCompVec, estimateComp, mdlVal, aicVal, sesInfo] = icatb_estimateCom
 % modified to accept a user specified mask.
 %
 
+icatb_defaults;
+global DIM_ESTIMATION_OPTS;
+
 % input arguments
 if ~exist( 'sesInfo', 'var' ) || isempty( sesInfo )
     %  estimate number of components?
@@ -13,6 +16,12 @@ if ( isempty( sesInfo ))
 else
     doGetPrompts = false;
 end;
+
+estimation_method = 1;
+try
+    estimation_method = DIM_ESTIMATION_OPTS.method;
+catch
+end
 
 % output arguments
 if ( nargout > 0 )
@@ -248,7 +257,11 @@ try
             msgString = ['The estimated independent components is found to be ', num2str(estimateComp), ...
                 ' using the MDL criteria.'];
             if ( doGetPrompts )
-                helpButton = icatb_dialogBox('title', 'Estimated Components', 'textBody', msgString, 'textType', 'large', 'plotbutton', plotX);
+                if ((estimation_method == 1) || (estimation_method == 2))
+                    helpButton = icatb_dialogBox('title', 'Estimated Components', 'textBody', msgString, 'textType', 'large', 'plotbutton', plotX);
+                else
+                    icatb_dialogBox('title', 'Estimated Components', 'textBody', msgString, 'textType', 'large');
+                end
             end
             msgString = {msgString};
         else
@@ -279,9 +292,14 @@ try
             
             if ( doGetPrompts )
                 if strcmp(flagTimePoints, 'same_time_points')
-                    % use the standard dialog box
-                    helpButton = icatb_dialogBox('title', 'Estimated Components', 'textBody', msgString, ...
-                        'textType', 'large', 'plotbutton', plotX);
+                    if ((estimation_method == 1) || (estimation_method == 2))
+                        % use the standard dialog box
+                        helpButton = icatb_dialogBox('title', 'Estimated Components', 'textBody', msgString, ...
+                            'textType', 'large', 'plotbutton', plotX);
+                    else
+                        icatb_dialogBox('title', 'Estimated Components', 'textBody', msgString, ...
+                            'textType', 'large');
+                    end
                 else
                     % use the standard dialog box
                     helpButton = icatb_dialogBox('title', 'Estimated Components', 'textBody', msgString, ...
