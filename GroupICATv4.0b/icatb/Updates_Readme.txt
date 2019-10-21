@@ -1,3 +1,37 @@
+GroupICATv4.0b Updates (Oct 21, 2019):
+
+1. Added IVA-L-SOS algorithm which uses second order statistics in the IVA-laplace algoritm. Please see S. Bhinge, R. Mowakeaa, V. D. Calhoun, & T. Adali, "Extraction of time-varying 
+spatio-temporal networks using parameter-tuned constrained IVA," Transaction on Medical Imaging, accepted for publication." for more information.
+
+2. Added Cross-ISI option in the stability or reliability analysis using ICA (Long, Qunfang, Chunying Jia, Zois Boukouvalas, Ben Gabrielson, Darren Emge, and Tülay Adali. 
+"Consistent run selection for independent component analysis: Application to fMRI analysis"; IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP), 2018)).
+
+3. Algorithms like ER-FM and ER-AR are used in the dimensionality estimation which use all the samples in the likelihood estimation (G.-S. Fu, M. Anderson, and T. Adali, 
+"Likelihood estimators for dependent samples and their application to order detection"; IEEE Trans. on Signal Processing, vol. 62, no. 16, pp.
+4237-4244, Aug. 2014). Please refer to icatb_defaults.m for setting the DIM_ESTIMATION_OPTS variable.
+
+4. By default, random initialization is done in the Infomax ica algorithm.
+
+The following files are modified:
+
+1. icatb/icatb_defaults.m
+2. icatb/icatb_define_parameters.m
+3. icatb/icatb_estimate_dimenison.m
+4. icatb/icatb_setup_analysis.m
+5. icatb/icatb_analysis_functions/icatb_backReconstruct.m
+6. icatb/icatb_analysis_functions/icatb_calculateICA.m
+7. icatb/icatb_analysis_functions/icatb_calibrateComponents.m
+8. icatb/icatb_analysis_functions/icatb_dataReduction.m
+9. icatb/icatb_analysis_functions/icatb_parameterInitialization.m
+10. icatb/icatb_analysis_functions/icatb_icaAlgorithm.m
+11. icatb/icatb_analysis_functions/icatb_groupStats.m
+12. icatb/icatb_analysis_functions/icatb_algorithms/icatb_ICA_EBM_Sparse.m
+13. icatb/icatb_analysis_functions/icatb_algorithms/icatb_iva_laplace_sos.m
+14. icatb/icatb_analysis_functions/icatb_algorithms/icatb_runica.m
+15. icatb/icatb_helper_functions/icatb_getDataForICA.m
+16. icatb/icatb_helper_functions/icatb_estimateCompCallback.m
+
 GroupICATv4.0b Updates (Oct 18, 2019):
 
 Subject timecourses are truncated to the least dimension across subjects to match the timepoints. The following files are fixed:

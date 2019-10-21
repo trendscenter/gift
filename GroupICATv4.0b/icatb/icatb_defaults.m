@@ -236,6 +236,17 @@ global DIM_ESTIMATION_OPTS;
 %% Shuffle random numbers
 global RAND_SHUFFLE;
 
+%% Results summary options
+global GICA_RESULTS_SUMMARY;
+
+%% DFNC defaults
+global DFNC_DEFAULTS;
+
+%% DESPIKE_METHOD
+global DESPIKE_METHOD;
+
+
+
 modalityType = icatb_get_modality;
 
 %% Naming Convention Output Files( Analyze Format)
@@ -569,6 +580,7 @@ EXPERIMENTAL_TR = 1;
 
 %% Timecourse postprocess (FNC and spectra info)
 TIMECOURSE_POSTPROCESS.write = 1; % 1 - Write FNC correlations and spectra info.
+TIMECOURSE_POSTPROCESS.save_timecourses = 1; % save the despiked and filtered timecourses output
 % spectra parameters
 TIMECOURSE_POSTPROCESS.spectra.tapers = [3, 5];
 TIMECOURSE_POSTPROCESS.spectra.sampling_frequency = 1/min(EXPERIMENTAL_TR);
@@ -685,7 +697,12 @@ CONNECTOGRAM_OPTIONS.fig_pos = [];
 % Radius at which spatial maps are plotted in a circle. By default, spatial maps are plotted in a circle with radius = 1.7
 CONNECTOGRAM_OPTIONS.radius_sm = [];
 
-%% Minimization function used in despike. Options are 'lsqcurvefit', 'fminsearch' and 'fminunc'
+%% DESPIKE METHOD 
+% Option 1 - Uses afni based despiking method
+% Option 2 - Spikes are determined using the smoothed timecourses
+DESPIKE_METHOD = 1;
+
+%% Minimization function used in despike. Options are 'lsqcurvefit', 'fminsearch' and 'fminunc'. Option used only if DESPIKE_METHOD = 1;
 % lsqcurvefit - Faster compared to the other two methods
 % fminsearch - Slower and requires general matlab version
 % fminunc - Requires optimization toolbox
@@ -709,10 +726,19 @@ GZIPINFO.buffer_size = 2^14;
 GZIPINFO.tempdir = tempdir;
 
 %% MDL Dimensionality estimation
-% iid_sampling - Option are 1 and 0. By default, i.i.d sampling is run on the data. If set to 0, please provide data
-% smoothness kernel to determine no. of i.i.d samples. 
-DIM_ESTIMATION_OPTS.iid_sampling = 1;
+% 1 - IID (default). By default, i.i.d sampling is run on the data.
+% 2 - Smoothness based estimation. Provide fwhm values in the field below.
+% 3 - Entropy based estimator. Uses finite memory length model
+% 4 - Entropy based estimator. Uses autoregressive model.
+% 
+DIM_ESTIMATION_OPTS.method = 1;
 DIM_ESTIMATION_OPTS.fwhm = [5, 5, 5];
 
 %% shuffle random numbers
 RAND_SHUFFLE = 1;
+
+%% PRINT Resolution for gica summary (only for deployed applications)
+GICA_RESULTS_SUMMARY.print_resolution = '-r72';
+GICA_RESULTS_SUMMARY.format = 'html';
+
+

@@ -57,11 +57,20 @@ if (~exist('precisionType', 'var'))
     precisionType = 'double';
 end
 
-iid_sampling = 1;
+dim_est_method = 1;
 fwhm = [];
 try
-    iid_sampling = DIM_ESTIMATION_OPTS.iid_sampling;
+    dim_est_method = DIM_ESTIMATION_OPTS.method;
 catch
+    if (isfield(DIM_ESTIMATION_OPTS, 'iid_sampling')) 
+        if (DIM_ESTIMATION_OPTS.iid_sampling == 1)
+            % iid sampling on
+            dim_est_method = 1;
+        else
+            % iid sampling off
+            dim_est_method = 2;
+        end        
+    end  
 end
 
 try
@@ -69,9 +78,9 @@ try
 catch
 end
 
-if (~iid_sampling)
+if (dim_est_method == 2)
     if (isempty(fwhm))
-        error('Please set fwhm smoothness factor when i.i.d sampling is turned off in DIM_ESTIMATION_OPTS');
+        error('Please set fwhm smoothness factor using DIM_ESTIMATION_OPTS.fwhm when DIM_ESTIMATION_OPTS.method = 2');
     end
 end
 
@@ -151,8 +160,33 @@ end
 
 verbose = 1;
 
+mdl = [];
+aic = [];
+kic = [];
 
-if (iid_sampling)
+if ((dim_est_method == 3) || (dim_est_method == 4))
+    % Use ER-FM or ER-AR
+    
+    if (verbose)
+       disp('Using entropy rate estimator ...'); 
+    end
+    
+    [ER_FM, ER_AR] = orderEstimation_HdsvsEig_R(data');
+    
+    if (dim_est_method == 3)
+        disp('Order estimated by entropy rate based method assumes signal has finite memory length ...');
+        comp_est = ER_FM;
+    else
+        disp('Order estimated by entropy rate based method assumes AR signal ...');
+        comp_est = ER_AR;
+    end
+    
+    return;
+    
+end
+
+
+if (dim_est_method == 1)
     
     %% Perform variance normalization
     if verbose
@@ -582,3 +616,337 @@ for i = 1:size(x, 2)
     a = a/std(a);
     kurt(i) = mean(a.^4) - 3;
 end
+
+
+
+function [ER_FM, ER_AR] = orderEstimation_HdsvsEig_R( data1 )
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%ENTROPY-RATE BASED ORDER SELECTION (ER_FM & ER_AR)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input:
+% data1:       mixtures X
+% Outputs:     
+% ER_FM:       Order estimated by entropy rate based method that assumes signal has finite memory length
+% ER_AR:       Order estimated by entropy rate based method that assumes AR signal
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% References:
+% 
+% ER_FM & ER_AR
+% G.-S. Fu, M. Anderson, and T. Adali, Likelihood estimators for dependent samples
+% and their application to order detection, in Signal Process, IEEE Trans.
+% on, vol. 62, no. 16, pp. 4237-4244, Aug. 2014.  
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Program by Geng-Shen Fu
+% Please contact me at fugengs1@umbc.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+data1 = data1 - mean(data1,2)*ones(1,size(data1,2));    % remove the mean 
+[N T]=size(data1);
+
+% estimate the downsampling depth and order detection
+[U1,S1,V1] = svd(data1,'econ');
+clear V1;
+data1 = U1'*data1;
+
+[ACS DSD dsdAll] = Entropy_rate_estimator(data1);
+
+ER_FM_DS=zeros(1,max(DSD,100));
+for i=1:DSD
+    for n=1:N
+        H(n)=Entropy_rate_single_estimator(ACS(n,1:i:DSD));
+    end;
+    if sum(H==Inf)>0
+        continue;
+    end
+    [H index_H] = sort(H, 'descend');
+    ER_FM_DS(i)=order_estimate_entropy(N, T/i, H);
+end
+ER_FM_DS1=ER_FM_DS(ER_FM_DS~=0);
+ER_FM=round(median(ER_FM_DS1));
+
+ER_AR_DS=zeros(1,max(DSD,100));
+for i=1:DSD
+    for n=1:N
+        H(n)=Entropy_rate_single_estimator_AR(data1(n,1:i:end));
+    end;
+    if sum(H==Inf)>0
+        continue;
+    end
+    [H index_H] = sort(H, 'descend');
+    ER_AR_DS(i)=order_estimate_entropy(N, T/i, H);
+end
+ER_AR_DS1=ER_AR_DS(ER_AR_DS~=0);
+ER_AR=round(median(ER_AR_DS1));
+
+maxp0 = floor(2*size(data1,2)/size(data1,1))/2;  
+dsd = size(data1,1)/2;    % the initial downsampling depth is half the number of sensors
+existing_orders = [];   % save all estimated orders
+while 1
+    % estimate orders
+    E_JDS = order_estimate_complex_c(size(data1,1), size(data1,2), dsd, diag(S1));
+    existing_orders = [existing_orders; E_JDS];
+    if sum(existing_orders==E_JDS)>=5  % return when the order detection converges
+        dsd = ceil(dsd);
+        break;
+    end
+        
+    % re-estimate downsampling depth
+    dsd = 0;
+    cnt1 = 0;
+    cnt2 = 0;   % counting the MA orders reaching the upper bound 
+    ma_order_list=[];
+    for k=1:E_JDS
+        ma_order1=DownSampOrderEstimationR(data1(k,:));
+        ma_order_list=[ma_order_list;ma_order1];
+    end
+    dsd=median(ma_order_list);
+end
+
+function p0 = order_estimate_complex_c( N, T0, dsd, S1 )
+%  order estimation of real-valued multivariate process
+%  N: number of time points
+%  T0: original sample size
+%  dsd: downsampling depth
+%  S1: singular values
+%  p0: estimated order 
+% Program by Geng-Shen Fu: fugengs1@umbc.edu
+T = T0/dsd;     % effective sample size 
+lambda = S1.^2/T0;   % eigenvalues
+
+DL = zeros(N,1);
+for p = 0 : N-1
+    
+    nf = 1+p*N-0.5*p*(p-1); % number of degrees of freedom
+    DL(p+1) = DL(p+1) + 0.5*nf*log(T)/T;
+    
+    for r = 1 : p
+        DL(p+1) = DL(p+1) + 0.5*log(lambda(r));
+    end
+    
+    sigma2v = sum(lambda(p+1:N))/(N-p);
+    DL(p+1) = DL(p+1) + 0.5*(N-p)*log(sigma2v);
+    
+end
+[dl0, p0] = min(real(DL));
+p0 = p0-1;
+%figure; plot([0:N-1], real(DL),'--o')
+
+
+
+function [ACS dsd ma_order_list] = Entropy_rate_estimator( data )
+N = size(data,1);
+T = size(data, 2);
+ma_order_list=[];
+
+for i = 1:N
+    dsd=DownSampOrderEstimationR(data(i,:));
+    ma_order_list = [ma_order_list;dsd];
+end;
+% ma_order_list=[40 35 30 25 10 10 10 10 10 10]';
+
+dsd=round(mean(ma_order_list));
+dsd_max=max(ma_order_list);
+
+% ma_order_list(ma_order_list<dsd)=dsd;
+% dsd=105;
+for i=1:N
+    data(i,:)=data(i,:)-mean(data(i,:));
+    acsTmp=xcorr(data(i,:),dsd_max-1,'unbiased');
+    ACS(i,:)=acsTmp(dsd_max:end);
+end;
+
+
+function [H1 E1 C1 C2 ma_order_list] = Entropy_estimate_complex( data )
+N = size(data,1);
+T = size(data, 2);
+ma_order_list=[];
+
+for i = 1:N
+    dsd=DownSampOrderEstimationR(data(i,:));
+    ma_order_list = [ma_order_list;dsd];
+end;
+% ma_order_list=[40 35 30 25 10 10 10 10 10 10]';
+
+dsd_max = max(ma_order_list);
+for i = 1:N
+    [H1(i) C1(:,:,i) C2(:,:,i)] = Entropy_single_estimate_complex(data(i,:), ma_order_list(i), dsd_max);
+    E1(i) = var(data(i,1:dsd:T), 1);
+end;
+
+function [H] = Entropy_rate_single_estimator( acs )
+% Program by Geng-Shen Fu: fugengs1@umbc.edu
+dsd=size(acs,2);
+C1=toeplitz(acs);
+if dsd~=1
+    C2=toeplitz(acs(1:end-1));
+else
+    C2=1;
+end;
+acs1=acs(end:-1:2);
+if det(C2)<1e-18
+    H=Inf;
+    return;
+end
+H= acs(1)-acs1*inv(C2)*acs1';
+% H= (abs(det(C1))/abs(det(C2)));
+
+
+function [H] = Entropy_rate_single_estimator_AR( data )
+% Program by Geng-Shen Fu: fugengs1@umbc.edu
+%AR Order Selection with Partial Autocorrelation Sequence
+T=size(data,2);
+[arcoefs,E,K] = aryule(data,15);
+
+AR_Order=find(abs(K)<1.96/sqrt(T),1)-1;
+if prod(size(AR_Order))==0
+    AR_Order=15;
+end
+[arcoefs] = aryule(data,AR_Order);
+Data_White = filter(arcoefs, 1, data);
+H=var(Data_White);
+
+% figure;
+% pacf = -K;
+% lag = 1:15;
+% stem(lag,pacf,'markerfacecolor',[0 0 1]);
+% xlabel('Lag'); ylabel('Partial Autocorrelation');
+% set(gca,'xtick',1:1:15)
+% lconf = -1.96/sqrt(T)*ones(length(lag),1);
+% uconf = 1.96/sqrt(T)*ones(length(lag),1);
+% hold on;
+% line(lag,lconf,'color',[1 0 0]);
+% line(lag,uconf,'color',[1 0 0]);
+% i=1;
+
+            
+            
+function [H1 C1 C2] = Entropy_single_estimate_complex( data, dsd, dsd_max )
+% Program by Geng-Shen Fu: fugengs1@umbc.edu
+data=data-mean(data);
+acs=xcorr(data,dsd-1,'unbiased');
+C1=toeplitz(acs(dsd:end));
+if dsd~=1
+    C2=toeplitz(acs(dsd:end-1));
+else
+    C2=1;
+end;
+H1= (abs(det(C1))/abs(det(C2)));
+
+acs=xcorr(data,dsd_max-1,'unbiased');
+C1=toeplitz(acs(dsd_max:end));
+if dsd_max~=1
+    C2=toeplitz(acs(dsd_max:end-1));
+else
+    C2=1;
+end;
+
+function [p0] = order_estimate_entropy( N, T0, H1 )
+%  order estimation of real-valued multivariate process
+%  N: number of time points
+%  T0: original sample size
+%  dsd: downsampling depth
+%  S1: singular values
+%  p0: estimated order 
+% Program by Geng-Shen Fu: fugengs1@umbc.edu
+% T = T0/dsd;     % effective sample size 
+T = T0;     % effective sample size 
+lambda = H1;   % eigenvalues
+
+DL = zeros(N,1);
+for p = 0 : N-1    
+    nf = 1+p*N-0.5*p*(p-1); % number of degrees of freedom
+    
+    for r = 1 : p
+        DL(p+1) = DL(p+1) + 0.5*log(lambda(r));
+    end
+    
+    sigma2v = sum(lambda(p+1:N))/(N-p);
+    DL(p+1) = DL(p+1) + 0.5*(N-p)*log(sigma2v);
+    
+    DL(p+1) = DL(p+1) + 0.5*nf*log(T)/T;    
+end
+[dl0, p0] = min(real(DL));
+p0 = p0-1;
+% DL'
+%figure; plot([0:N-1], real(DL),'--o')
+
+function [p0] = order_estimate_covariance( N, T, C1, C2, dsd )
+%  order estimation of real-valued multivariate process
+%  N: number of time points
+%  T0: original sample size
+%  dsd: downsampling depth
+%  S1: singular values
+%  p0: estimated order 
+% Program by Geng-Shen Fu: fugengs1@umbc.edu
+
+DL = zeros(N,1);
+for p = 0 : N-1    
+    nf = p*(2*N-p-1)/2+(p+1)*dsd; % number of degrees of freedom
+    
+    for r = 1 : p
+        DL(p+1) = DL(p+1) + 0.5*log((abs(det(C1(:,:,r)))/abs(det(C2(:,:,r)))));
+    end
+    
+    C1Bar = sum(C1(:,:,p+1:N),3)/(N-p);
+    C2Bar = sum(C2(:,:,p+1:N),3)/(N-p);
+    DL(p+1) = DL(p+1) + 0.5*(N-p)*log((abs(det(C1Bar))/abs(det(C2Bar))));
+    
+    DL(p+1) = DL(p+1) + 0.5*nf*log(T)/T;
+end
+[dl0, p0] = min(real(DL));
+p0 = p0-1;
+% DL'
+%figure; plot([0:N-1], real(DL),'--o')
+
+
+%For debug
+function DisplayACS(data)
+lag=round(prod(size(data))/20);
+acs=abs(xcorr(data, lag, 'unbiased'));
+figure;
+plot(1:lag+1,acs(lag+1:end));
+
+
+
+
+function p0 = DownSampOrderEstimationR(data)
+% return the estimated order of moving average process x 
+x = data - mean(data);
+x = x/std(x);
+p0 = 1;
+
+while 1
+    if isWhiteR( x(ceil(rand*p0):p0:end) ) % ceil(rand*p0) is a random offset
+        return;
+    else
+        p0=p0+1;
+        if p0>inf
+            p0=inf;
+            return;
+        end
+    end
+end
+
+
+function s = isWhiteR(x)
+% hypothesis: white process vs colored process
+% if accept white, return 1; otherwise, return 0
+% Program by Xi-Lin Li: lixilin@umbc.edu
+T=length(x);
+
+% DL of white case
+p=0;
+dl0=log(mean(abs(x).^2));
+
+% DL of colored case with AR order 1
+p=1;
+x1 = [0,x(1:end-1)];
+a = x*x1'/(x1*x1');
+n = x-a*x1;
+dl1 = log(mean(abs(n).^2)) + p*log(T)/T/2;
+    
+s=(dl0<dl1);

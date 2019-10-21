@@ -391,7 +391,7 @@ end
 numParameters = numParameters + 1;
 
 inputText(numParameters).promptString =  'Select stability analysis type';
-inputText(numParameters).answerString =  char('Regular', 'ICASSO', 'MST');
+inputText(numParameters).answerString =  char('Regular', 'ICASSO', 'MST', 'Cross ISI');
 inputText(numParameters).uiType = 'popup';
 inputText(numParameters).dataType = 'string';
 inputText(numParameters).tag = 'which_analysis';
@@ -400,7 +400,8 @@ inputText(numParameters).value = 1;
 inputText(numParameters).flag = 'scalar';
 inputText(numParameters).help = struct('title', 'Stability Analysis Type', 'string', char('1) Regular - ICA is run only once on the data.', ...
     '2) ICASSO toolbox is used to determine the reliability of ICA algorithm. ICA algorithm is run several times to determine the algorithmic reliability or stability. Reliable estimates correspond to tight clusters and un-reliable ones do not point to any cluster.', ...
-    '3) MST - Uses minimum spanning tree to determine stable ICA run estimates.'));
+    '3) MST - Uses minimum spanning tree to determine stable ICA run estimates.', ...
+    '4) Cross ISI - Cross ISI measures the distance between a pair of ICA solutions. The most consistent run is selected as the run with highest average cross ISI.'));
 
 
 if (~strcmpi(modalityType, 'smri'))
