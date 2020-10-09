@@ -756,10 +756,10 @@ GICA_RESULTS_SUMMARY.format = 'html';
 DFNC_DEFAULTS.step_size = 1;
 
 % Set average sliding window in seconds. By default average sliding window correlation is turned off.
-DFNC_DEFAULTS.aswc = 0;
+DFNC_DEFAULTS.aswc = 22;
 
 % run temporal variation dfnc
-DFNC_DEFAULTS.tvdfnc = 0;
+DFNC_DEFAULTS.tvdfnc = 1;
 
 % Get non-zero values within the window (remove values near zero obtained
 % from circshift or any values outside the window)
@@ -768,3 +768,4 @@ DFNC_DEFAULTS.mask_windows = 0;
 
 % for docker apps set this variable to 0 for copying the data from the container. 
 EXIT_GICA_APP =1;
+
