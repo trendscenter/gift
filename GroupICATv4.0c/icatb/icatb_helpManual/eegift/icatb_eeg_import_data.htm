@@ -1,0 +1,53 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+<h4> Import Data </h4>
+<hr>
+<p>
+This step imports EEGLAB .SET data and saves them as .MAT files. Here, EEG trials can also be smoothed across trials using a moving window average. 
+This is useful to further denoise the data when one predominantly wants to look at slower dynamics across trials. 
+Smoothing does not dramatically alter the outcome of the group ICA. When you click on <em>Import Data</em> button, a figure (Figure 
+1) 
+will open to select the EEG files in a data format that EEGLAB toolbox uses. After selecting the data files, 
+an input dialog box will open (Figure 2) to enter the following parameters.
+
+<ul> 
+<li> 'Enter vector to correct baseline (ms)'. Enter time range in milliseconds to remove the baseline. </li>
+<li> Do you want to smooth the EEG trials? Selecting 'Yes' means that the trials will be smoothed using the selected moving window. </li>
+<li> 'Enter a number for moving point average?' Trials will be averaged using the selected window length. For now leave it as 3. </li>
+<li> 'How Do You Want To Sort Trials?' You have the option to sort trials based on condition and latency. For now leave it as 'No'
+Note that trial sorting makes sense when (a) trial structure is different across subjects (b) sources are vastly different between conditions and or behavioral outcomes. 
+Sorting trials makes it easier to identify components of interest in the display GUI, it does for the most part not critically affect the accuracy of individual 
+component reconstruction, for illustration, in a typical oddball experiment, one can run the group ICA on unsorted trials, and then sort the resulting components 
+according to individual RTs, which reconstructs the RT-dependency of later components that belong to the P300 complex. EEGIFT can sort by RT and trial category, and 
+employs the EEG.event structure from EEGLAB for this. </li>
+<li> 'Enter file name (not full path) for writing data.' Data will be written in MAT file format that EEGIFT uses for analyzing EEG data. 
+The data will be saved in the specified output directory (Figure 3) and the data set directory name will be the same as the file name.
+</li>
+
+</ul>
+
+<p class="style1"> Figure 1: Select EEG files in .SET format. </p>
+<p class="style1"> <img src="images/icatb_eeg_sel_eeg_import_data.jpg"> </p>
+
+<p class="style1"> Figure 2: EEG Parameters</p>
+<p class="style1"> <img src="images/icatb_eeg_import_data_para.jpg"> </p>
+
+<p class="style1"> Figure 3: Output directory to save the data</p>
+<p class="style1"> <img src="images/icatb_eeg_import_data_out_dir.jpg"> </p>
+
+</p>
+
+<hr>
+</body>

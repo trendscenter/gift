@@ -1,0 +1,153 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<body>
+<h4> Appendix </h4>
+<hr>
+<h6> A. Auditory Oddball Paradigm </h6>
+<p> 
+The Auditory Oddball Paradigm (AOD) consisted of detecting an infrequent target 
+sound within a series of frequent regular sounds. The stimuli were presented via 
+headphones, and participants were asked to respond as quickly as possible by 
+pushing a mouse button with their right index finger. The standard stimulus was 
+a center-panned 500 Hz tone, the target stimuli were left or right-panned 
+location deviants, respectively. Targets occurred with a probability of 0.20, 
+0.10 for each location; the standard stimuli occurred with a probability of 
+0.80. Stimulus duration was 75 ms and the inter-stimulus interval was 700 ms, 
+with no immediate repetitions of targets. In the example data, the epochs 
+contain a sequence of standard &#8211; target &#8211; standard sounds, to dissociate between 
+obligatory stimulus related and target related components, respectively. All 
+stimuli were presented at approximately 65 decibels above threshold. Response 
+times ranged from 250-500 ms, the overall accuracy was larger than 98%. 
+Participants - 32 healthy right-handed undergraduates were recruited, and took 
+part in the experiment after providing a written statement of informed consent. 
+Participants were sitting in a comfortable recliner in an electro-magnetically 
+shielded and sound-attenuated testing chamber (Rainford EMC Systems, Wigan, UK). 
+Participants were fitted with 63 Ag/AgCl scalp electrodes mounted in an elastic 
+cap (EasiCap, Falk Minow Services, Breitenbrunn, Germany) according to the 10-20 
+System: FP1, FP2, F7, F3, Fz, F4, F8, T7, C3, Cz, C4, T8, P7, P3, Pz, P4, P8, 
+O1, OZ, O2, with additional intermediate sites at Fpz, AF7, AF3, AFz, AF4, AF8, 
+FT7, FC5, FC3, FC1, FCz, FC2, FC4, FC6, FT8, C5, C1, C2, C6, TP7, CP5, CP3, CP1, 
+CPz, CP2, CP4, CP6, TP8, P5, P1, P3, P6, PO7, PO3, POz, PO4, PO8, including 
+mastoid sites TP9 and TP10. All channels were referenced to the nose, with a 
+ground electrode on the cheek, and impedances were kept below 10k&#937;. Vertical eye 
+movement (EOG) was acquired from a bipolar derivation between Fp1 and an 
+additional electrode placed below the left eye, horizontal EOG was acquired from 
+a F7-F8 bipolar montage. EEGs were recorded continuously at 500 Hz sampling 
+frequency with a band-pass from 0.01-250 Hz with BrainAmp DC amplifiers 
+(BrainProducts, Munich, Germany). EEGs were down-sampled to 250 Hz, filtered 
+with a zero-phase Butterworth filter from 1-45 Hz (24 db per octave), and 
+re-referenced to common average reference. The data were then segmented from 
+-800 to 1200 ms around target stimuli and baseline activity was defined from 
+-300 to 0 ms around stimulus onset, and trials with amplitudes exceeding ±150µV 
+on any of the channels were excluded from further analysis. Concatenated single 
+sweeps around target onset, including the previous and the following standards 
+were subjected to single subject independent component analysis (ICA, Infomax 
+algorithm), implemented in EEGLAB (<a href="icatb_eeg_references.htm">[2]</a>) running in MATLAB. 
+Components with topographies attributable to eye movement and frontotemporal 
+muscle activity were identified and removed from the data (<a href="icatb_eeg_references.htm">[4]</a>). 
+For each dataset, we kept 20 components. Missing trials were padded with the 
+mean from surrounding trials. Hereafter, single-trials were additionally denoised with a wavelet filter (<a href="icatb_eeg_references.htm">[5]</a>). Wavelet 
+coefficients used for the reconstruction of the single trials were selected on 
+the basis of the grand-averaged response, and were the same for all electrode 
+sites and participants. Hereafter, group ICA was computed, estimating 20 PC/ICs.
+
+</p>
+
+<h6> B. Defaults </h6>
+
+<p>
+EEG defaults are in 'icatb_defaults.m' file. In GIFT manual and walk-through we explained necessary variables required for analysis and display. 
+We explain below EEG specific variables used in EEGIFT:
+
+<dl>
+<dt>EEG_RMBASE </dt>
+<dd> Vector used for removing baseline from EEG signal during smoothing trials. The default value is [-100 0]. </dd>
+<dt> EEG_IMAGE_VALUES </dt>
+<dd> Image values used for displaying stacked EEG signal. The options available are 'Positive and Negative', 'Positive', 'Absolute' and 
+'Negative'. The default value is 'Positive and Negative'. </dd>
+<dt> EEG_CONVERT_Z </dt>
+<dd> Option is provided to convert stacked EEG image to Z-scores during display. The default value is 'Yes'.</dd>
+<dt> EEG_THRESHOLD_VALUE </dt>
+<dd> Threshold used for displaying stacked EEG signal. The default value is '1.0'.</dd>
+<dt> EEG_IMAGES_PER_FIGURE </dt>
+<dd> The number of components per figure that can be displayed. The options available are '1', '4' and '9'. 
+The default value is '4'. </dd>
+<dt> EEG_TOPOPLOT_COLORMAP </dt>
+<dd> Color map used for topography plot. The default value is 'jet(64)'.</dd>
+</dl>
+
+</p>
+
+<h6> C. Output Files </h6>
+
+<ul>
+<li> Subject File - Subject file contains information about number of subjects, sessions and input files. It is saved with suffix 'Subject.mat'. 
+The following are the variables in the MAT file:
+<ul>
+<li> numOfSub - Number of subjects. </li>
+<li> numOfSess - Number of sessions.</li>
+<li> files - Input files stored in a data structure.</li>
+</ul>
+</li>
+
+<li> Parameter File - Parameter file contains user input and analysis output files information. It is stored with suffix 
+'_ica_parameter_info.mat'. The MAT file contains sesInfo data structure and the user input information is stored in sesInfo.userInput.
+</li>
+
+<li> Data reduction (PCA) - After PCA step, the data reduction information is stored in a MAT file with suffix '_pca_r<em>a</em>-<em>b</em>.mat' where <em>a</em> 
+refers to reduction step number and <em>b</em> refers to data-set number. The following are the variables in the PCA file:
+
+<ul>
+<li> V - Eigen vectors whose dimensions are electrodes by components. </li>
+<li> Lambda - Eigen values diagonal matrix of dimensions components by components.</li>
+<li> pcasig - Reduced data of dimensions time*trials by components. </li>
+<li> whiteM - Whitening matrix of dimensions components by electrodes.</li>
+<li> dewhiteM - Pseudo inverse of whitening matrix of dimensions electrodes by components. This will be used while reconstructing individual 
+subject components during the back reconstruction step.</li>
+</ul>
+
+</li>
+
+<li> ICA - After ICA step, the aggregate components information is stored in a MAT file with the suffix '_ica.mat'. The following are the variables in the ICA file:
+<ul>
+<li> W - Un-mixing matrix of dimensions components by components.</li>
+<li> A - Pseudo inverse of W and is of dimensions components by components.</li>
+<li> icasig - Independent source signals of dimensions components by time*trials. </li> 
+</ul>
+
+<li> Back reconstruction - Back reconstruction files are saved with suffix '_br<em>n</em>.mat' where 
+<em>n</em> refers to the data-set number. The MAT file contains compSet data structure with the following fields:
+<ul> 
+<li> timecourse - EEG signal of dimensions components by time*trials. </li>
+<li> Topography - Weights matrix of dimensions electrodes by components. </li>
+</ul>
+
+</li>
+
+<li>Calibrate - Calibrate step files are saved with suffix '*c<em>a</em>-<em>b</em>.mat' where 
+<em>a</em> refers to subject number and <em>b</em> refers to session number. 
+The following variables are in the calibrate step file:
+
+<ul> 
+<li> timecourse - Scaled EEG signal of dimensions components by time*trials.</li>
+<li> topography - Scaled weights matrix of dimensions electrodes by components. </li>
+</ul>
+
+</li>
+
+<li> Group stats - Group stats files are saved with suffix '_component_ica_' in MAT format. Each MAT file contains time courses (EEG signal) 
+and topography (weights matrix) of the same dimensions as in the calibrate step file. </li>
+
+</ul>
+
+<hr>
+
+</body>
+
+</html>

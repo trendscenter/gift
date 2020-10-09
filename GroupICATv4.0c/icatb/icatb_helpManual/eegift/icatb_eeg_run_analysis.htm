@@ -1,0 +1,113 @@
+<html>
+
+<head>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+<h4>Run Analysis </h4>
+<hr>
+
+<p> Run Analysis contains initializing parameters along with the steps involved 
+in the group ICA. When you click on <em>Run Analysis</em> button, a figure 
+window will open to select the ICA parameter file. After selecting the ICA 
+parameter file, figure 1 will open and contains the following options: 
+
+<ul>
+<li> All*** - You can run all the group analysis steps at once or run each one 
+separately. To run all steps at once select 'All***', to run each step 
+separately select the steps in order.  </li>
+
+<li> Parameter Initialization - All the variables that are needed later on or 
+during the analysis are declared and initialized. A parameter error check is 
+also preformed to try and catch errors before the group analysis begins. </li>
+
+<li> Data Reduction - Each data-set is reduced using Principal Components 
+Analysis (PCA). These reduced data-sets are then concatenated into a group or 
+groups depending on the number of data reductions steps selected, this process 
+is repeated. Each reduced data is saved in a MAT file and will be used in the 
+back reconstruction step. The second data reduction step demands most computing 
+resources (RAM) but works well for most current desktop/laptop PC configurations 
+and MATLAB versions. If an out of memory error from MATLAB occurs, try the usual 
+steps to improve performance, e.g. clear the workspace, terminate unused 
+programs and background processes. If it still does not work, reduce the number 
+of principal components or change the input data (e.g. lower sampling rate).
+</li>
+
+<li> Calculate ICA - The concatenated data from the data reduction step is used 
+and the aggregate ICA components are saved in MAT file format. Each component 
+consists of EEG time domain signal and weights. </li>
+
+<li> Back Reconstruction
+<ul>
+
+<li> Regular - The aggregate components and the results from data reduction are 
+used to compute the individual subject components. </li>
+
+<li> Spatial-temporal Regression - The aggregate components and the original 
+data are used to compute the individual subject components.</li>
+
+</ul>
+</li>
+
+<li> Calibrating Components - The original EEG data is used to scale the 
+components from arbitrary units to data units or Z-scores. </li>
+
+<li> Group Stats - The individual back reconstructed components are used to 
+compute statistics on components like mean, standard deviation and t-test. Each 
+component consists of EEG time domain signal and topographic weights. For the 
+t-test weights of a session used is the same as the mean of weights of that 
+session. These group stats components are calculated for each session and are 
+saved in MAT file format. </li>
+
+</ul>
+
+</p>
+
+<p>
+
+Results during each of the steps are printed to the MATLAB command window. 
+Before the group analysis can take place the parameters file must be 
+initialized. At this stage variables that were entered through the GUI are 
+parsed and initialized as needed for the group ICA analysis. Error checking is 
+also performed so that mistakes can be caught before the analysis starts. After 
+the analysis is completed, Display GUI&nbsp; will open automatically for 
+visualizing components. You can turn off this option by setting variable value 
+of OPEN_DISPLAY_GUI to 0 in 'icatb_defaults.m' file. 
+</p>
+
+<p>
+<strong>Note:</strong> 
+
+<ul>
+<li> The parameter initialization, data reduction, calculate ICA, back 
+reconstruction and group stats steps are the same as in GIFT.</li>
+<li> All the analysis information is stored in the '_results.log' file. This 
+file gets appended each time you run the analysis with the same prefix for the 
+output files. </li>
+<li> Output files information and variables contained in MAT files are explained 
+in <a href="icatb_eeg_appendix.htm">Appendix C</a>. </li>
+</ul>
+
+</p>
+
+<p class="style1"> Figure 1: Run Analysis </p>
+<p class="style1"> <img src="images/icatb_eeg_run_analysis.jpg"> </p>
+<hr>
+
+</body>
+
+</html>
