@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+
+<link rel="stylesheet" type="text/css" href="./style.css">
+
+<script type="text/javascript">
+
+/* List tree and update link*/
+function listTree_UpdateLink(section, myLink)
+{
+	/* Left frame */
+	myFrame = parent.frames['leftframe'];
+	
+	/* If left frame exists */
+	if (myFrame != null)
+	{
+		if(myFrame.document.getElementById(section).style.display == 'none')
+		{
+			myFrame.document.getElementById(section).style.display = 'inline';
+			myFrame.document.getElementById('img' + section).src = 'minus.gif';
+		}
+	}
+	
+	/* Right frame */
+	myFrame = parent.frames['rightframe'];
+	
+	/* If right frame exists */
+	if (myFrame != null)
+	{
+		/* Open link in right frame */
+		window.open(myLink, 'rightframe', '', 'true');
+	}
+	else
+	{
+		window.open(myLink, '_self');		
+	}
+		
+}
+/* End for listing tree and updating link*/
+
+
+</script>
+
+</head>
+
+<body> 
+<h4> Introduction </h4>
+<hr>
+<p> 
+Independent Component Analysis (ICA) is used to extract independent source 
+signals from the data. ICA is successfully applied on single subject single 
+session analysis. Since most of the ICA algorithms are stochastic group analysis 
+is complicated. In 
+<a href="gift/icatb_references.htm">[1]</a>, group ICA framework was proposed to 
+extend ICA to group studies. We have implemented toolboxes like Group ICA of 
+fMRI Toolbox (GIFT) and Group ICA of EEG Toolbox (EEGIFT) based on group ICA 
+framework. 
+<ul>
+<li> <a href="gift/icatb_getting_started.htm" target="rightframe"> 
+GIFT </a> - GIFT is used to do group ICA on fMRI data. </li>
+<li> <a href="eegift/icatb_eeg_getting_started.htm" target="rightframe"> 
+EEGIFT </a> - EEGIFT is used to group ICA on EEG data. </li>
+</ul>
+</p>
+<hr>
+
+</body>

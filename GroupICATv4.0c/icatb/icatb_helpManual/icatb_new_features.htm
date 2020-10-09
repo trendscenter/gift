@@ -1,0 +1,385 @@
+<html>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+
+<h4> New Features </h4>
+<hr>
+
+<b> GroupICAT v4.0b (Feb 20, 2017): </b>
+<ul>
+<li> A subject outlier detection tool is now added as a "Generate Mask" utility in the GIFT toolbox. An average mask is generated and subjects below a certain correlation threshold are 
+excluded from the analysis. At the end of the mask generation, a GIFT batch file is created which can be used to run the group ICA. </li>
+<li> An option is now provided to generate results summary in the Mancovan toolbox. This tool can be accessed using "display" button in the Mancovan toolbox. 
+Univariate results are plotted in a separate figure for each significant covariate and a connectogram display (Rashid, B., et al. (2014), 
+"Dynamic connectivity states estimated from resting fMRI Identify differences among Schizophrenia, bipolar disorder, and healthy control subjects", Frontiers in 
+human neuroscience) is used to show the FNC plots.</li>
+<li> We now provide an option in the Mancovan toolbox to run univariate tests using the selected covariates bypassing the multivariate tests. This tool can be accessed using 
+"Run analysis" button in the Mancovan toolbox. </li>
+<li> The "Group networks" tool is renamed to a more general "network summary" in the GIFT display tools. The network summary display uses the component network information and 
+optional FNC information to generate composite orthogonal views (Damaraju, E., et al. (2014), “Dynamic functional connectivity analysis reveals transient states of dysconnectivity 
+in schizophrenia", NeuroImage), composite rendered surfaces of brain, stacked orthogonal slices, FNC matrix viewer and connectogram FNC plot. </li>
+<li> We now provide an option to use the temporal design matrix information in the "Results Summary" button to compute R-square and one sample t-test on beta weights in the GIFT toolbox.
+ This tool can also be accessed as temporal sorting under "Utilities" drop down box. </li>
+<li> The stand-alone image viewer tool is now enabled to select multiple component images which can be plotted independently or in a composite plot (montage, render or orthogonal slices). </li>
+<li> An option is now provided to export results to PDF or HTML file in the component viewer display tool. </li>
+<li> MOO-ICAR algorithm name is changed to GIG-ICA. </li>
+</ul>
+
+<hr>
+
+<b> GroupICAT v4.0a (May 02, 2015): </b>
+
+<ul> 
+<li> Group ICA command line tool ("gica_cmd") is now added to the toolbox. Batch script can be run with minimal options from the MATLAB command line.</li>
+<li> Two more PCA methods are now integrated in the GIFT toolbox (early work based on: S. Rachakonda and V. D. Calhoun, "Efficient Data Reduction in Group ICA Of fMRI Data," in Proc. HBM, Seattle, WA, 2013, and in two papers currently under review)
+<ul>
+<li> Option to do PCA using Multi power iteration (MPOWIT) is now added. MPOWIT accelerates subspace iteration approach to extract dominant components from the data with very high accuracy in only a few iterations. MPOWIT can be run with data available in memory or by loading one data-set at a time. </li>
+<li>Subsampled time PCA (STP) based on three data reduction method is now integrated in the toolbox. STP avoids whitening in the intermediate PCA step and PCA subspace is updated based on previous group estimates and new group entered. [note this addresses previous issues related to performance of three-step PCA]</li>
+</ul>
+</li>
+<li> Parallel computing is now incorporated. Group ICA makes use of parallel computing toolbox to speed up the analysis stage. If parallel computing toolbox is not available, independent MATLAB sessions are used to speed up the process. The following tools are run in parallel:
+<ul>
+<li> Dimensionality Estimation</li>
+<li> Subject level PCA</li>
+<li> Stability analysis using ICASSO or Minimum spanning tree (MST)</li>
+<li> Back reconstruction using spatial temporal regression or MOO-ICAR methods</li>
+<li> Scaling components</li>
+<li> Removing components</li>
+</ul>
+</li>
+<li> Standalone image display tools like montage, orthogonal viewer, rendering and grouping components by network names are now integrated. </li>
+<li> Option is provided to summarize group ICA results using an HTML report. </li>
+<li> Spatial dynamic functional connectivity toolbox (sDFNC) is integrated. sDFNC toolbox is based on paper S. Ma, V. Calhoun, R. Phlypo and T. Adali, &#8220;Dynamic changes of spatial function network connectivity in healthy individuals and schizophrenia patients using independent vector analysis&#8221;, NeuroImage, 90 (2014), 196-206.</li>
+<li> Options are now provided to run both temporal and spatial ICA on pre-processed data directly. </li>
+
+</ul>
+
+<hr>
+
+<b> GroupICAT v3.0a (May 21, 2013): </b>
+
+<ul>
+<li> A new dynamic functional network connectivity (dFNC) toolbox is integrated within the GIFT toolbox. Please see E. Allen, E. Damaraju, S. M. Plis, E. Erhardt, T. Eichele, and V. D.Calhoun, "Tracking whole-brain connectivity dynamics in the resting state", Cereb Cortex, in press. The approach has also recently been validated using concurrent EEG/fMRI (see E. Allen, T. Eichele, L. Wu, and V. D. Calhoun, "EEG Signatures of Functional Connectivity States," in Human Brain Mapping, Seattle, WA, 2013).</li>
+<li> A new algorithm for independent vector analysis (IVA-GL) is integrated into the GIFT toolbox. IVA-GL uses multi-variate gaussian prior and laplacian prior to do source separation from the data. Please see M. Anderson, T. Adali, & X.-L. Li, "Joint Blind Source Separation of Multivariate Gaussian Sources: Algorithms and Performance Analysis," IEEE Trans. Signal Process., 2012, 60, 1672-1683) and T. Kim, H. T. Attias, S.-Y. Lee, & T.-W. Lee, "Blind Source Separation Exploiting Higher-Order Frequency Dependencies," IEEE Trans. Audio Speech Lang. Process., 2007, 15, 70-79.</li>
+<li> Multivariate Objective Optimization ICA with Reference (MOO-ICAR) is now integrated in the GIFT toolbox. MOO-ICAR uses a no data reduction approach and aggregate component maps from previous group ICA analysis as reference to estimate sources of interest for each subject. Please see Y. Du, Y. Fan, "Group information guided ICA for fMRI data analysis", NeuroImage 69: 157-197 (2013).</li>
+<li> Constrained ICA (Spatial) approach is updated to allow for the no data reduction approach similar to MOO-ICAR method above.</li>
+<li> PCA using eigen decomposition method is modified to compute the covariance matrix along the smallest dimension of the data.</li>
+<li> Statistics tool to compute T-test, ANOVA and Multiple Regression on subject ICA loading coefficients have now been added to the SBM toolbox.</li>
+</ul>
+
+<hr>
+
+<b>GroupICAT v2.0d with the release date March 31, 2010: </b>
+
+<ul>
+
+<li> Added data pre-processing options like intensity normalization, variance 
+normalization and removing mean time-series. Intensity normalization is 
+recommended for maximizing the reliability and replicability of the components. 
+Please see E. Allen, E. Erhardt, T. Eichele, A. R. Mayer, and V. D. Calhoun, "Comparison of pre-normalization methods on the accuracy of group ICA results," in Proc. HBM, Barcelona, Spain, 2010 for more details. </li>
+
+<li> Added expectation maximization option to PCA computation (S.Roweis, &quot;EM 
+algorithms for PCA and sensible PCA&quot;, Advances in Neural Information Processing 
+Systems. 1998). EM PCA has fewer memory constraints compared to covariance based 
+PCA and is the preferred method for very large data-set analysis. </li>
+
+
+<li> All the subsequent analysis MAT files after PCA with the exception of 
+ICASSO will be converted to single precision if you have selected single 
+precision in the PCA options. This is recommended for maximizing the number of 
+data sets given a fixed amount of RAM. </li>
+
+<li> GICA3 back reconstruction method was released as an update to GroupICAT 
+v2.0c. GICA3 is the recommended method for reconstructing individual subject 
+components with the most accurate spatial maps and timecourses. GICA3 has two 
+desirable properties that the sum of the subject spatial maps is the aggregate 
+spatial map and the product of the time courses and spatial maps estimate the 
+data to the accuracy of the PCA's. We have performed extensive comparison with 3 
+different PCA/data-reduction approaches and 4 back-reconstruction approaches 
+including spatio-temporal regression/dual regression. These approaches are 
+included as options in GIFT. Please see E. Erhardt, S. Rachakonda, E. Bedrick, T. Adali, and V. D. Calhoun, "Comparison of multi-subject ICA methods for analysis of fMRI data," in Proc. HBM, Barcelona, Spain, 2010. 
+ </li>
+
+<li> Component images sign in ICA is flipped based on the skewness measure of 
+the distribution (previously it was flipped based upon the maximum voxel). </li>
+
+
+<li> Subject component image distributions are centered to zero by default when 
+scaling component images. Centering is done based on the peak of the 
+distribution. </li>
+
+<li> &quot;icatb_mem_ica.m&quot; script is updated to include all the data reduction 
+strategies and will give a close estimate of how much RAM is required for all 
+the analysis types. </li>
+
+
+<li> ICASSO can now be acessed from Setup ICA GUI. </li>
+
+<li> Dimensionality estimation source code (&quot;icatb_estimate_dimension.m&quot;) 
+developed by Leo Li is now available. </li>
+
+<li> Batch script doesn't read &quot;numOfPC3&quot; variable if only two data reduction 
+steps are used. </li>
+
+<li> Bug was fixed in the back reconstruction code (GroupICAT v2.0c Updates, 
+March 11, 2010) to handle &quot;Constrained ICA (Spatial)&quot; algorithm. </li>
+
+<li> Covariance options is replaced with PCA options and will be available when 
+you select the PCA type in Setup ICA GUI. </li>
+
+</ul>
+
+<hr>
+
+<b>GroupICAT v2.0c with the release date August 17, 2009: </b>
+
+<ul>
+
+<li> Enabled two data reduction steps in Setup ICA when the number of subjects 
+is greater than 10. </li>
+<li> Two data reduction steps method is handled better in terms of memory usage 
+for analyzing very large datasets. </li>
+<li> Added C-MEX files for computing eigen values of a symmetric matrix using 
+packed storage scheme (this approach is slightly slower, but less memory 
+intensive).</li>
+<li> Added spatial-temporal back reconstruction approach (this is an alternative 
+approach to back-reconstruction and computes a spatial regression of the 
+aggregate component images onto each timepoint of the single subject data and 
+then computes a temporal regression of the single subject component timecourses 
+onto each voxels timecourse). Results are quite similar to back-reconstruction 
+using the PCA de-whitening matrix.</li>
+
+</ul>
+
+<hr>
+
+<b>GroupICAT v2.0b with the release date April 2, 2009: </b>
+<ul>
+<li> Single trial amplitudes utility based on Dr. Tom Eichele's work is now 
+added to the GIFT toolbox.</li>
+<li> Added an option in the batch script to select the input data using regular 
+expression pattern match. This can be used to get the directories that are 
+highly nested.</li>
+<li> We now remove the limitation to use MATLAB Statistics toolbox to compute 
+statistics on the time courses. </li>
+<li> Added Multiple Regression design criteria in the Stats on time courses GUI. </li>
+<li> Percent variance calculation is added in the Utilities Section.</li>
+</ul>
+
+<hr>
+<b>GroupICAT v2.0a with the release date April 11, 2008: </b>
+<ul>
+<li>We now provide EEGIFT toolbox for analyzing group ICA on EEG data (By Tom 
+Eichele). EEGIFT contains options for importing data in .SET format from EEGLAB 
+and visualization methods for viewing group ICA components. Both GIFT and EEGIFT 
+are subsumed within GroupICAT v2.0a.</li>
+
+<li> Temporal sorting in GIFT is optimized. We load .MAT files for individual 
+subject components instead of using time course images.</li>
+<li> Event average using deconvolution method (By Tom Eichele) is implemented. </li>
+<li> Event average utility in main figure window now has the options for 
+selecting multiple regressors and components. Event average results will be 
+written as .MAT files. </li>
+<li> Slider callback is optimized when very large number of time courses are 
+plotted using &quot;Split-timecourses&quot; utility. </li>
+</ul>
+
+
+<hr>
+
+<b>GIFT v1.3d with the release date Dec 18, 2007: </b>
+<ul>
+	<li>GUI for doing statistical testing of time courses (beta weights) is 
+	included.
+	</li>
+	<li>Right-left text plotted during display is changed in this version to 
+	make it consistent with SPM convention (Neurological convention). </li>
+	<li>Flip parameter for analyze images is stored in ICA parameter file and 
+	will give a warning message whenever flip parameter is changed during 
+	display.
+	</li>
+	<li>Statistics are done on component images and time courses even if the 
+	time points are different. </li>
+	<li>Latest SPM updates for volume functions are installed.</li>
+	<li>File selection window contains an option to enter a subset of Nifti 
+	files and an edit button to change the file selection.</li>
+</ul>
+
+<hr> 
+
+<b>GIFT v1.3c with the release date Jan 8, 2007:</b><ul>
+	<li>Constrained ICA (Spatial) algorithm developed by Qiu-Hua Lin is added to 
+	the GIFT toolbox. </li>
+	<li>Default mask calculation is changed such that Boolean AND operation is 
+	performed on each data-set. </li>
+	<li>PCA, ICA, Calibration MAT files contain only the voxels that are in the 
+	mask. Atleast 30% - 40% disk space will be saved. </li>
+	<li>Both batch script and setup ICA GUI share the same code. </li>
+	<li>Dimensionality estimation step is now batched. </li>
+	<li>Display methods can now be accessed through a batch file. </li>
+	<li>Error messages are reported with the line numbers on Matlab 7. </li>
+</ul>
+
+<hr><b>GIFT v1.3b with the release date Apri1 21, 2006:</b>
+<ul>
+	<li>Now writes analyze images compatible with SPM2. </li>
+	<li>Component images are detrended while converting to Z-scores.</li>
+</ul>
+<hr>
+
+<b> GIFT v1.3a with the release date March 15 2006: </b>
+<ul>
+	<li>Now reads functional data in Nifti or 4D Analyze format. </li>
+	<li>New MDL Algorithm for estimating the number of components.</li>
+	<li>Pre-compiled ICA algorithms: Erica, Simbec, Jade Opac, EVD and Amuse can 
+	now be run on Matlab 7. </li>
+	<li>Option is provided to compress image files to zip format (to reduce the 
+	number of files and disk space).</li>
+	<li> v1.3a reads the images from the previous version but older versions 
+	cannot read the images written using the new version.</li>
+	<li>Correlation, regression, kurtosis and maximum voxel results are saved to 
+	a text file. The text file location will be printed to the command prompt.</li>
+	<li>Manual is updated to include additional examples of temporal sorting and 
+	using output regression parameters, as well as statistical analysis of 
+	images using SPM2.</li>
+	<li>Display GUI and setup ICA GUI are changed to minimize the selection 
+	process.</li>
+	<li>Option is provide to calculate stats and event average under Utilities 
+	drop down box.
+	</li>
+</ul>
+
+<hr> <b>GIFT v1.2c with the release date 28 June, 2005: </b>
+<ul>
+	<li>Data-sets can be analyzed with different number of images or scans but 
+	voxel dimensions should be the same. </li>
+	<li>Error checking is done when SPM2 design matrix is loaded. Number of 
+	images of data-set is checked with the nscans field in SPM structure. </li>
+	<li>Regressors specific to session can be selected during temporal sorting. </li>
+	<li>Higher order detrending is provided when the components are sorted 
+	temporally.</li>
+	<li>Multiple Regression step is optimized in sorting components.</li>
+</ul>
+
+<hr><b>GIFT v1.2b with the release date 18, March 2005:</b>
+<ul>
+	<li>Semi-blind ICA algorithm created by Vince Calhoun is added to the 
+	toolbox.</li>
+	<li>Data reduction step is optimized in the ICA analysis step. Estimating 
+	components and the group ICA run faster than the previous version.</li>
+	<li>New user interface is provided to select the reference functions while 
+	sorting the components.</li>
+	<li>After the components are temporally sorted using Multiple Regression as 
+	sorting criteria, ICA Time courses can be adjusted by right clicking on the 
+	axis. ICA time courses are adjusted by removing the nuisance parameters and 
+	the regression coefficients other than the selected reference function.</li>
+	<li>In the event related average option is provided to select the reference 
+	function.</li>
+	<li>In batch scripts option is provided to specify one design matrix for all 
+	subjects. Components can be visualized using the Display GUI.</li>
+	<li>Fixed bug in batch scripts when subject folder names with variable 
+	length are specified.</li>
+</ul>
+<hr><b>GIFT v1.2a with the release date 26 November, 2004: </b>
+<ul>
+	<li>New user interface for Setup ICA is provided. ICA parameters and 
+	algorithms can be easily switched. Help button is included adjacent to each 
+	parameter.</li>
+	<li>Event related average for the ICA time course is calculated based on the 
+	onsets of the given SPM model or design matrix.</li>
+	<li>Time course window for multiple subjects and sessions is shown in a new 
+	figure window with a scroll bar.</li>
+	<li>New color maps for the composite viewer are provided. A maximum of five 
+	different color bars are plotted.</li>
+	<li>Batch script with two sample text files is provided. The explanation of 
+	the parameters is given in the help manual.</li>
+	<li>Interactive file selection window is updated to show the number of 
+	selected files and directory history.</li>
+	<li>Regression parameters or the coefficients are written to .mat and .txt 
+	files when the components are sorted with Multiple Regression sorting 
+	criteria.
+	</li>
+</ul>
+<hr><b>GIFT v1.1d with the release date 14 October, 2004 (Released for the ICA 
+Class at the Olin Neuropsychiatry Research Center): </b>
+<ul>
+	<li>Estimating number of independent components from the fMRI data is 
+	included. The number of components estimated is shown to the user before 
+	selecting the number of principal components. </li>
+	<li>HTML Help Manual is provided. When the help button is pressed HTML Help 
+	is opened in the default browser. </li>
+	<li>Maximum Voxel sorting criteria is added to sort components spatially 
+	based on the spatial template selected. </li>
+	<li>Optimal ICA algorithm created by Baoming Hong and Vince Calhoun is 
+	added.
+	</li>
+	<li>Interactive file selection window is added instead of using the spm_get 
+	function. </li>
+</ul>
+<hr><b>GIFT v1.01d with the release date 13 September, 2004</b>:
+<ul>
+	<li>Components can be spatially sorted by using a template image which 
+	contains regions of interest. Sample templates are provided in the folder 
+	'icatb_templates' with names 'LeftTemplate.img' and 'RightTemplate.img'.</li>
+	<li>All the analysis information is stored in a log file which ends with 
+	'_results.log'. This file gets appended every time when you run the analysis 
+	with the same prefix for the output files.</li>
+	<li>The parameters involved in the ICA and PCA step are shown to the user 
+	when the subject files are already selected.</li>
+	<li>Scroll bar is provided for the edit and pop up controls in the input 
+	dialog box for selecting the ICA options.</li>
+	<li>Any error occurring during setting up the analysis, running the analysis 
+	or displaying the results is shown to the user.</li>
+	<li>Fixed bug with correlation sorting criteria - When 'temporal' is 
+	selected in 'Select Sorting Type' option and 'Select All Subjects and 
+	Sessions' is selected in 'What do you want to sort?' option.</li>
+	<li>Horizontal scroll bar in all the dialog boxes is turned off.</li>
+</ul>
+<hr><b>GIFT v1.01c with the release date 20 August, 2004</b>:
+<ul>
+	<li>Number of partitions option in Setup ICA Analysis is turned off.</li>
+	<li>Normalize model time course checkbox option removed for the components 
+	that are not sorted in the figure window which will be displayed when 
+	clicked on the time course window.</li>
+	<li>Defaults in the 'icatb_defaults.m' file are applied to display GUI 
+	window. Option is provided to the user to change the defaults. Time courses 
+	can be smoothed by replacing the parameter 'SMOOTHPARA' from 'no' to 'yes' 
+	and the value can be changed by giving different values to 'SMOOTHINGVALUE' 
+	parameter in 'icatb_defaults.m' file.Four options for detrending time 
+	courses are provided in case of sorting with the Multiple Regression sorting 
+	criteria. </li>
+	<li>The 'DETRENDNUMBER' parameter in 'icatb_defaults.m' file can be changed 
+	from '0' to '3' depending on the type of detrending you want to do. Comments 
+	are included in the 'icatb_defaults.m' file which explains what 
+	'DETRENDNUMBER' means.</li>
+</ul>
+<hr><b>GIFT&nbsp; v1.01b with the release date 28 July, 2004</b>:
+<ul>
+	<li>Fixed bug for the components to be sorted when you use combination of 
+	&quot;No design matrix&quot; in the Setup ICA Analysis and &quot;select model for every 
+	subject&quot; in Sort Components GUI. New dialog boxes for showing the directions 
+	about the toolbox.</li>
+	<li>New input dialog box for ICA algorithms which can incorporate any number 
+	of inputs from the user.</li>
+	<li>Detrend is done prior to concatenation of the time courses in sorting 
+	components.</li>
+	<li>Line fit is shown along with the model and ICA time courses for Multiple 
+	Regression sorting criteria. Help button which explains how to use Group ICA 
+	Toolbox.</li>
+	<li>Status bar in the run analysis button which shows how much percentage of 
+	the analysis is done.ICA algorithms like Simbec, Evd, Jade Opac and Amuse 
+	are included in compiled version.</li>
+	<li>Option for selecting one regressor or multiple regressors is removed in 
+	sorting components GUI. </li>
+</ul>
+<hr>
+
+</body>
+
+</html>

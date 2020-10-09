@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+<h4>MEX Files</h4>
+<hr>
+
+
+<p> <strong>Group ICA MEX binaries </strong> </p>
+
+<p> 
+We now provide C-MEX files for computing eigen values of a symmetric
+matrix. The compiled MEX binaries are used only when you select
+packed storage scheme for computing covariance matrix during the
+second or third data reduction stage. To compile the MEX source
+code, type icatb_compile_mex_files at the MATLAB command
+prompt. The source code is located in icatb/icatb_mex_files/src.
+
+</p>
+
+
+<p> <strong>SPM MEX binaries</strong></p>
+
+<p>
+We use SPM volume functions to read and write image data and prefix
+those files with icatb_. Since SPM5 writes analyze images
+with a Nifti field in it, we use SPM2 functions to write analyze
+images. If you get "Bad image handle dimensions" error while loading
+the data follow any of the instructions below:
+
+<ul>
+
+<li> Run script icatb_copy_spm_binaries.m to copy the
+appropriate SPM MEX binaries. This script will take into account the
+MATLAB version and the Operating Systems like Windows and Linux 64
+bit. After the copying is done, restart MATLAB.</li>
+
+<li> Manually copy SPM MEX binaries to the appropriate SPM version
+directories in GIFT. Please see below:
+
+<ul>
+
+<li> Copy SPM2 MEX binaries like spm_list_files.mexext, spm_sample_vol.mexext, spm_slice_vol.mexext 
+to the directory icatb/icatb_spm2_files and prefix them with icatb_.</li>
+
+<li> Copy SPM5 MEX binaries like mat2file.mexext, spm_sample_vol.mexext, spm_slice_vol.mexext 
+to the directory icatb/icatb_spm5_files and prefix them with icatb_.</li>
+
+
+<strong>Note:</strong> mexext is the MEX file extension on your
+Operating System. Type mexext on the MATLAB command window to
+get the MEX file extension on the Operating System you are working
+on.
+
+</ul>
+
+</li>
+
+</ul>
+
+</p>
+<hr>
+
+</body>
+
+</html>
