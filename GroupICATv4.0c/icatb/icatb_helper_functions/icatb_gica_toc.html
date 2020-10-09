@@ -1,0 +1,116 @@
+﻿<html>
+
+<head>
+<title> Group ICA Results </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="./style.css">
+<!-- Include Javascript -->
+
+<script type="text/javascript">
+
+/* List tree */
+function listTree(section)
+{
+	if(document.getElementById(section).style.display == 'none')
+	{
+		document.getElementById(section).style.display = 'inline';
+		document.getElementById('img' + section).src = 'minus.gif';
+	}
+	else
+	{
+		document.getElementById(section).style.display = 'none';
+		document.getElementById('img' + section).src = 'plus.gif';
+	}
+}
+/* End for listing tree */
+
+</script>
+
+<!-- End for including Javascript -->
+
+</head>
+
+
+<body>
+
+<h4> Table Of Contents </h4>
+
+<p>
+
+<!-- sDFNC Results  -->
+<a href="javascript:listTree('GICA');">&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./minus.gif" border="0" id="imgGICA">&nbsp;&nbsp;&nbsp;
+</a>
+
+Group ICA Results
+<br />
+<font  id="gica" style="display: inline">&nbsp;&nbsp;&nbsp;
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- ICA Parameters -->
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="introduction.html" target="rightframe"> Group ICA Parameters</a> <br> 
+<!-- End for Group ICA results -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Group ICA results -->
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="mean_comp.html" target="rightframe"> Mean ICA Components</a> <br> 
+<!-- End for Group ICA results -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Spectral Summary -->
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="spectral_summary.html" target="rightframe"> Spectral Summary</a> <br> 
+<!-- End for spectral summary -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Temporal sorting -->
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="temporal_sort.html" target="rightframe"> Temporal sorting</a> <br> 
+<!-- End for temporal sorting -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Kurtosis Info -->
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="kurtosis_info.html" target="rightframe"> Kurtosis Info</a> <br> 
+<!-- End for kurtosis Info -->
+
+
+<!-- FC Results -->
+<a href="javascript:listTree('FCResults');">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./minus.gif" border="0" id="imgFCResults">&nbsp;&nbsp;&nbsp;
+</a>
+
+Functional Connectivity Results
+<br />
+<font  id="FCResults" style="display: inline">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Mean FC -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="fnc_timecourses.html" target="rightframe"> FNC of Timecourses</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Ttest -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="fnc_spatial_maps.html" target="rightframe">FNC of spatial maps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+</font>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+</font>
+
+</p>
+
+</body>
+
+</html>
