@@ -35,10 +35,10 @@ function [ICOutMax, TCMax] = icatb_gigicar(FmriMatr, ICRefMax)
 %written by Yuhui Du, CAS. 2012.
 
 %Input:
-%FmriMatr is the observed data with size of timepoints*voxelvolumsÂ£Â»
+%FmriMatr is the observed data with size of timepoints*voxelvolums£»
 %ICRefMax includes the reference signals;
 
-%OutputÂ£Âº
+%Output£º
 %ICOutMax includes the estimated ICs;
 %TCMax is the obtained mixing matrix;
 
