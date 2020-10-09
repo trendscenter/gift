@@ -1,0 +1,131 @@
+﻿<html>
+
+<head>
+<style>
+A:link {text-decoration: none}  
+A:visited {text-decoration: none}  
+</style>
+<title> sDFNC Results </title>
+<!-- Include Javascript -->
+
+<script type="text/javascript">
+
+/* List tree */
+function listTree(section)
+{
+	if(document.getElementById(section).style.display == 'none')
+	{
+		document.getElementById(section).style.display = 'inline';
+		document.getElementById('img' + section).src = 'minus.gif';
+	}
+	else
+	{
+		document.getElementById(section).style.display = 'none';
+		document.getElementById('img' + section).src = 'plus.gif';
+	}
+}
+/* End for listing tree */
+
+</script>
+
+<!-- End for including Javascript -->
+
+</head>
+
+
+<body>
+
+<h4> Table Of Contents </h4>
+
+<p>
+
+<!-- sDFNC Results  -->
+<a href="javascript:listTree('sDFNC');">&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./minus.gif" border="0" id="imgsDFNC">&nbsp;&nbsp;&nbsp;
+</a>
+
+sDFNC Results
+<br />
+<font  id="sDFNC" style="display: inline">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- T-map results -->
+<img align ="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="tmaps.html" target="rightframe"> T-maps</a> <br> 
+<!-- End for T-map results -->
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- FC Results -->
+<a href="javascript:listTree('FCResults');">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./minus.gif" border="0" id="imgFCResults">&nbsp;&nbsp;&nbsp;
+</a>
+
+Functional Connectivity Results
+<br />
+<font  id="FCResults" style="display: inline">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Mean FC -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="mean_fc.html" target="rightframe"> Mean Of Std of FC</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Ttest -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="ttest_fc_win.html" target="rightframe">T-test at each window</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- KLD -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="kld.html" target="rightframe">KL Divergence</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Median test -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="median_test.html" target="rightframe">Median tests</a><br />
+
+
+</font>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+<!-- Cluster states -->
+<a href="javascript:listTree('ClusterStates');">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="top" src="./minus.gif" border="0" id="imgClusterStates">&nbsp;&nbsp;&nbsp;
+</a>
+
+Cluster States
+<br />
+<font  id="ClusterStates" style="display: inline">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Average States -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="avg_states.html" target="rightframe"> Average FC Of States</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Histogram of each state -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="hist_fc_states.html" target="rightframe">Histograms Of States</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<!-- Transition Matrix -->
+<img align="top" src="./treeview.gif" border="0">&nbsp;&nbsp;&nbsp;
+<a href="tm_states.html" target="rightframe">Transition Matrix</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+</font>
+
+</font>
+
+</p>
+
+</body>
+
+</html>
