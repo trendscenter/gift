@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4>Time course options</h4>
+<hr>
+
+<p>When you click on "Time course Options" sub menu in <a href="icatb_expanded_view_tc.htm">"Options Menu"</a>, options window (See 
+Figure 1) appears with the defaults used from the 'icatb_defaults.m'. There are 
+three categories in the left list box like 'Model Time course', 'ICA Time course' 
+and 'Event Average'. 
+</p>
+
+<p>The explanation of each option in the list box is explained below:</p>
+<dl>
+<dt> 'Model Time course'</dt>
+<dd> 'Normalize Model Timecourse' - Model time course is normalized and ICA time course is used as a reference. </dd>
+<dd> 'Linear detrend Model Time course' - Linear trend is removed in model time course. </dd>
+<dt> 'ICA Time course' </dt>
+<dd> 'Detrend Number' - ICA time course is <a href="icatb_detrend.htm">detrended</a> with the number specified in popup control.</dd>
+<dd> 'Flip ICA Time course' - ICA time course is flipped. </dd>
+<dd> 'Smoothing Parameter' - ICA time course is smoothed if the option is set to 'Yes'.</dd>
+<dd> 'Smoothing Value' - ICA time course is smoothed using the value specified in edit control.</dd>
+<dt> <a href="icatb_event_average.htm">Event Average </a> </dt>
+<dd> 'Window size in seconds' - Window size to display the event average of ICA time course.</dd>
+<dd> 'Interpolation factor' - Factor to interpolate the ICA time course. </dd>
+</dl>
+
+<p>The function of each button in the figure window is shown below:</p>
+<dl>
+<dt> <em>OK </em> </dt>
+<dd> The values in the controls are used and the time courses are plotted in the <a href="icatb_expanded_view_tc.htm">expanded view time course </a>plot.</dd>
+<dt> <em>Cancel </em> </dt>
+<dd> Figure window will be used with the previous selected values </dd>
+<dt> <em>Defaults</em> </dt>
+<dd> Defaults will be used from 'icatb_defaults.m' file. </dd>
+</dl>
+
+<p class="style1">Figure 1: Time course options window</p>
+<p class="style1"> <img src="images/icatb_options_window.jpg"></p>
+
+<p>
+<b>Note: </b>Both the model time course and ICA time course mean are removed 
+during temporal sorting. </p>
+<hr>
+
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4> ICA </h4>
+
+<hr>
+<p>The ICA algorithm chosen is an user-specified parameter (See
+<a href="icatb_setup_ica.htm">Setup ICA</a>). Depending upon the algorithm chosen, ICA options window pops up 
+showing the options available to that algorithm. For explanation of some of the 
+algorithms implemented in GIFT and how ICA options effect the ICA process see 
+section 3.2 in the <a href="http://icatb.sourceforge.net">manual</a>. </p>
+
+<p>The reduced data-set from the <a href="icatb_data_reduction.htm">data 
+reduction step</a> is used and ICA is applied to reveal independent components. 
+The components (see Figure 1) represent group components.</p>
+
+<p>Figure 1: ICA applied on reduced data-set of the group</p>
+<p class="style1"><img border="0" src="images/icatb_calculate_ica.jpg"></p>
+<p> <b>Calculation involved in ICA step:</b></p>
+<p>After the ICA algorithm is applied in GIFT, 
+weights and activations are stored for future use in
+<a href="icatb_back_reconstruct.htm">back reconstruction</a> step. These are stored 
+in .mat files with suffix as '_ica'.</p>
+<hr>
+
+</body>
+
+</html>

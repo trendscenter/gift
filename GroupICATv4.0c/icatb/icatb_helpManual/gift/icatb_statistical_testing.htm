@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+<h4> Statistical testing of images and time courses </h4>
+<hr>
+<p><b>Two Sample t-test of Component Images</b></p>
+ <p>Two sample <i>t</i>-test can be used to compare a component image between 
+	subjects or sessions. For example for a particular component image session 1 
+	can be treated as group1 and session 2 as group2. You can use these images 
+	in SPM to do two sample <i>t</i>-test (<a href="icatb_references.htm">[3]</a>, 
+	pp 12-14).</p>
+ <p><b>Regression Parameters</b></p>
+        <p>After performing temporal sorting, the regression parameters are 
+		saved in a file with suffix &quot;regression.txt&quot;. This file can be quite 
+		useful in performing statistical tests to evaluate the task-relatedness 
+		of the components or to perform tests between components or groups. The 
+		text&nbsp; file contains a number for each component, regressor, subject 
+		and session (Table 1). The numbers represent the fit parameter from the 
+		regression. In order to use these numbers it is important to scale the 
+		ICA data. For example, if 10 subjects were analyzed with ICA and two 
+		regressors were used to sort, then one can test the degree to which the 
+		average amplitude of group 1 was greater than the average amplitude of 
+		group 2 by computing a two-sample t-test between the 10 parameters for 
+		group 1 and the 10 parameters for group 2. A separate test can be done 
+		for each component and the component which show a significant difference 
+		can be determined.</p>
+        <p class="style1"><b>Table 1:</b> Table shows two sorted components 
+		parameters. Regression values for each component are shown followed by 
+		the beta weight of each condition with the ICA time course.</p>
+        <center>
+        <table border="2">
+          <tr>
+            <td width="33%">Component Numbers</td>
+            <td width="33%">14 </td>
+            <td width="34%" >13</td>
+          </tr>
+          <tr>
+            <td width="33%" >Regression Values</td>
+            <td width="33%" >0.82740899</td>
+            <td width="34%" >0.74477757</td>
+          </tr>
+          <tr>
+            <td width="33%" >Subject 1 Sn(1) left*bf(1)</td>
+            <td width="33%" >-0.052490765</td>
+            <td width="34%" >1.6484661</td>
+          </tr>
+          <tr>
+            <td width="33%" >Subject 1 Sn(1) right*bf(1)</td>
+            <td width="33%" >1.4887159 </td>
+            <td width="34%" >0.13184605</td>
+          </tr>
+          <tr>
+            <td width="33%" >Subject 2 Sn(1) left*bf(1)</td>
+            <td width="33%" >0.12544365</td>
+            <td width="34%" >1.0076309</td>
+          </tr>
+          <tr>
+            <td width="33%" >Subject 2 Sn(1) right*bf(1)</td>
+            <td width="33%" >1.6412895</td>
+            <td width="34%" >0.75554373</td>
+          </tr>
+          <tr>
+            <td width="33%" >Subject 3 Sn(1) left*bf(1)</td>
+            <td width="33%" >-0.35264506</td>
+            <td width="34%" >1.5612781</td>
+          </tr>
+          <tr>
+            <td width="33%" >Subject 3 Sn(1) right*bf(1)</td>
+            <td width="33%" >1.3959309</td>
+            <td width="34%" >-0.0077817872</td>
+          </tr>
+        </table>
+        </center>
+      <p> &nbsp;We have now provided
+		<a href="icatb_stats_on_beta_weights.htm">GUI</a> for doing statistics 
+		on time courses (beta weights) under 
+		<a href="icatb_getting_started.htm">Utilities</a> drop down box. </p>
+      <hr>
+</body>
+</html>

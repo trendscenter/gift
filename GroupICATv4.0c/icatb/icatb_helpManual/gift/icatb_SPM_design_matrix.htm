@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<body>
+<h4> SPM Design Matrix </h4>
+<hr> 
+SPM design matrix contains information about the time courses and onsets for the 
+regressors. Multiple regression and correlation sorting criteria in GIFT use SPM 
+design matrix to sort components temporally. The SPM design matrix filename 
+selected is in .mat format. Type load filename at the MATLAB command prompt to 
+view the SPM structure. GIFT uses the following fields in SPM structure:
+      <dl>
+      <dt> nscan </dt>  
+      <dd> Refers to the number of scans. For multiple sessions, nscan should 
+		look be a row vector like [110 110 ... 110]. 
+      <dt> xX.X </dt>
+      <dd> Contains regressor time courses of dimension m by n where m is sum of 
+		scans over sessions and n (length of SPM.xX.name) is number of 
+		regressors.
+      <dt> xX.name </dt>
+      <dd> Contains the regressor names in a cell array. Number of regressors is 
+		equal to length of cell array. </dd>
+      <dt> xY.RT </dt>
+      <dd> Refers to the repetition time (TR). </dd>
+      <dt> xBF.UNITS </dt>
+      <dd> Refers to units in seconds or scans. </dd>
+      <dt> Sess </dt>
+      <dd> Contains information like onsets. Length of SPM.Sess is equal to the 
+		number of sessions (length of SPM.nscan).</dd>            
+       </dl>   
+How SPM structure should look like for one session and multiple sessions are 
+discussed below: 
+      <dl>
+      <dt> One Session </dt>
+      <dd> SPM.nscan should be a number. Length of SPM.Sess structure should be 
+		one. </dd>
+      <dt> Multiple Sessions </dt>
+      <dd> SPM.nscan should be a row vector or a single number equal to the sum 
+		of SPM.nscan. Length of SPM.Sess should be equal to length of SPM.nscan.</dd>
+      </dl>
+      
+      <b>Note: </b>GIFT pulls session specific regressors only when the 
+regressor names contain the session number like Sn(1) 
+right_visual_hemisphere*bf(1) where 1 after Sn( refers to the session number.
+      <hr>
+</body>
+</html>

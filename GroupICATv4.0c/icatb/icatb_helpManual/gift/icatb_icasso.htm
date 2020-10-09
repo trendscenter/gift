@@ -1,0 +1,58 @@
+<html>
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>   
+<h4>ICASSO </h4>  
+      <hr> <a href="http://www.cis.hut.fi/projects/ica/icasso/">ICASSO</a> 
+toolbox is used in GIFT to determine the reliability of ICA algorithm. ICA 
+algorithm is run several times to determine the algorithmic reliability or 
+stability. Reliable estimates correspond to tight clusters and un-reliable ones 
+do not point to any cluster. Figure 1 will open when you click on 
+<a href="icatb_getting_started.htm"> Utilities</a> drop down box and select 
+&quot;ICASSO&quot;. The parameters in the figure are as follows:
+<ul>
+<li>Select Mode - Options available are 'RandInit', 'Bootstrap' and 'both'. The 
+explanation of each option is given below:
+<ul>
+<li> RandInit - Algorithm starts with different initial values. </li>
+<li> Bootstrap - Bootstrap technique is used.</li>
+<li> Both - Uses both 'RandInit' and 'Bootstrap' options. </li>
+</ul>
+</li>
+
+<li> Select number of ICA runs - Number of times ICA algorithm will be run.
+</li>
+</ul>
+
+
+ICASSO results are written to a MAT file with suffix '_icasso_results.mat'. This 
+MAT file contains the following variables:
+<ul>
+<li> iq - Stability index. </li>
+<li> sR - Variable containing information about similarity measure, clustering 
+and projection. </li>
+<li> A - Mixing matrix. </li>
+<li> W - Un-mixing matrix. </li>
+<li> S - Source signal. </li>
+</ul>
+
+We use centroid of the cluster for each component instead of the average of the 
+individual ICA runs as it is more stable. After the ICASSO step is completed, 
+subsequent group ICA analysis steps like Back Reconstruction, Scaling Components 
+and Group Stats are run.
+
+
+      <p class="style1">Figure 1: GUI for running ICASSO.</p>
+      <p class="style1"> <img src="images/icatb_icasso_gui.jpg"></p>
+      <hr>
+</body>
+</html>

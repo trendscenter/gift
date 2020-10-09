@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+<h4> Temporal Sorting </h4>
+<hr> 
+
+<p> Temporal sorting is a way to compare the model's time course with the ICA 
+time course. GIFT provides three ways of entering the regressors. The method of 
+entering regressors is determined by the global variable 
+METHOD_ENTERING_REGRESSORS in &quot;icatb_defaults.m&quot; file. The values for that 
+variable are as follows: </p>
+
+<ul>
+<li> 'AUTOMATIC' - Regressors are pulled from 'SPM.mat' file. Session related 
+regressors will be used for 'Different regressors for sessions' or 'Different 
+regressors for subjects and sessions'.
+</li>
+
+<li> 'BATCH' - Regressors can be entered through a text file by specifying the 
+path in TXTFILE_REGRESSORS variable. This way of entering the regressors is 
+useful for large data-sets and each subject having a separate design matrix.
+</li>
+
+<li> 'GUI' - GUI will open to select the regressors. </li>
+</ul>
+
+<p> Select 'Temporal' option in <a target="_self" href="icatb_sorting_components.htm">
+Sorting GUI</a> and use SPM design matrix for the model time course. Figure 2 
+shows the sorted components using Multiple Linear Regression sorting criteria. 
+Here right and left visual are selected as the model time courses (Figure 1) for 
+the visuomotor task (See <a target="_self" href="icatb_appendix.htm"> 
+Experimental Paradigms </a>). The time course window can be viewed in a separate 
+<a href="icatb_expanded_view_tc.htm">figure </a>(Expanded view of time course) 
+if clicked on the time course plot. Expanded view of time course window has 
+features like 
+<a href="icatb_event_average.htm">event average</a>, 
+<a href="icatb_split_tc.htm">splitting time courses</a>, 
+<a href="icatb_adjust_ica.htm">adjusting ICA time course</a> and Fast Fourier 
+Transform.</p>
+
+<p class="style1">Figure 1: Reference time courses</p>
+<p class="style1"> <img src="images/icatb_model_timecourse.jpg"> </p>
+<p class="style1"> Figure 2: Sorted components using temporal sorting </p>
+<p class="style1"> <img src="images/icatb_temporal_sorting_MLR.jpg"> </p>
+
+<hr>
+</body>
+</html>

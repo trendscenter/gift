@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+<h4> File Selection Window </h4>
+<hr>
+<p>Interactive figure window can be used to 
+select a directory, file or files for performing the group ICA. The steps 
+involved are explained below where the button names are shown in italic for your 
+convenience.</p>
+<p class="style1" align="center">
+Figure 1: File selection window</p>
+<p class="style1" align="center">
+<img border="0" src="images/icatb_file_selection_window.jpg"></p>
+<dl>
+  <dt>Directory text box </dt>
+  <dd>Shows the current directory or you can edit the text box. When enter key 
+	is pressed the sub-folders are displayed on the left list box and also the 
+	files or folders are displayed on the right list box. </dd>
+    <dt>Directory History </dt>
+<dd> Shows the history of the directories recently visited in the MATLAB along 
+with the path for the GIFT. Option is provided in 'icatb_defaults.m' file to 
+store the directories where data is located. If you wish not to store the 
+information leave the default of the variable STORE_DIRECTORY_INFORMATION as 
+'No'. When the variable is changed to 'Yes' the directories entered in the curly 
+brackets are stored in the figure window.</dd> 
+    <dt><i>Back </i></dt>
+  <dd>
+  Returns to the previous folder in the same drive. </dd>
+    <dt><i>Filter </i></dt>
+    <dd> Resets the filter text box to *.</dd>
+    <dt>Filter text box </dt>
+  <dd>Filters files based on the text entered. If you want to list files with 
+	different patterns, separate them with semi-colon as delimiter.</dd>
+  <dt>File numbers text box </dt>
+<dd> Text box used to enter the file numbers for a 4D Nifti file. </dd>
+   <dt>Drives </dt>
+  <dd>Shows the drives available for the Windows operating system. For other operating systems the root directory is displayed.
+    <dt>Sub-folders list box</dt>
+  <dd>Sub-folders are shown in the left list box. </dd>
+    <dt>Files or sub-folders list box </dt>
+  <dd>Files in the current directory are shown in the right list box with the 
+	number of files listed in square brackets like [1:20] where 20 refers to the 
+	number of files for that prefix. In case of directory selection, sub-folders 
+	in the current directory will be displayed. </dd>
+  <dt> <i> Ed </i></dt>
+  <dd> Button used to edit the files</dd>
+    <dt><i>Reset </i></dt>
+  <dd>Refreshes the drives in the Windows operating system and deselects all the 
+	files previously selected. </dd>
+    <dt><i>Expand </i></dt>
+  <dd>By default files are shown in prefix mode. <i>Expand</i> button is used to 
+	list files with their original names.</dd> 
+      <dt><i>Select-All </i></dt>
+  <dd>Selects all the files in the current working directory depending on the 
+	filter specified. </dd>
+    <dt><i>OK </i></dt>
+  <dd>Once the entries on the right list box are selected, press 
+  <i>OK</i> to select the entries.  </dd>
+</dl>
+<p>
+<b>Note:</b> When a directory or a ICA parameter file is to be selected, the 
+right list box mode is set to inactive after the first selection. In order to 
+select a different file or directory <i>Reset </i>button should be used.</p>
+<hr>
+
+</body>
+
+</html>

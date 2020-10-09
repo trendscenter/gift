@@ -1,0 +1,66 @@
+<html>
+
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4>Scaling Components </h4>
+
+<hr>
+<p>For each data-set, the component images are compared with a reference image 
+like aggregate ICA image. The signs of the component images will be reversed 
+accordingly. The image maps and time courses of components have arbitrary units 
+after the <a href="icatb_back_reconstruct.htm">back reconstruction</a> 
+step and is the motivation for adding scaling step in GIFT. Presently there are 
+two scaling steps like Percent Signal Change and Z-scores. </p>
+
+<p> <b> Percent signal change </b>: The procedure for scaling individual subject 
+component images and time courses is given below: </p>
+
+<ul>
+<li> Top five voxel values are determined from the component image. 
+Corresponding time courses are obtained from the original subject's functional 
+data using the voxel indices. </li>
+
+<li>This data is scaled to a factor 100 times the ratio of the original time 
+course with the mean of that time course for that voxel.</li>
+
+<li> For each voxel (from the top five voxels of the component), component time 
+course is fit to the scaled original time course using Multiple Regression. A 
+weighted mean is taken using the weights of the top five voxels and voxel values 
+for that component. </li>
+
+<li> The component time course is scaled by multiplying component time course 
+with the weighted mean.</li>
+
+<li> The component images are scaled by a factor using the absolute value of the 
+ratio of the weighted mean with the maximum voxel value. </li>
+
+</ul>
+
+<p class="style1"> Figure shows how calibration is done for a particular 
+component: </p>
+
+<p class="style1"> <img border="0" src="images/icatb_percent_signal_change.jpg"></p>
+
+<p> <b> Z-Scores </b>: The component images and time courses are scaled to 
+Z-scores. For each component, the time courses and spatial maps are divided with 
+the their standard deviation. Figure below shows conversion to Z-scores:</p>
+
+<p class="style1"> <img border="0" src="images/icatb_z_scores.jpg"></p>
+
+<hr>
+
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4> Back Reconstruction </h4>
+<hr>
+<p> Back reconstruction step is used to separate individual data-set components from 
+the aggregate set of components calculated from the <a href="icatb_calculate_ica.htm">calculate 
+ICA</a> step. Figure shows the process involved in back reconstruction step. </p>
+
+<p class="style1"> <img border="0" src="images/icatb_back_reconstruct.jpg"> </p>
+<p><strong>Calculation involved in back reconstruction step:</strong></p>
+<p>Back reconstruction uses information from the <a href="icatb_data_reduction.htm">data reduction</a> and the
+<a href="icatb_calculate_ica.htm">ICA</a> 
+steps to reconstruct individual subject spatial maps and time courses. Spatial 
+map is calculated by multiplying weights matrix and product of whitening matrix with 
+the data. Time courses&nbsp;can be calculated by taking the product of dewhitening matrix with the pseudo inverse of weights matrix. These are saved as 
+.mat files with suffixes as '_ica_br*' where * refers to the data-set count.</p>
+<p>After the components are reconstructed, the units of spatial maps and time 
+courses are in arbitrary units. The component maps and time courses can be 
+scaled using <a href="icatb_scaling_components.htm">scaling components </a>step.</p>
+<hr>
+
+</body>
+
+</html>

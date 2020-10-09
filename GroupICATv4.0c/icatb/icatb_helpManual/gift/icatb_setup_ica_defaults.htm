@@ -1,0 +1,147 @@
+<html>
+
+<head>
+<title>Group ICA Toolbox Help</title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h4>Setup ICA Defaults</h4>
+<hr>
+<p>The explanation of hidden user interface controls is as follows:</p>
+<dl>
+
+
+<dt> Select Type Of Data Pre-processing - Data is pre-processed prior to the 
+first data reduction. Options are discussed below.</dt>
+
+<dd> 'Remove Mean Per Timepoint' - At each time point, image mean is removed. </dd>
+<dd> 'Remove Mean Per Voxel' - Time-series mean is removed at each voxel.</dd>
+<dd> 'Intensity Normalization' - At each voxel, time-series is scaled to have a 
+mean of 100. Since the data is already scaled to percent signal change, there is 
+no need to scale the components.</dd>
+<dd> 'Variance Normalization' - At each voxel, time-series is linearly detrended 
+and converted to Z-scores.</dd>
+
+	<dt>What Mask Do You Want to Use? </dt>
+	<dd>Default Mask
+	<ul>
+		<li>Mask is calculated using all the files for subjects and sessions or 
+		only the first file for each subject and session depending upon the 
+		variable DEFAULT_MASK_OPTION value in defaults. Boolean AND operation is 
+		done to include the voxels that surpass the mean of each subject's 
+		session. </li>
+	</ul>
+	</dd>
+	<dd>Select Mask<ul>
+		<li>Masks must be in Analyze or Nifti format.</li>
+	</ul>
+	</dd>
+	
+	
+<dt> Select Type Of PCA</dt>
+<dd> There are three options like 'Standard' , 'Expectation Maximization' and 
+'SVD'. 
+Optional parameters for PCA are provided. Please see 
+<a href="../icatb_pca_options.htm">PCA options</a> 
+page. </dd>
+<dt> Select The Back-Reconstruction Type</dt>
+	<dd>Options available are GICA, Regular (GICA2), GICA3 and Spatial-temporal 
+	regression. GICA2 and GICA3 are not not shown in the GUI but can be called 
+	in the batch script. GICA is a more robust tool to back reconstruct 
+	components when compared to GICA2 and GICA3 for low model order.</dd>
+	<ul>
+	<li> GICA - GICA uses PCA whitening and dewhitening information to back 
+	reconstruct the component maps and timecourses (<a href="icatb_references.htm">[1]</a>).</li>
+<li> Spatial-temporal Regression - Back reconstruction is done using a two step 
+multiple regression (<a href="icatb_references.htm">[3]</a>). In the first step, 
+aggregate component spatial maps are used as basis functions and projected on to 
+the subject's data resulting in subject component time courses. In the second 
+step, subject component time courses are used as basis functions and projected 
+on to the subject's data resulting in component spatial maps for that subject. </li>
+
+</ul>
+
+<dd>
+<strong>Note:</strong>
+<ul>
+	<li>GICA, GICA2 timecourses are similar to the timecourses obtained using 
+	Spatial-temporal Regression.</li>
+	<li>Spatial maps obtained using GICA2 are exactly equal to the GICA3 method.</li>
+	<li>All the back reconstruction methods give the same spatial maps and 
+	timecourses for one single subject single session analysis.</li>
+	<li>GICA and Spatial-temporal Regression component timecourses are 
+	equivalent when 100% variance is retained in the first step PCA.</li>
+</ul>
+	</dd>
+	<dt> Do You Want To Scale Components? </dt>
+	<dd>Scale To Original Data(%)	
+	<ul>
+		<li>Scales components to represent percent signal change. Explanation of 
+		calibrating components to percent signal change is given in 
+		<a href="icatb_scaling_components.htm">scaling components</a> section.</li>
+	</ul>
+	</dd>
+	<dd>Z-scores<ul>
+		<li>Component images and time courses are divided by their standard 
+		deviation.</li>
+	</ul>
+	</dd>
+	
+	<dd>Scaling in Timecourses<ul>
+		<li>Spatial maps are normalized using the maximum intensity value and 
+		the maximum intensity value is multiplied to the timecourses.</li>
+	</ul>
+	</dd>
+
+	<dd>Scaling in Maps and Timecourses<ul>
+		<li>Spatial maps are scaled using the standard deviation of timecourses 
+		and timecourses are scaled using the maximum spatial intensity value.</li>
+	</ul>
+	</dd>
+
+	
+<dd> <strong>Note:</strong>	By default, subject component images are centered 
+based on the peak of the distribution. Please see variable CENTER_IMAGES in 
+&quot;icatb_defaults.m&quot;.</dd>
+	<dt>How Many Data Reduction (PCA) Steps Do You Want to Run? </dt>
+	<dd>The number of times you want to do PCA. </dd>
+	<dd><b>Note</b>: The number of <a href="icatb_data_reduction.htm">data 
+	reduction</a> 
+	steps depends on the number of data sets. A maximum of three data reduction 
+	steps is allowed. </dd>
+	<dt>Number of PC to reduce each group into </dt>
+	<dd>Each subject is reduced to the number of principal components selected.
+	<ul>
+		<li>Number of times the prompt strings requesting to enter the PC is 
+		equal to the number of data reduction steps. </li>
+	</ul>
+	</dd>
+	<dd><b>Note</b>:
+	<ol>
+		<li>Always choose a greater number for PC in the first step if you wish 
+		to choose different numbers for the principal components. </li>
+		<li>The number of principle components after the last step of data 
+		reduction (will be disabled as you already entered the number of 
+		independent components) is the same as the number of independent 
+		components you want to extract.
+		</li>
+	</ol>
+	</dd>
+</dl>
+
+<p class="style1"> Figure 1: Setup Defaults menu </p>
+<p class="style1"> <img border="0" src="images/icatb_setup_ica_defaults.jpg"> </p>
+
+<hr>
+
+</body>
+
+</html>

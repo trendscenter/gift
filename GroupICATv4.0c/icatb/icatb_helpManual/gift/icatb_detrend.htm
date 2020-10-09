@@ -1,0 +1,39 @@
+<html>
+
+<head>
+<title> Group ICA Toolbox Help </title>
+<meta http-equiv="Content-Type" content="HTML, DHTML, CSS, XML, XHTML, JavaScript, VBScript; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<body>
+<h4> Detrending </h4>
+<hr>
+
+<p>
+Detrending is used to remove the trend in the data by doing a line fit of 
+nuisance parameters with the data. The order of detrend is determined by the 
+nuisance parameters involved. GIFT uses four orders of detrend for removing the 
+trend from the ICA time course. The nuisance parameters (X) for each order are 
+shown below:</p>
+<dl>
+<dt> Order 0</dt>
+<dd>X contains ones in first column.</dd>
+<dd> </dd>
+<dt> Order 1</dt>
+<dd>X includes ramp function with mean removed in first column and ones in 
+second column. </dd>
+<dd> </dd>
+<dt> Order 2</dt>
+<dd>X includes sine one cycle in first column, cosine one cycle in second 
+column, ramp function with mean removed in third column and ones in fourth 
+column.</dd>
+<dd> </dd>
+<dt> Order 3</dt>
+<dd>X includes sine two cycles in first column, cosine two cycles in second 
+column, sine one cycle in third column, cosine one cycle in fourth column, ramp 
+function with mean removed in fifth column and ones in sixth column.</dd>
+</dl>
+<p><b>Note:</b> The row length equals the data in all the orders.</p>
+<hr>
+</body></html>
