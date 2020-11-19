@@ -53,6 +53,17 @@ end
 setappdata(0, 'group_ica_modality', lower(modalityType));
 
 
+%% Check for bids
+if (strcmpi(modalityType, 'fmri'))
+    if (isfield(inputData, 'bids_info') && ~isempty(inputData.bids_info.root_dir))
+        input_data_file_patterns = icatb_parseBIDS(inputData.bids_info);
+        inputData.input_data_file_patterns = input_data_file_patterns;
+        inputData.dataSelectionMethod = 4;
+        sesInfo.userInput.bids_info = inputData.bids_info;
+    end
+end
+
+
 %% Group ICA type
 if (strcmpi(modalityType, 'fmri'))
     group_ica_type = 'spatial';

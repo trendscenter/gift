@@ -79,35 +79,11 @@ keyword_designMatrix = 'no';
 OnedesignMat = 'C:\MATLAB6p5p2\work\Example Subjects\Visuomotor_data\SPM.mat';
 
 %% Specify BIDS info. Data file patterns is read from the bids structure and input_data_file_patterns variable is skipped
-% bids_info.root_dir = root_dir;
-% bids_info.subjects =;
-% bids_info.sessions =; 
-% bids_info.task =; 
-
-
-%% There are three ways to enter the subject data
-% options are 1, 2, 3 or 4
-dataSelectionMethod = 4;
-
-
-%% Method 4
-% Input data file pattern for data-sets must be in a cell array. The no. of rows of cell array correspond to no. of subjects
-% and columns correspond to sessions. In the below example, there are 3
-% subjects and 1 session. If you have multiple sessions, please see
-% Input_data_subjects_2.m file.
-input_data_file_patterns = {'C:\MATLAB6p5p2\work\Example Subjects\Visuomotor_data\sub01_vis\ns*.img';
-    'C:\MATLAB6p5p2\work\Example Subjects\Visuomotor_data\sub02_vis\ns*.img';
-    'C:\MATLAB6p5p2\work\Example Subjects\Visuomotor_data\sub03_vis\ns*.img'};
-
-% Input for design matrices will be used only if you have a design matrix
-% for each subject i.e., if you have selected 'diff_sub_diff_sess' for
-% variable keyword_designMatrix.
-input_design_matrices = {};
-
-% Enter no. of dummy scans to exclude from the group ICA analysis. If you have no dummy scans leave it as 0.
-dummy_scans = 0;
-
-%%%%%%%% End for Method 4 %%%%%%%%%%%%
+bids_info.root_dir = 'C:\bids';
+bids_info.subjects = {}; % Cell string of subject ids or leave empty to select all
+bids_info.sessions = {}; % Cell string of sessions or leave empty to select all
+bids_info.tasks = {}; % Cell string of tasks or leave empty to select all
+bids_info.derivatives_dir = ''; % Derivatives directory
 
 %% Enter directory to put results of analysis
 outputDir = 'D:\test_GIFT\batch_results';
