@@ -37,6 +37,8 @@ defaults.coreg.write.mask        = 0;
 
 eoptions = defaults.coreg.estimate;
 
+coregRefImage = chkImage(coregRefImage);
+
 tmp_files = icatb_rename_4d_file(coregSourceImage);
 
 coregSourceImage = deblank(tmp_files(1, :));
@@ -129,3 +131,18 @@ end
 resliced_files = char(resliced_files);
 
 fprintf('Done\n');
+
+
+function coregSourceImage = chkImage(coregSourceImage, outDir)
+
+if (~exist('outDir', 'var') || isempty(outDir))
+    outDir = tempdir;
+end
+
+coregSourceImage_tmp = icatb_parseExtn(coregSourceImage);
+if ~isempty(regexpi(coregSourceImage_tmp, '.*\.nii\.gz$'))
+    coregSourceImage = gunzip(coregSourceImage_tmp, outDir);
+end
+
+tmp_files = icatb_rename_4d_file(coregSourceImage);
+coregSourceImage = deblank(tmp_files(1, :));
