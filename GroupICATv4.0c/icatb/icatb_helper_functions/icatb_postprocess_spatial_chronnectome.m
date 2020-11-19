@@ -15,6 +15,7 @@ end
 
 
 kmeans_init = 'none';
+use_tall_array = 'no';
 
 if (~isstruct(param_file))
     load(param_file);
@@ -38,6 +39,11 @@ if (~isstruct(param_file))
     
     try
         kmeans_init = answers.kmeans_init;
+    catch
+    end
+    
+    try
+        use_tall_array = answers.use_tall_array;
     catch
     end
     
@@ -94,6 +100,11 @@ else
     catch
     end
     
+    try
+        use_tall_array = schronnInfo.postprocess.use_tall_array;
+    catch
+    end
+    
 end
 
 outputDir = schronnInfo.outputDir;
@@ -121,6 +132,9 @@ catch
 end
 
 
+variableToLoad = 'dynamic_coupling_maps';
+
+
 for nComps = 1:numComps
     
     SP = cell(size(schronnInfo.outputFiles, 1), 1);
@@ -129,16 +143,27 @@ for nComps = 1:numComps
     disp(['Computing kmeans on component ', num2str(comps(nComps)), ' ...']);
     data = cell(size(schronnInfo.outputFiles, 1), 1);
     for nSub = 1:size(schronnInfo.outputFiles, 1)
-        tmp = load(fullfile(outputDir, schronnInfo.outputFiles{nSub, nComps}));
-        data{nSub} = tmp.dynamic_coupling_maps;
+        tmpFName = fullfile(outputDir, schronnInfo.outputFiles{nSub, nComps});
+        tmp = load(tmpFName);
+        if (nSub == 1)
+            dims = size(tmp.dynamic_coupling_maps);
+        end
+        if (strcmpi(use_tall_array, 'no'))
+            data{nSub} = tmp.(variableToLoad);
+        else
+            data{nSub} = tmpFName;
+        end
         DEV = std(tmp.dynamic_coupling_maps, [], 2);
         [xmax, imax, xmin, imin] = icatb_extrema(DEV); % find the extrema
         pIND = sort(imax);
         %k1_peaks(nSub) = length(pIND);
-        SP{nSub} = tmp.dynamic_coupling_maps(pIND, :);
+        tmp = tmp.(variableToLoad);
+        SP{nSub} = tmp(pIND, :);
     end
     
     SPflat = cell2mat(SP);
+    
+    dims = [size(schronnInfo.outputFiles, 1), dims];
     
     
     if (~strcmpi(est_clusters, 'yes'))
@@ -160,14 +185,7 @@ for nComps = 1:numComps
     
     if (~strcmpi(kmeans_init, 'none'))
         
-        try
-            [IDXp, Cp, SUMDp, Dp] = kmeans(SPflat, current_no_clusters, 'distance', schronnInfo.postprocess.kmeans_distance_method, 'Replicates', ...
-                schronnInfo.postprocess.kmeans_num_replicates, 'MaxIter', schronnInfo.postprocess.max_iter, 'Display', 'iter', 'empty', 'drop', ...
-                'Options', stat_opts);
-        catch
-            [IDXp, Cp, SUMDp, Dp] = icatb_kmeans(SPflat, current_no_clusters, 'distance', schronnInfo.postprocess.kmeans_distance_method, 'Replicates', ...
-                schronnInfo.postprocess.kmeans_num_replicates, 'MaxIter', schronnInfo.postprocess.max_iter, 'Display', 'iter', 'empty', 'drop');
-        end
+        [IDXp, Cp, SUMDp, Dp] = icatb_kmeans_clustering(SPflat, current_no_clusters, schronnInfo.postprocess);
         
         % Save subsampled data
         %clusterInfo.SP = SPflat;
@@ -177,39 +195,28 @@ for nComps = 1:numComps
     
     clear IDXp SUMDp Dp
     
-    data = cat(3, data{:});
-    data = permute(data, [3, 1, 2]);
-    dims = [size(data, 1), size(data, 2), size(data, 3)];
-    data = reshape(data, dims(1)*dims(2), dims(3));
+    if (strcmpi(use_tall_array, 'no'))
+        data = cat(3, data{:});
+        data = permute(data, [3, 1, 2]);
+        %dims = [size(data, 1), size(data, 2), size(data, 3)];
+        data = reshape(data, dims(1)*dims(2), dims(3));
+    end
     
     
-    %data = cell2mat(data);
-    
-    
+    post_process_opts = schronnInfo.postprocess;
+    post_process_opts.variableToLoad = variableToLoad;
     
     if (~strcmpi(kmeans_init, 'none'))
         
-        try
-            [IDXp, Call, SUMDp, Dp] = kmeans(data, current_no_clusters, 'distance', schronnInfo.postprocess.kmeans_distance_method, 'Replicates', ...
-                1, 'MaxIter', schronnInfo.postprocess.max_iter, ...
-                'Display', 'iter', 'empty', 'drop', 'Start', Cp);
-        catch
-            [IDXp, Call, SUMDp, Dp] =  icatb_kmeans(data, current_no_clusters, 'distance', schronnInfo.postprocess.kmeans_distance_method, 'Replicates', ...
-                1, 'MaxIter', schronnInfo.postprocess.max_iter, ...
-                'Display', 'iter', 'empty', 'drop', 'Start', Cp);
-        end
+        post_process_opts.Cp = Cp;
+        post_process_opts.kmeans_num_replicates = 1;
+        
+        [IDXp, Call, SUMDp, Dp] = icatb_kmeans_clustering(data, current_no_clusters, post_process_opts);
         
     else
         
-        try
-            [IDXp, Call, SUMDp, Dp] = kmeans(data, current_no_clusters, 'distance', schronnInfo.postprocess.kmeans_distance_method, 'Replicates', ...
-                schronnInfo.postprocess.kmeans_num_replicates, 'MaxIter', schronnInfo.postprocess.max_iter, ...
-                'Display', 'iter', 'empty', 'drop',  'Options', stat_opts);
-        catch
-            [IDXp, Call, SUMDp, Dp] =  icatb_kmeans(data, current_no_clusters, 'distance', schronnInfo.postprocess.kmeans_distance_method, 'Replicates', ...
-                schronnInfo.postprocess.kmeans_num_replicates, 'MaxIter', schronnInfo.postprocess.max_iter, ...
-                'Display', 'iter', 'empty', 'drop');
-        end
+        [IDXp, Call, SUMDp, Dp] = icatb_kmeans_clustering(data, current_no_clusters, post_process_opts);
+        
     end
     
     clusterInfo.IDX = reshape(IDXp, dims(1:2));
@@ -244,14 +251,23 @@ for nComps = 1:numComps
     
     clusterInfo.clusterFiles = clusterFiles;
     
+    if (strcmpi(use_tall_array, 'no'))
+        data = reshape(data, dims);
+    end
     
-    data = reshape(data, dims);
+    
     subject_cluster_files = cell(1, current_no_clusters);
     for nc = 1:current_no_clusters
         
-        subject_states = zeros([prod(tmpV.dim(1:3)), size(data, 1)]);
-        for n = 1:size(data, 1)
-            tmp = squeeze(data(n, :, :));
+        subject_states = zeros([prod(tmpV.dim(1:3)), dims(1)]);
+        for n = 1:dims(1)
+            if (strcmpi(use_tall_array, 'no'))
+                tmp = squeeze(data(n, :, :));
+            else
+                load(data{n}, variableToLoad);
+                tmp = dynamic_coupling_maps;
+                clear dynamic_coupling_maps;
+            end
             idx = clusterInfo.IDX(n, :);
             inds = find(idx == nc);
             
@@ -273,10 +289,10 @@ for nComps = 1:numComps
         end
         
         
-        subject_states = reshape(subject_states, [tmpV.dim(1:3), size(data, 1)]);
+        subject_states = reshape(subject_states, [tmpV.dim(1:3), dims(1)]);
         subject_cluster_files{nc} = fullfile(post_process_results_dir, [schronnInfo.prefix, '_subject_comp_', icatb_returnFileIndex(comps(nComps)), '_states_', ...
             icatb_returnFileIndex(nc), '.nii']);
-        icatb_write_nifti_data(fullfile(outputDir, subject_cluster_files{nc}), repmat(tmpV, size(data, 1), 1), subject_states);
+        icatb_write_nifti_data(fullfile(outputDir, subject_cluster_files{nc}), repmat(tmpV, dims(1), 1), subject_states);
         clear subject_states;
         
     end
@@ -309,14 +325,22 @@ for nComps = 1:numComps
     
     
     % Spatial_transition matrix
-    glcm = zeros(size(data, 1), num_bins, num_bins);
-    glcms_Contrast = zeros(1, size(data, 1));
+    glcm = zeros(dims(1), num_bins, num_bins);
+    glcms_Contrast = zeros(1, dims(1));
     glcms_Correlation = glcms_Contrast;
     glcms_Energy = glcms_Contrast;
     glcms_Homogeneity = glcms_Contrast;
-    for n = 1:size(data, 1)
-        [dumvar2, SI] = graycomatrix(squeeze(data(n, :, tmap_all))', 'NumLevels', num_bins, 'Offset', [0, num_intervals]);
-        glcm(n, :, :) = 100*dumvar2/sum(dumvar2(:));
+    
+    for n = 1:dims(1)
+        if (strcmpi(use_tall_array, 'no'))
+            tmp = squeeze(data(n, :, :));
+        else
+            tmpDc = load(data{n}, variableToLoad);
+            tmp = tmpDc.(variableToLoad);
+        end
+        tmp = tmp(:, tmap_all)';
+        [dumvar2, SI] = graycomatrix(tmp, 'NumLevels', num_bins, 'Offset', [0, num_intervals]);
+        glcm(n, :, :) = 100*dumvar2/(sum(dumvar2(:)) + eps);
         
         dumvar3 = graycoprops(dumvar2);
         glcms_Contrast(n) = dumvar3.Contrast;

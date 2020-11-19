@@ -96,11 +96,12 @@ if ~strcmpi(modalityType, 'eeg')
     if (~isempty(icatb_findstr(lower(sesInfo.userInput.files(1).name(1,:)), '.gii')))
         V.fname = fullfile(sesInfo.userInput.pwd, [sesInfo.userInput.prefix, 'Mask.gii']);
     else
-        V.fname = fullfile(sesInfo.userInput.pwd, [sesInfo.userInput.prefix, 'Mask.img']);
+        V.fname = fullfile(sesInfo.userInput.pwd, [sesInfo.userInput.prefix, 'Mask.nii']);
     end
     
     V.n(1) = 1;
-    icatb_write_vol(V, mask);
+    %icatb_write_vol(V, mask);
+    icatb_write_nifti_data(V.fname, V, mask);
     
     
 else

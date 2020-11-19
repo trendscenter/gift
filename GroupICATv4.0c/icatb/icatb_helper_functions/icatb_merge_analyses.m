@@ -83,10 +83,20 @@ all_comps = cell(1, length(param_files));
 for n = 1:length(param_files)
     
     load(param_files{n});
+    
+    tmp_ses_outputDir = fileparts(param_files{n});
+    if (isempty(tmp_ses_outputDir))
+        tmp_ses_outputDir = pwd;
+    end
+    sesInfo.userInput.pwd = tmp_ses_outputDir;
+    sesInfo.outputDir = tmp_ses_outputDir;
+    
     if (n == 1)
         tmpComp = sesInfo.numComp;
-        tmpSub = sesInfo.numOfSub*sesInfo.numOfSess;
+        %tmpSub = sesInfo.numOfSub*sesInfo.numOfSess;
     end
+    
+    tmpSub = sesInfo.numOfSub*sesInfo.numOfSess;
     
     if (isempty(comp_network_names{n}))
         comp_network_names{n} = {'ALL', (1:sesInfo.numComp)};

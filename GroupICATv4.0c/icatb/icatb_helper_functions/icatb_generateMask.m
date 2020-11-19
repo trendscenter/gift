@@ -162,8 +162,9 @@ avgMask = double(L == max_inds);
 writeV = HInfo.V(1);
 writeV.n(1) = 1;
 maskFile = fullfile(outputDir, [prefix, 'Mask.nii']);
-writeV.fname = maskFile;
-icatb_write_vol(writeV, avgMask);
+%writeV.fname = maskFile;
+%icatb_write_vol(writeV, avgMask);
+icatb_write_nifti_data(maskFile, writeV, avgMask);
 
 axesTitle = 'Individual mask correlations w.r.t average mask';
 fH = icatb_getGraphics(axesTitle, 'timecourse', 'mask_corr', 'on');

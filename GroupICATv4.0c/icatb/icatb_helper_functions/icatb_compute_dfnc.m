@@ -234,11 +234,26 @@ for ii = 1:Nwin
     
     Ashift = circshift(A, round(-minTP/2) + round(wsize/2) + window_steps(ii));
     msk = icatb_window_mask(Ashift, window_steps(ii), window_alpha, wsize);
-    tcwin1 = bsxfun(@times, X(msk, :), Ashift(msk));
+    
+    try
+        tcwin1 = bsxfun(@times, X(msk, :), Ashift(msk));
+    catch
+        tcwin1 = zeros(length(msk), size(X, 2));
+        for nwin1 = 1:size(X, 2)
+            tcwin1(:, nwin1) = X(msk, nwin1).* Ashift(msk);
+        end
+    end
     
     
     if (~isempty(Y))
-        tcwin2 = bsxfun(@times, Y(msk, :), Ashift(msk));
+        try
+            tcwin2 = bsxfun(@times, Y(msk, :), Ashift(msk));
+        catch
+            tcwin2 = zeros(length(msk), size(Y, 2));
+            for nwin2 = 1:size(Y, 2)
+                tcwin2(:, nwin2) = Y(msk, nwin2).* Ashift(msk);
+            end
+        end
     end
     
     if (task_dfnc)
@@ -348,7 +363,7 @@ if (isempty(Y))
 else
     % Correlation with X and Y
     
-    FNCdyn = zeros(Nwin, size(XWin{ii}, 2), size(YWin{ii}, 2));
+    FNCdyn = zeros(Nwin, size(XWin{ii}, 2), size(YWin{ii}, 2), class(Y));
     
     if (strcmpi(method, 'none') || strcmpi(method, 'correlation'))
         % No L1 approach
