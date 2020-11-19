@@ -308,7 +308,7 @@ class evalGIFTCommand(GIFTCommand):
 class DFNCCommandInputSpec(GIFTCommandInputSpec):
     """ DFNC Inputs """
     
-    ica_param_file = traits.Str( mandatory = True, desc = 'Enter fullfile path of the ICA parameter file')
+    ica_param_file = traits.List( mandatory = True, desc = 'Enter fullfile path of the ICA parameter file in a list')
     out_dir = traits.Str( mandatory = False, desc = 'Enter fullfile path of the results directory')
     comp_network_names =  traits.Dict(mandatory=True, desc='dictionary containing network names and network values')
     TR =  traits.Float(mandatory=True, desc = "Enter experimental TR in seconds");
@@ -334,7 +334,7 @@ class DFNCCommand(GIFTCommand):
 
     >>> import nipype.interfaces.gift
     >>> dc = gift.DFNCCommand()
-    >>> dc.inputs.ica_param_file = /path/to/ica_parameter_file
+    >>> dc.inputs.ica_param_file = ['/path/to/ica_parameter_file']
     >>> dc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
     >>> dc.inputs.TR = 2
     >>> dc.run()   
@@ -355,8 +355,11 @@ class DFNCCommand(GIFTCommand):
         commandstr.append("outputDir = '%s';\n" % (os.getcwd()));
 	
         commandstr.append("%% ICA parameter file name \n");
-        commandstr.append("ica_param_file = '%s';\n" % (self.inputs.ica_param_file));
-	
+        commandstr.append("ica_param_file = {");
+        for nlist in self.inputs.ica_param_file:
+            commandstr.append("'%s'  " % (nlist));
+        commandstr.append("};\n");
+        
         commandstr.append("%% TR in seconds \n");
         commandstr.append("TR = %s;\n" % str(self.inputs.TR));
 	
@@ -494,7 +497,7 @@ class DFNCCommand(GIFTCommand):
 class MancovanCommandInputSpec(GIFTCommandInputSpec):
     """ Mancovan Inputs """
     
-    ica_param_file = traits.Str( mandatory = True, desc = 'Enter fullfile path of the ICA parameter file')
+    ica_param_file = traits.List( mandatory = True, desc = 'Enter fullfile path of the ICA parameter file in a list')
     out_dir = traits.Str( mandatory = False, desc = 'Enter fullfile path of the results directory')
     comp_network_names =  traits.Dict(mandatory=True, desc='dictionary containing network names and network values')
     TR =  traits.Float(mandatory=True, desc = "Enter experimental TR in seconds");
@@ -527,7 +530,7 @@ class MancovanCommand(GIFTCommand):
 
     >>> import nipype.interfaces.gift
     >>> mc = gift.MancovanCommand()
-    >>> mc.inputs.ica_param_file = /path/to/ica_parameter_file
+    >>> mc.inputs.ica_param_file = ['/path/to/ica_parameter_file'];
     >>> #mc.inputs.univariate_tests = {'Gender': ['Age'], 'Age': [], 'Gender_X_Age': []} #univariate tests examples.
     >>> #mc.inputs.univariate_tests={'Ttest':{'datasets':[ [i for i in range(1,26)] ], 'name':['HE']}} #One sample t-test
     >>> #mc.inputs.univariate_tests={'Ttest2':{'datasets':[[i for i in range(1,26)], [j for j in range(26, 51)]], 'name':['HE', 'SZ']}} #Two sample t-test
@@ -555,8 +558,10 @@ class MancovanCommand(GIFTCommand):
         commandstr.append("outputDir = '%s';\n" % (os.getcwd()));
 	
         commandstr.append("%% ICA parameter file name \n");
-        commandstr.append("ica_param_file = '%s';\n" % (self.inputs.ica_param_file));
-	
+        commandstr.append("ica_param_file = {");
+        for nlist in self.inputs.ica_param_file:
+            commandstr.append("'%s'  " % (nlist));
+        commandstr.append("};\n");
         commandstr.append("%% TR in seconds \n");
         commandstr.append("TR = %s;\n" % str(self.inputs.TR));
 	

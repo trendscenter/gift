@@ -66,7 +66,7 @@ from nipype.interfaces import gift
 matlab_cmd = '/data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/GroupICATv4.0b_standalone_July30_2020/run_groupica.sh /data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/tmp_gica_stand_alone/v91/ '
 gift.MancovanCommand.set_mlab_paths(matlab_cmd=matlab_cmd,use_mcr=True)
 mc = gift.MancovanCommand()
-mc.inputs.ica_param_file = '/path/to/ica_parameter_file'
+mc.inputs.ica_param_file = ['/path/to/ica_parameter_file']
 mc.inputs.covariates = {'Age':['continuous', '/path/toage.txt', 'log'], 'Gender':['categorical', '/path/to/gender.txt']}
 mc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
 #mc.inputs.univariate_tests = {'Gender': ['Age'], 'Age': [], 'Gender_X_Age': []} #univariate tests examples.
@@ -84,7 +84,7 @@ from nipype.interfaces import gift
 matlab_cmd = '/data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/GroupICATv4.0b_standalone_July30_2020/run_groupica.sh /data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/tmp_gica_stand_alone/v91/ '
 gift.MancovanCommand.set_mlab_paths(matlab_cmd=matlab_cmd,use_mcr=True)
 mc = gift.MancovanCommand()
-mc.inputs.ica_param_file = '/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat'
+mc.inputs.ica_param_file = ['/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat']
 mc.inputs.covariates = {'Age':['continuous', '/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/covariates/age.txt', 'log'], 'Gender':['categorical', '/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/covariates/gender.txt']}
 mc.inputs.univariate_tests = {'Gender': ['Age'], 'Age': ['Gender'], 'Gender_X_Age': []} #univariate tests examples.
 mc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
@@ -99,7 +99,7 @@ from nipype.interfaces import gift
 matlab_cmd = '/data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/GroupICATv4.0b_standalone_July30_2020/run_groupica.sh /data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/tmp_gica_stand_alone/v91/ '
 gift.MancovanCommand.set_mlab_paths(matlab_cmd=matlab_cmd,use_mcr=True)
 mc = gift.MancovanCommand()
-mc.inputs.ica_param_file = '/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat'
+mc.inputs.ica_param_file = ['/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat']
 mc.inputs.univariate_tests = {'Ttest': {'datasets':[ [i for i in range(1,51)] ], 'name':['HE']}} #data-sets should start with 1 (matlab syntax).
 mc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
 mc.inputs.TR = 2
@@ -114,7 +114,7 @@ from nipype.interfaces import gift
 matlab_cmd = '/data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/GroupICATv4.0b_standalone_July30_2020/run_groupica.sh /data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/tmp_gica_stand_alone/v91/ '
 gift.MancovanCommand.set_mlab_paths(matlab_cmd=matlab_cmd,use_mcr=True)
 mc = gift.MancovanCommand()
-mc.inputs.ica_param_file = '/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat'
+mc.inputs.ica_param_file = ['/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat']
 mc.inputs.univariate_tests = {'Ttest': {'datasets':[ [i for i in range(1,26)], [i for i in range(26, 51)] ], 'name':['C1', 'C2']}} #data-sets should start with 1 (matlab syntax).
 mc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
 mc.inputs.TR = 2
@@ -129,7 +129,7 @@ from nipype.interfaces import gift
 matlab_cmd = '/data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/GroupICATv4.0b_standalone_July30_2020/run_groupica.sh /data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/tmp_gica_stand_alone/v91/ '
 gift.MancovanCommand.set_mlab_paths(matlab_cmd=matlab_cmd,use_mcr=True)
 mc = gift.MancovanCommand()
-mc.inputs.ica_param_file = '/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat'
+mc.inputs.ica_param_file = ['/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat']
 mc.inputs.univariate_tests = {'Ttest2': {'datasets':[ [i for i in range(1,26)], [i for i in range(26, 51)] ], 'name':['HE', 'SZ']}} #data-sets should start with 1 (matlab syntax).
 mc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
 mc.inputs.TR = 2
@@ -141,7 +141,7 @@ mc.run()
 
  import nipype.interfaces.gift as gift
  dc = gift.DFNCCommand()
- dc.inputs.ica_param_file = /path/to/ica_parameter_file
+ dc.inputs.ica_param_file = ['/path/to/ica_parameter_file']
  dc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
  dc.inputs.TR = 2
  dc.run()   
@@ -152,7 +152,7 @@ from nipype.interfaces import gift
 matlab_cmd = '/data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/GroupICATv4.0b_standalone_July30_2020/run_groupica.sh /data/mialab/users/srinivas/GIFT_Stand_alone/Linux_x86_64/tmp_gica_stand_alone/v91/ '
 gift.DFNCCommand.set_mlab_paths(matlab_cmd=matlab_cmd,use_mcr=True)
 dc = gift.DFNCCommand()
-dc.inputs.ica_param_file = '/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat'
+dc.inputs.ica_param_file = ['/data/mialab/users/srinivas/Example_Subjects/mancova_sample_data/ica_output/rest_hcp_ica_parameter_info.mat']
 dc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
 dc.inputs.TR = 2
 dc.inputs.postprocess = {'num_clusters':5, 'display_results':1}
