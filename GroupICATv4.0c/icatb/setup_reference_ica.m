@@ -183,8 +183,29 @@ try
 catch
 end
 
-filesInfo = icatb_fileSelector(filesInfo, '*.nii');
-if (~isempty(filesInfo.filesList))
+use_bids = icatb_questionDialog('title', 'BIDS format?', 'textbody', 'Is the data in BIDS format?');
+drawnow;
+
+if (use_bids)
+    
+    
+    
+    data_setDir = icatb_selectEntry('typeEntity', 'directory', 'title', ...
+        'Select root folder for subjects and sessions');
+    drawnow;
+    
+    
+    bids_info = icatb_select_bids_params(struct('root_dir', data_setDir, 'modality_dir', 'func', 'listFiles', 0));
+    input_data_file_patterns = {};
+    filesInfo.filesList = input_data_file_patterns;
+    filesInfo.bids_info = bids_info;
+    
+else
+    
+    filesInfo = icatb_fileSelector(filesInfo, '*.nii');
+    
+end
+if (~isempty(filesInfo.filesList) || ~isempty(filesInfo.bids_info))
     set(handles.select_data, 'ForegroundColor', [0, 1, 0]);
 end
 
@@ -288,23 +309,39 @@ try
 catch
 end
 
-if (isempty(filesList))
-    error('data is not specified');
+bids_info = [];
+try
+    bids_info = results.filesInfo.bids_info;
+catch
+end
+
+if (isempty(bids_info))
+    if (isempty(filesList))
+        error('data is not specified');
+    end
 end
 
 filesList = cellstr(filesList);
 numOfDataSets = length(filesList);
-numOfSess = results.filesInfo.numOfSess;
+numOfSess = 1;
+try
+    numOfSess = results.filesInfo.numOfSess;
+catch
+end
 numOfSub = numOfDataSets/numOfSess;
 
 handles.dataSelectionMethod = 4;
 
-input_data_file_patterns = cell(numOfSub, numOfSess);
-endTp = 0;
-for nSub = 1:numOfSub
-    startTp = endTp + 1;
-    endTp = endTp + numOfSess;
-    input_data_file_patterns(nSub, :) = filesList(startTp:endTp);
+if (isempty(bids_info))
+    input_data_file_patterns = cell(numOfSub, numOfSess);
+    endTp = 0;
+    for nSub = 1:numOfSub
+        startTp = endTp + 1;
+        endTp = endTp + numOfSess;
+        input_data_file_patterns(nSub, :) = filesList(startTp:endTp);
+    end
+else
+    input_data_file_patterns = {};
 end
 
 handles.input_data_file_patterns = input_data_file_patterns;
@@ -377,6 +414,10 @@ network_summary_opts.save_info = 1;
 %network_summary_opts.conn_threshold = 0.25;
 
 handles.network_summary_opts = network_summary_opts;
+
+if (~isempty(bids_info))
+    handles.bids_info = bids_info;
+end
 
 generateBatch(handles);
 
@@ -529,7 +570,11 @@ function generateBatch(handles)
 
 
 % Enter no. of dummy scans to exclude from the group ICA analysis. If you have no dummy scans leave it as 0.
-dummy_scans = handles.filesInfo.file_numbers;
+try
+    dummy_scans = handles.filesInfo.file_numbers;
+catch
+    dummy_scans = 0;
+end
 
 if (isempty(dummy_scans))
     dummy_scans = 0;
@@ -548,7 +593,13 @@ catch
 end
 
 dataFileName = fullfile( handles.outputDir, [handles.prefix, '_files.mat']);
-files = handles.input_data_file_patterns;
+
+if (~isfield(handles, 'bids_info'))
+    files = handles.input_data_file_patterns;
+else
+    bids_info = handles.bids_info;
+    files = {};
+end
 
 display_results.formatName = 'html';
 
@@ -573,7 +624,12 @@ if (numWorkers > 1)
 end
 
 parallel_info.num_workers = numWorkers;
-save(dataFileName, 'files', 'display_results', 'parallel_info');
+if (~exist('bids_info', 'var') || isempty(bids_info))
+    save(dataFileName, 'files', 'display_results', 'parallel_info');
+else
+    save(dataFileName, 'bids_info', 'display_results', 'parallel_info');
+end
+
 
 clear display_results files parallel_info;
 
@@ -589,9 +645,20 @@ comments{end + 1} = '%% All the output files will be preprended with the specifi
 batchInfo.perfType = 1;
 comments{end + 1} = '%% Group PCA performance settings. Best setting for each option will be selected based on variable MAX_AVAILABLE_RAM in icatb_defaults.m.';
 batchInfo.dataSelectionMethod = 4;
-comments{end + 1} = '%% Data selection option. If option 4 is specified, file names must be entered in input_data_file_patternss';
-batchInfo.input_data_file_patterns = 'files;';
-comments{end + 1} = '%% Input data file pattern for data-sets must be in a cell array. The no. of rows of cell array correspond to no. of data-sets.';
+
+if (exist('bids_info', 'var') && ~isempty(bids_info))
+    
+    comments{end + 1} = '%% Bids Info';
+    batchInfo.bids_info = 'bids_info;';
+    comments{end + 1} = '%% Specify BIDS info. Data file patterns is read from the bids structure and input_data_file_patterns variable is skipped';
+    
+else
+    
+    comments{end + 1} = '%% Data selection option. If option 4 is specified, file names must be entered in input_data_file_patterns';
+    batchInfo.input_data_file_patterns = 'files;';
+    comments{end + 1} = '%% Input data file pattern for data-sets must be in a cell array. The no. of rows of cell array correspond to no. of data-sets.';
+    
+end
 
 batchInfo.input_design_matrices = {};
 comments{end + 1} = '%% Design matrix/matrices.';
@@ -627,7 +694,8 @@ for nF = 1:length(fnames)
     if (isempty(tmp))
         tmp = [fnames{nF}, ' = {};'];
     else
-        if (~strcmpi(fnames{nF}, 'input_data_file_patterns') && ~strcmpi(fnames{nF}, 'parallel_info') && ~strcmpi(fnames{nF}, 'display_results'))
+        if (~strcmpi(fnames{nF}, 'input_data_file_patterns') && ~strcmpi(fnames{nF}, 'parallel_info') && ~strcmpi(fnames{nF}, 'display_results') ...
+                && ~strcmpi(fnames{nF}, 'bids_info'))
             if (isnumeric(tmp))
                 tmp = sprintf('%s = %s;', fnames{nF}, mat2str(tmp, 4));
             else

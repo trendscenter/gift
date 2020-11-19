@@ -22,18 +22,18 @@ function varargout = post_process_spatial_chronnectome(varargin)
 
 % Edit the above text to modify the response to help post_process_spatial_chronnectome
 
-% Last Modified by GUIDE v2.5 02-Sep-2020 10:22:59
+% Last Modified by GUIDE v2.5 30-Oct-2020 12:37:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @post_process_spatial_chronnectome_OpeningFcn, ...
-                   'gui_OutputFcn',  @post_process_spatial_chronnectome_OutputFcn, ...
-                   'gui_LayoutFcn',  [], ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @post_process_spatial_chronnectome_OpeningFcn, ...
+    'gui_OutputFcn',  @post_process_spatial_chronnectome_OutputFcn, ...
+    'gui_LayoutFcn',  [], ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
-   gui_State.gui_Callback = str2func(varargin{1});
+    gui_State.gui_Callback = str2func(varargin{1});
 end
 
 if nargout
@@ -93,7 +93,7 @@ function done_Callback(hObject, eventdata, handles)
 
 results.num_intervals = str2num(deblank(get(handles.num_intervals, 'string')));
 results.num_bins = str2num(deblank(get(handles.num_bins, 'string')));
-results.tmap_transition_matrix_threshold = str2num(deblank(get(handles.tmap_transition_matrix, 'string'))); 
+results.tmap_transition_matrix_threshold = str2num(deblank(get(handles.tmap_transition_matrix, 'string')));
 opts = cellstr(get(handles.est_clusters, 'string'));
 val = get(handles.est_clusters, 'value');
 results.est_clusters = lower(deblank(opts{val}));
@@ -110,6 +110,12 @@ opts = cellstr(get(handles.kmeans_init, 'string'));
 val = get(handles.kmeans_init, 'value');
 results.kmeans_init = opts{val};
 
+use_tall_array = 'no';
+if (isfield(handles, 'use_tall_array'))
+    use_tall_array = handles.use_tall_array;
+end
+
+results.use_tall_array = use_tall_array;
 
 setappdata(0, 'pSchronnAppData', results);
 
@@ -408,3 +414,33 @@ function help_kmeans_init_Callback(hObject, eventdata, handles)
 
 msgH = msgbox('Option is provided to initialize k-means using subject exemplars which are obtained using the global extrema points for each subject.', 'Distance', 'modal');
 waitfor(msgH);
+
+
+% --------------------------------------------------------------------
+function options_menu_Callback(hObject, eventdata, handles)
+% hObject    handle to options_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+use_tall_array = 'no';
+
+if (~isempty(which('tall.m')))
+    
+    try
+        use_tall_array = 'yes';
+    catch
+    end
+    
+    use_tall_array = questdlg('Do you want to use tall array option for large data?', ...
+        'Tall array?', ...
+        'No', 'Yes', 'No');
+    
+    if (isempty(use_tall_array))
+        use_tall_array = 'no';
+    end
+    
+end
+
+handles.use_tall_array = use_tall_array;
+
+guidata(hObject, handles);

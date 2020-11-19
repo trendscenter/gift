@@ -616,7 +616,7 @@ try
         
         set(handles, 'pointer', 'watch');
         
-        [files, designMatrix, numOfSub, numOfSess, dataSelMethod, diffTimePoints, spmMatFlag] = icatb_dataSelection(...
+        [files, designMatrix, numOfSub, numOfSess, dataSelMethod, diffTimePoints, spmMatFlag, bids_info] = icatb_dataSelection(...
             [], sesInfo.userInput.pwd, sesInfo.userInput.prefix, ...
             sesInfo.userInput.read_complex_file_naming, sesInfo.userInput.read_complex_images);
         setappdata(0, 'create_mask_gica',1);
@@ -627,6 +627,9 @@ try
         sesInfo.userInput.designMatrix = designMatrix;
         sesInfo.userInput.spmMatFlag = spmMatFlag;
         sesInfo.userInput.diffTimePoints = diffTimePoints;
+        if (~isempty(bids_info))
+            sesInfo.userInput.bids_info = bids_info;
+        end
         
         icatb_save(subjectFile, 'files', 'numOfSub', 'numOfSess', 'SPMFiles', 'modalityType');
         
