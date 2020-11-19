@@ -220,7 +220,12 @@ sesInfo.numOfScans = sesInfo.diffTimePoints(1);
 
 if ~strcmpi(modalityType, 'eeg')
     % return HInfo
-    [V, sesInfo.HInfo] = icatb_returnHInfo(sesInfo.userInput.files(1).name(1, :));
+    tmpMaskFile = fullfile(outputDir, [sesInfo.userInput.prefix, 'Mask.nii']);
+    if (exist(tmpMaskFile, 'file') == 2)
+        [V, sesInfo.HInfo] = icatb_returnHInfo(tmpMaskFile);
+    else
+        [V, sesInfo.HInfo] = icatb_returnHInfo(sesInfo.userInput.files(1).name(1, :));
+    end
     clear V;
 else
     sesInfo.HInfo = sesInfo.userInput.HInfo;

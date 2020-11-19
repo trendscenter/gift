@@ -240,8 +240,18 @@ if (nargin > 0 && nargin <= 3)
             
             W = icatb_iva_second_order(data, secondOrderOpts{:});
             ICA_Options(end+1:end+4) = {'whiten', false, 'initW', W};
-            disp('Weights from second order IVA are used as initial weights in laplacian IVA. Computing laplacian IVA ...');
-            W = icatb_iva_laplace(data, ICA_Options{:}); % run iva-l, initialized with iva-g result
+            
+            chkInd = strmatch('skip_laplace', lower(ICA_Options(1:2:end)), 'exact');
+            skip_laplace = 'no';
+            if (~isempty(chkInd))
+                skip_laplace = ICA_Options{chkInd + 1};
+                ICA_Options(chkInd:chkInd+1) = [];
+            end
+            
+            if (strcmpi(skip_laplace, 'no'))
+                disp('Weights from second order IVA are used as initial weights in laplacian IVA. Computing laplacian IVA ...');
+                W = icatb_iva_laplace(data, ICA_Options{:}); % run iva-l, initialized with iva-g result
+            end
             
             [W, A, icasig_tmp] = correct_sign(W, data);
             

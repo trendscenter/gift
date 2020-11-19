@@ -473,6 +473,13 @@ try
     end
     
     
+    if(groupICAStep == 1 || groupICAStep == 7)
+        if (isfield(sesInfo.userInput, 'bids_info') && ~isempty(sesInfo.userInput.bids_info))
+            icatb_copy_ica_results_to_bids(sesInfo);
+        end
+    end
+    
+    
     % Use tic and toc instead of cputime
     t_end = toc;
     

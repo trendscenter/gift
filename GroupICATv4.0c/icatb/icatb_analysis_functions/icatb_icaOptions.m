@@ -504,6 +504,16 @@ switch (lower(ica_algorithm))
         
         numParameters = numParameters + 1;
         
+        
+        inputText(numParameters).promptString = 'Do you want to skip iva-laplace algorithm?';
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).answerString = char('no', 'yes');
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'skip_laplace';
+        inputText(numParameters).enable = 'on';
+        
+         numParameters = numParameters + 1;
+        
         inputText(numParameters).promptString = 'Enter max no. of iterations';
         inputText(numParameters).uiType = 'edit';
         inputText(numParameters).answerString = num2str(1024);

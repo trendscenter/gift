@@ -294,8 +294,11 @@ if (intermediatePCA)
                     icatb_save(pcaout, 'V', 'Lambda');
                 end
                 
-                if (strcmpi(modalityType, 'smri'))
-                    sesInfo.pca_variances = compute_var(data, V, Lambda, tmpPreprocType, mask_ind);
+                try
+                    if (strcmpi(modalityType, 'smri'))
+                        sesInfo.pca_variances = compute_var(data, V, Lambda, tmpPreprocType, mask_ind);
+                    end
+                catch
                 end
                 
                 fprintf('\n\n');
@@ -675,6 +678,8 @@ if (~isnumeric(data))
     data = icatb_remove_mean(icatb_preproc_data(icatb_read_data(files, [], mask_ind), tmpPreprocType));
 end
 
-[whiteM, dewhiteM] = get_pca_info(V, Lambda);
-pcasig = data*whiteM';
+pcasig = data*V;
+dewhiteM = V;
+%[whiteM, dewhiteM] = get_pca_info(V, Lambda);
+%pcasig = data*whiteM';
 pf = icatb_compute_var_evd(data, dewhiteM, pcasig);
