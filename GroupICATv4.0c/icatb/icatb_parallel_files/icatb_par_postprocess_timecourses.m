@@ -230,13 +230,13 @@ if (writeInfo)
         
         % save timecourses if needed
         if (save_tc)
-            subFileOut = [calibrate_components_mat_file, num2str(nSub), '-', num2str(nSess), '.mat'];
-            subFileOut = fullfile(outputDir, subFileOut);
+            %subFileOut = [calibrate_components_mat_file, num2str(nSub), '-', num2str(nSess), '.mat'];
+            %subFileOut = fullfile(outputDir, subFileOut);
             outfile = ['cleaned_', deblank(subjectICAFiles(nSub).ses(nSess).name(1, :))];
             saveTimecourses(outfile, timecourses, HInfo, outputDir);
-            if (exist(subFileOut, 'file'))
-                icatb_parSave(subFileOut, {timecourses}, {'tc_cleaned'}, '-append');
-            end
+            %             if (exist(subFileOut, 'file'))
+            %                 icatb_parSave(subFileOut, {timecourses}, {'tc_cleaned'}, '-append');
+            %             end
         end
         
     end
