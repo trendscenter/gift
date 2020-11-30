@@ -168,7 +168,7 @@ minTP = min(ceil((time_points.*num) ./ denom));
 
 varsToSave = {'FNCdyn'};
 
-if (~strcmpi(dfcRoiInfo.method, 'none'))
+if (strcmpi(dfcRoiInfo.method, 'L1'))
     varsToSave(end + 1:end + 2) = {'Pdyn', 'Lambdas'};
 end
 
@@ -185,6 +185,10 @@ best_lambda = zeros(1, numOfDataSets);
 dims = size(atlas_mask);
 
 filesList = dfcRoiInfo.userInput.filesInfo.filesList;
+
+if (~isempty(covariate_files))
+    covariate_files = cellstr(covariate_files);
+end
 
 %% Loop over subjects
 parfor dataSetCount = 1:numOfDataSets
@@ -236,7 +240,7 @@ parfor dataSetCount = 1:numOfDataSets
     
     
     varCount = 1;
-    if (~strcmpi(windowing_params.method, 'none'))
+    if (strcmpi(windowing_params.method, 'L1'))
         best_lambda(dataSetCount) = corrInfo.best_lambda;
         vars(varCount+1:varCount+2) = {corrInfo.Pdyn, corrInfo.Lambdas};
     end
