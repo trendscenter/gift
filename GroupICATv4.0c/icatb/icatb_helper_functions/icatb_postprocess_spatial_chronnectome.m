@@ -16,6 +16,7 @@ end
 
 kmeans_init = 'none';
 use_tall_array = 'no';
+est_clusters = 'no';
 
 if (~isstruct(param_file))
     load(param_file);
@@ -102,6 +103,11 @@ else
     
     try
         use_tall_array = schronnInfo.postprocess.use_tall_array;
+    catch
+    end
+    
+    try
+        est_clusters = schronnInfo.postprocess.est_clusters;
     catch
     end
     
@@ -279,7 +285,8 @@ for nComps = 1:numComps
         
         tmp_dat = subject_states(schronnInfo.mask_ind, :)';
         tmp_dat(tmp_dat == 0) = NaN;
-        tmp_dat = icatb_ttest(tmp_dat, 0);
+        [~, tmp_dat] = icatb_ttest(tmp_dat, 0);
+        tmp_dat(isfinite(tmp_dat) == 0) = 0;
         tmp_dat = tmp_dat >= tmap_transition_matrix_threshold;
         
         if (nc == 1)

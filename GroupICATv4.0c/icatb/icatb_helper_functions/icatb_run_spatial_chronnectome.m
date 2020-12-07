@@ -197,7 +197,7 @@ parfor dataSetCount = 1:numOfSub*numOfSess
     tc = icatb_loadComp(tmpSesInfo, comps, 'vars_to_load', 'tc', 'detrend_no', [], 'subjects', nSub, 'sessions', nSess);
     
     % Load BOLD data
-    bold_data = icatb_remove_mean(icatb_preproc_data(icatb_read_data(inputFiles(dataSetCount).name, [], mask_ind, 'single'), preproc_default));
+    bold_data = icatb_remove_mean(icatb_preproc_data(icatb_read_data(inputFiles(dataSetCount).name, [], mask_ind, 'double'), preproc_default));
     bold_data = bold_data';
     
     corrInfo = icatb_compute_dfnc(tc, TR(nSub), 'Y', bold_data, 'mintr', minTR, 'minTP', minTP, 'preprocess_params', ...
