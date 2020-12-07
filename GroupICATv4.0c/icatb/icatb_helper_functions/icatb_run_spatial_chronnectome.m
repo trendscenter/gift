@@ -167,8 +167,12 @@ preproc_default = PREPROC_DEFAULT;
 
 tmpSesInfo = sesInfo;
 
+if (~isempty(covariate_files))
+    covariate_files = cellstr(covariate_files);
+end
+
 %% Loop over subjects
-for dataSetCount = 1:numOfSub*numOfSess
+parfor dataSetCount = 1:numOfSub*numOfSess
     
     nSub = ceil(dataSetCount/numOfSess);
     nSess = mod(dataSetCount - 1, numOfSess) + 1;

@@ -236,6 +236,10 @@ if (~isempty(modelTC))
     varsToSave(end + 1) = {'task_connectivity'};
 end
 
+if (~isempty(covariate_files))
+    covariate_files = cellstr(covariate_files);
+end
+
 
 best_lambda = zeros(1, numOfSub*numOfSess);
 

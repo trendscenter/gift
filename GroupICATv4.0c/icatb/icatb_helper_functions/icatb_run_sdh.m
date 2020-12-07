@@ -60,6 +60,10 @@ sdhInfo.V = sesInfo.HInfo.V(1);
 sdhInfo.mask_ind = mask_ind;
 sdhInfo.time_points = sesInfo.diffTimePoints;
 
+if (~isempty(covariate_files))
+    covariate_files = cellstr(covariate_files);
+end
+
 %% Save components
 parfor countD = 1:numOfSub*numOfSess
     
