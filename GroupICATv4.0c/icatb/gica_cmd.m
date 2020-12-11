@@ -352,6 +352,11 @@ function [files, diffTimePoints] = listFiles(filesP)
 
 %% If text file is provided, read from file.
 filesP = readTxtFile(filesP);
+chk = icatb_good_cells(filesP);
+filesP = filesP(chk);
+if (isempty(filesP))
+    error('No files found');
+end
 
 files = cell(length(filesP), 1);
 diffTimePoints = zeros(1,  length(filesP));
