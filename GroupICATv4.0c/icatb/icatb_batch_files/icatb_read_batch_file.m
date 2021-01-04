@@ -569,6 +569,11 @@ try
 catch
 end
 
+try
+    network_summary_opts = inputData.network_summary_opts;
+catch
+end
+
 
 if (isnumeric(display_results))
     tmp_display_results = display_results;
