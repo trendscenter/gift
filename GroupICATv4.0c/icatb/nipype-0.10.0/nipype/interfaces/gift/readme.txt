@@ -44,7 +44,7 @@ gc.inputs.df = 30;
 # Number of independent components
 gc.inputs.dim = 16;
 # Display results
-gc.inputs.display_results = 1;
+gc.inputs.display_results = {'anatomical_file': '/data/mialab/users/srinivas/ch2bet.nii', 'slices_in_mm': list(range(-40, 76, 4)), 'convert_to_zscores':'yes', 'threshold':1.0, 'image_values':'positive', 'anatomical_plane':'axial'};
 # Display network summary
 gc.inputs.network_summary_opts = {'comp_network_names':{'VIS':[1,2,3], 'SM':[4,5],'AUD':6}, 'threshold' : 2.0, 'convert_to_z':'yes', 'format':'html'};
 gc.run()

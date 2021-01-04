@@ -29,7 +29,8 @@ class GICACommandInputSpec(GIFTCommandInputSpec):
     algoType = traits.Int( mandatory = False, desc = 'options are 1 - Infomax, 2 - Fast ica , ...')	
     refFiles = InputMultiPath(File(exists=True), argstr="-i %s", mandatory=False, position=0, desc="input file names (either single file name or a list)", sep=",")
     numWorkers = traits.Int( mandatory = False, desc = 'Number of parallel workers')	
-    display_results = traits.Int( mandatory = False, desc = '0 - No display, 1 - HTML report, 2 - PDF')
+    #display_results = traits.Int( mandatory = False, desc = '0 - No display, 1 - HTML report, 2 - PDF')
+    display_results = traits.Dict(mandatory=False, desc='dictionary containing results summary options')
     network_summary_opts = traits.Dict(mandatory=False, desc='dictionary containing network summary options')
 	
 
@@ -216,16 +217,24 @@ class GICACommand(GIFTCommand):
 
         commandstr.append("%% Report generator \n");                
         if isdefined(self.inputs.display_results):            
-            display_results = self.inputs.display_results
+            tmp_disp_results = self.inputs.display_results;
         else:
-            display_results = 0
-
-
-        #if isdefined(self.inputs.use_mcr) and self.inputs.use_mcr:
-            #display_results = 0
-                
-        commandstr.append("display_results = %d;\n" % (display_results));
-
+            tmp_disp_results = 0;
+        
+        display_results = tmp_disp_results;        
+        if not ((type(display_results) == int) or  (type(display_results) == str)):
+            for keyD in display_results.keys():
+                tmp_disp_results = display_results[keyD];
+                if (type(tmp_disp_results) == str):
+                    commandstr.append("display_results.{} = '{}';\n".format(keyD, tmp_disp_results));
+                else:
+                    commandstr.append("display_results.{} = {};\n".format(keyD, tmp_disp_results));
+        else:
+            if (type(display_results) == str):
+                commandstr.append("display_results = '{}';\n".format(display_results));
+            else:
+                commandstr.append("display_results = {};\n".format(display_results));
+        
         # network summary options
         if isdefined(self.inputs.network_summary_opts):
 			network_summary_opts = self.inputs.network_summary_opts;
