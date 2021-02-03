@@ -66,7 +66,7 @@ handles.outDir = pwd;
 % Choose default command line output for component_labeller
 handles.output = hObject;
 
-set(handles.anatomical_file, 'string', fullfile(fileparts(which('gift.m')), 'icatb_templates', 'nsingle_subj_T1_2_2_5.nii'));
+set(handles.anatomical_file, 'string', fullfile(fileparts(which('gift.m')), 'icatb_templates', 'ch2bet_3x3x3.nii'));
 set(handles.image_values, 'value', strmatch(lower(IMAGE_VALUES), lower({'Positive and Negative', 'Positive', 'Absolute Value', 'Negative'}), 'exact'));
 set(handles.z_scores, 'value', strmatch(lower(CONVERT_Z), lower(get(handles.z_scores, 'string')), 'exact'));
 set(handles.threshold, 'string', num2str(THRESHOLD_VALUE));

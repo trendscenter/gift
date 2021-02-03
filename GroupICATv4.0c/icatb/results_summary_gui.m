@@ -400,7 +400,7 @@ if (~isempty(chk))
     set(handles.image_values, 'value', chk);
 end
 
-structFile = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'nsingle_subj_T1_2_2_5.nii');
+structFile = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
 set(handles.anatomical_file, 'string', structFile);
 
 convert_to_zscores = CONVERT_Z;

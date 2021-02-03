@@ -57,7 +57,7 @@ handles.output = hObject;
 
 if (length(varargin) > 0)
     handles.compFiles = varargin{1}{1};
-    structFile = fullfile (fileparts(which('gift.m')), 'icatb_templates', 'nsingle_subj_T1_2_2_5.nii');
+    structFile = fullfile (fileparts(which('gift.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
     for nComp  = 1:size(handles.compFiles, 1)
         hD = icatb_orth_views(deblank(handles.compFiles(nComp, :)), 'image_values', 'positive', ...
             'convert_to_zscores', 'yes', 'get_interp_data', 1, 'set_to_max_voxel', 1, 'threshold', 1, 'structfile', structFile);

@@ -22,7 +22,7 @@ function varargout = setup_reference_ica(varargin)
 
 % Edit the above text to modify the response to help setup_reference_ica
 
-% Last Modified by GUIDE v2.5 30-Jul-2020 19:02:02
+% Last Modified by GUIDE v2.5 19-Jan-2021 13:41:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -400,7 +400,7 @@ network_summary_opts.comp_network_names = networkOpts;
 network_summary_opts.threshold = 1.5;
 
 % structural file
-network_summary_opts.structFile = fullfile(fileparts(which('gift.m')), 'icatb_templates', 'nsingle_subj_T1_2_2_5.nii');
+network_summary_opts.structFile = fullfile(fileparts(which('gift.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
 
 % format: options are html and pdf
 network_summary_opts.format = 'html';

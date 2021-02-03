@@ -317,7 +317,7 @@ backReconIndex = strmatch(backReconTag, cellstr(char(inputText.tag)), 'exact');
 if (~isempty(backReconIndex))
     inputText(backReconIndex).enable = 'on';
     if (strcmpi(deblank(icaStr(icaVal, :)), 'iva-gl') || strcmpi(deblank(icaStr(icaVal, :)), 'iva-l') ...
-            || strcmpi(deblank(icaStr(icaVal, :)), 'iva-l-sos') || strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') || strcmpi(deblank(icaStr(icaVal, :)), 'gig-ica') || strcmpi(deblank(icaStr(icaVal, :)), 'constrained ica (spatial)'))
+            || strcmpi(deblank(icaStr(icaVal, :)), 'iva-l-sos') || strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') || strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') || strcmpi(deblank(icaStr(icaVal, :)), 'constrained ica (spatial)'))
         inputText(backReconIndex).enable = 'inactive';
     end
 end
@@ -338,7 +338,7 @@ if numOfSub*numOfSess > 0
     
     numReductionSteps = 1;
     if (~strcmpi(deblank(icaStr(icaVal, :)), 'iva-gl') && ~strcmpi(deblank(icaStr(icaVal, :)), 'iva-l') && ~strcmpi(deblank(icaStr(icaVal, :)), 'iva-l-sos') && ~strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') ...
-            && ~strcmpi(deblank(icaStr(icaVal, :)), 'gig-ica') && ~strcmpi(deblank(icaStr(icaVal, :)), 'constrained ica (spatial)'))
+            && ~strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') && ~strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') && ~strcmpi(deblank(icaStr(icaVal, :)), 'constrained ica (spatial)'))
         % Number of data reduction steps
         if(numOfSub == 1 && numOfSess == 1)
             numReductionSteps = 1;
@@ -718,7 +718,7 @@ try
     numCompH = findobj(handles, 'tag', 'numComp');
     set(numCompH, 'enable', 'on', 'string', num2str(sesInfo.userInput.numComp));
     
-    if (strcmpi(tmpAlgStr{tmpAlgVal}, 'moo-icar') || strcmpi(tmpAlgStr{tmpAlgVal}, 'gig-ica') || strcmpi(tmpAlgStr{tmpAlgVal}, 'constrained ica (spatial)'))
+    if (strcmpi(tmpAlgStr{tmpAlgVal}, 'moo-icar') || strcmpi(tmpAlgStr{tmpAlgVal}, 'moo-icar') || strcmpi(tmpAlgStr{tmpAlgVal}, 'constrained ica (spatial)'))
         set(numCompH, 'enable', 'inactive');
     end
     
@@ -746,7 +746,7 @@ try
             algoStr = cellstr(get(algoHandle, 'string'));
             set(algoHandle, 'value', algoVal);
             if (strcmpi(algoStr{algoVal}, 'iva-gl') || strcmpi(algoStr{algoVal}, 'iva-l') || strcmpi(algoStr{algoVal}, 'iva-l-sos') || strcmpi(algoStr{algoVal}, 'moo-icar')  || ....
-                    strcmpi(algoStr{algoVal}, 'gig-ica') || strcmpi(algoStr{algoVal}, 'constrained ica (spatial)'))
+                    strcmpi(algoStr{algoVal}, 'moo-icar') || strcmpi(algoStr{algoVal}, 'constrained ica (spatial)'))
                 icaTypeCallback(algoHandle, [], handles);
             end
         end
@@ -1373,7 +1373,7 @@ try
     icaStr = get(icaAlgoH, 'string');
     
     if (strcmpi(deblank(icaStr(icaVal, :)), 'iva-gl') || strcmpi(deblank(icaStr(icaVal, :)), 'iva-l') || strcmpi(deblank(icaStr(icaVal, :)), 'iva-l-sos') || strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') ...
-            || strcmpi(deblank(icaStr(icaVal, :)), 'gig-ica') || strcmpi(deblank(icaStr(icaVal, :)), 'constrained ica (spatial)'))
+            || strcmpi(deblank(icaStr(icaVal, :)), 'moo-icar') || strcmpi(deblank(icaStr(icaVal, :)), 'constrained ica (spatial)'))
         sesInfo.userInput.numReductionSteps = 1;
     else
         if (sesInfo.userInput.numReductionSteps > 2)
@@ -1688,12 +1688,12 @@ sesInfo.userInput.algorithm = sel_algorithm;
 
 algorithmName = lower(allAlgorithms{sel_algorithm});
 
-if strcmpi(algorithmName, 'moo-icar')
-    algorithmName = 'gig-ica';
+if strcmpi(algorithmName, 'gig-ica')
+    algorithmName = 'moo-icar';
 end
 
 if (useTemporalICA)
-    if (strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)')  || ...
+    if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)')  || ...
             strcmpi(algorithmName, 'semi-blind infomax'))
         error(['Temporal ICA cannot be run using algorithm ', algorithmName]);
     end
@@ -1772,14 +1772,14 @@ if (~isempty(matchedInd))
     
 end
 
-if (strcmpi(algorithmName, 'moo-icar'))
-    algorithmName = 'gig-ica';
+if (strcmpi(algorithmName, 'gig-ica'))
+    algorithmName = 'moo-icar';
 end
 
 %%%% Multi-fixed ICA algorithm for constraining spatial maps %%%
-if (strcmpi(algorithmName, 'constrained ica (spatial)') || strcmpi(algorithmName, 'gig-ica'))
+if (strcmpi(algorithmName, 'constrained ica (spatial)') || strcmpi(algorithmName, 'moo-icar'))
     
-    if ~strcmpi(algorithmName, 'gig-ica')
+    if ~strcmpi(algorithmName, 'moo-icar')
         spatial_references = icatb_selectEntry('title', 'Select spatial reference files ...', ...
             'typeEntity', 'file', 'typeSelection', 'multiple', 'filter', '*.img;*.nii', 'fileType', 'image');
         if isempty(spatial_references)
@@ -1795,7 +1795,7 @@ if (strcmpi(algorithmName, 'constrained ica (spatial)') || strcmpi(algorithmName
         end
         spatial_references = icatb_selectEntry('title', gigFileTitle, 'typeEntity', 'file', 'typeSelection', 'multiple', 'filter', gigFileP, 'fileType', 'image');
         if isempty(spatial_references)
-            error('Aggregate images need to be selected in order to use GIG-ICA');
+            error('Aggregate images need to be selected in order to use moo-icar');
         end
     end
     
@@ -2027,7 +2027,7 @@ set(whichAnalysisH, 'enable', 'on');
 %     set(whichAnalysisH, 'enable', 'inactive');
 % end
 
-if (strcmpi(icaTypes{icaVal}, 'moo-icar') || strcmpi(icaTypes{icaVal}, 'gig-ica') || strcmpi(icaTypes{icaVal}, 'constrained ica (spatial)'))
+if (strcmpi(icaTypes{icaVal}, 'moo-icar') || strcmpi(icaTypes{icaVal}, 'moo-icar') || strcmpi(icaTypes{icaVal}, 'constrained ica (spatial)'))
     set(numCompH, 'enable', 'inactive');
     set(whichAnalysisH, 'enable', 'inactive');
 end

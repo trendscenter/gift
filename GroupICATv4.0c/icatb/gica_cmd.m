@@ -20,7 +20,7 @@ function gica_cmd(varargin)
 %   7. --n - Number of components extracted from the data. If
 %   omitted, MDL tool will be used to estimate components from the data.
 %   Mean of the estimated components is used as default.
-%   8. --r or --recon - Backreconstruction type. Options are gica, str, gig-ica.
+%   8. --r or --recon - Backreconstruction type. Options are gica, str, moo-icar.
 %   9. --a or --algorithm - ICA algorithm.
 %   10. --pca - PCA algorithm. Options are:
 %       1. Standard
@@ -205,8 +205,8 @@ disp('............GICA COMMAND LINE ................');
 disp('..............................................');
 fprintf('\n');
 
-if (ischar(algoType) && strcmpi(algoType, 'moo-icar'))
-    algoType = 'gig-ica';
+if (ischar(algoType) && strcmpi(algoType, 'gig-ica'))
+    algoType = 'moo-icar';
 end
 
 ica_algo = lower(cellstr(icatb_icaAlgorithm));
@@ -221,7 +221,7 @@ if (isempty(filesP))
     error('data parameter is missing. Command line usage is gica --o output_directory_name --data files1.nii --n 20 --a infomax');
 end
 
-if strcmpi(ica_algo{algoType}, 'gig-ica') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)')
+if strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)')
     if (~exist('spatial_references', 'var'))
         error('Spatial references doesn''t exist for doing constrained ica');
     end
@@ -271,7 +271,7 @@ if (numOfSub*numOfSess == 1)
     numReductionSteps = 1;
 end
 
-if (useTemporalICA || strcmpi(ica_algo{algoType}, 'iva-gl') || strcmpi(ica_algo{algoType}, 'iva-l') || strcmpi(ica_algo{algoType}, 'gig-ica') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
+if (useTemporalICA || strcmpi(ica_algo{algoType}, 'iva-gl') || strcmpi(ica_algo{algoType}, 'iva-l') || strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
     numReductionSteps = 1;
 end
 

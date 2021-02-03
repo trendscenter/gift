@@ -124,8 +124,8 @@ if (dispInfo)
     
 end
 
-if (strcmpi(icaAlgo, 'moo-icar'))
-    icaAlgo = 'gig-ica';
+if (strcmpi(icaAlgo, 'gig-ica'))
+    icaAlgo = 'moo-icar';
 end
 
 if strcmpi(icaAlgo, 'iva-gl')
@@ -142,7 +142,7 @@ if strcmpi(icaAlgo, 'iva-gl')
         pca_opts(nOpts).precision = precisionType;
     end
     
-elseif (strcmpi(icaAlgo, 'constrained ica (spatial)') || strcmpi(icaAlgo, 'gig-ica'))
+elseif (strcmpi(icaAlgo, 'constrained ica (spatial)') || strcmpi(icaAlgo, 'moo-icar'))
     
     mems = compute_mem_requirements(1, voxels, time_points, time_points, numOfPC1, precisionType);
     chk = strcmpi(mems(:, 3), 'yes');
