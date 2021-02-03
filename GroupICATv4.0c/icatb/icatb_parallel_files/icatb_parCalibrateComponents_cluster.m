@@ -20,7 +20,7 @@ end
 [dd1, dd2, imExtn] = fileparts(FUNCTIONAL_DATA_FILTER);
 
 modalityType = sesInfo.modality;
-componentSigns = sesInfo.scale_opts.componentSigns;
+%componentSigns = sesInfo.scale_opts.componentSigns;
 meanImOffsets = sesInfo.scale_opts.meanImOffsets;
 compSetFields = sesInfo.scale_opts.compSetFields;
 outputDir = sesInfo.outputDir;
@@ -29,6 +29,64 @@ numOfSess = sesInfo.numOfSess;
 numOfSub = sesInfo.numOfSub;
 back_reconstruction_mat_file = sesInfo.back_reconstruction_mat_file;
 calibrate_components_mat_file = sesInfo.calibrate_components_mat_file;
+
+icaAlgo = icatb_icaAlgorithm; % available ICA algorithms
+
+algoVal = sesInfo.algorithm; % algorithm index
+
+% selected ICA algorithm
+algorithmName = deblank(icaAlgo(algoVal, :));
+
+componentSigns = ones(1, sesInfo.numComp);
+
+useTemporalICA = 0;
+if (strcmpi(modalityType, 'fmri'))
+    try
+        useTemporalICA = strcmpi(sesInfo.group_ica_type, 'temporal');
+    catch
+    end
+end
+
+if (strcmpi(algorithmName, 'gig-ica'))
+    algorithmName = 'moo-icar';
+end
+
+subject_loadings = cell(sesInfo.numOfSub*sesInfo.numOfSess, 1);
+refImage = NaN;
+
+writeLoadings = 0;
+
+if (~useTemporalICA)
+    if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
+            && ~strcmpi(algorithmName, 'moo-icar'))
+        %--load reference image
+        %---------------------------------------------------------
+        icain=sesInfo.ica_mat_file;
+        ref = load(fullfile(outputDir, [icain, '.mat']));
+        refImage = ref.icasig;
+        W = ref.W;
+        pcain = [sesInfo.data_reduction_mat_file,num2str(sesInfo.numReductionSteps),'-',num2str(1), '.mat'];
+        load(fullfile(outputDir, pcain), 'pcasig');
+        
+        if (~strcmpi(modalityType, 'smri'))
+            writeLoadings = 1;
+        end
+        
+        if size(refImage, 2) == prod(sesInfo.HInfo.DIM(1:3))
+            refImage = refImage(:, mask_ind);
+        end
+        
+        %componentSigns = zeros(1, size(refImage, 1));
+        pcasig = W*pcasig';
+        componentSigns = (sign(diag(icatb_corr(pcasig', refImage'))))';
+        
+        %         for nC = 1:length(componentSigns)
+        %             componentSigns(nC) = sign(icatb_corr2(pcasig(nC, :), refImage(nC, :)));
+        %         end
+        
+    end
+end
+
 
 [subjectICAFiles, meanICAFiles, tmapICAFiles, meanALL_ICAFile] = icatb_parseOutputFiles('icaOutputFiles', sesInfo.icaOutputFiles, 'numOfSub', sesInfo.numOfSub, 'numOfSess', sesInfo.numOfSess, ...
     'flagTimePoints', sesInfo.flagTimePoints);
@@ -42,12 +100,16 @@ zipImages = ZIP_IMAGE_FILES;
 
 parfor i = 1:length(dataSetsToRun)
     
+    refIm = refImage;
+    
     tmpComponentSigns = componentSigns;
     tmpOffsets = meanImOffsets;
     
     fieldName  = compSetFields;
-    subjectNumberStr = num2str(ceil(dataSetsToRun(i) / numOfSess));
-    sessNumberStr = num2str(mod(dataSetsToRun(i) - 1, numOfSess) + 1);
+    subjectNumber = ceil(dataSetsToRun(i) / numOfSess);
+    sessNumber = mod(dataSetsToRun(i) - 1, numOfSess) + 1;
+    subjectNumberStr = num2str(subjectNumber);
+    sessNumberStr = num2str(sessNumber);
     
     disp(['--Subject ', subjectNumberStr,' Session ', sessNumberStr, '''s Component Set']);
     if (conserve_disk_space ~= 1)
@@ -72,6 +134,7 @@ parfor i = 1:length(dataSetsToRun)
     tempICs = bsxfun(@times, tempICs, tmpComponentSigns(:));
     tempTCs = bsxfun(@times, tempTCs, tmpComponentSigns(:));
     
+    subject_loadings{i} = (sum((tempICs - refIm).^2, 2))';
     
     if (strcmpi(modalityType, 'fmri'))
         
@@ -153,7 +216,10 @@ for nF = 1:length(zipFileName)
     sesInfo.zipContents.files_in_zip(nF).name = files_in_zip;
 end
 
-
+if (writeLoadings)
+    subject_loadings = cat(1, subject_loadings{:});
+    save(fullfile(outputDir, [icain, '.mat']), 'subject_loadings', '-append');
+end
 
 function [zipFileName, files_in_zip] = saveImgFiles(sesInfo, outfile, tempIC, tempTC, zipFiles, deleteFiles)
 %% Save images and compress images if necessary
