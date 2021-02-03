@@ -28,7 +28,7 @@ compFilePattern = '*mean*comp*s1*.img';
 compNumbers = [];
 
 % anatomical file used for displaying component images:
-structFile = which('nsingle_subj_T1_2_2_5.nii');
+structFile = which('ch2bet_3x3x3.nii');
 
 %%%%%%% fMRI data and component data %%%%%%%%
 

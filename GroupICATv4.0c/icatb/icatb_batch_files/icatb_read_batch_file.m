@@ -310,12 +310,12 @@ if (numOfSub*numOfSess == 1)
     numReductionSteps = 1;
 end
 
-if strcmpi(ica_algo{algoType}, 'moo-icar')
-    ica_algo{algoType} = 'gig-ica';
+if strcmpi(ica_algo{algoType}, 'gig-ica')
+    ica_algo{algoType} = 'moo-icar';
 end
 
 if (useTemporalICA || strcmpi(ica_algo{algoType}, 'iva-gl') || strcmpi(ica_algo{algoType}, 'iva-l') ...
-        || strcmpi(ica_algo{algoType}, 'gig-ica') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
+        || strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
     numReductionSteps = 1;
 end
 
@@ -332,7 +332,7 @@ if (isfield(inputData, 'doEstimation'))
     doEstimation = inputData.doEstimation;
 end
 
-if (strcmpi(ica_algo{algoType}, 'gig-ica') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
+if (strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
     doEstimation = 0;
 end
 
@@ -546,7 +546,7 @@ if strcmpi(ica_algo{algoType}, 'semi-blind infomax')
     % SBICA
     sesInfo = sbICACallback(sesInfo, inputData.refFunNames);
     
-elseif (strcmpi(ica_algo{algoType}, 'constrained ica (spatial)') || strcmpi(ica_algo{algoType}, 'gig-ica'))
+elseif (strcmpi(ica_algo{algoType}, 'constrained ica (spatial)') || strcmpi(ica_algo{algoType}, 'moo-icar'))
     % Constrained ICA (Spatial)
     sesInfo = constrainedICACallback(sesInfo, inputData.refFiles);
 end

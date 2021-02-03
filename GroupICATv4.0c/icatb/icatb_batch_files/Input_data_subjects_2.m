@@ -342,10 +342,10 @@ display_results.convert_to_zscores = 'yes';
 display_results.threshold = 1.0;
 display_results.image_values = 'positive and negative';
 display_results.slice_plane = 'axial';
-display_results.anatomical_file = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\nsingle_subj_T1_2_2_5.nii';
+display_results.anatomical_file = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\ch2bet_3x3x3.nii';
 
 % %Network names and components are used in the plots (only fmri). If you are using
-% %gig-ica or constrained ica (spatial), you can specify network names and
+% %moo-icar or constrained ica (spatial), you can specify network names and
 % %components within each network. Below is an example from neuromark
 % %template labels
 % display_results.network_summary_opts.comp_network_names = { 'SC', (1:5);                    
@@ -373,7 +373,7 @@ display_results.anatomical_file = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\i
 %display_results.network_summary_opts.CLIM=CLIM;
 
 
-%% Specify spatial reference files for constrained ICA (spatial) or gig-ica
+%% Specify spatial reference files for constrained ICA (spatial) or moo-icar
 refFiles = {which('ref_default_mode.nii'), which('ref_left_visuomotor.nii'), which('ref_right_visuomotor.nii')};
 
 %% ICA Options - Name by value pairs in a cell array. Options will vary depending on the algorithm. See icatb_icaOptions for more details. Some options are shown below.
