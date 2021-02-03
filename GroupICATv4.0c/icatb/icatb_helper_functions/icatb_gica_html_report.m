@@ -33,7 +33,7 @@ load(param_file);
 
 sesInfo.outputDir = outputDir;
 
-structFile = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'nsingle_subj_T1_2_2_5.nii');
+structFile = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
 try
     structFile = opts.anatomical_file;
 catch
@@ -313,7 +313,7 @@ fALFF = zeros(size(compFiles, 1), 1);
 dynamic_range = zeros(size(compFiles, 1), 1);
 components = (1:size(compFiles, 1))';
 
-meanH = [];
+%meanH = [];
 resultsInfo = [];
 tmp_fnames = cell(1, size(compFiles, 1));
 for nF = 1:size(compFiles, 1)
@@ -423,7 +423,7 @@ for nF = 1:size(compFiles, 1)
             %end
         end
         
-        delete(meanH);
+        delete(gH);
     end
     
 end
@@ -672,18 +672,22 @@ if (exist('kurt_comp', 'var'))
     end
     
     drawnow;
+    tmp_values = values(1, :);
+    tmp_errors = errors(1, :);
     bw_legend = cellstr([repmat('Comp ', length(components), 1), num2str(components)]);
     kurtH(1) = figure('color', 'w', 'name', 'Kurtosis (Timecourses)', 'position', figurePos, 'visible', figVisible);
     %plotBars(values, errors, 0.8, {'Timecourses', 'Spatial Maps'}, winter(64), bw_legend);
-    plotBars(values(1, :), errors(1, :), 0.8, {'Timecourses'}, winter(64), bw_legend);
+    plotBars(tmp_values, tmp_errors, 0.8, {'Timecourses'}, winter(64), bw_legend);
     title('Kurtosis (Mean +/- SEM)');
-    set(gca, 'Ylim', [min(values(:)-abs(errors(:)))-0.1, max(values(:)+abs(errors(:))+0.1)]);
+    set(gca, 'Ylim', [min(tmp_values(:) -abs(tmp_errors(:))) - 0.1, max(tmp_values(:) + abs(tmp_errors(:)) + 0.1)]);
     
     %pause(1);
+    tmp_values = values(2, :);
+    tmp_errors = errors(2, :);
     kurtH(2) = figure('color', 'w', 'name', 'Kurtosis (SM)', 'position', figurePos, 'visible', figVisible);
-    plotBars(values(2, :), errors(2, :), 0.8, {'Spatial Maps'}, winter(64), bw_legend);
+    plotBars(tmp_values, tmp_errors, 0.8, {'Spatial Maps'}, winter(64), bw_legend);
     title('Kurtosis (Mean +/- SEM)');
-    set(gca, 'Ylim', [min(values(:)-abs(errors(:)))-0.1, max(values(:)+abs(errors(:))+0.1)]);
+    set(gca, 'Ylim', [min(tmp_values(:) -abs(tmp_errors(:))) - 0.1, max(tmp_values(:) + abs(tmp_errors(:)) + 0.1)]);
     
     clear values errors;
     drawnow;
@@ -927,7 +931,7 @@ convert_to_zscores = 'no';
 image_values = 'positive';
 labels = '';
 cmap = hot(64);
-structFile = fullfile (fileparts(which('gift.m')), 'icatb_templates', 'nsingle_subj_T1_2_2_5.nii');
+structFile = fullfile (fileparts(which('gift.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
 
 for n = 1:2:length(varargin)
     if (strcmpi(varargin{n}, 'structfile'))
@@ -1199,7 +1203,7 @@ else
     
     set(gca, 'xtick', ticks);
     set(gca, 'xticklabel', groupNames);
-    legend(bh(1: size(barvalues, 2)), bw_legend{:}, 'location', 'best');
+    legend(bh(1: size(barvalues, 2)), bw_legend{:}, 'location', 'bestoutside');
 end
 
 

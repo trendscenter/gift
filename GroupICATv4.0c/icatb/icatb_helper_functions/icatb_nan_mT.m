@@ -15,6 +15,13 @@ if (~exist('missing_subs_cutoff', 'var'))
     end
 end
 
+
+levels = chk_levels(groups(:, 2:end));
+levels_to_chk = find(isfinite(levels) == 1);
+levels = levels(levels_to_chk);
+
+[tmp_tt, tmp_pp, tmp_stats] = mT(randn(size(data, 1), 1), groups, covariates, term, {});
+
 missing_subs_cutoff = ceil((missing_subs_cutoff*size(data, 1))/100);
 
 nan_cols = any(isnan(data));
@@ -22,7 +29,8 @@ nan_cols = any(isnan(data));
 good_cols = find(nan_cols == 0);
 nan_cols = find(nan_cols == 1);
 
-t = NaN(1, size(data, 2));
+% Initialize later to handle multiple contrasts
+t = NaN(length(tmp_tt), size(data, 2));
 p = t;
 
 if (~isempty(covariates))
@@ -43,7 +51,12 @@ stats.Term = term;
 
 
 if (~isempty(good_cols))
-    [t(good_cols), p(good_cols), stats1] = mT(data(:, good_cols), groups, covariates, term, options);
+    %[t(good_cols), p(good_cols), stats1] = mT(data(:, good_cols), groups, covariates, term, options);
+    [tmp_t, tmp_p, stats1] = mT(data(:, good_cols), groups, covariates, term, options);
+    t(:, good_cols) = tmp_t;
+    p(:, good_cols) = tmp_p;
+    clear tmp_t tmp_t;
+    
     stats.B = NaN(size(stats1.B, 1), size(data, 2));
     stats.B(:, good_cols) = stats1.B;
     stats.SSE(1, good_cols) = stats1.SSE;
@@ -71,6 +84,14 @@ if (~isempty(nan_cols))
             continue;
         end
         
+        tmp_levels = chk_levels(grp(:, 2:end));
+        tmp_levels = tmp_levels(levels_to_chk);
+        
+        if (any(tmp_levels ~= levels))
+            continue;
+        end
+        
+        
         if (~isempty(y))
             
             try
@@ -79,8 +100,8 @@ if (~isempty(nan_cols))
                     continue;
                 end
                 countB = countB + 1;
-                t(nan_cols(nC)) = tmp_t;
-                p(nan_cols(nC)) = tmp_p;
+                t(:, nan_cols(nC)) = tmp_t;
+                p(:, nan_cols(nC)) = tmp_p;
                 if (countB == 1)
                     if (~isfield(stats, 'B'))
                         stats.B = NaN(size(stats2.B, 1), size(data, 2));
@@ -103,4 +124,19 @@ end
 
 if (~isfield(stats, 'Levels'))
     stats.Levels = [1, 0];
+end
+
+
+
+function levels = chk_levels(groups)
+% Check levels in categorical covariates. If the number of levels don't
+% match between the excluded nan values and full group covariates, tests
+% are not done.
+levels = NaN(1, size(groups, 2));
+for nL = 1:size(groups, 2)
+    if any(groups(:, nL) < 0)
+        continue
+    end
+    tmp = length(unique(groups(:, nL)));
+    levels(nL) = tmp;
 end

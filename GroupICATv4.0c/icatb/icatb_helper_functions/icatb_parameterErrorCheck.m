@@ -68,7 +68,7 @@ catch
     algoType = '';
 end
 
-if (~strcmpi(algoType, 'gig-ica') &&  ~strcmpi(algoType, 'Constrained ICA (Spatial)'))
+if (~strcmpi(algoType, 'moo-icar') &&  ~strcmpi(algoType, 'Constrained ICA (Spatial)'))
     for i=1:sesInfo.numReductionSteps
         if(sesInfo.reduction(i).numOfPCInEachGroupAfterCAT(1) < sesInfo.reduction(i).numOfPCAfterReduction)
             infoCell{1} = ['Reduction Step ', num2str(i), ': '];

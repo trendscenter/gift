@@ -102,7 +102,7 @@ else
 end
 
 if (strcmpi(method, 'all'))
-    methodStr = {'elbow', 'gap', 'bic', 'aic', 'dunns', 'silhouette'};
+    methodStr = {'elbow', 'gap', 'bic', 'aic', 'dunns', 'silhouette', 'daviesbouldin', 'ray turi'};
 else
     methodStr = cellstr(method);
 end
@@ -171,6 +171,44 @@ for numMethod = 1:length(methodStr)
         results.values = values;
         results.klist = klist;
         results.title = 'Dunns Index';
+        
+    elseif (strcmpi(method, 'daviesbouldin'))
+        % daves bouldin
+        klist = KList;
+        idx2 = idx;
+        Cjj = C;
+        idx2(klist == 1) = [];
+        Cjj(klist == 1) = [];
+        klist(klist == 1) = [];
+        values = zeros(1, length(klist));
+        for jj = 1:length(klist)
+            values(jj) = davesBouldinIndex(data, Cjj{jj}, idx2{jj});
+        end
+        clear Cjj idx2;
+        [dd, indsa]  = min(values);
+        results.K = klist(indsa(:)');
+        results.values = values;
+        results.klist = klist;
+        results.title = 'DaviesBouldin';
+        
+    elseif (strcmpi(method, 'ray turi'))
+        % Ray turi metric
+        klist = KList;
+        idx2 = idx;
+        Cjj = C;
+        idx2(klist == 1) = [];
+        Cjj(klist == 1) = [];
+        klist(klist == 1) = [];
+        values = zeros(1, length(klist));
+        for jj = 1:length(klist)
+            values(jj) = ray_turi(data, Cjj{jj}, idx2{jj});
+        end
+        clear Cjj idx2;
+        [dd, indsa]  = min(values);
+        results.K = klist(indsa(:)');
+        results.values = values;
+        results.klist = klist;
+        results.title = 'Ray Turi';
         
     else
         % Silhouette
@@ -573,7 +611,7 @@ if (isempty(param_file))
     error('Data is not selected');
 end
 
-methodsStr = {'Elbow', 'Gap', 'BIC', 'AIC', 'Dunns', 'Silhouette'};
+methodsStr = {'Elbow', 'Gap', 'BIC', 'AIC', 'Dunns', 'Silhouette', 'DaviesBouldin', 'Ray Turi'};
 
 index = icatb_listdlg('PromptString', 'Select method', 'SelectionMode','multiple', 'ListString', methodsStr, 'movegui', 'center', 'windowStyle', 'modal', ...
     'title_fig', 'Cluster estimate method');
@@ -696,3 +734,50 @@ end
 handles.data = data;
 
 
+function ray_turi_metric = ray_turi(data, Call, idx)
+%% Ray Turi index
+
+num_clusters = size(Call, 1);
+
+wgss = 0;
+for i = 1:num_clusters
+    X = data((idx == i), :);
+    Y = Call(i, :);
+    d = sqrt(sum(bsxfun(@minus, X, Y).^2, 2));
+    wgss = wgss + sum(d.^2);
+end
+
+ray_turi_metric = wgss / (length(idx)*(min(icatb_pdist(Call, 1, 'euclidean'))^2));
+
+
+function db_index = davesBouldinIndex(data, Call, idx)
+%% Daves bouldin index
+
+num_clusters = size(Call, 1);
+
+db_index = 0;
+
+for i = 1:num_clusters
+    
+    cluster_members_a = find(idx == i);
+    cluster_center_a = Call(i, :);
+    cluster_members_a = cluster_members_a(:)';
+    
+    sum1 = sum(sqrt(sum(bsxfun(@minus, data(cluster_members_a, :), cluster_center_a).^2, 2)));
+    
+    tmp_dis = zeros(1, num_clusters);
+    
+    for j = 1:num_clusters
+        if (j ~= i)
+            cluster_members_b = find(idx == j);
+            cluster_center_b = Call(j, :);
+            sum2 = sum(sqrt(sum(bsxfun(@minus, data(cluster_members_b, :), cluster_center_b).^2, 2)));
+            tmp_dis(j) = ((sum1 / length(cluster_members_a)) + (sum2 / length(cluster_members_b))) / norm(cluster_center_a - cluster_center_b);
+        end
+    end
+    
+    db_index = db_index + max(tmp_dis);
+    
+end
+
+db_index = db_index / num_clusters;

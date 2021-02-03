@@ -56,7 +56,7 @@ end
 
 
 if (~isGIFTI)
-    structFile = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'nsingle_subj_T1_2_2_5.nii');
+    structFile = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
     try
         structFile = opts.anatomical_file;
     catch

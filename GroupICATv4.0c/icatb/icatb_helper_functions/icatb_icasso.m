@@ -57,11 +57,11 @@ algoVal = sesInfo.userInput.algorithm; % algorithm index
 % selected ICA algorithm
 algorithmName = deblank(icaAlgo(algoVal, :));
 
-if strcmpi(algorithmName, 'moo-icar')
-    algorithmName = 'gig-ica';
+if strcmpi(algorithmName, 'gig-ica')
+    algorithmName = 'moo-icar';
 end
 
-if (strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)'))
     error(['ICASSO option is not available for algorithm ', algorithmName]);
 end
 
