@@ -151,8 +151,8 @@ try
         algorithmName = sesInfo.userInput.algorithm;
     end
     
-    if (strcmpi(algorithmName, 'moo-icar'))
-        algorithmName = 'gig-ica';
+    if (strcmpi(algorithmName, 'gig-ica'))
+        algorithmName = 'moo-icar';
     end
     
     analysisStr = {'All***', 'Initialize Parameters', 'Group Data Reduction', 'Calculate ICA/IVA', 'Back Reconstruct', 'Calibrate Components', 'Group Stats'};
@@ -264,7 +264,7 @@ try
     end
     
     
-    if (strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)'))
+    if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)'))
         % No data reduction
         stepsToRun(stepsToRun == 3) = [];
         % No back-reconstruction

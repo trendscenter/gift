@@ -21,11 +21,11 @@ function varargout = icatb_icaAlgorithm(ica_algorithm, data, ICA_Options)
 if (strcmpi(modalityType, 'fmri'))
     % all the available algorithms for fmri data
     icaAlgo = str2mat('Infomax','Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'GIG-ICA', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS');
+        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'MOO-ICAR', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS');
 elseif (strcmpi(modalityType, 'smri'))
     % all the available algorithms for EEG data
     icaAlgo = str2mat('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'GIG-ICA', 'Sparse ICA-EBM', 'IVA-L-SOS', 'Constrained ICA (Spatial)');
+        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'MOO-ICAR', 'Sparse ICA-EBM', 'IVA-L-SOS', 'Constrained ICA (Spatial)');
 else
     % all the available algorithms for EEG data
     icaAlgo = str2mat('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...

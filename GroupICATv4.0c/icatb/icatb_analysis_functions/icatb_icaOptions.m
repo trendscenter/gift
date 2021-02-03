@@ -29,8 +29,10 @@ frames = dataSize(2);
 
 %% Available ICA algorithms
 icaAlgo = icatb_icaAlgorithm;
-
 if ischar(algorithm_index)
+    if (strcmpi(algorithm_index, 'gig-ica'))
+        algorithm_index = 'moo-icar';
+    end
     algorithm_index = strmatch(lower(algorithm_index), lower(icaAlgo), 'exact');
     if isempty(algorithm_index)
         error('Check the algorithm name you specified');

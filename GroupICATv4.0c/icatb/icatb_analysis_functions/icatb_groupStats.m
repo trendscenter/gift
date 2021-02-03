@@ -41,8 +41,8 @@ algoVal = sesInfo.algorithm; % algorithm index
 algorithmName = deblank(icaAlgo(algoVal, :));
 
 
-if (strcmpi(algorithmName, 'moo-icar'))
-    algorithmName = 'gig-ica';
+if (strcmpi(algorithmName, 'gig-ica'))
+    algorithmName = 'moo-icar';
 end
 
 parallelMode = 'serial';
@@ -480,7 +480,7 @@ if (conserve_disk_space ~= 1)
     try
         
         if (sesInfo.numOfSub*sesInfo.numOfSess > 1 && (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') ...
-                && ~strcmpi(algorithmName, 'constrained ica (spatial)') && ~strcmpi(algorithmName, 'gig-ica')))
+                && ~strcmpi(algorithmName, 'constrained ica (spatial)') && ~strcmpi(algorithmName, 'moo-icar')))
             disp('Comparing mean image with the aggregate ...');
             disp('Value shows how much the mean component is close w.r.t aggregate component');
             %load ica data
@@ -505,6 +505,9 @@ if (conserve_disk_space ~= 1)
     
     %% Write FNC and spectra info by default in file *_postprocess_results.mat
     if (strcmpi(modalityType, 'fmri'))
+        
+        
+        
         if (~runParallel)
             icatb_postprocess_timecourses(sesInfo);
         else

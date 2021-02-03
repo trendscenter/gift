@@ -77,8 +77,8 @@ sesInfo.parallel_info.num_workers = num_workers;
 icaStr = icatb_icaAlgorithm;
 algorithmName = deblank(icaStr(sesInfo.userInput.algorithm, :));
 
-if strcmpi(algorithmName, 'moo-icar')
-    algorithmName = 'gig-ica';
+if strcmpi(algorithmName, 'gig-ica')
+    algorithmName = 'moo-icar';
 end
 
 if (strcmpi(modalityType, 'fmri'))
@@ -91,7 +91,7 @@ if (strcmpi(modalityType, 'fmri'))
     
     useTemporalICA = strcmpi(sesInfo.group_ica_type, 'temporal');
     if (useTemporalICA)
-        if (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
+        if (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
                 strcmpi(algorithmName, 'semi-blind infomax'))
             error(['Temporal ica cannot be run using algorithm ', algorithmName]);
         end
@@ -99,7 +99,7 @@ if (strcmpi(modalityType, 'fmri'))
     
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'gig-ica') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'moo-icar') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
     
     if (sesInfo.userInput.numOfSub*sesInfo.userInput.numOfSess == 1)
         sesInfo.userInput.numReductionSteps = 1;

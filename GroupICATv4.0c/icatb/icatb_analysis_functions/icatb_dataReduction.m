@@ -39,11 +39,11 @@ appDataName = 'gica_waitbar_app_data';
 
 algoList = icatb_icaAlgorithm;
 algoName = deblank(algoList(sesInfo.algorithm, :));
-if (strcmpi(algoName, 'moo-icar'))
-    algoName = 'gig-ica';
+if (strcmpi(algoName, 'gig-ica'))
+    algoName = 'moo-icar';
 end
 
-if (strcmpi(algoName, 'gig-ica') || strcmpi(algoName, 'constrained ica (spatial)'))
+if (strcmpi(algoName, 'moo-icar') || strcmpi(algoName, 'constrained ica (spatial)'))
     return;
 end
 
@@ -129,7 +129,7 @@ if (strcmpi(modalityType, 'fmri'))
     
     if (useTemporalICA)
         reductionStepsToRun = 1;
-        if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos') || strcmpi(algoName, 'gig-ica') || strcmpi(algoName, 'constrained ica (spatial)'))
+        if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos') || strcmpi(algoName, 'moo-icar') || strcmpi(algoName, 'constrained ica (spatial)'))
             error(['Temporal ICA cannot be run using the algorithm ', algoName]);
         end
     end

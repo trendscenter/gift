@@ -100,19 +100,29 @@ if (strcmpi(modalityType, 'fmri'))
     end
 end
 
-if strcmpi(algorithmName, 'moo-icar')
-    algorithmName = 'gig-ica';
+if (strcmpi(algorithmName, 'gig-ica'))
+    algorithmName = 'moo-icar';
 end
 
+writeLoadings = 0;
 if (~useTemporalICA)
     if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
-            && ~strcmpi(algorithmName, 'gig-ica'))
+            && ~strcmpi(algorithmName, 'moo-icar'))
         %--load reference image
         %---------------------------------------------------------
         icain=sesInfo.ica_mat_file;
         ref = load(fullfile(outputDir, [icain, '.mat']));
         refImage = ref.icasig;
         W = ref.W;
+        
+        if (~strcmpi(modalityType, 'smri'))
+            writeLoadings = 1;
+            try
+                subject_loadings = ref.subject_loadings;
+            catch
+                subject_loadings = zeros(sesInfo.numOfSub*sesInfo.numOfSess, sesInfo.numComp);
+            end
+        end
         
         pcain = [sesInfo.data_reduction_mat_file,num2str(sesInfo.numReductionSteps),'-',num2str(1), '.mat'];
         load(fullfile(outputDir, pcain), 'pcasig');
@@ -121,12 +131,13 @@ if (~useTemporalICA)
             refImage = refImage(:, mask_ind);
         end
         
-        componentSigns = zeros(1, size(refImage, 1));
+        %componentSigns = zeros(1, size(refImage, 1));
         pcasig = W*pcasig';
+        componentSigns = (sign(diag(icatb_corr(pcasig', refImage'))))';
         
-        for nC = 1:length(componentSigns)
-            componentSigns(nC) = sign(icatb_corr2(pcasig(nC, :), refImage(nC, :)));
-        end
+        %         for nC = 1:length(componentSigns)
+        %             componentSigns(nC) = sign(icatb_corr2(pcasig(nC, :), refImage(nC, :)));
+        %         end
         
     end
 end
@@ -138,7 +149,7 @@ if (isfield(sesInfo, 'conserve_disk_space'))
     conserve_disk_space = sesInfo.conserve_disk_space;
 end
 
-if (strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)'))
     conserve_disk_space = 0;
 end
 
@@ -147,7 +158,7 @@ if (isfield(sesInfo, 'backReconType'))
     backReconType = sesInfo.backReconType;
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'gig-ica') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'moo-icar') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
     if (conserve_disk_space == 1)
         if (~strcmpi(backReconType, 'spatial-temporal regression'))
             [sesInfo.tcInfo, sesInfo.icInfo] = icatb_groupBackReconInfo(sesInfo, W);
@@ -297,6 +308,7 @@ else
         % get sign of correlation between subject components and reference
         % component
         for compNum = 1:sesInfo.numComp
+            
             tempIC(compNum, :) = tempIC(compNum, :) - meanImOffsets(compNum);
             %         subjectImage = detrend(tempIC(compNum, :), 0);
             %         if length(subjectImage) ~= size(refImage, 2)
@@ -311,6 +323,11 @@ else
                 tempIC(compNum, :) = tempIC(compNum, :) * -1;
                 tempTC(compNum, :) = tempTC(compNum, :) * -1;
             end
+            
+            if (writeLoadings)
+                subject_loadings(i, compNum) = sum(((tempIC(compNum, :)) - (refImage(compNum, :))).^2);
+            end
+            
         end
         drawnow;
         
@@ -404,6 +421,29 @@ else
         
     end
     
+    if (writeLoadings)
+        try
+            save(fullfile(outputDir, [icain, '.mat']), 'subject_loadings', '-append');
+        catch
+        end
+    end
+    
+end
+
+
+%% Write out subject loadings
+if (writeLoadings)
+    try
+        load(fullfile(outputDir, [icain, '.mat']))
+        subject_loadings = reshape(subject_loadings, sesInfo.numOfSub, sesInfo.numOfSess, sesInfo.numComp);
+        writeLoadingsV = sesInfo.HInfo.V;
+        writeLoadingsV.dim = size(subject_loadings);
+        writeLoadingsV.n(1) = 1;
+        writeLoadingsV.descrip = 'Subject ICA Loadings (subjects x sessions x components';
+        writeLoadingsV.fname = fullfile(outputDir, [sesInfo.userInput.prefix, '_ica_subject_loadings.nii']);
+        icatb_write_vol(writeLoadingsV, subject_loadings);
+    catch
+    end
 end
 
 
@@ -540,7 +580,7 @@ if (conserve_disk_space == 1)
         
         
         if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
-                && ~strcmpi(algorithmName, 'gig-ica'))
+                && ~strcmpi(algorithmName, 'moo-icar'))
             
             disp('Comparing mean image with the aggregate ...');
             disp('Value shows how much the mean component is close w.r.t aggregate component');

@@ -36,11 +36,11 @@ icaStr = icatb_icaAlgorithm;
 
 algorithmName = deblank(icaStr(sesInfo.algorithm, :));
 
-if strcmpi(algorithmName, 'moo-icar')
-    algorithmName = 'gig-ica';
+if strcmpi(algorithmName, 'gig-ica')
+    algorithmName = 'moo-icar';
 end
 
-if (strcmpi(algorithmName, 'gig-ica') || strcmpi(algorithmName, 'constrained ica (spatial)') )
+if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)') )
     return;
 end
 
@@ -188,7 +188,7 @@ if (strcmpi(backReconType, 'moo-icar'))
 end
 
 %% ICA back-reconstruction
-if (~strcmpi(backReconType, 'spatial-temporal regression') && ~strcmpi(backReconType, 'gig-ica') && ~useTemporalICA)
+if (~strcmpi(backReconType, 'spatial-temporal regression') && ~strcmpi(backReconType, 'constrained ica') && ~strcmpi(backReconType, 'gig-ica') && ~useTemporalICA)
     
     if (~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-gl') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l') && ~strcmpi(deblank(icaStr(sesInfo.algorithm, :)), 'iva-l-sos'))
         if (~isfield(sesInfo, 'tcInfo') || ~isfield(sesInfo, 'icInfo'))
