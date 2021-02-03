@@ -254,12 +254,12 @@ if (strcmpi(modalityType, 'fmri'))
     D(size(D,2)+1).string = ['Group ICA Type : ', upper(group_ica_type(1)), group_ica_type(2:end)];
 end
 
-if strcmpi(selected_ica_algorithm, 'moo-icar')
-    selected_ica_algorithm = 'gig-ica';
+if strcmpi(selected_ica_algorithm, 'gig-ica')
+    selected_ica_algorithm = 'moo-icar';
 end
 
 
-if (~(strcmpi(selected_ica_algorithm, 'iva-gl') || strcmpi(selected_ica_algorithm, 'gig-ica') || strcmpi(selected_ica_algorithm, 'constrained ica (spatial)') || useTemporalICA))
+if (~(strcmpi(selected_ica_algorithm, 'iva-gl') || strcmpi(selected_ica_algorithm, 'moo-icar') || strcmpi(selected_ica_algorithm, 'constrained ica (spatial)') || useTemporalICA))
     % Back Reconstruction Type
     backReconType = 'Regular';
     if (isfield(sesInfo, 'backReconType'))

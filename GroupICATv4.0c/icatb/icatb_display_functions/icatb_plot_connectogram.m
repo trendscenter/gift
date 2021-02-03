@@ -75,7 +75,7 @@ convert_to_zscores = 'yes';
 image_values = 'positive';
 load icatb_colors coldhot;
 cmap = coldhot(1:4:end, :);
-template_file = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet.nii');
+template_file = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
 slice_plane = 'sagittal';
 colorbar_label = 'Corr';
 

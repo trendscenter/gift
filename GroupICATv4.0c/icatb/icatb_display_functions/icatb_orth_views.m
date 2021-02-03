@@ -393,6 +393,8 @@ function subH = plotImage(subH, data, CLIM)
 %% Function to plot the image at the specified position
 %
 
+structVol = get(get(subH, 'parent'), 'userdata');
+%structVol = tmpV.structVol;
 imageAxisPos = get(subH, 'position');
 image(rot90(data), 'parent', subH, 'CDataMapping', 'scaled');
 set(subH, 'units', 'normalized');
@@ -416,7 +418,9 @@ imageAxisPos = [imageAxisPos(1), imageAxisPos(2), newWidth, newHeight];
 set(subH, 'position', imageAxisPos);
 %setImagePos(subH, imagePos);
 set(subH, 'clim', CLIM); % set the axis positions to the specified
-axis(subH, 'image');
+if (all(structVol.VOX==structVol.VOX(1)))
+    axis(subH, 'image');
+end
 set(subH, 'XTick', []);
 set(subH, 'XTickLabel', []);
 set(subH, 'YTick', []);

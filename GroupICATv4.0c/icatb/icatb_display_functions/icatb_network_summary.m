@@ -342,7 +342,8 @@ if (~isempty(FNCM))
     
     %% Connectogram view - FNC correlations are shown using bezier curves and thumbnails of spatial maps are shown in a circle. Components within the same network are shown in the same color.
     fH = icatb_plot_connectogram([], comp_network_names, 'C', FNCM, 'threshold', thresholds(1), 'image_file_names', file_names, 'colorbar_label', fnc_colorbar_label, 'cmap', cmap_corr, ...
-        'slice_plane', slice_plane, 'conn_threshold', conn_threshold, 'imwidth', imWidth, 'display_type', display_type, 'CLIM', CLIM_corr);
+        'slice_plane', slice_plane, 'conn_threshold', conn_threshold, 'imwidth', imWidth, 'display_type', display_type, 'CLIM', CLIM_corr, ...
+        'template_file', structFile);
     tmp_f_name = [prefix, '_connectogram'];
     outFNames = fullfile(outputDir, [tmp_f_name, '.fig']);
     saveas(fH, outFNames);
