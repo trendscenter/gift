@@ -83,9 +83,9 @@ scaleType = 2;
 % Note: Use only one subject and one session for Semi-blind ICA. Also specify atmost two reference function names
 
 % 1 means infomax, 2 means fastICA, etc.
-algoType = 'gig-ica';
+algoType = 'moo-icar';
 
-%% Specify spatial reference files for constrained ICA (spatial) or gig-ica.
+%% Specify spatial reference files for constrained ICA (spatial) or moo-icar.
 refFiles = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\neuromark_53.nii'; 
 
 %% Report generator (fmri and smri only)
@@ -95,11 +95,11 @@ display_results.convert_to_zscores = 'yes';
 display_results.threshold = 1.0;
 display_results.image_values = 'positive and negative';
 display_results.slice_plane = 'axial';
-display_results.anatomical_file = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\nsingle_subj_T1_2_2_5.nii';
+display_results.anatomical_file = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\ch2bet_3x3x3.nii';
 
 %% Network summary options
 %Network names and components are used in the plots (only fmri). If you are using
-%gig-ica or constrained ica (spatial), you can specify network names and
+%moo-icar or constrained ica (spatial), you can specify network names and
 %components within each network. Below is an example from neuromark
 %template labels
 display_results.network_summary_opts.comp_network_names = { 'SC', (1:5);                    
@@ -111,7 +111,7 @@ display_results.network_summary_opts.comp_network_names = { 'SC', (1:5);
                                     'CB', (50:53)};
 display_results.network_summary_opts.outputDir = fullfile(outputDir, 'network_summary');
 display_results.network_summary_opts.prefix = [prefix, '_network_summary'];
-display_results.network_summary_opts.structFile = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\nsingle_subj_T1_2_2_5.nii';
+display_results.network_summary_opts.structFile = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\ch2bet_3x3x3.nii';
 display_results.network_summary_opts.image_values = 'positive and negative';
 display_results.network_summary_opts.threshold = 2;
 display_results.network_summary_opts.convert_to_z = 'yes';
