@@ -22,7 +22,7 @@ function varargout = noisecloud_gui(varargin)
 
 % Edit the above text to modify the response to help noisecloud_gui
 
-% Last Modified by GUIDE v2.5 03-Oct-2016 11:55:11
+% Last Modified by GUIDE v2.5 17-Feb-2021 16:32:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -157,6 +157,29 @@ catch
     testing_opts.regress_cov = [];
 end
 
+testing_opts.orig_data = '';
+try
+    testing_opts.orig_data = handles.testing_opts.orig_data;
+catch
+    %testing_opts.orig_data = '';
+end
+
+if (~isempty(testing_opts.orig_data))
+    
+    orig_data = cellstr(deblank(testing_opts.orig_data));
+    if (length(orig_data) ~= size(testing_opts.sm, 1))
+        error('Number of subjects entered in original data doesn''t match the number of spatial maps entered in testing data');
+    end
+    
+    for nO = 1:length(orig_data)
+        chkFile = dir(orig_data{nO});
+        if (isempty(chkFile))
+            error('File entered %s is not a valid file pattern or file', orig_data{nO});
+        end
+    end
+    
+end
+
 try
     training_opts.regress_cov = handles.training_opts.regress_cov;
 catch
@@ -169,6 +192,7 @@ end
 
 disp('Saving results ...');
 save(fullfile(outputDir, 'noise_cloud_results.mat'), 'class_labels', 'fit_mdl', 'result_nc_classifier', 'training_opts', 'testing_opts');
+disp('Done');
 
 
 
@@ -566,4 +590,30 @@ function help_train_covariates_Callback(hObject, eventdata, handles)
 
 
 H = helpdlg('Specify the covariates to be regressed from the timecourses. You could enter realignment parameters. Number of rows in each covariate file must match the number of timepoints. Number of files must match the number of subjects.', 'Regress Covariates (Training set)');
+waitfor(H);
+
+
+% --- Executes on button press in browse_test_original_data.
+function browse_test_original_data_Callback(hObject, eventdata, handles)
+% hObject    handle to browse_test_original_data (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+sm_files = icatb_selectEntry('title', 'Select original data of all subjects ...', 'typeSelection', 'multiple', 'filter', '*.nii');
+drawnow;
+handles.testing_opts.orig_data = sm_files;
+guidata(hObject, handles);
+if (~isempty(sm_files))
+    set(handles.browse_test_original_data, 'foregroundcolor', [0, 1, 0]);
+end
+
+
+% --- Executes on button press in help_test_original_data.
+function help_test_original_data_Callback(hObject, eventdata, handles)
+% hObject    handle to help_test_original_data (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+H = helpdlg(['Enter original data of all subjects. If you have analyze images, specify wildcard pattern. ', ...
+    'Components flagged as noise will be removed from each subject''s data and new set of images are written with R_ prefix in results directory.'], 'Original data');
 waitfor(H);

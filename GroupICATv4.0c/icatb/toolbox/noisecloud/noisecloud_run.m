@@ -93,6 +93,14 @@ if (isfield(training_opts, 'tc') && ~isempty(training_opts.tc))
     end
 end
 
+orig_data = '';
+try
+    orig_data = testing_opts.orig_data;
+    orig_data(1);
+    orig_data = cellstr(orig_data);
+catch
+end
+
 [training_tc, testing_tc] = doRegressTimeCourses(training_tc, regress_training_cov, testing_tc, regress_testing_cov, outDir);
 
 %% Get the features of training data
@@ -131,6 +139,13 @@ flags_testing(class_labels == 0) = {'Network'};
 output_file_name = fullfile(outDir, 'nc_class_labels.txt');
 cl_to_write = [char(file_names_testing), repmat(' ', length(file_names_testing), 1), char(flags_testing)];
 dlmwrite(output_file_name, cl_to_write, '');
+
+%% Optional remove noise from the testing data-sets
+if (~isempty(orig_data))
+    if (~isempty(file_names_testing))
+        removeNoiseData(orig_data, testing_opts.sm, class_labels, outDir);
+    end
+end
 
 
 
@@ -206,3 +221,63 @@ for nS = 1:length(training_tc)
     end
     training_tc{nS} = outName;
 end
+
+
+function removeNoiseData(orig_data, file_names_testing, class_labels, outDir)
+% Remove noise components from the data
+
+file_names_testing = cellstr(file_names_testing);
+
+endT = 0;
+for nO = 1:length(orig_data)
+    currentFile = orig_data{nO};
+    [p, fn, extn] = fileparts(currentFile);
+    tmp_files = dir(currentFile);
+    if (isempty(tmp_files))
+        error('File %s names doesn''t exist with the pattern or file name', currentFile);
+    end
+    p = icatb_fullFile('directory', p, 'files', char(tmp_files.name));
+    files = icatb_rename_4d_file(p);
+    V = icatb_spm_vol(deblank(files));
+    Vcomp = icatb_spm_vol(file_names_testing{nO});
+    mask = find(abs(icatb_spm_read_vols(Vcomp(1))) > eps);
+    data = icatb_read_data(files, [], (1:prod(V(1).dim(1:3))));
+    startT = endT + 1;
+    endT = endT + length(Vcomp);
+    comp_flags = class_labels(startT:endT);
+    noise_comps = find(comp_flags == 1);
+    if (isempty(noise_comps))
+        disp(['No noise components in ', file_names_testing{nO}, '. Not removing components']);
+        continue;
+    end
+    sm = icatb_remove_mean(icatb_read_data(file_names_testing{nO}, [], mask));
+    dataN = data(mask, :);
+    meanData = mean(dataN);
+    % remove the mean
+    dataN = icatb_remove_mean(dataN, 0);
+    A = (pinv(sm)*dataN)';
+    S = sm';
+    A_R = A; S_R = S;
+    A_R(:, noise_comps) = []; S_R(noise_comps, :) = [];
+    % compute the new data (contains the removed articfactual)
+    disp('Removing the noise components from the data ...');
+    dataN = A_R*S_R;
+    clear  A S A_R S_R;
+    disp('Adding mean back to the data ...');
+    dataN = dataN';
+    dataN = bsxfun(@plus, dataN, meanData);
+    %dataN = zeros(prod(V(1).dim(1:3)), size(data, 2));
+    data(mask, :) = dataN;
+    clear dataN;
+    data = reshape(data, [V(1).dim(1:3), size(data, 2)]);
+    newDir = fullfile(outDir, 'noise_cloud_cleaned_data');
+    if (exist(newDir, 'dir') ~= 7)
+        mkdir(newDir);
+    end
+    [~, tmpP, extn] = fileparts(V(1).fname);
+    outFile = fullfile(newDir, ['R_', tmpP, '.nii']);
+    icatb_write_nifti_data(outFile, V, data, 'Cleaned data');
+    clear data;
+end
+
+fprintf('Done\n');
