@@ -32,6 +32,10 @@ if (~exist('complexInfo', 'var'))
     complexInfo = [];
 end
 
+if (length(A) == numel(A))
+    A = A(:);
+end
+
 %run defaults file
 icatb_defaults;
 
@@ -109,68 +113,68 @@ end
 files_to_zip = {};
 
 if isfield(V, 'gifti')
-   fileExtn = '.gii'; 
+    fileExtn = '.gii';
 end
 
 ciftiFile = 0;
 if isfield(V, 'cifti')
-   ciftiFile = 1; 
+    ciftiFile = 1;
 end
 
 if isreal(A)
     % check if the time course is of double data type
-
+    
     V.fname = [timecourse_name, fileExtn];
-
+    
     % return zip files
     files_to_zip = returnZipFiles(V.fname, fileExtn, files_to_zip, zipFiles);
-
+    
     V.fname = fullfile(outputDir, V.fname);
-
+    
     % write the images
     icatb_write_vol(V, A);
-
-
+    
+    
 elseif isa(A, 'complex_data')
     % check if it is complex data class
-
+    
     % use file parts to separate time course name
     [pathstr, tName] = fileparts(timecourse_name);
-
+    
     % File names of complex data
     P = icatb_get_complex_files_naming(timecourse_name, dataType, complexInfo, 'write');
     % get the file namings
     firstFileName = P.first; secondFileName = P.second;
-
-
+    
+    
     V.fname = firstFileName;
-
+    
     % return zip files
     files_to_zip = returnZipFiles(V.fname, fileExtn, files_to_zip, zipFiles);
-
+    
     V.fname = fullfile(outputDir, V.fname);
-
+    
     % access the first field
     icatb_write_vol(V, getfield(A, 'firstField'));
-
-
+    
+    
     % phase image
     V.fname = secondFileName;
-
+    
     % return zip files
     files_to_zip = returnZipFiles(V.fname, fileExtn, files_to_zip, zipFiles);
-
+    
     V.fname = fullfile(outputDir, V.fname);
-
+    
     % access the second field
     icatb_write_vol(V, getfield(A, 'secondField'));
-
+    
     clear V1;
-
+    
 else
-
+    
     error('Unknown data type');
-
+    
 end
 
 % Initialise file names
@@ -179,7 +183,7 @@ fileNames = cell(1, numOfIC);
 for i=1:numOfIC
     % return file index
     [fileIndex] = icatb_returnFileIndex(i);
-
+    
     V = HInfo.V(1); V.dt(1) = 4;
     if (strcmpi(fileExtn, '.img') || strcmpi(fileExtn, '.gii'))
         % analyze format
@@ -193,12 +197,12 @@ for i=1:numOfIC
     else
         error('Unknown image extensions');
     end
-
+    
     fileNames{i} = V.fname;
     V.dim(1) = c_dim(1);
     V.dim(2) = c_dim(2);
     V.dim(3) = c_dim(3);
-
+    
     data = zeros(prod(HInfo.DIM(1:3)), 1);
     if size(icasig, 2) == size(data, 1)
         data(mask_ind) = icasig(i, mask_ind);
@@ -208,7 +212,7 @@ for i=1:numOfIC
     % Reshape data
     data = reshape(data, [c_dim(1), c_dim(2), c_dim(3)]);
     %data = reshape(icasig(i, :), [c_dim(1), c_dim(2), c_dim(3)]);
-
+    
     % handle complex data
     if isreal(data)
         if (strcmpi(fileExtn, '.img') || strcmpi(fileExtn, '.gii'))
@@ -224,14 +228,14 @@ for i=1:numOfIC
         V.fname = fullfile(outputDir, V.fname);
         icatb_write_vol(V, data);
     elseif isa(data, 'complex_data')
-
+        
         % File names of complex data
         P = icatb_get_complex_files_naming(V.fname, dataType, complexInfo, 'write');
         % get the file namings
         firstFileName = P.first; secondFileName = P.second;
-
+        
         V.fname = firstFileName;
-
+        
         if strcmpi(fileExtn, '.img')
             % return zip files
             files_to_zip = returnZipFiles(V.fname, fileExtn, files_to_zip, zipFiles);
@@ -241,13 +245,13 @@ for i=1:numOfIC
                 files_to_zip = returnZipFiles(V.fname, fileExtn, files_to_zip, zipFiles);
             end
         end
-
+        
         V.fname = fullfile(outputDir, V.fname);
         % write image
         icatb_write_vol(V, getfield(data, 'firstField'));
-
+        
         V.fname = secondFileName;
-
+        
         if strcmpi(fileExtn, '.img')
             % return zip files
             files_to_zip = returnZipFiles(V.fname, fileExtn, files_to_zip, zipFiles);
@@ -257,17 +261,17 @@ for i=1:numOfIC
                 files_to_zip = returnZipFiles(V.fname, fileExtn, files_to_zip, zipFiles);
             end
         end
-
+        
         V.fname = fullfile(outputDir, V.fname);
         % write image
         icatb_write_vol(V, getfield(data, 'secondField'));
-
+        
     else
-
+        
         error('Unknown data type.');
-
+        
     end
-
+    
 end
 % end for all components
 
@@ -301,5 +305,5 @@ if strcmpi(zipFiles, 'yes')
     else
         files_to_zip{countZip} = [newFile];
     end
-
+    
 end
