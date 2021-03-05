@@ -274,7 +274,10 @@ end
 
 files = icatb_fullFile('files', files, 'directory', sesInfo.outputDir);
 files = icatb_rename_4d_file(files);
-files = files(compNumber, :);
+try
+    files = files(compNumber, :);
+catch
+end
 
 ic = [];
 tc = [];

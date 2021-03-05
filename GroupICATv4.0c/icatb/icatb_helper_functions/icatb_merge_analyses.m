@@ -80,6 +80,10 @@ end
 
 all_comps = cell(1, length(param_files));
 
+if (strcmpi(merge_type, 'stack_subjects'))
+    missing_tr = zeros(1, length(param_files));
+end
+
 for n = 1:length(param_files)
     
     load(param_files{n});
@@ -110,6 +114,8 @@ for n = 1:length(param_files)
                 tmp_tr = repmat(tmp_tr, 1, tmpSub);
             end
             trs = [trs, tmp_tr];
+        else
+            missing_tr(n) = 1;
         end
         
         numOfSub = tmpSub + numOfSub;
@@ -188,8 +194,24 @@ sesInfo.param_files = param_files;
 
 
 if (~isempty(trs))
+    
+    if (length(trs) ~= sesInfo.diffTimePoints)
+        if (exist('missing_tr', 'var'))
+            missingTRParamFiles = param_files(missing_tr == 1);
+            for nMissing = 1:length(missingTRParamFiles)
+                if (nMissing == 1)
+                    disp('The following parameter files have missing TR ....');
+                end
+                disp(missingTRParamFiles{nMissing});
+            end
+            error('Concatenated TRs don''t match the number of data-sets. Check if you have any parameter files which doesn''t have TR set');
+        end
+        
+    end
+    
     sesInfo.userInput.TR = trs;
     sesInfo.TR = trs;
+    
 end
 
 subjectICAFiles = icatb_parseOutputFiles('icaOutputFiles', sesInfo.icaOutputFiles, 'numOfSub', numOfSub, 'numOfSess', numOfSess);
@@ -226,7 +248,10 @@ for n = 1:length(ses)
                 tmpa = accumHdrFiles(tmpa);
                 
                 for nLinks = 1:length(tmpb)
-                    createlinks(tmpb{nLinks}, tmpa{nLinks});
+                    try
+                        createlinks(tmpb{nLinks}, tmpa{nLinks});
+                    catch
+                    end
                 end
                 
             end
@@ -301,8 +326,25 @@ save(sesInfo.userInput.param_file, 'sesInfo');
 
 out_file = sesInfo.userInput.param_file;
 
-% Run group stats
-icatb_runAnalysis(sesInfo, 7);
+chkComponents = dir(fullfile(outDir, '*sub*comp*nii'));
+chkTimecourses = dir(fullfile(outDir, '*sub*time*nii'));
+
+if (isempty(chkTimecourses))
+    chkTimecourses = dir(fullfile(outDir, '*sub*time*img'));
+end
+
+if (isempty(chkTimecourses))
+    error('Subject component timecourses doesn''t exist. Cannot proceed with the analysis.');
+end
+
+if (isempty(chkComponents))
+    chkComponents = dir(fullfile(outDir, '*sub*comp*img'));
+end
+
+if (~isempty(chkComponents))
+    % Run group stats
+    icatb_runAnalysis(sesInfo, 7);
+end
 
 
 function createlinks(tmpb, tmpa)
