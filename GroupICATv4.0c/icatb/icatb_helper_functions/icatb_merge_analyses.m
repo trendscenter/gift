@@ -205,8 +205,10 @@ if (~isempty(trs))
                 end
                 disp(missingTRParamFiles{nMissing});
             end
-            storeTr = 0;
-            disp('!!!!Concatenated TRs don''t match the number of data-sets. Not using TR information from the parameter files.');
+            if (~isempty(missingTRParamFiles))
+                storeTr = 0;
+                disp('!!!!Concatenated TRs don''t match the number of data-sets. Not using TR information from the parameter files.');
+            end
         end
         
     end
