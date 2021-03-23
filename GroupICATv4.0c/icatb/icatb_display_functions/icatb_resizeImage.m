@@ -38,6 +38,12 @@ function [images, coords, HInfo, slices, text_left_right] = icatb_resizeImage(st
 
 icatb_defaults;
 global FLIP_ANALYZE_IMAGES;
+global INTERP_VAL;
+
+interp_val = INTERP_VAL;
+if (isempty(interp_val))
+    interp_val = 0;
+end
 
 
 % check the existence of the vars
@@ -175,7 +181,7 @@ for ii = 1:nslices
         % to voxel space of image
         vixyz = (transform*img(jj).V(1).mat) \ ixyzmm;
         % raw data
-        i1 = icatb_spm_sample_vol(img(jj).V(1), vixyz(X, :), vixyz(Y, :), vixyz(Z, :), [1, nan]);
+        i1 = icatb_spm_sample_vol(img(jj).V(1), vixyz(X, :), vixyz(Y, :), vixyz(Z, :), [interp_val, nan]);
         i1 = reshape(i1, vdims(1:2));
         
         % assign the images
