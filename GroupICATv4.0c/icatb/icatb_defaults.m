@@ -242,6 +242,9 @@ global DFNC_DEFAULTS;
 %% DESPIKE OPTIONS
 global DESPIKE_OPTIONS;
 
+%% INTERP VALUE (image resampling)
+global INTERP_VAL;
+
 %% Exit groupica app
 global EXIT_GICA_APP;
 
@@ -765,7 +768,12 @@ DFNC_DEFAULTS.tvdfnc = 1;
 % from circshift or any values outside the window)
 DFNC_DEFAULTS.mask_windows = 0;
 
+% Interpolation (spm sample vol)
+% Default: 0 - Nearest neighbor interpolation
+INTERP_VAL = 0;
+
 
 % for docker apps set this variable to 0 for copying the data from the container. 
 EXIT_GICA_APP =1;
+
 
