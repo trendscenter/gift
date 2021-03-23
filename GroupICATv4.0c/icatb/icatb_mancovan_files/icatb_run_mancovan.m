@@ -346,7 +346,10 @@ if ((step == 1) || (step == 2))
                 
                 
                 %meanmap = zeros(1, size(SM, 2));
-                %if (~strcmpi(desCriteria, 'paired t-test'))
+                if (sesInfo.numOfSess > 1)
+                    SM = convertDataTo2D(SM, (1:sesInfo.numOfSub*sesInfo.numOfSess), sesInfo);
+                end
+                
                 SM_avg = zeros(length(avg_runs_info), size(SM, 2));
                 
                 for nM = 1:length(avg_runs_info)
