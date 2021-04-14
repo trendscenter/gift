@@ -121,7 +121,7 @@ for n = 1:length(param_files)
         numOfSub = tmpSub + numOfSub;
         numComp = sesInfo.numComp;
         if (tmpComp ~= (sesInfo.numComp))
-            error('Number of data-sets doesn''t match between analyses');
+            error('Number of components doesn''t match between analyses');
         end
         tp = [tp, sesInfo.diffTimePoints];
         start_tp = length(files) + 1;
