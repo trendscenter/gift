@@ -315,7 +315,7 @@ if (strcmpi(merge_type, 'stack_components'))
         ic = cat(1, ic{:});
         tc = cat(2, tc{:});
         
-        icatb_saveICAData(tmp_comp_names, ic, tc, mask_ind, size(tc, 2), sesInfo.HInfo);
+        icatb_saveICAData(tmp_comp_names, ic, tc, mask_ind, size(tc, 2), sesInfo.HInfo, 'real', [], outDir);
         
     end
     
@@ -347,10 +347,19 @@ if (isempty(chkComponents))
     chkComponents = dir(fullfile(outDir, '*sub*comp*img'));
 end
 
-if (~isempty(chkComponents))
-    % Run group stats
+try
+    
+	% Run group stats
     icatb_runAnalysis(sesInfo, 7);
+	
+catch
+	
 end
+
+% if (~isempty(chkComponents))
+%     % Run group stats
+%     icatb_runAnalysis(sesInfo, 7);
+% end
 
 
 function createlinks(tmpb, tmpa)
