@@ -160,6 +160,7 @@ end
 
 
 countSub = 0;
+countDataSet = 0;
 for i = subjects
     
     countSub = countSub + 1;
@@ -176,17 +177,29 @@ for i = subjects
     countSess = 0;
     for j = sessions
         countSess = countSess + 1;
+        countDataSet = countDataSet + 1;
         %% Load Components
         fileIn = fullfile(outDir, [sesInfo.calibrate_components_mat_file, num2str(i), '-', num2str(j), '.mat']);
         if (conserve_disk_space ~= 1)
             if (exist(fileIn, 'file'))
-                [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber);
+                [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, sesInfo.diffTimePoints(indices(countDataSet)));
             else
-                [ic, tc] = loadIm(sesInfo, subjectICAFiles(i).ses(j).name, loadTC, loadIC, compNumber, detrendNumber);
+                try
+                    [ic, tc] = loadIm(sesInfo, subjectICAFiles(i).ses(j).name, loadTC, loadIC, compNumber, detrendNumber);
+                catch
+                    fileIn = fullfile(outDir, [sesInfo.back_reconstruction_mat_file, num2str(indices(countDataSet)), '.mat']);
+                    [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, sesInfo.diffTimePoints(indices(countDataSet)));
+                end
             end
         else
-            [ic, tc] = loadIm(sesInfo, subjectICAFiles(i).ses(j).name, loadTC, loadIC, compNumber, detrendNumber);
+            try
+                [ic, tc] = loadIm(sesInfo, subjectICAFiles(i).ses(j).name, loadTC, loadIC, compNumber, detrendNumber);
+            catch
+                fileIn = fullfile(outDir, [sesInfo.back_reconstruction_mat_file, num2str(indices(countDataSet)), '.mat']);
+                [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, sesInfo.diffTimePoints(indices(countDataSet)));
+            end
         end
+        
         
         if (~isempty(covariates))
             tc = regress_cov(tc, covariates{j + (i - 1)*sesInfo.numOfSess}, scansToInclude);
@@ -298,22 +311,48 @@ if (~isempty(zipFileName))
     icatb_delete_file_pattern(files_in_zip, sesInfo.outputDir);
 end
 
-function [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber)
+function [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, tp)
 
 ic = [];
 tc = [];
 
-info = load(fileIn, vars_to_load{:});
+varsIn = who('-file', fileIn);
+chk = strmatch('compSet', varsIn, 'exact');
+
+doZscore = 0;
+if (~isempty(chk))
+    doZscore = 1;
+    tmpInfo = load(fileIn);
+    info = struct;
+    for n = 1:length(vars_to_load)
+        info.(vars_to_load{n}) = tmpInfo.compSet.(vars_to_load{n});
+    end
+    clear tmpInfo;
+else
+    info = load(fileIn, vars_to_load{:});
+end
+
+
 if (isfield(info, compSetFields{1}))
     ic = getfield(info, compSetFields{1});
     ic = ic(compNumber, :)';
+    if (doZscore)
+        ic = icatb_zscore(ic);
+    end
 end
 
 if (isfield(info, compSetFields{2}))
     tc = getfield(info, compSetFields{2});
+    if (size(tc, 1) ~= tp)
+        tc = tc';
+    end
     tc = tc(:, compNumber);
+    
     if (~isempty(detrendNumber))
         tc = icatb_detrend(tc, 1, [], detrendNumber);
+    end
+    if (doZscore)
+        tc = icatb_zscore(tc);
     end
 end
 
