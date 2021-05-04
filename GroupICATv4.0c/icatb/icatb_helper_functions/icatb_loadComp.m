@@ -188,7 +188,12 @@ for i = subjects
                     [ic, tc] = loadIm(sesInfo, subjectICAFiles(i).ses(j).name, loadTC, loadIC, compNumber, detrendNumber);
                 catch
                     fileIn = fullfile(outDir, [sesInfo.back_reconstruction_mat_file, num2str(indices(countDataSet)), '.mat']);
-                    [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, sesInfo.diffTimePoints(indices(countDataSet)));
+                    try
+                        [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, sesInfo.diffTimePoints(indices(countDataSet)));
+                    catch
+                        ic = NaN(length(sesInfo.mask_ind), length(compNumber));
+                        tc = NaN(sesInfo.diffTimePoints(indices(countDataSet)), length(compNumber));
+                    end
                 end
             end
         else
@@ -196,7 +201,12 @@ for i = subjects
                 [ic, tc] = loadIm(sesInfo, subjectICAFiles(i).ses(j).name, loadTC, loadIC, compNumber, detrendNumber);
             catch
                 fileIn = fullfile(outDir, [sesInfo.back_reconstruction_mat_file, num2str(indices(countDataSet)), '.mat']);
-                [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, sesInfo.diffTimePoints(indices(countDataSet)));
+                try
+                    [ic, tc] = loadMAT(fileIn, vars_to_load, compSetFields, compNumber, detrendNumber, sesInfo.diffTimePoints(indices(countDataSet)));
+                catch
+                    ic = NaN(length(sesInfo.mask_ind), length(compNumber));
+                    tc = NaN(sesInfo.diffTimePoints(indices(countDataSet)), length(compNumber));
+                end
             end
         end
         

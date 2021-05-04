@@ -127,6 +127,14 @@ for nSub = subjects
             'covariates', covariate_files, 'scansToInclude', scansToInclude);
         tc = squeeze(tc);
         
+        if (nV == 1)
+            fnc_corrs = zeros(length(subjects)*sesInfo.numOfSess, nCombCnt);
+        end
+        
+        if (~isempty(find(isfinite(tc(1)) == 0)))
+            continue;
+        end
+        
         if (currentTR ~= minTR)
             interpFactor = currentTR/minTR;
             tc = icatb_interp_data(tc, interpFactor);
@@ -146,10 +154,6 @@ for nSub = subjects
         c(1:size(c, 1) + 1:end) = 0;
         c = icatb_mat2vec(c);
         
-        
-        if (nV == 1)
-            fnc_corrs = zeros(length(subjects)*sesInfo.numOfSess, nCombCnt);
-        end
         
         fnc_corrs(nV, :) = c(:)';
         
