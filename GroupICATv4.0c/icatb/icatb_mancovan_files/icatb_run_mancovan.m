@@ -578,6 +578,7 @@ if ((step == 1) || (step == 2))
             
             countComp = 0;
             result_files = repmat({''}, 1, length(comp_inds));
+            [tmp_rand_spectra, tmp_freq] = icatb_get_spectra(randn(1, minTpLength), min(tmpTR), spectra_params);
             for ncomps = comp_inds
                 
                 countComp = countComp + 1;
@@ -593,10 +594,17 @@ if ((step == 1) || (step == 2))
                 disp('Doing multi-taper spectral estimation ...');
                 
                 %for nSubjects = 1:size(timecourses, 1)
+                
+                
+                spectra_tc = zeros(sesInfo.numOfSub, sesInfo.numOfSess, length(tmp_rand_spectra));
+                
                 for nSubjects = 1:sesInfo.numOfSub
                     for nSessions = 1:sesInfo.numOfSess
                         timecourses = icatb_loadComp(sesInfo, ncomps, 'vars_to_load', 'tc', 'subjects', nSubjects, 'sessions', nSessions,  ...
                             'subject_ica_files', subjectICAFiles, 'detrend_no', feature_params.final.spectra_detrend);
+                        if (~isempty(find(isfinite(timecourses(1)) == 0)))
+                            continue;
+                        end
                         timecourses = squeeze(timecourses);
                         currentTR = tmpTR(nSubjects);
                         if (currentTR ~= min(tmpTR))
@@ -606,9 +614,7 @@ if ((step == 1) || (step == 2))
                         end
                         timecourses = timecourses(1:minTpLength);
                         [temp_spectra, freq] = icatb_get_spectra(timecourses, min(tmpTR), spectra_params);
-                        if ((nSubjects == 1) && (nSessions == 1))
-                            spectra_tc = zeros(sesInfo.numOfSub, sesInfo.numOfSess, length(temp_spectra));
-                        end
+                        
                         spectra_tc(nSubjects, nSessions, :) = temp_spectra;
                     end
                 end
@@ -617,7 +623,7 @@ if ((step == 1) || (step == 2))
                 
                 if (strcmpi(feature_params.final.spectra_normalize_subs, 'yes'))
                     disp('Using fractional amplitude ...');
-                    spectra_tc = spectra_tc./repmat(sum(spectra_tc,3), [1, 1, size(spectra_tc, 3)]);
+                    spectra_tc = spectra_tc./repmat(sum(spectra_tc,3) + eps, [1, 1, size(spectra_tc, 3)]);
                 end
                 
                 
