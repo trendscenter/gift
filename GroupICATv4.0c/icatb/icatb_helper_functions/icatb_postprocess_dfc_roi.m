@@ -229,6 +229,9 @@ for nFD = 1:length(outputFiles)
     clusterInfo.Dp = Dp;
     clusterInfo.num_clusters = current_no_clusters;
     
+    % Save state-wise windowed corrs and subject-wise state vectors
+    [clusterInfo.corrs_states, clusterInfo.states] = getStateCorr(dfncInfo, clusterInfo); 
+    
     if (strcmpi(analysisType, 'roi-voxel'))
         clusterFiles = cell(1, current_no_clusters);
         for nC = 1:current_no_clusters
@@ -261,3 +264,28 @@ disp(['Saving parameters info in ', fname]);
 save(fname, 'dfcRoiInfo');
 fprintf('\n\n');
 
+
+function [corrs, states] = getStateCorr(dfcRoiInfo, clusterInfo)
+% corrs - subjects x sessions x clusters
+% states - subjects x sessions x windows
+outDir = dfcRoiInfo.outputDir;
+
+Nwin = size(clusterInfo.IDXall, 1)/(dfcRoiInfo.userInput.filesInfo.numOfSess*dfcRoiInfo.userInput.numOfDataSets);
+
+% subjects x sessions x windows
+states = reshape(clusterInfo.IDXall, dfcRoiInfo.userInput.filesInfo.numOfSess, dfcRoiInfo.userInput.numOfDataSets, Nwin);
+states = permute(states, [2, 1, 3]);
+
+count = 0;
+for nSub = 1:dfcRoiInfo.userInput.numOfDataSets
+    for nSess = 1:dfcRoiInfo.userInput.filesInfo.numOfSess
+        count = count + 1;
+        fn = fullfile(outDir, dfcRoiInfo.outputFiles{count});
+        load(fn);
+        tmp = squeeze(states(nSub, nSess, :));
+        for nState = 1:dfcRoiInfo.postprocess.num_clusters
+            inds = tmp == nState;
+            corrs{nSub, nSess, nState} = FNCdyn(inds, :);
+        end
+    end
+end
