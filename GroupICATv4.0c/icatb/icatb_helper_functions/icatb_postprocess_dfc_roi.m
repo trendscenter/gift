@@ -230,7 +230,7 @@ for nFD = 1:length(outputFiles)
     clusterInfo.num_clusters = current_no_clusters;
     
     % Save state-wise windowed corrs and subject-wise state vectors
-    [clusterInfo.corrs_states, clusterInfo.states] = getStateCorr(dfncInfo, clusterInfo); 
+    [clusterInfo.corrs_states, clusterInfo.states] = getStateCorr(dfcRoiInfo, clusterInfo); 
     
     if (strcmpi(analysisType, 'roi-voxel'))
         clusterFiles = cell(1, current_no_clusters);
