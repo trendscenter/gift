@@ -701,7 +701,7 @@ if (length(find((imDims == funcDims) ~= 0)) ~= length(funcDims))
     spatial_references = noisecloud_spm_coregister(deblank(sesInfo.userInput.files(1).name(1, :)), deblank(spatial_references(1, :)), spatial_references, sesInfo.userInput.pwd);
 end
 
-[images, imHInfo] = icatb_loadData(spatial_references);
+%[images, imHInfo] = icatb_loadData(spatial_references);
 
 
 % if (length(find((imDims == funcDims) ~= 0)) ~= length(funcDims))
@@ -709,13 +709,13 @@ end
 %         num2str(imDims), num2str(funcDims));
 % end
 
-images = reshape(images, prod(funcDims), numSpatialFiles);
-images = (images(sesInfo.userInput.mask_ind, :))';
+%images = reshape(images, prod(funcDims), numSpatialFiles);
+%images = (images(sesInfo.userInput.mask_ind, :))';
 
 ICAOptions = sesInfo.userInput.ICA_Options;
 
 % Update ICA Options
-sesInfo.userInput.ICA_Options = [{'ref_data', images}, ICAOptions];
+sesInfo.userInput.ICA_Options = [{'ref_data', {spatial_references, sesInfo.userInput.mask_ind}}, ICAOptions];
 sesInfo.userInput.numComp = numSpatialFiles;
 sesInfo.userInput.numOfPC1 = sesInfo.userInput.numComp;
 
