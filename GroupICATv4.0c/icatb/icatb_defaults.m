@@ -444,7 +444,7 @@ NUM_RUNS_GICA = 1;
 
 % Text for showing the slices on component explorer and composite viewer
 % options are 'on' and 'off'
-TEXT_DISPLAY_SLICES_IN_MM = 'on';
+TEXT_DISPLAY_SLICES_IN_MM = 'off';
 
 % event average window size in seconds
 EVENTAVG_WINDOW_SIZE = 30;
@@ -581,7 +581,7 @@ EXPERIMENTAL_TR = 1;
 
 %% Timecourse postprocess (FNC and spectra info)
 TIMECOURSE_POSTPROCESS.write = 1; % 1 - Write FNC correlations and spectra info.
-TIMECOURSE_POSTPROCESS.save_timecourses = 1; % save the despiked and filtered timecourses output
+TIMECOURSE_POSTPROCESS.save_timecourses = 0; % save the despiked and filtered timecourses output in nifti
 % spectra parameters
 TIMECOURSE_POSTPROCESS.spectra.tapers = [3, 5];
 TIMECOURSE_POSTPROCESS.spectra.sampling_frequency = 1/min(EXPERIMENTAL_TR);
@@ -604,7 +604,7 @@ DEFAULT_TR_SPECTRAL_GROUP_COMPARE = EXPERIMENTAL_TR;
 %% Enforce MAT files versioning for MATLAB versions greater than 6.5. Use
 % the correct option. For more help on version compatibility, please check
 % MATLAB save command options for MAT files.
-ENFORCE_MAT_FILE_VER = '-v6';
+ENFORCE_MAT_FILE_VER = '-v7.3';
 
 %% Center Image distribution
 % Options are 0 and 1
@@ -710,7 +710,7 @@ CONNECTOGRAM_OPTIONS.radius_sm = [];
 %            *c2 is the upper range of the allowed deviation from the curve.
 % Option 2 - Spikes are determined using the smoothed timecourses (reference signal). Deviations away from the reference signal are replaced with the reference signal. 
 % Option 3 - Median filtering is used (signal processing toolbox). Order n can be specified. Default order is 3.
-DESPIKE_OPTIONS.method = 1;
+DESPIKE_OPTIONS.method = 2;
 DESPIKE_OPTIONS.c = [2.5, 3];
 DESPIKE_OPTIONS.order = 4;
 
@@ -749,9 +749,16 @@ DIM_ESTIMATION_OPTS.fwhm = [5, 5, 5];
 %% shuffle random numbers
 RAND_SHUFFLE = 1;
 
-%% PRINT Resolution for gica summary (only for deployed applications)
-GICA_RESULTS_SUMMARY.print_resolution = '-r72';
+%% PRINT Resolution for gica summary 
+% display option of 1 uses publish and if you run out of memory errors use
+% option 2 which saves figures to the disk.
+GICA_RESULTS_SUMMARY.display_option = 1;
+GICA_RESULTS_SUMMARY.print_resolution = '-r150'; % used only for option 2 as publish doesn't use resolution parameter
+GICA_RESULTS_SUMMARY.print_opts = {'-noui', '-bestfit'}; % print pdf options
+% results format 
 GICA_RESULTS_SUMMARY.format = 'html';
+GICA_RESULTS_SUMMARY.compute.mi = 0;
+GICA_RESULTS_SUMMARY.compute.kurtosis = 0;
 
 %% dFNC defaults
 

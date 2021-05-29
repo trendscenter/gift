@@ -275,6 +275,9 @@ set(InputHandle, 'windowStyle', windowStyle);
 function set_data_para(handles, menuH)
 % transfer figure data to menu
 
+
+modalityType = icatb_get_modality;
+
 % sesInfo structure
 handles_data = get(handles, 'userdata');
 sesInfo = handles_data.sesInfo;
@@ -376,8 +379,10 @@ if numOfSub*numOfSess > 0
     
     [minTp, minTpInd] = min(sesInfo.userInput.diffTimePoints);
     
-    if (minTp == 1)
-        error('Error:TimePoints', 'Please re-select the data as the no of selected files is found to be 1 (%s)\n', deblank(sesInfo.userInput.files(minTpInd).name(1, :)));
+    if (strcmpi(modalityType, 'fmri'))
+        if (minTp == 1)
+            error('Error:TimePoints', 'Please re-select the data as the no of selected files is found to be 1 (%s)\n', deblank(sesInfo.userInput.files(minTpInd).name(1, :)));
+        end
     end
     
     PCBefore = round(min([minTp, 1.5*PCBefore]));
@@ -1473,9 +1478,9 @@ try
     %--Acknowledge creaters of ICA algorithms
     %icatb_acknowledgeCreators;
     
-    if sesInfo.userInput.numComp < 2
-        error(['Select Number of IC to be more than or equal to 2.']);
-    end
+    %     if sesInfo.userInput.numComp < 2
+    %         error(['Select Number of IC to be more than or equal to 2.']);
+    %     end
     
     if (sesInfo.userInput.numComp > min(sesInfo.userInput.diffTimePoints))
         error(['No. of components selected cannot be greater than ', num2str(min(sesInfo.userInput.diffTimePoints))]);
@@ -1820,16 +1825,16 @@ if (strcmpi(algorithmName, 'constrained ica (spatial)') || strcmpi(algorithmName
         spatial_references = noisecloud_spm_coregister(deblank(sesInfo.userInput.files(1).name(1, :)), deblank(spatial_references(1, :)), spatial_references, sesInfo.userInput.pwd);
     end
     
-    [images, imHInfo] = icatb_loadData(spatial_references);
+    % [images, imHInfo] = icatb_loadData(spatial_references);
     
     
-    images = reshape(images, prod(funcDims), numSpatialFiles);
-    images = (images(sesInfo.userInput.mask_ind, :))';
+    % images = reshape(images, prod(funcDims), numSpatialFiles);
+    % images = (images(sesInfo.userInput.mask_ind, :))';
     
     ICAOptions = sesInfo.userInput.ICA_Options;
     
     % Update ICA Options
-    sesInfo.userInput.ICA_Options = {'ref_data', images, ICAOptions{:}};
+    sesInfo.userInput.ICA_Options = {'ref_data', {spatial_references, sesInfo.userInput.mask_ind}, ICAOptions{:}};
     sesInfo.userInput.numComp = length(fileNumbers);
     sesInfo.userInput.numOfPC1 = sesInfo.userInput.numComp;
     

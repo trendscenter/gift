@@ -1051,6 +1051,11 @@ try
                 parameters.undetrendICA = icaTimecourse;
                 % linearly detrend ICA Timecourse
                 parameters.icaTimecourse = icatb_detrend(icaTimecourse, 1, size(icaTimecourse, 1), DETRENDNUMBER);
+                if (size(parameters.icaTimecourse, 2) ~= parameters.numComp)
+                    if (numel(parameters.icaTimecourse) == length(parameters.icaTimecourse))
+                        parameters.icaTimecourse = parameters.icaTimecourse(:)';
+                    end
+                end
                 %detrend(icaTimecourse); % linearly detrended ica time course
                 clear icaTimecourse;
                 parameters.modelTimecourse = modelTimecourse;
@@ -1296,6 +1301,11 @@ try
             parameters.componentnumber = dispParameters.componentnumber;
             % detrend ica Time course
             parameters.icaTimecourse = icatb_detrend(icaTimecourse, 1, size(icaTimecourse, 1), DETRENDNUMBER);
+            if (size(parameters.icaTimecourse, 2) ~= parameters.numComp)
+                if (numel(parameters.icaTimecourse) == length(parameters.icaTimecourse))
+                    parameters.icaTimecourse = parameters.icaTimecourse(:)';
+                end
+            end
             parameters.icaDIM = [xdim ydim zdim tdim];
             parameters.htmlFile = 'icatb_composite_viewer.htm';
             
@@ -1390,6 +1400,11 @@ try
             parameters.icasig = icasig;
             clear icasig;
             parameters.icaTimecourse = icatb_detrend(icaTimecourse, 1, size(icaTimecourse, 1), DETRENDNUMBER);
+            if (size(parameters.icaTimecourse, 2) ~= parameters.numComp)
+                if (numel(parameters.icaTimecourse) == length(parameters.icaTimecourse))
+                    parameters.icaTimecourse = parameters.icaTimecourse(:)';
+                end
+            end
             clear icaTimecourse;
             parameters.icaFiles = icaFiles;
             clear icaFiles;
@@ -1529,6 +1544,11 @@ try
             parameters.icasig = icasig;
             clear icasig;
             parameters.icaTimecourse = icatb_detrend(icaTimecourse, 1, size(icaTimecourse, 1), DETRENDNUMBER);
+            if (size(parameters.icaTimecourse, 2) ~= parameters.numComp)
+                if (numel(parameters.icaTimecourse) == length(parameters.icaTimecourse))
+                    parameters.icaTimecourse = parameters.icaTimecourse(:)';
+                end
+            end
             parameters.undetrendICA = icaTimecourse;
             clear icaTimecourse;
             parameters.numSubjects = 1; % number of subjects concatenated
