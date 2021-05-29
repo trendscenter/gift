@@ -33,7 +33,11 @@ if (~exist('complexInfo', 'var'))
 end
 
 if (length(A) == numel(A))
-    A = A(:);
+    if (numOfIC == 1)
+        A = A(:);
+    else
+        A = A(:)';
+    end
 end
 
 %run defaults file
