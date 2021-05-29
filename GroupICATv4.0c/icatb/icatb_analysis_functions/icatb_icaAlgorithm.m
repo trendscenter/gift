@@ -174,6 +174,14 @@ if (nargin > 0 && nargin <= 3)
             %% Spatial constrained ICA
             
             % ICA algorithm with spatial constraints
+            
+            if (~isnumeric(ICA_Options{2}))
+                ref_data = ICA_Options{2};
+                tmp = icatb_read_data(ref_data{1}, [], ref_data{2});
+                ref_data = tmp';
+                ICA_Options{2} = ref_data;
+            end
+            
             [out, W] = icatb_multi_fixed_ICA_R_Cor(data, ICA_Options{2:2:length(ICA_Options)});
             icasig_tmp = W*data;
             A = pinv(W);
@@ -261,6 +269,10 @@ if (nargin > 0 && nargin <= 3)
             % Inputs will be raw fmri data and reference data
             chk = strmatch(lower('ref_data'), lower(ICA_Options(1:2:end)), 'exact');
             ref_data = ICA_Options{2*chk};
+            if (~isnumeric(ref_data))
+                tmp = icatb_read_data(ref_data{1}, [], ref_data{2});
+                ref_data = tmp';
+            end
             [icasig_tmp, A] = icatb_gigicar(data, ref_data);
             W = pinv(W);
             
