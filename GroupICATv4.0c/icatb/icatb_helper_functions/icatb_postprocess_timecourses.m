@@ -1,4 +1,4 @@
-function icatb_postprocess_timecourses(param_file)
+function icatb_postprocess_timecourses(param_file, varargin)
 %% Write FNC and spectra information in *_postprocess_results.mat.
 % FNC correlations (transformed to fisher z-scores) are saved as fnc_corrs_all with
 % dimensions subjects x sessions x components x components. Spectra is
@@ -11,6 +11,29 @@ global EXPERIMENTAL_TR;
 global TIMECOURSE_POSTPROCESS;
 global DETRENDNUMBER;
 global PARAMETER_INFO_MAT_FILE;
+global GICA_RESULTS_SUMMARY;
+
+compute_mi = 1;
+compute_kurtosis = 1;
+try
+    compute_mi = GICA_RESULTS_SUMMARY.compute.mi;
+    compute_kurtosis = GICA_RESULTS_SUMMARY.compute.kurtosis;
+catch
+end
+
+for nV = 1:2:length(varargin)
+    if (strcmpi(varargin{nV}, 'subjects'))
+        subjects = varargin{nV + 1};
+    elseif (strcmpi(varargin{nV}, 'components'))
+        components = varargin{nV + 1};
+    elseif (strcmpi(varargin{nV}, 'outputDir'))
+        resultsDir = varargin{nV + 1};
+    elseif (strcmpi(varargin{nV}, 'compute_mi'))
+        compute_mi = varargin{nV + 1};
+    elseif (strcmpi(varargin{nV}, 'compute_kurtosis'))
+        compute_kurtosis = varargin{nV + 1};
+    end
+end
 
 filterP = ['*', PARAMETER_INFO_MAT_FILE, '*.mat'];
 if (~exist('param_file', 'var'))
@@ -36,6 +59,10 @@ end
 
 if (isempty(outputDir))
     outputDir = pwd;
+end
+
+if (~exist('resultsDir', 'var') || isempty(resultsDir))
+    resultsDir = outputDir;
 end
 
 try
@@ -75,6 +102,27 @@ else
     if (length(TR) ~= sesInfo.numOfSub)
         error('Length of TR must match the number of subjects');
     end
+end
+
+if (~exist('subjects', 'var'))
+    subjects = (1:sesInfo.numOfSub);
+end
+
+subjects (subjects > max(sesInfo.numOfSub)) = [];
+
+if (isempty(subjects))
+    error('Please check the subjects variable passed');
+end
+
+
+if (~exist('components', 'var'))
+    components = (1:sesInfo.numComp);
+end
+
+components (components > max(sesInfo.numComp)) = [];
+
+if (isempty(components))
+    error('Please check the components variable passed');
 end
 
 % Spectra info
@@ -122,7 +170,7 @@ if (writeInfo)
     catch
     end
     
-    outputFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
+    outputFile = fullfile(resultsDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
     
     %% Uncompress files
     subjectICAFiles = icatb_parseOutputFiles('icaOutputFiles', sesInfo.icaOutputFiles, 'numOfSub', sesInfo.numOfSub, 'numOfSess', sesInfo.numOfSess, 'flagTimePoints', ...
@@ -158,24 +206,38 @@ if (writeInfo)
         minTpLength = min(chkTp);
     end
     
-    kurt_tc = zeros(sesInfo.numOfSub, sesInfo.numOfSess, sesInfo.numComp);
-    kurt_ic = zeros(sesInfo.numOfSub, sesInfo.numOfSess, sesInfo.numComp);
+    if (exist(outputFile, 'file'))
+        try
+            delete (outputFile);
+        catch
+            error([outputFile, ' is not cleaned up prior to new analysis. Delete file manually']);
+        end
+    end
     
-    for nSub = 1:sesInfo.numOfSub
+    matFileInfo = matfile(outputFile, 'Writable', true);
+    matFileInfo.subjects = subjects;
+    matFileInfo.components = components;
+    
+    for nSub = 1:length(subjects)
         for nSess = 1:sesInfo.numOfSess
             countS = countS + 1;
-            timecourses = icatb_loadComp(sesInfo, (1:sesInfo.numComp), 'subjects', nSub, 'sessions', nSess, 'vars_to_load', 'tc', 'detrend_no', ...
-                DETRENDNUMBER, 'subject_ica_files', subjectICAFiles);
+            timecourses = icatb_loadComp(sesInfo, components, 'subjects', subjects(nSub), 'sessions', nSess, 'vars_to_load', 'tc', ...
+                'detrend_no', DETRENDNUMBER, 'subject_ica_files', subjectICAFiles);
             
-            kvals = kurt(timecourses);
-            
-            kurt_tc(nSub, nSess, :) = kvals;
-            
+            if (compute_kurtosis)
+                kvals = kurt(timecourses);
+                kvals = reshape(kvals, 1, 1, length(kvals));
+                if (~isempty(who(matFileInfo, 'kurt_tc')))
+                    matFileInfo.kurt_tc(nSub, nSess, :) = kvals;
+                else
+                    matFileInfo.kurt_tc = kvals;
+                end
+            end
             
             % Interpolate timecourses if needed for variable TRs across
             % subjects
             if (~all(TR == min(TR)))
-                interpFactor = TR(nSub)/min(TR);
+                interpFactor = TR(subjects(nSub))/min(TR);
                 [num, denom] = rat(interpFactor);
                 timecourses = resample(timecourses, num, denom);
             end
@@ -184,11 +246,14 @@ if (writeInfo)
             [temp_spectra, freq] = icatb_get_spectra(timecourses(1:minTpLength, :)', min(TR), spectra_params);
             temp_spectra = temp_spectra./repmat(sum(temp_spectra, 2), [1, size(temp_spectra, 2)]);
             temp_spectra = temp_spectra';
-            if (countS == 1)
-                spectra_tc_all = zeros(sesInfo.numOfSub, sesInfo.numOfSess, size(temp_spectra, 1), sesInfo.numComp);
-                fnc_corrs_all = zeros(sesInfo.numOfSub, sesInfo.numOfSess, sesInfo.numComp, sesInfo.numComp);
+            
+            temp_spectra = reshape(temp_spectra, 1, 1, size(temp_spectra, 1), size(temp_spectra, 2));
+            
+            if (~isempty(who(matFileInfo, 'spectra_tc_all')))
+                matFileInfo.spectra_tc_all(nSub, nSess, :, :) = temp_spectra;
+            else
+                matFileInfo.spectra_tc_all = temp_spectra;
             end
-            spectra_tc_all(nSub, nSess, :, :) = temp_spectra;
             
             % despike
             if (despike_tc)
@@ -203,17 +268,17 @@ if (writeInfo)
             c = icatb_corr(timecourses);
             c(1:size(c, 1) + 1:end) = 0;
             c = icatb_r_to_z(c);
-            fnc_corrs_all(nSub, nSess, :, :) = c;
             
+            c = reshape(c, 1, 1, size(c, 1), size(c, 2));
+            
+            if (~isempty(who(matFileInfo, 'fnc_corrs_all')))
+                matFileInfo.fnc_corrs_all(nSub, nSess, :, :) = c;
+            else
+                matFileInfo.fnc_corrs_all = c;
+            end
             
             % save timecourses if needed
             if (save_tc)
-                %subFileOut = [sesInfo.calibrate_components_mat_file, num2str(nSub), '-', num2str(nSess), '.mat'];
-                %subFileOut = fullfile(outputDir, subFileOut);
-                %                 tc_cleaned = timecourses;
-                %                 if (exist(subFileOut, 'file'))
-                %                     icatb_save(subFileOut, 'tc_cleaned', '-append');
-                %                 end
                 outfile = ['cleaned_', deblank(subjectICAFiles(nSub).ses(nSess).name(1, :))];
                 saveTimecourses(outfile, timecourses, sesInfo.HInfo, outputDir);
             end
@@ -221,43 +286,84 @@ if (writeInfo)
         end
     end
     
-    if (sesInfo.numOfSub*sesInfo.numOfSess == 1)
-        spectra_tc_all = squeeze(spectra_tc_all);
-        fnc_corrs_all = squeeze(fnc_corrs_all);
-    end
-    
-    save(outputFile, 'spectra_tc_all', 'freq', 'fnc_corrs_all');
-    
     % mutual information between components
     countS = 0;
     fprintf('\n');
-    for nSub = 1:sesInfo.numOfSub
-        for nSess = 1:sesInfo.numOfSess
-            countS = countS + 1;
-            ic = icatb_loadComp(sesInfo, (1:sesInfo.numComp), 'subjects', nSub, 'sessions', nSess, 'vars_to_load', 'ic', 'subject_ica_files', subjectICAFiles);
-            kvals = kurt(ic);
-            kurt_ic(nSub, nSess, :) = kvals;
-            tmp = icatb_compute_mi(ic');
-            if (countS == 1)
-                spatial_maps_MI = zeros(sesInfo.numOfSub, sesInfo.numOfSess, sesInfo.numComp, sesInfo.numComp);
+    
+    if (compute_kurtosis || compute_mi)
+        
+        for nSub = 1:length(subjects)
+            for nSess = 1:sesInfo.numOfSess
+                countS = countS + 1;
+                ic = icatb_loadComp(sesInfo, components, 'subjects', subjects(nSub), 'sessions', nSess, 'vars_to_load', 'ic', 'subject_ica_files', ...
+                    subjectICAFiles);
+                
+                if (compute_kurtosis)
+                    kvals = kurt(ic);
+                    kvals = reshape(kvals, 1, 1, length(kvals));
+                    
+                    if (~isempty(who(matFileInfo, 'kurt_ic')))
+                        matFileInfo.kurt_ic(nSub, nSess, :) = kvals;
+                    else
+                        matFileInfo.kurt_ic = kvals;
+                    end
+                end
+                
+                if (compute_mi)
+                    
+                    tmp = icatb_compute_mi(ic');
+                    
+                    tmp = reshape(tmp, 1, 1, size(tmp, 1), size(tmp, 2));
+                    
+                    if (~isempty(who(matFileInfo, 'spatial_maps_MI')))
+                        matFileInfo.spatial_maps_MI(nSub, nSess, :, :) = tmp;
+                    else
+                        matFileInfo.spatial_maps_MI = tmp;
+                    end
+                    
+                end
+                clear tmp;
             end
-            spatial_maps_MI(nSub, nSess, :, :) = tmp;
-            clear tmp;
         end
+        
     end
     
-    kurt_comp.ic = kurt_ic;
-    kurt_comp.tc = kurt_tc;
     
-    save(outputFile, 'spatial_maps_MI', 'kurt_comp', '-append');
+    if (compute_kurtosis)
+        matFileInfo.kurt_comp = struct('tc', matFileInfo.kurt_tc, 'ic', matFileInfo.kurt_ic);
+        matFileInfo.kurt_ic = [];
+        matFileInfo.kurt_tc = [];
+    end
+    
+    if (length(subjects)*sesInfo.numOfSess == 1)
+        
+        matFileInfo.spectra_tc_all = squeeze(matFileInfo.spectra_tc_all);
+        matFileInfo.fnc_corrs_all = squeeze(matFileInfo.fnc_corrs_all);
+        if (~isempty(who(matFileInfo, 'spatial_maps_MI')))
+            matFileInfo.spatial_maps_MI = squeeze(matFileInfo.spatial_maps_MI);
+        end
+        
+        if (~isempty(who(matFileInfo, 'kurt_comp')))
+            tmp = matFileInfo.kurt_comp;
+            tmp.ic = reshape(tmp.ic, 1, length(components));
+            tmp.tc = reshape(tmp.tc, 1, length(components));
+            matFileInfo.kurt_comp = struct('ic', squeeze(tmp.ic), 'tc', squeeze(tmp.tc));
+        end
+        
+    end
+    
+    matFileInfo.freq = freq;
     
     fprintf('Done\n\n');
     disp(['File ', outputFile, ' contains spectra and FNC correlations']);
-    disp('1. spectra_tc_all - Timecourses spectra. spectra_tc_all variable is of dimensions subjects x sessions x spectral length x components');
-    disp('2. fnc_corrs_all - FNC correlations transformed to fisher z-scores. fnc_corrs_all variable is of dimensions subjects x sessions x components x components');
-    disp('3. spatial_maps_MI - Mutual information is computed between components spatially. spatial_maps_MI variable is of dimensions subjects x sessions x components x components');
-    disp('4. kurt_comp - Kurtosis is computed on the spatial maps and timecourses. kurt_comp variable is of dimensions subjects x sessions x components');
-    
+    disp('spectra_tc_all - Timecourses spectra. spectra_tc_all variable is of dimensions subjects x sessions x spectral length x components');
+    disp('fnc_corrs_all - FNC correlations transformed to fisher z-scores. fnc_corrs_all variable is of dimensions subjects x sessions x components x components');
+    if (compute_mi)
+        disp('spatial_maps_MI - Mutual information is computed between components spatially. spatial_maps_MI variable is of dimensions subjects x sessions x components x components');
+    end
+    if (compute_kurtosis)
+        disp('kurt_comp - Kurtosis is computed on the spatial maps and timecourses. kurt_comp variable is of dimensions subjects x sessions x components');
+    end
     
     if (exist('filesToDelete', 'var') && ~isempty(filesToDelete))
         icatb_cleanupFiles(filesToDelete, outputDir);
@@ -364,3 +470,4 @@ if strcmpi(zipFiles, 'yes')
     end
     
 end
+

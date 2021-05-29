@@ -2,6 +2,9 @@ function icatb_report_generator(param_file, results)
 %% Report generator for fmri and smri
 %
 
+icatb_defaults;
+global GICA_RESULTS_SUMMARY;
+
 sesDir = fileparts(param_file);
 
 if (isempty(sesDir))
@@ -11,6 +14,8 @@ end
 load (param_file);
 
 modalityType = 'fmri';
+
+diary (fullfile(sesDir, [sesInfo.userInput.prefix, '_results.log']));
 
 try
     modalityType = sesInfo.modality;
@@ -28,6 +33,10 @@ end
 
 if (~exist('formatName', 'var'))
     formatName = 'html';
+    try
+        formatName = GICA_RESULTS_SUMMARY.format;
+    catch
+    end
 end
 
 if (isnumeric(formatName))
@@ -39,6 +48,7 @@ if (isnumeric(formatName))
 end
 
 results.formatName = formatName;
+results.format = formatName;
 
 if (strcmpi(modalityType, 'fmri'))
     resultsFile = 'icatb_gica_html_report';
@@ -48,6 +58,10 @@ else
     resultsFile = 'icatb_sbm_html_report';
     outDir = fullfile(sesDir, [sesInfo.userInput.prefix, '_sbm_results']);
     opts.codeToEvaluate = 'icatb_sbm_html_report(param_file, results);';
+end
+
+if (isfield(results, 'outputDir'))
+    outDir = results.outputDir;
 end
 
 results.outputDir = outDir;
@@ -61,12 +75,29 @@ if (strcmpi(opts.format, 'pdf'))
 end
 
 
+
 disp('Generating reults summary. Please wait ....');
 drawnow;
 
-isDeployedVer = isdeployed;
+display_option = 1;
+if (isdeployed)
+    display_option = 2;
+end
 
-if (~isDeployedVer)
+try
+    display_option = GICA_RESULTS_SUMMARY.display_option;
+catch
+end
+
+try
+    if (results.save_info)
+        display_option = 2;
+    end
+catch
+end
+
+
+if (display_option == 1)
     
     assignin('base', 'param_file', param_file);
     assignin('base', 'results', results);
@@ -126,7 +157,7 @@ if (strcmpi(modalityType, 'fmri'))
 end
 
 
-if (~isDeployedVer)
+if (~isdeployed)
     if (strcmpi(opts.format, 'html'))
         icatb_openHTMLHelpFile(fullfile(outDir, [resultsFile, '.html']));
     else
@@ -135,3 +166,5 @@ if (~isDeployedVer)
 end
 
 disp('Done');
+
+diary ('off');

@@ -287,7 +287,7 @@ if (strcmpi(convert_to_zscores, 'yes'))
     icaTimecourse = icaTimecourse*diag(1./std(icaTimecourse));
 end
 
-kurt_tc = kurt(icaTimecourse);
+kurt_tc = kurt(icaTimecourse, size(icaTimecourse, 2));
 
 
 fprintf('\n');
@@ -1039,8 +1039,14 @@ D(size(D,2)+1).string = '';
 newText = char(D.string);
 
 
-function k = kurt(x)
+function k = kurt(x, numComp)
 % Kurtosis
+
+if (size(x, 1) == 1)
+    if (numel(x) == length(x))
+        x = repmat(x, numComp, 1);
+    end
+end
 
 x = icatb_remove_mean(x);
 s2 = mean(x.^2);

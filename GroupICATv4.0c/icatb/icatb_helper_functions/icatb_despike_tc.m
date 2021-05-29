@@ -1,4 +1,4 @@
-function [tc_out, frames_replaced] = icatb_despike_tc(tc, TR)
+function [tc_out, frames_replaced] = icatb_despike_tc(tc, TR, despike_method)
 %% Despike timeseries
 %
 % Inputs:
@@ -13,10 +13,14 @@ function [tc_out, frames_replaced] = icatb_despike_tc(tc, TR)
 icatb_defaults;
 global DESPIKE_OPTIONS;
 
-despike_method = 1;
-try
-    despike_method = DESPIKE_OPTIONS.method;
-catch
+if (~exist('despike_method', 'var'))
+    
+    despike_method = 1;
+    try
+        despike_method = DESPIKE_OPTIONS.method;
+    catch
+    end
+    
 end
 
 

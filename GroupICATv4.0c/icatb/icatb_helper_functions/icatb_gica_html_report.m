@@ -3,7 +3,6 @@ function icatb_gica_html_report(param_file, opts)
 global GICA_PARAM_FILE;
 
 icatb_defaults;
-global EXPERIMENTAL_TR;
 global PARAMETER_INFO_MAT_FILE;
 global CONVERT_Z;
 global IMAGE_VALUES;
@@ -72,6 +71,14 @@ end
 
 
 groupsInfo = [];
+spatial_maps_MI = [];
+compute_mi = 1;
+compute_kurtosis = 1;
+try
+    compute_mi = GICA_RESULTS_SUMMARY.compute.mi;
+    compute_kurtosis = GICA_RESULTS_SUMMARY.compute.kurtosis;
+catch
+end
 
 try
     groupsInfo = opts.groupsInfo;
@@ -122,6 +129,46 @@ end
 
 resultsInfo = [];
 
+try
+    print_opts = GICA_RESULTS_SUMMARY.print_opts;
+catch
+    print_opts = {'-noui'};
+end
+printOptions = [{'-dpdf', printRes}, print_opts];
+if (icatb_get_matlab_version < 2016)
+    printOptions(strcmpi(printOptions, '-bestfit')) = [];
+    printOptions(strcmpi(printOptions, '-fillpage')) = [];
+end
+
+
+components = (1:sesInfo.numComp)';
+subjects_to_use = (1:sesInfo.numOfSub);
+
+use_parallel = 0;
+
+try
+    computeInfo = opts.compute;
+    subjects_to_use = computeInfo.subjects;
+    components = computeInfo.components;
+catch
+end
+
+try
+    use_parallel = computeInfo.use_parallel;
+catch
+end
+
+try
+    compute_mi = opts.compute.mi;
+catch
+end
+
+try
+    compute_kurtosis = opts.compute.kurtosis;
+catch
+end
+
+components = components(:);
 
 %% Group ICA Parameters
 sesInfo.structFile = structFile;
@@ -130,7 +177,7 @@ sesInfo.image_values = image_values;
 sesInfo.threshold = threshold;
 sesInfo.groupsInfo = groupsInfo;
 sesInfo.convert_to_zscores = convert_to_zscores;
-newText = dispParams(sesInfo);
+newText = dispParams(sesInfo, subjects_to_use, components);
 disp(newText);
 
 pdfFiles = {};
@@ -164,7 +211,7 @@ if (saveFigInfo)
         
         tmpImFile = [pdfPrefix, '_', icatb_returnFileIndex(1), '.pdf'];
         set(gH, 'PaperPositionMode', 'auto');
-        print(gH, '-dpdf', printRes, '-noui', fullfile(resultsDir, tmpImFile));
+        print(gH, fullfile(resultsDir, tmpImFile), printOptions{:});
         countPdfs = 1;
         pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
         delete(gH);
@@ -216,7 +263,7 @@ if (sesInfo.which_analysis == 2)
                             countPdfs = countPdfs + 1;
                             tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
                             set(icassoFigs(nPdfs), 'PaperPositionMode', 'auto');
-                            print(icassoFigs(nPdfs), '-dpdf', printRes, '-noui', fullfile(resultsDir, tmpImFile));
+                            print(icassoFigs(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
                             pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
                         end
                         
@@ -231,6 +278,8 @@ if (sesInfo.which_analysis == 2)
     end
     
 end
+
+drawnow;
 
 %% Mean Components
 % Mean across all subjects and sessions is computed for each component
@@ -257,29 +306,71 @@ outFiles = {''};
 compFileNaming = sesInfo.icaOutputFiles(1).ses(1).name;
 currentFile = deblank(compFileNaming(1, :));
 
-if ~exist(currentFile, 'file')
-    [zipFileName, files_in_zip] = icatb_getViewingSet_zip(currentFile, [], 'real', sesInfo.zipContents);
-    if (~isempty(zipFileName))
-        icatb_unzip(regexprep(zipFileName, ['.*\', filesep], ''), fullfile(outputDir, fileparts(currentFile)));
+
+if (~exist('computeInfo', 'var'))
+    
+    if ~exist(currentFile, 'file')
+        [zipFileName, files_in_zip] = icatb_getViewingSet_zip(currentFile, [], 'real', sesInfo.zipContents);
+        if (~isempty(zipFileName))
+            icatb_unzip(regexprep(zipFileName, ['.*\', filesep], ''), fullfile(outputDir, fileparts(currentFile)));
+        end
     end
+    
+    compFiles = icatb_rename_4d_file(icatb_fullFile('directory', outputDir, 'files', compFileNaming));
+    
+    postProcessFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
+    
+else
+    
+    if (use_parallel)
+        icatb_par_postprocess_timecourses(param_file, 'subjects', subjects_to_use, 'components', components, 'outputDir', resultsDir, ...
+            'compute_mi', compute_mi, 'compute_kurtosis', compute_kurtosis);
+    else
+        icatb_postprocess_timecourses(param_file, 'subjects', subjects_to_use, 'components', components, 'outputDir', resultsDir, ...
+            'compute_mi', compute_mi, 'compute_kurtosis', compute_kurtosis);
+    end
+    
+    postProcessFile = fullfile(resultsDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
+    
+    writeComponentMaps (sesInfo, compFileNaming, subjects_to_use, components, resultsDir);
+    
+    compFiles = icatb_rename_4d_file(icatb_fullFile('directory', resultsDir, 'files', compFileNaming));
+    
 end
 
-compFiles = icatb_rename_4d_file(icatb_fullFile('directory', outputDir, 'files', compFileNaming));
+numComp = length(components);
+numOfSub = length(subjects_to_use);
+
 icaTimecourse = icatb_loadICATimeCourse(compFiles);
 
-postProcessFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
+%postProcessFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
 if (~exist(postProcessFile, 'file'))
-    icatb_postprocess_timecourses(param_file);
+    icatb_par_postprocess_timecourses(param_file);
 end
 
-load(postProcessFile);
+matFileInfo = matfile(postProcessFile, 'Writable', true);
+freq = matFileInfo.freq;
 
-if (sesInfo.numOfSess > 1)
-    spectra_tc_all = reshape(mean(spectra_tc_all, 2), sesInfo.numOfSub, length(freq), sesInfo.numComp);
-else
-    spectra_tc_all = reshape(squeeze(spectra_tc_all), sesInfo.numOfSub, length(freq), sesInfo.numComp);
+matFileInfo.fALFF = [];
+matFileInfo.dynamic_range = [];
+matFileInfo.dynamic_range_all = [];
+matFileInfo.fALFF_all = [];
+
+disp('Computing mean FNC of timecourses ...');
+[fnc_corrs_all, CLIM_FNC, fnc_grps, CLIMG, grp_names] = computeFNC(postProcessFile, 'fnc_corrs_all', 1, numComp, numOfSub, groupsInfo);
+disp('Done computing mean of FNC');
+
+if (~isempty(who(matFileInfo, 'spatial_maps_MI')))
+    disp('Computing mean FNC of spatial maps ...');
+    [spatial_maps_MI, CLIM_mi, fnc_grps_mi, CLIMG_mi] = computeFNC(postProcessFile, 'spatial_maps_MI', 0, numComp, numOfSub, groupsInfo);
+    disp('Done computing mean FNC of spatial maps');
 end
 
+closeGCP;
+
+%load(postProcessFile);
+
+numOfSess = sesInfo.numOfSess;
 
 clear tc;
 
@@ -289,40 +380,24 @@ try
 catch
 end
 
-
-
-if (~exist('spatial_maps_MI', 'var'))
-    countS = 0;
-    fprintf('\n');
-    for nSub = 1:sesInfo.numOfSub
-        for nSess = 1:sesInfo.numOfSess
-            countS = countS + 1;
-            ic = icatb_loadComp(sesInfo, (1:sesInfo.numComp), 'subjects', nSub, 'sessions', nSess, 'vars_to_load', 'ic');
-            tmp = icatb_compute_mi(ic');
-            if (countS == 1)
-                spatial_maps_MI = zeros(sesInfo.numOfSub, sesInfo.numOfSess, sesInfo.numComp, sesInfo.numComp);
-            end
-            spatial_maps_MI(nSub, nSess, :, :) = tmp;
-        end
-    end
-end
-
 cmap = getCmap(image_values);
 
 fALFF = zeros(size(compFiles, 1), 1);
 dynamic_range = zeros(size(compFiles, 1), 1);
-components = (1:size(compFiles, 1))';
 
-%meanH = [];
 resultsInfo = [];
 tmp_fnames = cell(1, size(compFiles, 1));
+
+
+drawnow;
+
 for nF = 1:size(compFiles, 1)
     
     cn = deblank(compFiles(nF, :));
     
     [dd, fN, extn] = fileparts(cn);
     
-    gH = icatb_getGraphics([fN, extn], 'graphics', 'imviewer', figVisible);
+    gH = icatb_getGraphics([fN, extn, '(Comp ', icatb_returnFileIndex(components(nF)), ')'], 'graphics', 'imviewer', figVisible);
     set(gH, 'resize', 'on');
     colormap(cmap);
     
@@ -334,7 +409,8 @@ for nF = 1:size(compFiles, 1)
     height2 = 0.5;
     sh = axes('parent', gH, 'units', 'normalized', 'position', [0.01, yOffSet, width2, height2]);
     icatb_image_viewer(cn, 'structfile', structFile, 'image_values', image_values, 'convert_to_zscores', convert_to_zscores, 'threshold', threshold, ...
-        'slices_in_mm', slices_in_mm, 'anatomical_view', slice_plane, 'axesh', sh, 'colorbar', 0, 'labels', ' ');
+        'slices_in_mm', slices_in_mm, 'anatomical_view', slice_plane, 'axesh', sh, 'colorbar', 0, 'labels', ...
+        {['(Comp ', icatb_returnFileIndex(components(nF)), ')']});
     
     width = 0.4;
     height = 0.4;
@@ -342,6 +418,8 @@ for nF = 1:size(compFiles, 1)
     sh = axes('parent', gH, 'units', 'normalized', 'position', [width2 + 0.03, height2/2-(height/2), width, height]);
     plotStackedOrtho(cn, 'structfile', structFile, 'image_values', image_values, 'convert_to_zscores', convert_to_zscores, 'threshold', threshold, 'set_to_max_voxel', 1, ...
         'get_interp_data', 1, 'cmap', cmap, 'axesh', sh, 'colorbar', false, 'labels', 'Peak Coordinates (mm)', 'colorbar', true, 'colorbar_label', true);
+    
+    drawnow;
     
     yPos = 0.65;
     width = 0.4;
@@ -353,36 +431,64 @@ for nF = 1:size(compFiles, 1)
         tc = tc/std(tc);
         tc_label = 'Data units';
     end
-    icatb_plotTimecourse('data', tc, 'parent', sh, 'color', 'm', 'title', ['Component ', icatb_returnFileIndex(nF)], 'xlabelstr', 'Scans', 'ylabelstr', tc_label);
+    icatb_plotTimecourse('data', tc, 'parent', sh, 'color', 'm', 'title', ['Component ', icatb_returnFileIndex(components(nF))], ...
+        'xlabelstr', 'Scans', 'ylabelstr', tc_label);
     
     sh = axes('parent', gH, 'units', 'normalized', 'position', [xOffSet+width+0.1, yPos, width, height]);
     clear tc;
-    tc.data = squeeze(spectra_tc_all(:, :, nF));
+    
+    chkSize = size(matFileInfo, 'spectra_tc_all');
+    
+    %pause(0.1);
+    
+    if (numel(chkSize) == 4)
+        tc.data = reshape(squeeze(mean(matFileInfo.spectra_tc_all(:, :, :, nF), 2)), numOfSub, length(freq));
+    else
+        if (numel(chkSize) == 3)
+            tc.data = matFileInfo.spectra_tc_all(:, :, nF);
+        else
+            tc.data = matFileInfo.spectra_tc_all(:, nF);
+            tc.data = tc.data';
+        end
+    end
+    
+    tc.data = reshape(tc.data, numOfSub, length(freq));
+    
     tmp_dynamicrange = zeros(1, size(tc.data, 1));
     tmp_fALFF = tmp_dynamicrange;
     for nS = 1:length(tmp_dynamicrange)
         [tmp_dynamicrange(nS), tmp_fALFF(nS)] = icatb_get_spec_stats(tc.data(nS, :), freq, freq_limits);
     end
     
-    fALFF(nF) = mean(tmp_fALFF);
-    dynamic_range(nF) = mean(tmp_dynamicrange);
-    
-    if (nF == 1)
-        dynamic_range_all = zeros(length(tmp_dynamicrange), size(compFiles, 1));
-        fALFF_all = dynamic_range_all;
+    if (~isempty(matFileInfo.fALFF))
+        matFileInfo.fALFF(1, nF) = mean(tmp_fALFF);
+        matFileInfo.dynamic_range(1, nF) = mean(tmp_dynamicrange);
+    else
+        matFileInfo.fALFF = reshape(mean(tmp_fALFF), 1, 1);
+        matFileInfo.dynamic_range = reshape(mean(tmp_dynamicrange), 1, 1);
     end
     
-    dynamic_range_all(:, nF) = tmp_dynamicrange;
-    fALFF_all(:, nF) = tmp_fALFF;
+    tmp_dynamicrange = tmp_dynamicrange(:);
+    tmp_fALFF = tmp_fALFF(:);
+    
+    if (~isempty(matFileInfo.fALFF_all))
+        matFileInfo.dynamic_range_all(:, nF) = tmp_dynamicrange;
+        matFileInfo.fALFF_all(:, nF) = tmp_fALFF;
+    else
+        matFileInfo.dynamic_range_all = tmp_dynamicrange;
+        matFileInfo.fALFF_all = tmp_fALFF;
+    end
     
     tc.xAxis = freq;
     tc.isSpectra = 1;
     tc.xlabelStr = 'Frequency (Hz)';
     tc.ylabelStr = 'Power';
-    tc.titleStr = sprintf('Dynamic range: %0.3f, Power_L_F/Power_H_F: %0.3f',  dynamic_range(nF), fALFF(nF));
+    tc.titleStr = sprintf('Dynamic range: %0.3f, Power_L_F/Power_H_F: %0.3f',  matFileInfo.dynamic_range(1, nF),  matFileInfo.fALFF(1, nF));
     icatb_plot_spectra(sh, tc);
     
     clear tc;
+    
+    drawnow;
     
     %meanH(end + 1) = gH;
     
@@ -418,7 +524,7 @@ for nF = 1:size(compFiles, 1)
             countPdfs = countPdfs + 1;
             tmpImFile = [pdfPrefix, '_', num2str(nF), '.pdf'];
             set(gH, 'PaperPositionMode', 'auto');
-            print(gH, '-dpdf', printRes, '-noui', fullfile(resultsDir, tmpImFile));
+            print(gH, fullfile(resultsDir, tmpImFile), printOptions{:});
             pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
             %end
         end
@@ -428,44 +534,16 @@ for nF = 1:size(compFiles, 1)
     
 end
 
-%figurePos = get(gH, 'position');
-
-% if (saveFigInfo)
-%     if (~strcmpi(resultsFormat, 'pdf'))
-%         resultsInfo(end + 1).title = 'Mean Components';
-%         resultsInfo(end).text = ['<ul> <li> <b> a) Timecourse </b> - Mean timecourse is converted to z-scores. </li>', ...
-%             '<li> <b> b) Spectra </b> - Timecourses spectra is computed for each data-set and averaged across sessions. Mean and standard error of mean is shown in the figure. </li> ', ...
-%             '<li> <b> c) Montage </b> - Axial slices are shown. </li>', ...
-%             '<li> <b> a) Ortho slices </b> - Ortho plot is shown for the peak voxel and coordinates are reported. </li> </ul>'];
-%
-%         resultsInfo(end).files = printFigs(meanH, resultsDir, 'mean_comp');
-%         %writeHTML(resultsDir, resultsInfo(end), 'mean_comp.html', 'Mean Components');
-%         htmlSummaryStr(end + 1). title = 'Mean Components';
-%         htmlSummaryStr(end).tag = 'mean_comp';
-%         htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
-%
-%     else
-%
-%         for nPdfs = 1:length(meanH)
-%             countPdfs = countPdfs + 1;
-%             tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
-%             set(meanH(nPdfs), 'PaperPositionMode', 'auto');
-%             print(meanH(nPdfs), '-dpdf', printRes, '-noui', fullfile(resultsDir, tmpImFile));
-%             pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
-%         end
-%     end
-%
-%     delete(meanH);
-% end
-
 
 % Append fALFF and dynamic range info to post process file
-save(postProcessFile, 'dynamic_range', 'fALFF', 'dynamic_range_all', 'fALFF_all', '-append');
+%save(postProcessFile, 'dynamic_range', 'fALFF', 'dynamic_range_all', 'fALFF_all', '-append');
 
 %% Spectral Summary
 % * *a) dynamic_range* - Difference between the peak power and minimum power at frequencies to the right of the peak.
 % * *b) fALFF* - Low frequency to high frequency power ratio.
 %
+fALFF = matFileInfo.fALFF;
+dynamic_range = matFileInfo.dynamic_range;
 
 outFiles = {''};
 resultsInfo = [];
@@ -521,6 +599,9 @@ end
 % Multiple regression is done using the timecourses from SPM design matrix as model and ICA timecourses as observations. R^2 values for each
 % component are shown in bar plot. For each component, one sample t-test results of each session and condition are shown in the bar plots.
 %
+
+drawnow;
+
 temporal_stats_betas = [];
 try
     temporal_stats_betas = opts.temporal_stats_betas;
@@ -599,7 +680,7 @@ if (~isempty(temporal_stats_betas))
                 countPdfs = countPdfs + 1;
                 tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
                 set(regress_figsH(nPdfs), 'PaperPositionMode', 'auto');
-                print(regress_figsH(nPdfs), '-bestfit', '-dpdf', '-noui', fullfile(resultsDir, tmpImFile));
+                print(regress_figsH(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
                 pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
             end
             
@@ -613,14 +694,25 @@ end
 
 resultsInfo = [];
 
+drawnow;
+
 %% Kurtosis of timecourses and spatial maps
 % Mean across subjects is reported in table. Figure shows mean+/- SEM across subjects
-if (exist('kurt_comp', 'var'))
+%if (isfield(matFileInfo, 'kurt_comp') && ~isempty(matFileInfo.kurt_comp))
+if (~isempty(who(matFileInfo, 'kurt_comp')) && ~isempty(matFileInfo.kurt_comp))
     
-    tmp_tc = squeeze(mean(kurt_comp.tc, 2));
-    tmp_ic = squeeze(mean(kurt_comp.ic, 2));
+    size_kurt_tc = size(getfield(matFileInfo.kurt_comp, 'tc'));
     
-    if (sesInfo.numOfSub > 1)
+    if (numel(size_kurt_tc) == 4)
+        % average across sessions
+        tmp_tc = squeeze(mean(getfield(matFileInfo.kurt_comp, 'tc'), 2));
+        tmp_ic = squeeze(mean(getfield(matFileInfo.kurt_comp, 'ic'), 2));
+    else
+        tmp_tc = getfield(matFileInfo.kurt_comp, 'tc');
+        tmp_ic = getfield(matFileInfo.kurt_comp, 'ic');
+    end
+    
+    if (numOfSub > 1)
         values = [mean(tmp_tc); mean(tmp_ic)];
         errors = [std(tmp_tc)/sqrt(size(tmp_tc, 1)); std(tmp_ic)/sqrt(size(tmp_ic, 1))];
     else
@@ -674,7 +766,7 @@ if (exist('kurt_comp', 'var'))
     drawnow;
     tmp_values = values(1, :);
     tmp_errors = errors(1, :);
-    bw_legend = cellstr([repmat('Comp ', length(components), 1), num2str(components)]);
+    bw_legend = cellstr([repmat('Comp ', length(components), 1), num2str(components(:))]);
     kurtH(1) = figure('color', 'w', 'name', 'Kurtosis (Timecourses)', 'position', figurePos, 'visible', figVisible);
     %plotBars(values, errors, 0.8, {'Timecourses', 'Spatial Maps'}, winter(64), bw_legend);
     plotBars(tmp_values, tmp_errors, 0.8, {'Timecourses'}, winter(64), bw_legend);
@@ -709,7 +801,7 @@ if (exist('kurt_comp', 'var'))
                 countPdfs = countPdfs + 1;
                 tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
                 set(kurtH(nPdfs), 'PaperPositionMode', 'auto');
-                print(kurtH(nPdfs), '-dpdf', printRes, '-noui', fullfile(resultsDir, tmpImFile));
+                print(kurtH(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
                 pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
             end
         end
@@ -718,37 +810,16 @@ if (exist('kurt_comp', 'var'))
     
 end
 
+drawnow;
+
 %% FNC correlations
 % Functional network connectivity correlations are computed for each
 % data-set and averaged across sessions.
-if (sesInfo.numOfSess > 1)
-    fnc_corrs_all = reshape(mean(fnc_corrs_all, 2), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
-else
-    fnc_corrs_all = reshape(squeeze(fnc_corrs_all), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
-end
 
-fnc_grps = cell(1, length(groupsInfo));
-grp_names = cell(1, length(groupsInfo));
-CLIMG = [];
-
-if (sesInfo.numOfSub > 1)
-    for n = 1:length(groupsInfo)
-        grp_names{n} = groupsInfo(n).name;
-        tmp = icatb_z_to_r(squeeze(mean(fnc_corrs_all(groupsInfo(n).val, :, :))));
-        fnc_grps{n} = tmp;
-        CLIMG = max([CLIMG, max(abs(tmp(:)))]);
-    end
-    fnc_corrs_all = squeeze(mean(fnc_corrs_all));
-else
-    fnc_corrs_all = squeeze(fnc_corrs_all);
-end
-fnc_corrs_all = icatb_z_to_r(fnc_corrs_all);
-comps = (1:sesInfo.numComp)';
-CLIM = max(abs(fnc_corrs_all(:)));
 gH = figure('color', 'w', 'visible', figVisible);
 set(gH, 'resize', 'on');
 axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-icatb_plot_FNC(fnc_corrs_all, [-CLIM, CLIM], cellstr(num2str(comps)), (1:length(comps)), gH, [], axesH);
+icatb_plot_FNC(fnc_corrs_all, CLIM_FNC, cellstr(num2str(components(:))), (1:length(components(:))), gH, [], axesH);
 colormap(jet(64));
 title('Average FNC Correlations', 'parent', axesH);
 
@@ -758,7 +829,7 @@ for n = 1:length(grp_names)
     gH = figure('color', 'w', 'visible', figVisible);
     set(gH, 'resize', 'on');
     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    icatb_plot_FNC(fnc_grps{n}, [-CLIMG, CLIMG], cellstr(num2str(comps)), (1:length(comps)), gH, [], axesH);
+    icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, [], axesH);
     colormap(jet(64));
     title(['Average FNC Correlations of ', grp_names{n}], 'parent', axesH);
     fncHandles(end + 1) = gH;
@@ -784,7 +855,7 @@ if (saveFigInfo)
             countPdfs = countPdfs + 1;
             tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
             set(fncHandles(nPdfs), 'PaperPositionMode', 'auto');
-            print(fncHandles(nPdfs), '-dpdf', printRes, '-noui', fullfile(resultsDir, tmpImFile));
+            print(fncHandles(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
             pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
         end
         
@@ -794,82 +865,62 @@ if (saveFigInfo)
 end
 
 
+drawnow;
+
 %% FNC metrics of component spatial maps
 % Mutual information is computed between components spatially and averaged
 % across data-sets.
 
-if (sesInfo.numOfSess > 1)
-    spatial_maps_MI = reshape(mean(spatial_maps_MI, 2), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
-else
-    spatial_maps_MI = reshape(squeeze(spatial_maps_MI), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
-end
-
-fnc_grps = cell(1, length(groupsInfo));
-grp_names = cell(1, length(groupsInfo));
-CLIMG = [];
-
-if (sesInfo.numOfSub > 1)
-    for n = 1:length(groupsInfo)
-        grp_names{n} = groupsInfo(n).name;
-        tmp = (squeeze(mean(spatial_maps_MI(groupsInfo(n).val, :, :))));
-        fnc_grps{n} = tmp;
-        CLIMG = max([CLIMG, max(abs(tmp(:)))]);
-    end
-end
-
-if (sesInfo.numOfSub > 1)
-    spatial_maps_MI = squeeze(mean(spatial_maps_MI));
-else
-    spatial_maps_MI = squeeze(spatial_maps_MI);
-end
-
-
-comps = (1:sesInfo.numComp)';
-CLIM = [min(abs(spatial_maps_MI(:))), max(abs(spatial_maps_MI(:)))];
-gH = figure('color', 'w', 'visible', figVisible);
-set(gH, 'resize', 'on');
-axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-icatb_plot_FNC(spatial_maps_MI, CLIM, cellstr(num2str(comps)), (1:length(comps)), gH, ' ', axesH);
-colormap(jet(64));
-title('Average FNC metrics (Spatial maps)', 'parent', axesH);
-
-clear fncHandles;
-fncHandles(1) = gH;
-
-for n = 1:length(grp_names)
+if (~isempty(spatial_maps_MI))
+    
+    fnc_grps = fnc_grps_mi;
+    CLIMG = CLIMG_mi;
+    CLIM = CLIM_mi;
+    
     gH = figure('color', 'w', 'visible', figVisible);
     set(gH, 'resize', 'on');
     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    icatb_plot_FNC(fnc_grps{n}, [0, CLIMG], cellstr(num2str(comps)), (1:length(comps)), gH, ' ', axesH);
+    icatb_plot_FNC(spatial_maps_MI, CLIM, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
     colormap(jet(64));
-    title(['Average spatial FNC metrics of ', grp_names{n}], 'parent', axesH);
-    fncHandles(end + 1) = gH;
-end
-
-resultsInfo = [];
-if (saveFigInfo)
+    title('Average FNC metrics (Spatial maps)', 'parent', axesH);
     
-    if (~strcmpi(resultsFormat, 'pdf'))
-        resultsInfo(end + 1).title = 'FNC metrics of component spatial maps';
-        resultsInfo(end).text = 'Mutual information is computed between components spatially and averaged across data-sets.';
-        FNCSPNGFiles = printFigs(fncHandles, resultsDir, 'FNC_maps');
-        resultsInfo(end).files = FNCSPNGFiles;
-        %writeHTML(resultsDir, resultsInfo(end), 'fnc_spatial_maps.html', 'FNC metrics of component spatial maps');
-        htmlSummaryStr(end + 1). title = 'FNC metrics of component spatial maps';
-        htmlSummaryStr(end).tag = 'fnc_corrs_sm';
-        htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
-    else
-        for nPdfs = 1:length(fncHandles)
-            countPdfs = countPdfs + 1;
-            tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
-            set(fncHandles(nPdfs), 'PaperPositionMode', 'auto');
-            print(fncHandles(nPdfs), '-dpdf', printRes, '-noui', fullfile(resultsDir, tmpImFile));
-            pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
-        end
+    clear fncHandles;
+    fncHandles(1) = gH;
+    
+    for n = 1:length(grp_names)
+        gH = figure('color', 'w', 'visible', figVisible);
+        set(gH, 'resize', 'on');
+        axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
+        icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
+        colormap(jet(64));
+        title(['Average spatial FNC metrics of ', grp_names{n}], 'parent', axesH);
+        fncHandles(end + 1) = gH;
     end
-    delete(fncHandles);
+    
+    resultsInfo = [];
+    if (saveFigInfo)
+        
+        if (~strcmpi(resultsFormat, 'pdf'))
+            resultsInfo(end + 1).title = 'FNC metrics of component spatial maps';
+            resultsInfo(end).text = 'Mutual information is computed between components spatially and averaged across data-sets.';
+            FNCSPNGFiles = printFigs(fncHandles, resultsDir, 'FNC_maps');
+            resultsInfo(end).files = FNCSPNGFiles;
+            %writeHTML(resultsDir, resultsInfo(end), 'fnc_spatial_maps.html', 'FNC metrics of component spatial maps');
+            htmlSummaryStr(end + 1). title = 'FNC metrics of component spatial maps';
+            htmlSummaryStr(end).tag = 'fnc_corrs_sm';
+            htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+        else
+            for nPdfs = 1:length(fncHandles)
+                countPdfs = countPdfs + 1;
+                tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
+                set(fncHandles(nPdfs), 'PaperPositionMode', 'auto');
+                print(fncHandles(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
+                pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
+            end
+        end
+        delete(fncHandles);
+    end
 end
-
 
 if (saveFigInfo)
     if (strcmpi(resultsFormat, 'pdf'))
@@ -1018,7 +1069,18 @@ s = ceil(len/2 - length(b)/2) + 1;
 c(2, s:s + length(b) - 1) = b;
 
 
-function newText = dispParams(sesInfo)
+function newText = dispParams(sesInfo, subjects_to_use, all_components)
+
+
+dasets_in_use = zeros(1, length(subjects_to_use)*sesInfo.numOfSess);
+endInd = 0;
+for tmpS = 1:length(subjects_to_use)
+    ia = (subjects_to_use(tmpS) - 1)*sesInfo.numOfSess + 1;
+    ib = subjects_to_use(tmpS)*sesInfo.numOfSess;
+    startInd = endInd + 1;
+    endInd = endInd + sesInfo.numOfSess;
+    dasets_in_use(startInd:endInd) = (ia:ib);
+end
 
 icaAlgo = icatb_icaAlgorithm;
 selected_ica_algorithm = deblank(icaAlgo(sesInfo.algorithm, :));
@@ -1034,21 +1096,27 @@ catch
 end
 
 if (strcmpi(modalityType, 'fmri'))
-    D(size(D,2)+1).string = ['Number of Subjects : ', num2str(sesInfo.numOfSub)];
+    D(size(D,2)+1).string = ['Number of Subjects : ', num2str(length(subjects_to_use))];
     D(size(D,2)+1).string = ['Number of Sessions : ', num2str(sesInfo.numOfSess)];
     if(isfield(sesInfo.userInput, 'TR'))
         Trs = sesInfo.userInput.TR;
+        if (length(Trs) == 1)
+            Trs = repmat(Trs, 1, length(subjects_to_use));
+        else
+            Trs = Trs(subjects_to_use);
+        end
+        
         D(size(D,2)+1).string = ['TR in seconds (Mean, Standard deviation): ', '(', num2str(mean(Trs)), ', ', num2str(std(Trs)), ')'];
     end
 end
 
 
 
-D(size(D,2)+1).string = ['Number of Independent Components : ', num2str(sesInfo.numComp)];
+D(size(D,2)+1).string = ['Number of Independent Components : ', num2str(length(all_components))];
 D(size(D,2)+1).string = ['ICA Algorithm : ', selected_ica_algorithm];
 
 if (~strcmpi(modalityType, 'smri'))
-    D(size(D,2)+1).string = ['Number Of Scans/Timepoints : ', num2str(sesInfo.numOfScans)];
+    D(size(D,2)+1).string = ['Number Of Scans/Timepoints (Mean, Standard deviation): ', '(', num2str(mean(sesInfo.diffTimePoints(dasets_in_use))), ', ', num2str(std(sesInfo.diffTimePoints(dasets_in_use))), ')'];
 else
     D(size(D,2)+1).string = ['Number Of Subjects : ', num2str(sesInfo.numOfScans)];
 end
@@ -1677,6 +1745,17 @@ if (isempty(PRINT_RESOLUTION))
     PRINT_RESOLUTION = '-r72';
 end
 
+try
+    print_opts = GICA_RESULTS_SUMMARY.print_opts;
+catch
+    print_opts = {'-noui'};
+end
+
+
+printOptions = [{'-dpng', PRINT_RESOLUTION}, print_opts];
+
+printOptions(strcmpi(printOptions, '-bestfit')) = [];
+printOptions(strcmpi(printOptions, '-fillpage')) = [];
 
 imNames = cell(1, length(Figs));
 for nF = 1:length(Figs)
@@ -1685,5 +1764,127 @@ for nF = 1:length(Figs)
     else
         imNames{nF} = [filename, '.png'];
     end
-    print(Figs(nF), '-dpng', PRINT_RESOLUTION, '-noui', fullfile(outdir, imNames{nF}));
+    print(Figs(nF), fullfile(outdir, imNames{nF}), printOptions{:});
+end
+
+
+
+function writeComponentMaps (sesInfo, compFileNaming, subjects_to_use, components, resultsDir)
+
+
+tp = [];
+dasets_in_use = zeros(1, length(subjects_to_use)*sesInfo.numOfSess);
+endInd = 0;
+for tmpS = 1:length(subjects_to_use)
+    ia = (subjects_to_use(tmpS) - 1)*sesInfo.numOfSess + 1;
+    ib = subjects_to_use(tmpS)*sesInfo.numOfSess;
+    tp = min([tp, min(sesInfo.diffTimePoints([ia, ib]))]);
+    startInd = endInd + 1;
+    endInd = endInd + sesInfo.numOfSess;
+    dasets_in_use(startInd:endInd) = (ia:ib);
+end
+
+meanIm = zeros(length(components), length(sesInfo.mask_ind));
+meanTC = zeros(tp, length(components));
+
+
+sesInfo.userInput.files = [];
+sesInfo.inputFiles = [];
+try
+    sesInfo.userInput.ICA_Options = {};
+    sesInfo.ICA_Options = {};
+catch
+end
+
+numOfSess = sesInfo.numOfSess;
+parfor nDataset = 1:length(dasets_in_use)
+    nD = dasets_in_use(nDataset);
+    nSub = ceil(nD/numOfSess);
+    nSess = mod(nD - 1, numOfSess) + 1;
+    [tc, ic]  = icatb_loadComp(sesInfo, components, 'subjects', nSub, 'sessions', nSess);
+    meanIm = meanIm + ic';
+    meanTC =  meanTC + tc(1:tp, :);
+end
+
+
+meanIm = meanIm / length(dasets_in_use);
+meanTC = meanTC / length(dasets_in_use);
+
+try
+    if exist(fullfile(resultsDir, compFileNaming), 'file')
+        delete (fullfile(resultsDir, compFileNaming));
+    end
+catch
+end
+
+icatb_saveICAData(compFileNaming, meanIm, meanTC, sesInfo.mask_ind, length(components), sesInfo.HInfo, 'real', [], resultsDir);
+
+
+
+function [fnc_corrs_all, CLIM, fnc_grps, CLIMG, grp_names] = computeFNC(postProcessFile, varName, convZToR, numComp, numOfSub, groupsInfo)
+
+fnc_grps = cell(1, length(groupsInfo));
+grp_names = cell(1, length(groupsInfo));
+CLIMG = [];
+
+matFileInfo = matfile (postProcessFile);
+if (numOfSub > 1)
+    for n = 1:length(groupsInfo)
+        grp_names{n} = groupsInfo(n).name;
+        tmp = matFileInfo.(varName)(groupsInfo(n).val, :, :, :);
+        tmp = squeeze(mean(mean(tmp, 2)));
+        if (convZToR)
+            tmp = icatb_z_to_r(tmp);
+        end
+        fnc_grps{n} = tmp;
+        CLIMG = max([CLIMG, max(abs(tmp(:)))]);
+    end
+    
+    fnc_corrs_all = zeros(numComp, numComp);
+    parfor nSubIn = 1:numOfSub
+        matFileInfo = matfile (postProcessFile);
+        tmp = matFileInfo.(varName)(nSubIn, :, :, :);
+        if (size(tmp, 2) > 1)
+            tmp = reshape(mean(tmp, 2), numComp, numComp);
+        else
+            tmp = reshape(squeeze(tmp), numComp, numComp);
+        end
+        fnc_corrs_all = fnc_corrs_all + tmp;
+    end
+    fnc_corrs_all = fnc_corrs_all ./ numOfSub;
+    
+else
+    fnc_corrs_all = squeeze(matFileInfo.fnc_corrs_all);
+end
+
+if (convZToR)
+    fnc_corrs_all = icatb_z_to_r(fnc_corrs_all);
+end
+
+if (strcmpi(varName, 'fnc_corrs_all'))
+    CLIM = max(abs(fnc_corrs_all(:)));
+    CLIM = [-CLIM, CLIM];
+    if (~isempty(CLIMG))
+        CLIMG = [-CLIMG, CLIMG];
+    end
+else
+    CLIM = [min(abs(fnc_corrs_all(:))), max(abs(fnc_corrs_all(:)))];
+    if (~isempty(CLIMG))
+        CLIMG = [0, CLIMG];
+    end
+end
+
+function closeGCP
+
+if (~isempty(which('parpool')))
+    try
+        poolobj = gcp('nocreate');
+        delete(poolobj);
+    catch
+    end
+else
+    try
+        matlabpool close;
+    catch
+    end
 end
