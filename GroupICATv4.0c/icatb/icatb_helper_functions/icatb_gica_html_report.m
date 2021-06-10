@@ -74,9 +74,11 @@ groupsInfo = [];
 spatial_maps_MI = [];
 compute_mi = 1;
 compute_kurtosis = 1;
+compute_fnc = 1;
 try
     compute_mi = GICA_RESULTS_SUMMARY.compute.mi;
     compute_kurtosis = GICA_RESULTS_SUMMARY.compute.kurtosis;
+    compute_fnc = GICA_RESULTS_SUMMARY.compute.fnc;
 catch
 end
 
@@ -165,6 +167,11 @@ end
 
 try
     compute_kurtosis = opts.compute.kurtosis;
+catch
+end
+
+try
+    compute_fnc = opts.compute.fnc;
 catch
 end
 
@@ -309,7 +316,7 @@ currentFile = deblank(compFileNaming(1, :));
 
 if (~exist('computeInfo', 'var'))
     
-    if ~exist(currentFile, 'file')
+    if ~exist(fullfile(outputDir, currentFile), 'file')
         [zipFileName, files_in_zip] = icatb_getViewingSet_zip(currentFile, [], 'real', sesInfo.zipContents);
         if (~isempty(zipFileName))
             icatb_unzip(regexprep(zipFileName, ['.*\', filesep], ''), fullfile(outputDir, fileparts(currentFile)));
@@ -324,10 +331,10 @@ else
     
     if (use_parallel)
         icatb_par_postprocess_timecourses(param_file, 'subjects', subjects_to_use, 'components', components, 'outputDir', resultsDir, ...
-            'compute_mi', compute_mi, 'compute_kurtosis', compute_kurtosis);
+            'compute_mi', compute_mi, 'compute_kurtosis', compute_kurtosis, 'compute_fnc', compute_fnc);
     else
         icatb_postprocess_timecourses(param_file, 'subjects', subjects_to_use, 'components', components, 'outputDir', resultsDir, ...
-            'compute_mi', compute_mi, 'compute_kurtosis', compute_kurtosis);
+            'compute_mi', compute_mi, 'compute_kurtosis', compute_kurtosis, 'compute_fnc', compute_fnc);
     end
     
     postProcessFile = fullfile(resultsDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
@@ -348,25 +355,33 @@ if (~exist(postProcessFile, 'file'))
     icatb_par_postprocess_timecourses(param_file);
 end
 
-matFileInfo = matfile(postProcessFile, 'Writable', true);
-freq = matFileInfo.freq;
-
-matFileInfo.fALFF = [];
-matFileInfo.dynamic_range = [];
-matFileInfo.dynamic_range_all = [];
-matFileInfo.fALFF_all = [];
-
-disp('Computing mean FNC of timecourses ...');
-[fnc_corrs_all, CLIM_FNC, fnc_grps, CLIMG, grp_names] = computeFNC(postProcessFile, 'fnc_corrs_all', 1, numComp, numOfSub, groupsInfo);
-disp('Done computing mean of FNC');
-
-if (~isempty(who(matFileInfo, 'spatial_maps_MI')))
-    disp('Computing mean FNC of spatial maps ...');
-    [spatial_maps_MI, CLIM_mi, fnc_grps_mi, CLIMG_mi] = computeFNC(postProcessFile, 'spatial_maps_MI', 0, numComp, numOfSub, groupsInfo);
-    disp('Done computing mean FNC of spatial maps');
+varsInMat = whos('-file', postProcessFile);
+chkAgg = strmatch('aggregate', cellstr(char(varsInMat.name)), 'exact');
+if (isempty(chkAgg))
+    aggregate = getAggInfo(sesInfo, postProcessFile);
+else
+    load(postProcessFile, 'aggregate');
 end
 
-closeGCP;
+% matFileInfo = matfile(postProcessFile, 'Writable', true);
+% freq = matFileInfo.freq;
+%
+% matFileInfo.fALFF = [];
+% matFileInfo.dynamic_range = [];
+% matFileInfo.dynamic_range_all = [];
+% matFileInfo.fALFF_all = [];
+%
+% disp('Computing mean FNC of timecourses ...');
+% [fnc_corrs_all, CLIM_FNC, fnc_grps, CLIMG, grp_names] = computeFNC(postProcessFile, 'fnc_corrs_all', 1, numComp, numOfSub, groupsInfo);
+% disp('Done computing mean of FNC');
+%
+% if (~isempty(who(matFileInfo, 'spatial_maps_MI')))
+%     disp('Computing mean FNC of spatial maps ...');
+%     [spatial_maps_MI, CLIM_mi, fnc_grps_mi, CLIMG_mi] = computeFNC(postProcessFile, 'spatial_maps_MI', 0, numComp, numOfSub, groupsInfo);
+%     disp('Done computing mean FNC of spatial maps');
+% end
+%
+% closeGCP;
 
 %load(postProcessFile);
 
@@ -382,8 +397,8 @@ end
 
 cmap = getCmap(image_values);
 
-fALFF = zeros(size(compFiles, 1), 1);
-dynamic_range = zeros(size(compFiles, 1), 1);
+fALFF = aggregate.spectra.fALFF;
+dynamic_range = aggregate.spectra.dynamic_range;
 
 resultsInfo = [];
 tmp_fnames = cell(1, size(compFiles, 1));
@@ -437,54 +452,62 @@ for nF = 1:size(compFiles, 1)
     sh = axes('parent', gH, 'units', 'normalized', 'position', [xOffSet+width+0.1, yPos, width, height]);
     clear tc;
     
-    chkSize = size(matFileInfo, 'spectra_tc_all');
+    % chkSize = size(matFileInfo, 'spectra_tc_all');
     
     %pause(0.1);
     
-    if (numel(chkSize) == 4)
-        tc.data = reshape(squeeze(mean(matFileInfo.spectra_tc_all(:, :, :, nF), 2)), numOfSub, length(freq));
-    else
-        if (numel(chkSize) == 3)
-            tc.data = matFileInfo.spectra_tc_all(:, :, nF);
-        else
-            tc.data = matFileInfo.spectra_tc_all(:, nF);
-            tc.data = tc.data';
-        end
-    end
+    %     if (numel(chkSize) == 4)
+    %         tc.data = reshape(squeeze(mean(matFileInfo.spectra_tc_all(:, :, :, nF), 2)), numOfSub, length(freq));
+    %     else
+    %         if (numel(chkSize) == 3)
+    %             tc.data = matFileInfo.spectra_tc_all(:, :, nF);
+    %         else
+    %             tc.data = matFileInfo.spectra_tc_all(:, nF);
+    %             tc.data = tc.data';
+    %         end
+    %     end
+    %
+    %     tc.data = reshape(tc.data, numOfSub, length(freq));
+    %
+    %     tmp_dynamicrange = zeros(1, size(tc.data, 1));
+    %     tmp_fALFF = tmp_dynamicrange;
+    %     for nS = 1:length(tmp_dynamicrange)
+    %         [tmp_dynamicrange(nS), tmp_fALFF(nS)] = icatb_get_spec_stats(tc.data(nS, :), freq, freq_limits);
+    %     end
+    %
+    %     if (~isempty(matFileInfo.fALFF))
+    %         matFileInfo.fALFF(1, nF) = mean(tmp_fALFF);
+    %         matFileInfo.dynamic_range(1, nF) = mean(tmp_dynamicrange);
+    %     else
+    %         matFileInfo.fALFF = reshape(mean(tmp_fALFF), 1, 1);
+    %         matFileInfo.dynamic_range = reshape(mean(tmp_dynamicrange), 1, 1);
+    %     end
+    %
+    %     tmp_dynamicrange = tmp_dynamicrange(:);
+    %     tmp_fALFF = tmp_fALFF(:);
+    %
+    %     if (~isempty(matFileInfo.fALFF_all))
+    %         matFileInfo.dynamic_range_all(:, nF) = tmp_dynamicrange;
+    %         matFileInfo.fALFF_all(:, nF) = tmp_fALFF;
+    %     else
+    %         matFileInfo.dynamic_range_all = tmp_dynamicrange;
+    %         matFileInfo.fALFF_all = tmp_fALFF;
+    %     end
     
-    tc.data = reshape(tc.data, numOfSub, length(freq));
-    
-    tmp_dynamicrange = zeros(1, size(tc.data, 1));
-    tmp_fALFF = tmp_dynamicrange;
-    for nS = 1:length(tmp_dynamicrange)
-        [tmp_dynamicrange(nS), tmp_fALFF(nS)] = icatb_get_spec_stats(tc.data(nS, :), freq, freq_limits);
-    end
-    
-    if (~isempty(matFileInfo.fALFF))
-        matFileInfo.fALFF(1, nF) = mean(tmp_fALFF);
-        matFileInfo.dynamic_range(1, nF) = mean(tmp_dynamicrange);
-    else
-        matFileInfo.fALFF = reshape(mean(tmp_fALFF), 1, 1);
-        matFileInfo.dynamic_range = reshape(mean(tmp_dynamicrange), 1, 1);
-    end
-    
-    tmp_dynamicrange = tmp_dynamicrange(:);
-    tmp_fALFF = tmp_fALFF(:);
-    
-    if (~isempty(matFileInfo.fALFF_all))
-        matFileInfo.dynamic_range_all(:, nF) = tmp_dynamicrange;
-        matFileInfo.fALFF_all(:, nF) = tmp_fALFF;
-    else
-        matFileInfo.dynamic_range_all = tmp_dynamicrange;
-        matFileInfo.fALFF_all = tmp_fALFF;
-    end
-    
-    tc.xAxis = freq;
+    tc.xAxis = aggregate.spectra.freq;
     tc.isSpectra = 1;
     tc.xlabelStr = 'Frequency (Hz)';
     tc.ylabelStr = 'Power';
-    tc.titleStr = sprintf('Dynamic range: %0.3f, Power_L_F/Power_H_F: %0.3f',  matFileInfo.dynamic_range(1, nF),  matFileInfo.fALFF(1, nF));
-    icatb_plot_spectra(sh, tc);
+    tc.titleStr = sprintf('Dynamic range: %0.3f, Power_L_F/Power_H_F: %0.3f', dynamic_range(nF), fALFF(nF));
+    %icatb_plot_spectra(sh, tc);
+    icatb_plot_with_ste_area(sh, aggregate.spectra.freq, aggregate.spectra.mean(:, nF)', aggregate.spectra.sem(:, nF)', 'm', [.5 .5 1]);
+    xlabel(tc.xlabelStr, 'parent', sh, 'Interpreter', 'tex');
+    ylabel(tc.ylabelStr, 'parent', sh, 'Interpreter', 'tex');
+    title(tc.titleStr, 'parent', sh, 'Interpreter', 'tex');
+    
+    set(sh, 'XColor', FONT_COLOR, 'YColor', FONT_COLOR);
+    
+    axis(sh, 'tight');
     
     clear tc;
     
@@ -542,8 +565,10 @@ end
 % * *a) dynamic_range* - Difference between the peak power and minimum power at frequencies to the right of the peak.
 % * *b) fALFF* - Low frequency to high frequency power ratio.
 %
-fALFF = matFileInfo.fALFF;
-dynamic_range = matFileInfo.dynamic_range;
+%fALFF = matFileInfo.fALFF;
+%dynamic_range = matFileInfo.dynamic_range;
+fALFF = aggregate.spectra.fALFF;
+dynamic_range = aggregate.spectra.dynamic_range;
 
 outFiles = {''};
 resultsInfo = [];
@@ -699,26 +724,29 @@ drawnow;
 %% Kurtosis of timecourses and spatial maps
 % Mean across subjects is reported in table. Figure shows mean+/- SEM across subjects
 %if (isfield(matFileInfo, 'kurt_comp') && ~isempty(matFileInfo.kurt_comp))
-if (~isempty(who(matFileInfo, 'kurt_comp')) && ~isempty(matFileInfo.kurt_comp))
+if (isfield(aggregate, 'kurt'))
     
-    size_kurt_tc = size(getfield(matFileInfo.kurt_comp, 'tc'));
+    %     size_kurt_tc = size(getfield(matFileInfo.kurt_comp, 'tc'));
+    %
+    %     if (numel(size_kurt_tc) == 4)
+    %         % average across sessions
+    %         tmp_tc = squeeze(mean(getfield(matFileInfo.kurt_comp, 'tc'), 2));
+    %         tmp_ic = squeeze(mean(getfield(matFileInfo.kurt_comp, 'ic'), 2));
+    %     else
+    %         tmp_tc = getfield(matFileInfo.kurt_comp, 'tc');
+    %         tmp_ic = getfield(matFileInfo.kurt_comp, 'ic');
+    %     end
+    %
+    %     if (numOfSub > 1)
+    %         values = [mean(tmp_tc); mean(tmp_ic)];
+    %         errors = [std(tmp_tc)/sqrt(size(tmp_tc, 1)); std(tmp_ic)/sqrt(size(tmp_ic, 1))];
+    %     else
+    %         values = [tmp_tc(:)'; tmp_ic(:)'];
+    %         errors = zeros(size(values));
+    %     end
     
-    if (numel(size_kurt_tc) == 4)
-        % average across sessions
-        tmp_tc = squeeze(mean(getfield(matFileInfo.kurt_comp, 'tc'), 2));
-        tmp_ic = squeeze(mean(getfield(matFileInfo.kurt_comp, 'ic'), 2));
-    else
-        tmp_tc = getfield(matFileInfo.kurt_comp, 'tc');
-        tmp_ic = getfield(matFileInfo.kurt_comp, 'ic');
-    end
-    
-    if (numOfSub > 1)
-        values = [mean(tmp_tc); mean(tmp_ic)];
-        errors = [std(tmp_tc)/sqrt(size(tmp_tc, 1)); std(tmp_ic)/sqrt(size(tmp_ic, 1))];
-    else
-        values = [tmp_tc(:)'; tmp_ic(:)'];
-        errors = zeros(size(values));
-    end
+    values = [aggregate.kurt.tc.mean; aggregate.kurt.ic.mean];
+    errors = [aggregate.kurt.tc.sem; aggregate.kurt.ic.sem];
     
     varNames = {'ComponentNumber', 'Timecourses', 'SpatialMaps'};
     
@@ -815,55 +843,61 @@ drawnow;
 %% FNC correlations
 % Functional network connectivity correlations are computed for each
 % data-set and averaged across sessions.
-
-gH = figure('color', 'w', 'visible', figVisible);
-set(gH, 'resize', 'on');
-axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-icatb_plot_FNC(fnc_corrs_all, CLIM_FNC, cellstr(num2str(components(:))), (1:length(components(:))), gH, [], axesH);
-colormap(jet(64));
-title('Average FNC Correlations', 'parent', axesH);
-
-fncHandles(1) = gH;
-
-for n = 1:length(grp_names)
+if (isfield(aggregate, 'fnc'))
+    
+    fnc_corrs_all = aggregate.fnc.mean;
+    fnc_corrs_all = icatb_z_to_r(fnc_corrs_all);
+    CLIM = max(abs(fnc_corrs_all(:)));
+    CLIM = [-CLIM, CLIM];
     gH = figure('color', 'w', 'visible', figVisible);
     set(gH, 'resize', 'on');
     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, [], axesH);
+    icatb_plot_FNC(fnc_corrs_all, CLIM, cellstr(num2str(components(:))), (1:length(components(:))), gH, [], axesH);
     colormap(jet(64));
-    title(['Average FNC Correlations of ', grp_names{n}], 'parent', axesH);
-    fncHandles(end + 1) = gH;
-end
-
-
-resultsInfo = [];
-if (saveFigInfo)
+    title('Average FNC Correlations', 'parent', axesH);
     
-    if (~strcmpi(resultsFormat, 'pdf'))
-        resultsInfo(end + 1).title = 'FNC correlations on timecourses';
-        resultsInfo(end).text = 'Functional network connectivity correlations are computed for each data-set using timecourses and averaged across sessions.';
-        FNCTPNGFiles = printFigs(fncHandles, resultsDir, 'FNC_time');
-        resultsInfo(end).files = FNCTPNGFiles;
-        %writeHTML(resultsDir, resultsInfo(end), 'fnc_timecourses.html', 'FNC correlations on timecourses');
-        htmlSummaryStr(end + 1).title = 'FNC correlations on timecourses';
-        htmlSummaryStr(end).tag  = 'fnc_corrs_tc';
-        htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+    fncHandles(1) = gH;
+    
+    % for n = 1:length(grp_names)
+    %     gH = figure('color', 'w', 'visible', figVisible);
+    %     set(gH, 'resize', 'on');
+    %     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
+    %     icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, [], axesH);
+    %     colormap(jet(64));
+    %     title(['Average FNC Correlations of ', grp_names{n}], 'parent', axesH);
+    %     fncHandles(end + 1) = gH;
+    % end
+    
+    
+    resultsInfo = [];
+    if (saveFigInfo)
         
-    else
-        
-        for nPdfs = 1:length(fncHandles)
-            countPdfs = countPdfs + 1;
-            tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
-            set(fncHandles(nPdfs), 'PaperPositionMode', 'auto');
-            print(fncHandles(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
-            pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
+        if (~strcmpi(resultsFormat, 'pdf'))
+            resultsInfo(end + 1).title = 'FNC correlations on timecourses';
+            resultsInfo(end).text = 'Functional network connectivity correlations are computed for each data-set using timecourses and averaged across sessions.';
+            FNCTPNGFiles = printFigs(fncHandles, resultsDir, 'FNC_time');
+            resultsInfo(end).files = FNCTPNGFiles;
+            %writeHTML(resultsDir, resultsInfo(end), 'fnc_timecourses.html', 'FNC correlations on timecourses');
+            htmlSummaryStr(end + 1).title = 'FNC correlations on timecourses';
+            htmlSummaryStr(end).tag  = 'fnc_corrs_tc';
+            htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+            
+        else
+            
+            for nPdfs = 1:length(fncHandles)
+                countPdfs = countPdfs + 1;
+                tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
+                set(fncHandles(nPdfs), 'PaperPositionMode', 'auto');
+                print(fncHandles(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
+                pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
+            end
+            
         end
         
+        delete(fncHandles);
     end
     
-    delete(fncHandles);
 end
-
 
 drawnow;
 
@@ -871,11 +905,12 @@ drawnow;
 % Mutual information is computed between components spatially and averaged
 % across data-sets.
 
-if (~isempty(spatial_maps_MI))
-    
-    fnc_grps = fnc_grps_mi;
-    CLIMG = CLIMG_mi;
-    CLIM = CLIM_mi;
+if (isfield(aggregate, 'mi'))
+    spatial_maps_MI =  aggregate.mi.mean;
+    CLIM = [min(abs(spatial_maps_MI(:))), max(abs(spatial_maps_MI(:)))];
+    %     fnc_grps = fnc_grps_mi;
+    %     CLIMG = CLIMG_mi;
+    %     CLIM = CLIM_mi;
     
     gH = figure('color', 'w', 'visible', figVisible);
     set(gH, 'resize', 'on');
@@ -887,15 +922,15 @@ if (~isempty(spatial_maps_MI))
     clear fncHandles;
     fncHandles(1) = gH;
     
-    for n = 1:length(grp_names)
-        gH = figure('color', 'w', 'visible', figVisible);
-        set(gH, 'resize', 'on');
-        axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-        icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
-        colormap(jet(64));
-        title(['Average spatial FNC metrics of ', grp_names{n}], 'parent', axesH);
-        fncHandles(end + 1) = gH;
-    end
+    %     for n = 1:length(grp_names)
+    %         gH = figure('color', 'w', 'visible', figVisible);
+    %         set(gH, 'resize', 'on');
+    %         axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
+    %         icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
+    %         colormap(jet(64));
+    %         title(['Average spatial FNC metrics of ', grp_names{n}], 'parent', axesH);
+    %         fncHandles(end + 1) = gH;
+    %     end
     
     resultsInfo = [];
     if (saveFigInfo)
@@ -1641,7 +1676,7 @@ for nR = 1:length(sdFNCResults)
     
     if (~strcmpi(extn, '.txt'))
         
-        num_cols = 2;
+        num_cols = 1;
         num_rows = ceil(length(files)/num_cols);
         countF = 0;
         results_string1 = [results_string1, '<table>'];
@@ -1821,25 +1856,162 @@ icatb_saveICAData(compFileNaming, meanIm, meanTC, sesInfo.mask_ind, length(compo
 
 
 
-function [fnc_corrs_all, CLIM, fnc_grps, CLIMG, grp_names] = computeFNC(postProcessFile, varName, convZToR, numComp, numOfSub, groupsInfo)
+function closeGCP
 
-fnc_grps = cell(1, length(groupsInfo));
-grp_names = cell(1, length(groupsInfo));
-CLIMG = [];
+if (~isempty(which('parpool')))
+    try
+        poolobj = gcp('nocreate');
+        delete(poolobj);
+    catch
+    end
+else
+    try
+        matlabpool close;
+    catch
+    end
+end
+
+
+function aggregate = getAggInfo(sesInfo, postProcessFile)
+% Get aggregate info
+
+icatb_defaults
+global TIMECOURSE_POSTPROCESS;
+
+freq_limits = [0.1, 0.15];
+try
+    freq_limits = TIMECOURSE_POSTPROCESS.spectra.freq_limits;
+catch
+end
+
+matFileInfo = matfile(postProcessFile);
+freq = matFileInfo.freq;
+spectra_size = size(matFileInfo, 'spectra_tc_all');
+
+try
+    subjects = matFileInfo.subjects;
+catch
+end
+
+try
+    components = matFileInfo.components;
+catch
+end
+
+if (~exist('subjects', 'var'))
+    subjects = (1:sesInfo.numOfSub);
+end
+
+subjects (subjects > max(sesInfo.numOfSub)) = [];
+
+if (isempty(subjects))
+    error('Please check the subjects variable passed');
+end
+
+
+if (~exist('components', 'var'))
+    components = (1:sesInfo.numComp);
+end
+
+components (components > max(sesInfo.numComp)) = [];
+
+if (isempty(components))
+    error('Please check the components variable passed');
+end
+
+numComp = length(components);
+numOfSub = length(subjects);
+
+
+if (~isempty(who(matFileInfo, 'fnc_corrs_all')))
+    disp('Computing mean FNC of timecourses ...');
+    aggregate.fnc.mean = computeFNC(postProcessFile, 'fnc_corrs_all', numComp, numOfSub);
+    disp('Done computing mean of FNC');
+end
+
+if (~isempty(who(matFileInfo, 'spatial_maps_MI')))
+    disp('Computing mean FNC of spatial maps ...');
+    aggregate.mi.mean = computeFNC(postProcessFile, 'spatial_maps_MI', numComp, numOfSub);
+    disp('Done computing mean FNC of spatial maps');
+end
+
+closeGCP;
+
+dynamic_range = zeros(1, numComp);
+fALFF = zeros(1, numComp);
+spectra_mean = zeros(length(freq), numComp);
+spectra_sem = zeros(length(freq), numComp);
+
+for nF = 1:numComp
+    
+    if (numel(spectra_size) == 4)
+        tc = reshape(squeeze(mean(matFileInfo.spectra_tc_all(:, :, :, nF), 2)), numOfSub, length(freq));
+    else
+        if (numel(chkSize) == 3)
+            tc = matFileInfo.spectra_tc_all(:, :, nF);
+        else
+            tc = matFileInfo.spectra_tc_all(:, nF);
+            tc = tc';
+        end
+    end
+    
+    numOfSub = size(tc, 1);
+    
+    tc = reshape(tc, numOfSub, length(freq));
+    
+    tmp_dynamicrange = zeros(1, size(tc, 1));
+    tmp_fALFF = tmp_dynamicrange;
+    for nS = 1:length(tmp_dynamicrange)
+        [tmp_dynamicrange(nS), tmp_fALFF(nS)] = icatb_get_spec_stats(tc(nS, :), freq, freq_limits);
+    end
+    
+    dynamic_range(nF) = mean(tmp_dynamicrange);
+    fALFF(nF) = mean(tmp_fALFF);
+    spectra_mean(:, nF) = mean(tc);
+    spectra_sem(:, nF) = std(tc) / sqrt(size(tc, 1));
+    
+    clear tc
+    
+    
+end
+
+aggregate.spectra.dynamic_range = dynamic_range;
+aggregate.spectra.fALFF = fALFF;
+aggregate.spectra.mean = spectra_mean;
+aggregate.spectra.sem = spectra_sem;
+aggregate.spectra.freq = freq;
+
+clear dynamic_range fALFF spectra_mean spectra_sem;
+
+if (~isempty(who(matFileInfo, 'kurt_comp')) && ~isempty(matFileInfo.kurt_comp))
+    size_kurt_tc = size(getfield(matFileInfo.kurt_comp, 'tc'));
+    if (numel(size_kurt_tc) == 4)
+        % average across sessions
+        tmp_tc = squeeze(mean(getfield(matFileInfo.kurt_comp, 'tc'), 2));
+        tmp_ic = squeeze(mean(getfield(matFileInfo.kurt_comp, 'ic'), 2));
+    else
+        tmp_tc = getfield(matFileInfo.kurt_comp, 'tc');
+        tmp_ic = getfield(matFileInfo.kurt_comp, 'ic');
+    end
+    
+    if (numOfSub > 1)
+        values = [mean(tmp_tc); mean(tmp_ic)];
+        errors = [std(tmp_tc)/sqrt(size(tmp_tc, 1)); std(tmp_ic)/sqrt(size(tmp_ic, 1))];
+    else
+        values = [tmp_tc(:)'; tmp_ic(:)'];
+        errors = zeros(size(values));
+    end
+    aggregate.kurt.tc.mean = values(1, :);
+    aggregate.kurt.tc.sem = errors(1, :);
+    aggregate.kurt.ic.mean = values(2, :);
+    aggregate.kurt.ic.sem = errors(2, :);
+end
+
+function fnc_corrs_all = computeFNC(postProcessFile, varName, numComp, numOfSub)
+% Compute FNC
 
 matFileInfo = matfile (postProcessFile);
 if (numOfSub > 1)
-    for n = 1:length(groupsInfo)
-        grp_names{n} = groupsInfo(n).name;
-        tmp = matFileInfo.(varName)(groupsInfo(n).val, :, :, :);
-        tmp = squeeze(mean(mean(tmp, 2)));
-        if (convZToR)
-            tmp = icatb_z_to_r(tmp);
-        end
-        fnc_grps{n} = tmp;
-        CLIMG = max([CLIMG, max(abs(tmp(:)))]);
-    end
-    
     fnc_corrs_all = zeros(numComp, numComp);
     parfor nSubIn = 1:numOfSub
         matFileInfo = matfile (postProcessFile);
@@ -1855,36 +2027,4 @@ if (numOfSub > 1)
     
 else
     fnc_corrs_all = squeeze(matFileInfo.fnc_corrs_all);
-end
-
-if (convZToR)
-    fnc_corrs_all = icatb_z_to_r(fnc_corrs_all);
-end
-
-if (strcmpi(varName, 'fnc_corrs_all'))
-    CLIM = max(abs(fnc_corrs_all(:)));
-    CLIM = [-CLIM, CLIM];
-    if (~isempty(CLIMG))
-        CLIMG = [-CLIMG, CLIMG];
-    end
-else
-    CLIM = [min(abs(fnc_corrs_all(:))), max(abs(fnc_corrs_all(:)))];
-    if (~isempty(CLIMG))
-        CLIMG = [0, CLIMG];
-    end
-end
-
-function closeGCP
-
-if (~isempty(which('parpool')))
-    try
-        poolobj = gcp('nocreate');
-        delete(poolobj);
-    catch
-    end
-else
-    try
-        matlabpool close;
-    catch
-    end
 end

@@ -129,16 +129,27 @@ if (strcmpi(modalityType, 'fmri'))
             compFiles = icatb_rename_4d_file(icatb_fullFile('directory', sesInfo.outputDir, 'files', compFileNaming));
             network_opts.file_names = compFiles;
             postProcessFile = fullfile(sesInfo.outputDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
-            load(postProcessFile, 'fnc_corrs_all');
-            if (sesInfo.numOfSess > 1)
-                fnc_corrs_all = reshape(mean(fnc_corrs_all, 2), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
-            else
-                fnc_corrs_all = reshape(squeeze(fnc_corrs_all), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
+            aggregate = [];
+            try
+                load(postProcessFile, 'aggregate');
+            catch
+                
             end
-            if (sesInfo.numOfSub > 1)
-                fnc_corrs_all = squeeze(mean(fnc_corrs_all));
+            
+            if (~isempty(aggregate))
+                fnc_corrs_all = aggregate.fnc.mean;
             else
-                fnc_corrs_all = squeeze(fnc_corrs_all);
+                load(postProcessFile, 'fnc_corrs_all')
+                if (sesInfo.numOfSess > 1)
+                    fnc_corrs_all = reshape(mean(fnc_corrs_all, 2), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
+                else
+                    fnc_corrs_all = reshape(squeeze(fnc_corrs_all), sesInfo.numOfSub, sesInfo.numComp, sesInfo.numComp);
+                end
+                if (sesInfo.numOfSub > 1)
+                    fnc_corrs_all = squeeze(mean(fnc_corrs_all));
+                else
+                    fnc_corrs_all = squeeze(fnc_corrs_all);
+                end
             end
             fnc_corrs_all = icatb_z_to_r(fnc_corrs_all);
             network_opts.fnc_matrix_file = fnc_corrs_all;
