@@ -580,7 +580,10 @@ SPM_STATS_AVG_RUNS = 1;
 EXPERIMENTAL_TR = 1;
 
 %% Timecourse postprocess (FNC and spectra info)
-TIMECOURSE_POSTPROCESS.write = 1; % 1 - Write FNC correlations and spectra info.
+% 0 - Skip post process step
+% 1 - Write FNC correlations and spectra info to the disk and aggregate summary used in HTML/PDF reports.
+% 2 - Compute aggregate summary used in HTML/PDF reports.
+TIMECOURSE_POSTPROCESS.write = 1; 
 TIMECOURSE_POSTPROCESS.save_timecourses = 0; % save the despiked and filtered timecourses output in nifti
 % spectra parameters
 TIMECOURSE_POSTPROCESS.spectra.tapers = [3, 5];
@@ -752,13 +755,14 @@ RAND_SHUFFLE = 1;
 %% PRINT Resolution for gica summary 
 % display option of 1 uses publish and if you run out of memory errors use
 % option 2 which saves figures to the disk.
-GICA_RESULTS_SUMMARY.display_option = 1;
+GICA_RESULTS_SUMMARY.display_option = 2;
 GICA_RESULTS_SUMMARY.print_resolution = '-r150'; % used only for option 2 as publish doesn't use resolution parameter
 GICA_RESULTS_SUMMARY.print_opts = {'-noui', '-bestfit'}; % print pdf options
 % results format 
 GICA_RESULTS_SUMMARY.format = 'html';
 GICA_RESULTS_SUMMARY.compute.mi = 0;
 GICA_RESULTS_SUMMARY.compute.kurtosis = 0;
+GICA_RESULTS_SUMMARY.compute.fnc = 1;
 
 %% dFNC defaults
 
