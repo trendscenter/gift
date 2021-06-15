@@ -47,7 +47,7 @@ function x = icatb_spm_coreg(varargin)
 % Copyright (C) 1994-2011 Wellcome Trust Centre for Neuroimaging
 
 % John Ashburner
-% $Id: spm_coreg.m 6435 2015-05-14 09:59:54Z guillaume $
+% $Id: spm_coreg.m 7320 2018-05-29 10:19:49Z john $
 
 %--------------------------------------------------------------------------
 % References
@@ -63,7 +63,7 @@ function x = icatb_spm_coreg(varargin)
 %
 % Wells III, Viola, Atsumi, Nakajima & Kikinis (1996).
 % "Multi-modal volume registration by maximisation of mutual information".
-% Medical Image Analysis, 1(1):35-51, 1996. 
+% Medical Image Analysis, 1(1):35-51, 1996.
 %
 % Entropy Correlation Coefficient
 % -------------------------------------------------------------------------
@@ -75,7 +75,7 @@ function x = icatb_spm_coreg(varargin)
 % -------------------------------------------------------------------------
 % Studholme, Hill & Hawkes (1998).
 % "A normalized entropy measure of 3-D medical image alignment".
-% in Proc. Medical Imaging 1998, vol. 3338, San Diego, CA, pp. 132-143.             
+% in Proc. Medical Imaging 1998, vol. 3338, San Diego, CA, pp. 132-143.
 %
 % Optimisation
 % -------------------------------------------------------------------------
@@ -84,7 +84,7 @@ function x = icatb_spm_coreg(varargin)
 % Published by Cambridge.
 %--------------------------------------------------------------------------
 
-SVNid = '$Rev: 6435 $';
+SVNid = '$Rev: 7320 $';
 
 if nargin >= 4
     x = optfun(varargin{:});
@@ -95,7 +95,7 @@ end
 %--------------------------------------------------------------------------
 %SPMid = spm('FnBanner',mfilename,SVNid);
 
-%def_flags          = spm_get_defaults('coreg.estimate');
+%def_flags          = icatb_spm_get_defaults('coreg.estimate');
 def_flags.params   = [0 0 0  0 0 0];
 %def_flags.graphics = ~spm('CmdLine');
 if nargin < 3
@@ -111,13 +111,13 @@ else
 end
 
 if nargin < 1
-    VG = icatb_spm_vol(spm_select(1,'image','Select reference image'));
+    VG = icatb_spm_vol(icatb_spm_select(1,'image','Select reference image'));
 else
     VG = varargin{1};
     if ischar(VG), VG = icatb_spm_vol(VG); end
 end
 if nargin < 2
-    VF = icatb_spm_vol(spm_select(Inf,'image','Select moved image(s)'));
+    VF = icatb_spm_vol(icatb_spm_select(Inf,'image','Select moved image(s)'));
 else
     VF = varargin{2};
     if ischar(VF) || iscellstr(VF), VF = icatb_spm_vol(char(VF)); end;
@@ -145,7 +145,7 @@ for k=1:numel(VF)
         fwhmf     = sqrt(max([1 1 1]*flags.sep(end)^2 - vxf.^2, [0 0 0]))./vxf;
         VFk       = smooth_uint8(VFk,fwhmf); % Note side effects
     end
-
+    
     xk  = flags.params(:);
     for samp=flags.sep(:)'
         xk     = icatb_spm_powell(xk(:), xi,sc,mfilename,VG,VFk,samp,flags.cost_fun,flags.fwhm);
@@ -232,23 +232,23 @@ if size(V.pinfo,2)==1 && V.pinfo(1) == 2
     mx = 255*V.pinfo(1) + V.pinfo(2);
     mn = V.pinfo(2);
 else
-%    spm_progress_bar('Init',V.dim(3),...
-%        ['Computing max/min of ' icatb_spm_file(V.fname,'filename')],...
-%        'Planes complete');
+    %     icatb_spm_progress_bar('Init',V.dim(3),...
+    %         ['Computing max/min of ' icatb_spm_file(V.fname,'filename')],...
+    %         'Planes complete');
     mx = -Inf; mn =  Inf;
     for p=1:V.dim(3)
         img = icatb_spm_slice_vol(V,icatb_spm_matrix([0 0 p]),V.dim(1:2),1);
         img = img(isfinite(img));
         mx  = max([max(img(:))+paccuracy(V,p) mx]);
         mn  = min([min(img(:)) mn]);
-       % spm_progress_bar('Set',p);
+        %  icatb_spm_progress_bar('Set',p);
     end
 end
 
 % Another pass to find a maximum that allows a few hot-spots in the data.
-%spm_progress_bar('Init',V.dim(3),...
-%        ['2nd pass max/min of ' spm_file(V.fname,'filename')],...
-%        'Planes complete');
+% icatb_spm_progress_bar('Init',V.dim(3),...
+%         ['2nd pass max/min of ' icatb_spm_file(V.fname,'filename')],...
+%         'Planes complete');
 nh = 2048;
 h  = zeros(nh,1);
 for p=1:V.dim(3)
@@ -256,14 +256,14 @@ for p=1:V.dim(3)
     img = img(isfinite(img));
     img = round((img+((mx-mn)/(nh-1)-mn))*((nh-1)/(mx-mn)));
     h   = h + accumarray(img,1,[nh 1]);
-    %spm_progress_bar('Set',p);
+    % icatb_spm_progress_bar('Set',p);
 end
 tmp = [find(cumsum(h)/sum(h)>0.9999); nh];
 mx  = (mn*nh-mx+tmp(1)*(mx-mn))/(nh-1);
 
-% Load data from file indicated by V into an array of unsigned bytes.
-% spm_progress_bar('Init',V.dim(3),...
-%     ['Loading ' spm_file(V.fname,'filename')],...
+% % Load data from file indicated by V into an array of unsigned bytes.
+% icatb_spm_progress_bar('Init',V.dim(3),...
+%     ['Loading ' icatb_spm_file(V.fname,'filename')],...
 %     'Planes loaded');
 udat = zeros(V.dim,'uint8');
 st = rand('state'); % st = rng;
@@ -278,9 +278,9 @@ for p=1:V.dim(3)
         r = rand(size(img))*acc;
         udat(:,:,p) = uint8(max(min(round((img+r-mn)*(255/(mx-mn))),255),0));
     end
-%    spm_progress_bar('Set',p);
+    %   icatb_spm_progress_bar('Set',p);
 end
-% spm_progress_bar('Clear');
+%icatb_spm_progress_bar('Clear');
 rand('state',st); % rng(st);
 
 
@@ -318,10 +318,10 @@ icatb_spm_conv_vol(V.uint8,V.uint8,x,y,z,-[i j k]);
 % function display_results(VG,VF,x,flags)
 %==========================================================================
 function display_results(VG,VF,x,flags)
-fig = spm_figure('FindWin','Graphics');
+fig = icatb_spm_figure('FindWin','Graphics');
 if isempty(fig), return; end;
 set(0,'CurrentFigure',fig);
-spm_figure('Clear','Graphics');
+icatb_spm_figure('Clear','Graphics');
 
 %txt = 'Information Theoretic Coregistration';
 switch lower(flags.cost_fun)
@@ -338,7 +338,7 @@ ax = axes('Position',[0.1 0.8 0.8 0.15],'Visible','off','Parent',fig);
 text(0.5,0.7, txt,'FontSize',16,...
     'FontWeight','Bold','HorizontalAlignment','center','Parent',ax);
 
-Q = inv(VF.mat\spm_matrix(x(:)')*VG.mat);
+Q = inv(VF.mat\icatb_spm_matrix(x(:)')*VG.mat);
 text(0,0.5, sprintf('X1 = %0.3f*X %+0.3f*Y %+0.3f*Z %+0.3f',Q(1,:)),'Parent',ax);
 text(0,0.3, sprintf('Y1 = %0.3f*X %+0.3f*Y %+0.3f*Z %+0.3f',Q(2,:)),'Parent',ax);
 text(0,0.1, sprintf('Z1 = %0.3f*X %+0.3f*Y %+0.3f*Z %+0.3f',Q(3,:)),'Parent',ax);
@@ -346,17 +346,17 @@ text(0,0.1, sprintf('Z1 = %0.3f*X %+0.3f*Y %+0.3f*Z %+0.3f',Q(3,:)),'Parent',ax)
 % Display joint histograms
 %--------------------------------------------------------------------------
 ax  = axes('Position',[0.1 0.5 0.35 0.3],'Visible','off','Parent',fig);
-H   = spm_hist2(VG.uint8,VF.uint8,VF.mat\VG.mat,[1 1 1]);
+H   = icatb_spm_hist2(VG.uint8,VF.uint8,VF.mat\VG.mat,[1 1 1]);
 tmp = log(H+1);
 image(tmp*(64/max(tmp(:))),'Parent',ax');
 set(ax,'DataAspectRatio',[1 1 1],...
     'PlotBoxAspectRatioMode','auto','XDir','normal','YDir','normal',...
     'XTick',[],'YTick',[]);
 title('Original Joint Histogram','Parent',ax);
-xlabel(spm_file(VG.fname,'short22'),'Parent',ax,'Interpreter','none');
-ylabel(spm_file(VF.fname,'short22'),'Parent',ax,'Interpreter','none');
+xlabel(icatb_spm_file(VG.fname,'short22'),'Parent',ax,'Interpreter','none');
+ylabel(icatb_spm_file(VF.fname,'short22'),'Parent',ax,'Interpreter','none');
 
-H   = spm_hist2(VG.uint8,VF.uint8,VF.mat\spm_matrix(x(:)')*VG.mat,[1 1 1]);
+H   = icatb_spm_hist2(VG.uint8,VF.uint8,VF.mat\icatb_spm_matrix(x(:)')*VG.mat,[1 1 1]);
 ax  = axes('Position',[0.6 0.5 0.35 0.3],'Visible','off','Parent',fig);
 tmp = log(H+1);
 image(tmp*(64/max(tmp(:))),'Parent',ax');
@@ -364,16 +364,16 @@ set(ax,'DataAspectRatio',[1 1 1],...
     'PlotBoxAspectRatioMode','auto','XDir','normal','YDir','normal',...
     'XTick',[],'YTick',[]);
 title('Final Joint Histogram','Parent',ax);
-xlabel(spm_file(VG.fname,'short22'),'Parent',ax,'Interpreter','none');
-ylabel(spm_file(VF.fname,'short22'),'Parent',ax,'Interpreter','none');
+xlabel(icatb_spm_file(VG.fname,'short22'),'Parent',ax,'Interpreter','none');
+ylabel(icatb_spm_file(VF.fname,'short22'),'Parent',ax,'Interpreter','none');
 
 % Display ortho-views
 %--------------------------------------------------------------------------
-spm_orthviews('Reset');
-     spm_orthviews('Image',VG,[0.01 0.01 .48 .49]);
-h2 = spm_orthviews('Image',VF,[.51 0.01 .48 .49]);
+icatb_spm_orthviews('Reset');
+icatb_spm_orthviews('Image',VG,[0.01 0.01 .48 .49]);
+h2 = icatb_spm_orthviews('Image',VF,[0.51 0.01 .48 .49]);
 global st
-st.vols{h2}.premul = inv(spm_matrix(x(:)'));
-spm_orthviews('Space');
+st.vols{h2}.premul = inv(icatb_spm_matrix(x(:)'));
+icatb_spm_orthviews('Space');
 
-spm_print;
+icatb_spm_print;
