@@ -38,6 +38,14 @@ try
 catch
 end
 
+[~, structHInfo] = icatb_returnHInfo(structFile);
+
+if ~(all(structHInfo.VOX == structHInfo.VOX(1)))
+    disp('Spatial template is not isotropic. Reslicing spatial template ...');
+    structFile = noisecloud_spm_coregister(fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii'), ...
+        deblank(structFile), '', outputDir);
+end
+
 slices_in_mm = (-40:4:72);
 try
     slices_in_mm = opts.slices_in_mm;
