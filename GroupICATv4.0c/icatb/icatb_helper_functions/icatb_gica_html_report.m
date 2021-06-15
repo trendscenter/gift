@@ -1947,7 +1947,7 @@ for nF = 1:numComp
     if (numel(spectra_size) == 4)
         tc = reshape(squeeze(mean(matFileInfo.spectra_tc_all(:, :, :, nF), 2)), numOfSub, length(freq));
     else
-        if (numel(chkSize) == 3)
+        if (numel(spectra_size) == 3)
             tc = matFileInfo.spectra_tc_all(:, :, nF);
         else
             tc = matFileInfo.spectra_tc_all(:, nF);
@@ -1967,8 +1967,8 @@ for nF = 1:numComp
     
     dynamic_range(nF) = mean(tmp_dynamicrange);
     fALFF(nF) = mean(tmp_fALFF);
-    spectra_mean(:, nF) = mean(tc);
-    spectra_sem(:, nF) = std(tc) / sqrt(size(tc, 1));
+    spectra_mean(:, nF) = mean(tc, 1);
+    spectra_sem(:, nF) = (std(tc, 0, 1) + eps) / sqrt(size(tc, 1));
     
     clear tc
     
