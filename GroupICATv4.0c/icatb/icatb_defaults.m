@@ -779,6 +779,12 @@ DFNC_DEFAULTS.tvdfnc = 1;
 % from circshift or any values outside the window)
 DFNC_DEFAULTS.mask_windows = 0;
 
+% Turn off meta state analysis if set to 0
+DFNC_DEFAULTS.META_STATE = 1;
+
+% Use tall array for large data (k-means)
+DFNC_DEFAULTS.use_tall_array = 'no';
+
 % Interpolation (spm sample vol)
 % Default: 0 - Nearest neighbor interpolation
 INTERP_VAL = 0;

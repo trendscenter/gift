@@ -118,6 +118,11 @@ results.dmethod = handles.dmethod; %opts{val};
 results.kmeans_num_replicates = handles.kmeans_num_replicates;
 results.num_tests_est_clusters = handles.num_tests_est_clusters;
 results.kmeans_start = handles.kmeans_start;
+use_tall_array = 'no';
+try
+    results.use_tall_array = handles.use_tall_array;
+catch
+end
 
 opts = cellstr(lower(get(handles.meta_method, 'string')));
 val = get(handles.meta_method, 'value');
@@ -449,6 +454,12 @@ catch
 end
 handles.num_tests_est_clusters = num_tests_est_clusters;
 
+try
+    use_tall_array  = dfncInfo.use_tall_array;
+catch
+    use_tall_array = 'no';
+end
+handles.use_tall_array = use_tall_array;
 % chk = strmatch(lower(dfncInfo.dmethod), lower(kmeans_methods), 'exact');
 % if (~isempty(chk))
 %     set(handles.dmethod, 'value', chk);
@@ -587,6 +598,21 @@ inputText(numParameters).tag = 'num_tests_est_clusters';
 inputText(numParameters).enable = 'on';
 inputText(numParameters).value = 1;
 
+numParameters = numParameters + 1;
+
+
+chk = strmatch(lower(handles.use_tall_array), {'no', 'yes'}, 'exact');
+if (isempty(chk))
+    chk = 1;
+end
+
+inputText(numParameters).promptString = 'Use Tall array (large data)?';
+inputText(numParameters).uiType = 'popup';
+inputText(numParameters).answerString = {'No', 'Yes'};
+inputText(numParameters).dataType = 'string';
+inputText(numParameters).tag = 'use_tall_array';
+inputText(numParameters).enable = 'on';
+inputText(numParameters).value = chk;
 
 
 answers = icatb_inputDialog('inputtext', inputText, 'Title', dlg_title, 'handle_visibility', 'on');
@@ -601,7 +627,13 @@ if (~isempty(answers))
     catch
         num_tests_est_clusters = 10;
     end
+    try
+        use_tall_array  = answers{end};
+    catch
+        use_tall_array = 'no';
+    end
     handles.num_tests_est_clusters = num_tests_est_clusters;
+    handles.use_tall_array = use_tall_array;
     guidata(handles.post_process_dfnc, handles);
     
 end
