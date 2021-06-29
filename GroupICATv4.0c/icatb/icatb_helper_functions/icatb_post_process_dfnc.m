@@ -5,6 +5,21 @@ function dfncInfo = icatb_post_process_dfnc(param_file)
 
 icatb_defaults;
 
+global DFNC_DEFAULTS;
+
+use_meta_state = 1;
+
+try
+    use_meta_state = DFNC_DEFAULTS.META_STATE;
+catch
+end
+
+use_tall_array = 'no';
+try
+    use_tall_array = DFNC_DEFAULTS.use_tall_array;
+catch
+end
+
 %% Select dFNC file
 showGUI = 0;
 if (~exist('param_file', 'var'))
@@ -53,12 +68,18 @@ try
     kmeans_max_iter = dfncInfo.postprocess.kmeans_max_iter;
     dmethod = dfncInfo.postprocess.dmethod;
     kmeans_num_replicates = dfncInfo.postprocess.kmeans_num_replicates;
+    
 catch
 end
 
 
 try
     num_tests_est_clusters = dfncInfo.postprocess.num_tests_est_clusters;
+catch
+end
+
+try
+    use_tall_array = dfncInfo.postprocess.use_tall_array;
 catch
 end
 
@@ -119,7 +140,7 @@ if (showGUI)
     guiInputs = struct('estimate_clusters', estimate_clusters, 'num_clusters', num_clusters, 'kmeans_max_iter', kmeans_max_iter, 'dmethod', dmethod, ...
         'ica_algorithm', ica_algorithm, 'num_ica_runs', num_ica_runs, 'num_comps_ica', num_comps_ica, 'regressCovFile', regressCovFile, ...
         'meta_method', meta_method, 'kmeans_num_replicates', kmeans_num_replicates, 'num_tests_est_clusters', num_tests_est_clusters, 'kmeans_start', ...
-        kmeans_start);
+        kmeans_start, 'use_tall_array', use_tall_array);
     
     results = post_process_dfnc(guiInputs);
     
@@ -297,8 +318,10 @@ end
 
 M = length(dfncInfo.outputFiles);
 
-SP = cell(M,1);
-k1_peaks = zeros(1,M);
+if (strcmpi(estimate_clusters, 'yes') || strcmpi(kmeans_start, 'subject exemplars'))
+    SP = cell(M,1);
+end
+
 
 disp('Computing spectra on FNC correlations ...');
 
@@ -306,8 +329,10 @@ chk_tvdfnc = who('-file', fullfile(outputDir,  dfncInfo.outputFiles{1}));
 tvdfnc=0;
 if (~isempty(strmatch('FNC_tvdfnc', chk_tvdfnc,'exact')))
     tvdfnc = 1;
+    tvFNCdynflat = cell(length(dfncInfo.outputFiles), 1);
 end
 
+FNCdynflat = cell(length(dfncInfo.outputFiles), 1);
 
 %% Frequency analysis
 for nR = 1:length(dfncInfo.outputFiles)
@@ -326,17 +351,26 @@ for nR = 1:length(dfncInfo.outputFiles)
         findx=find(f>=fpass(1) & f<=fpass(end)); % just one-half of the spectrum
         f = f(findx);
         dfncInfo.freq = f;
-        FNCdynflat = zeros(M, Nwin, size(FNCdyn, 2));
+        num_component_pairs = size(FNCdyn, 2);
+        %FNCdynflat = zeros(M, Nwin, size(FNCdyn, 2));
+    end
+    
+    if (strcmpi(use_tall_array, 'no'))
+        FNCdynflat{nR} = FNCdyn;
+    else
+        FNCdynflat{nR} = current_file;
     end
     
     
-    FNCdynflat(nR, :, :) = FNCdyn;
-    
-    DEV = std(FNCdyn, [], 2);
-    [xmax, imax, xmin, imin] = icatb_extrema(DEV); % find the extrema
-    pIND = sort(imax);
-    k1_peaks(nR) = length(pIND);
-    SP{nR} = FNCdyn(pIND, :);
+    if (strcmpi(estimate_clusters, 'yes') || strcmpi(kmeans_start, 'subject exemplars'))
+        
+        DEV = std(FNCdyn, [], 2);
+        [xmax, imax, xmin, imin] = icatb_extrema(DEV); % find the extrema
+        pIND = sort(imax);
+        %k1_peaks(nR) = length(pIND);
+        SP{nR} = FNCdyn(pIND, :);
+        
+    end
     
     %% Compute spectra
     FNCdyn = FNCdyn - repmat(mean(FNCdyn, 1), Nwin, 1);
@@ -365,10 +399,12 @@ for nR = 1:length(dfncInfo.outputFiles)
     
     if (tvdfnc)
         load(current_file, 'FNC_tvdfnc');
-        if (nR == 1)
-            tvFNCdynflat = zeros(M, Nwin, size(FNC_tvdfnc, 2));
+        if (strcmpi(use_tall_array, 'no'))
+            tvFNCdynflat{nR} = FNC_tvdfnc;
+        else
+            tvFNCdynflat{nR} = current_file;
         end
-        tvFNCdynflat(nR, :, :) = FNC_tvdfnc;
+        
     end
     
 end
@@ -387,18 +423,13 @@ fprintf('\n');
 disp('Computing k-means on FNC correlations ...');
 
 %% Cluster
-SPflat = cell2mat(SP);
+if (strcmpi(estimate_clusters, 'yes') || strcmpi(kmeans_start, 'subject exemplars'))
+    SPflat = cell2mat(SP);
+end
 
 clear SP;
 
-FNCdynflat = reshape(FNCdynflat, M*Nwin , size(FNCdynflat, 3));
-
-if (tvdfnc)
-    tvFNCdynflat = reshape(tvFNCdynflat, M*Nwin , size(tvFNCdynflat, 3));
-end
-
-
-num_component_pairs = size(FNCdynflat, 2);
+%num_component_pairs = size(FNCdynflat, 2);
 
 % Determine optmial number of clusters
 if (strcmpi(estimate_clusters, 'yes'))
@@ -431,29 +462,35 @@ if (strcmpi(kmeans_start, 'subject exemplars'))
 end
 
 % Save subsampled data
-clusterInfo.SP = SPflat;
+if (exist('SPflat', 'var'))
+    clusterInfo.SP = SPflat;
+end
 clear SPflat IDXp SUMDp;
 
+post_process_opts = struct('max_iter', dfncInfo.postprocess.kmeans_max_iter, 'kmeans_num_replicates', 1, ...
+    'kmeans_distance_method', dfncInfo.postprocess.dmethod);
 
-if (strcmpi(kmeans_start, 'subject exemplars'))
-    %% Use as a starting point to cluster all the data
-    try
-        [IDXall, Call, SUMDall, Dall] = kmeans(FNCdynflat, num_clusters, 'distance', dmethod, 'Replicates', 1, 'Display', 'iter', 'MaxIter', kmeans_max_iter, ...
-            'empty', 'drop', 'Start', Cp);
-    catch
-        [IDXall, Call, SUMDall, Dall] = icatb_kmeans(FNCdynflat, num_clusters, 'distance', dmethod, 'Replicates', 1, 'Display', 'iter', 'MaxIter', kmeans_max_iter, ...
-            'empty', 'drop', 'Start', Cp);
-    end
-else
+if (~strcmpi(kmeans_start, 'subject exemplars'))
+    post_process_opts.kmeans_num_replicates = dfncInfo.postprocess.kmeans_num_replicates;
     Cp = [];
-    try
-        [IDXall, Call, SUMDall, Dall] = kmeans(FNCdynflat, num_clusters, 'distance', dmethod, 'Replicates', 1, 'Display', 'iter', 'MaxIter', kmeans_max_iter, ...
-            'empty', 'drop', 'Replicates', kmeans_num_replicates);
-    catch
-        [IDXall, Call, SUMDall, Dall] = icatb_kmeans(FNCdynflat, num_clusters, 'distance', dmethod, 'Replicates', 1, 'Display', 'iter', 'MaxIter', kmeans_max_iter, ...
-            'empty', 'drop', 'Replicates', kmeans_num_replicates);
+end
+
+post_process_opts.Cp = Cp;
+
+
+
+if (strcmpi(use_tall_array, 'no'))
+    FNCdynflat = cat(3, FNCdynflat{:});
+    FNCdynflat = permute(FNCdynflat, [3, 1, 2]);
+    FNCdynflat = reshape(FNCdynflat, M*Nwin, size(FNCdynflat, 3));
+    if (tvdfnc)
+        tvFNCdynflat = cat(3, tvFNCdynflat{:});
+        tvFNCdynflat = permute(tvFNCdynflat, [3, 1, 2]);
+        tvFNCdynflat = reshape(tvFNCdynflat, M*Nwin, size(tvFNCdynflat, 3));
     end
 end
+
+[IDXall, Call, SUMDall, Dall] = icatb_kmeans_clustering(FNCdynflat, num_clusters, post_process_opts);
 
 clusterInfo.Call = Call;
 clusterInfo.Cp = Cp;
@@ -471,22 +508,31 @@ end
 
 
 %% Meta state analysis
-FNCdynflat = reshape(FNCdynflat, M, Nwin, size(FNCdynflat, 2));
-meta_states_info = icatb_dfnc_meta_state_analysis(FNCdynflat, num_comps_ica, 'dmethod', dmethod, 'kmeans_max_iter', kmeans_max_iter, 'num_ica_runs', num_ica_runs, ...
-    'ica_algorithm', lower(ica_algorithm), 'method', meta_method, 'replicates', kmeans_num_replicates);
+if (~isnumeric(FNCdynflat))
+    use_meta_state = 0;
+    disp('Currently meta state analysis is not performed when using tall array as the distance metric type is unknown in the distributed k-means');
+end
 
-save(post_process_file, 'meta_states_info', '-append');
-
-
+if (use_meta_state)
+    %if (isnumeric(FNCdynflat))
+    FNCdynflat = reshape(FNCdynflat, M, Nwin, size(FNCdynflat, 2));
+    %end
+    meta_states_info = icatb_dfnc_meta_state_analysis(FNCdynflat, num_comps_ica, 'dmethod', dmethod, 'kmeans_max_iter', kmeans_max_iter, 'num_ica_runs', num_ica_runs, ...
+        'ica_algorithm', lower(ica_algorithm), 'method', meta_method, 'replicates', kmeans_num_replicates);
+    
+    save(post_process_file, 'meta_states_info', '-append');
+    
+end
 
 %% TVdfnc analysis
 
 if (tvdfnc)
-    try
-        [idx, ctv, sumtv, dtv] = kmeans(tvFNCdynflat, num_clusters, 'distance', dmethod, 'Replicates', kmeans_num_replicates, 'MaxIter', kmeans_max_iter, 'Display', 'iter', 'empty', 'drop');
-    catch
-        [idx, ctv, sumtv, dtv] = icatb_kmeans(tvFNCdynflat, num_clusters, 'distance', dmethod, 'Replicates', kmeans_num_replicates, 'MaxIter', kmeans_max_iter, 'Display', 'iter', 'empty', 'drop');
-    end
+    
+    post_process_opts.kmeans_num_replicates = kmeans_num_replicates;
+    post_process_opts.Cp = [];
+    
+    [idx, ctv, sumtv, dtv] = icatb_kmeans_clustering(tvFNCdynflat, num_clusters, post_process_opts);
+    
     Call = {ctv(:, 1:num_component_pairs), ctv(:, num_component_pairs + 1:end)};
     tvdfncInfo.IDXall = idx;
     tvdfncInfo.Call = Call;
@@ -559,6 +605,8 @@ Nwin = size(clusterInfo.IDXall, 1)/(dfncInfo.userInput.numOfSess*dfncInfo.userIn
 % subjects x sessions x windows
 states = reshape(clusterInfo.IDXall, dfncInfo.userInput.numOfSess, dfncInfo.userInput.numOfSub, Nwin);
 states = permute(states, [2, 1, 3]);
+
+corrs = cell(dfncInfo.userInput.numOfSub, dfncInfo.userInput.numOfSess, dfncInfo.postprocess.num_clusters);
 
 count = 0;
 for nSub = 1:dfncInfo.userInput.numOfSub

@@ -324,11 +324,10 @@ function KL = computeKLD(MIvals)
 numGroups = length(MIvals);
 KL = cell(1, numGroups);
 
-[numComp, b, numOfSub, windows] = size(MIvals{1});
-
 %% KL metric
 for nG = 1:numGroups
     mi_vals = MIvals{nG};
+    [numComp, b, numOfSub, windows] = size(MIvals{nG});
     kl_vals = zeros(numOfSub, windows - 1);
     for nSub = 1:numOfSub
         for w = 1:windows - 1

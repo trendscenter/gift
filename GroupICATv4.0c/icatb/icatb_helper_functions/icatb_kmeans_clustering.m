@@ -13,6 +13,15 @@ function [IDXall, Call, SUMDall, Dall] = icatb_kmeans_clustering(data, num_clust
 % SUMDall - within-cluster sums of point-to-centroid distances
 %
 
+check_numeric = isnumeric(data);
+if (~check_numeric)
+    try
+        check_numeric = opts.convert_to_numeric;
+    catch
+    end
+end
+
+
 max_iter = 150;
 try
     max_iter = opts.max_iter;
@@ -48,13 +57,32 @@ catch
 end
 
 
+
+if (check_numeric)
+    if (iscell(data))
+        files = data;
+        clear data
+        
+        for nData = 1:length(files)
+            tmp = load(files{nData}, variableToLoad);
+            tmp = tmp.(variableToLoad);
+            if (nData == 1)
+                data = zeros(length(files), size(tmp, 1), size(tmp, 2));
+            end
+            data(nData, :, :) = tmp;
+        end
+        
+        data = reshape(data, size(data, 1)*size(data, 2), size(data, 3));
+    end
+end
+
 if (isnumeric(data))
     params = {'distance', kmeans_distance_method, 'Replicates', kmeans_num_replicates, 'MaxIter', max_iter, 'Display', 'iter', 'empty', 'drop'};
 else
     params = {'Replicates', kmeans_num_replicates, 'MaxIter', max_iter, 'Display', 'iter'};
 end
 
-if (exist('Cp', 'var'))
+if (exist('Cp', 'var') && ~isempty(Cp))
     params(end + 1) = {'Start'};
     params(end + 1) = {Cp};
 end
