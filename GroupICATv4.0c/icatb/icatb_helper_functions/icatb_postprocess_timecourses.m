@@ -215,7 +215,7 @@ if (writeInfo)
     
     %% Spectra
     spectra_params = struct('tapers', tapers, 'Fs', sampling_frequency, 'fpass', frequency_band);
-    countS = 0;
+    
     fprintf('\nComputing spectra and FNC correlations of all subjects and sessions components ...\n');
     if (despike_tc)
         disp('Timecourses will be despiked when computing FNC correlations...');
@@ -280,6 +280,7 @@ if (writeInfo)
     
     dynamic_range_agg = zeros(1, length(components));
     fALFF_agg = dynamic_range_agg;
+    countS = 0;
     
     
     for nSub = 1:length(subjects)
@@ -321,9 +322,9 @@ if (writeInfo)
             % Interpolate timecourses if needed for variable TRs across
             % subjects
             if (~all(TR == minTR))
-                interpFactor = TR(nSub)/minTR;
-                [num, denom] = rat(interpFactor);
-                timecourses = resample(timecourses, num, denom);
+                %interpFactor = TR(nSub)/minTR;
+                %[num, denom] = rat(interpFactor);
+                timecourses = resample(timecourses, numN(countS), denN(countS));
             end
             
             %timecourses = timecourses(1:min(sesInfo.diffTimePoints), :);
