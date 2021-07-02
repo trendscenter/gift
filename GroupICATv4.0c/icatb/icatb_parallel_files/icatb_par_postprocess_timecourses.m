@@ -132,10 +132,26 @@ if (isempty(components))
     error('Please check the components variable passed');
 end
 
+datasets_in_use = zeros(1, length(subjects)*sesInfo.numOfSess);
+endInd = 0;
+for tmpS = 1:length(subjects)
+    ia = (subjects(tmpS) - 1)*sesInfo.numOfSess + 1;
+    ib = subjects(tmpS)*sesInfo.numOfSess;
+    startInd = endInd + 1;
+    endInd = endInd + sesInfo.numOfSess;
+    datasets_in_use(startInd:endInd) = (ia:ib);
+end
+
+
+diffTimePoints = sesInfo.diffTimePoints(datasets_in_use);
+minTpLength = min(diffTimePoints);
+TR = TR(subjects);
+minTR = min(TR);
+
 % Spectra info
 tapers = [3, 5];
-sampling_frequency = 1/min(TR);
-frequency_band = [0, 1/(2*min(TR))];
+sampling_frequency = 1/minTR;
+frequency_band = [0, 1/(2*minTR)];
 
 %
 % if (isempty(EXPERIMENTAL_TR))
@@ -216,35 +232,21 @@ if (writeInfo)
         disp(['Timecourses will be filtered when computing FNC correlations using HF cutoff of ', num2str(cutoff_frequency), ' Hz ...']);
     end
     
-    minTpLength = min(sesInfo.diffTimePoints);
-    if (~all(TR == min(TR)))
+    numN = [];
+    denN = [];
+    
+    if (~all(TR == minTR))
         tmpTR = TR;
         tmpTR = repmat(tmpTR(:)', sesInfo.numOfSess, 1);
         tmpTR = tmpTR(:)';
         ratiosTR = (tmpTR(:)')./min(tmpTR);
         [numN, denN] = rat(ratiosTR);
-        chkTp = ceil((sesInfo.diffTimePoints(:)'.*numN)./denN);
+        chkTp = ceil((diffTimePoints(:)'.*numN)./denN);
         minTpLength = min(chkTp);
     end
     
-    
-    diffTimePoints = sesInfo.diffTimePoints;
-    [tmps, freq] = icatb_get_spectra(randn(1, minTpLength), min(TR), spectra_params);
-    numOfSub = length(subjects);
-    numOfSess = sesInfo.numOfSess;
+    [tmps, freq] = icatb_get_spectra(randn(1, minTpLength), minTR, spectra_params);
     spectral_length = length(tmps);
-    numComp = length(components);
-    
-    
-    datasets_in_use = zeros(1, length(subjects)*sesInfo.numOfSess);
-    endInd = 0;
-    for tmpS = 1:length(subjects)
-        ia = (subjects(tmpS) - 1)*sesInfo.numOfSess + 1;
-        ib = subjects(tmpS)*sesInfo.numOfSess;
-        startInd = endInd + 1;
-        endInd = endInd + sesInfo.numOfSess;
-        datasets_in_use(startInd:endInd) = (ia:ib);
-    end
     
     detrendNumber = DETRENDNUMBER;
     
@@ -274,6 +276,10 @@ if (writeInfo)
     catch
     end
     
+    
+    numOfSess = sesInfo.numOfSess;
+    numOfSub = length(subjects);
+    
     disp('Computing spectra, fnc, etc, ...');
     
     %% Spectra and FNC
@@ -295,20 +301,20 @@ if (writeInfo)
         % Interpolate timecourses if needed for variable TRs across
         % subjects
         if (~all(TR == min(TR)))
-            interpFactor = TR(nSub)/min(TR);
-            [num, denom] = rat(interpFactor);
-            timecourses = resample(timecourses, num, denom);
+            %interpFactor = TR(nSub)/min(TR);
+            %[num, denom] = rat(interpFactor);
+            timecourses = resample(timecourses, numN(countDataset), denN(countDataset));
         end
-        temp_spectra = icatb_get_spectra(timecourses(1:minTpLength, :)', min(TR), spectra_params);
+        temp_spectra = icatb_get_spectra(timecourses(1:minTpLength, :)', minTR, spectra_params);
         temp_spectra = temp_spectra./repmat(sum(temp_spectra, 2), [1, size(temp_spectra, 2)]);
         spectra_tc = temp_spectra';
         
         % FNC
         if (despike_tc)
-            timecourses = icatb_despike_tc(timecourses, min(TR));
+            timecourses = icatb_despike_tc(timecourses, minTR);
         end
         if (min(cutoff_frequency) > 0)
-            timecourses = icatb_filt_data(timecourses, min(TR), cutoff_frequency);
+            timecourses = icatb_filt_data(timecourses, minTR, cutoff_frequency);
         end
         c = icatb_corr(timecourses);
         c(1:size(c, 1) + 1:end) = 0;
