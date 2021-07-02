@@ -282,7 +282,7 @@ if (isempty(Y))
             a = icatb_corr(squeeze(XWin{ii}));
             FNCdyn(ii, :) = icatb_mat2vec(a);
         end
-        FNCdyn = atanh(FNCdyn);
+        FNCdyn = icatb_r_to_z(FNCdyn);
         
     elseif (strcmpi(method, 'mutual information'))
         for ii = 1:Nwin
@@ -345,7 +345,7 @@ if (isempty(Y))
         corrInfo.Pdyn = Pdyn;
         corrInfo.Lambdas = Lambdas;
         
-        FNCdyn = atanh(FNCdyn);
+        FNCdyn = icatb_r_to_z(FNCdyn);
         
     end
     
@@ -353,7 +353,7 @@ if (isempty(Y))
     if (task_dfnc)
         task_connectivity = zeros(size(model_tcwin, 2), size(FNCdyn, 2));
         for nRegress = 1:size(model_tcwin, 2)
-            task_connectivity(nRegress, :) = atanh(icatb_corr(model_tcwin(:, nRegress), FNCdyn));
+            task_connectivity(nRegress, :) = icatb_r_to_z(icatb_corr(model_tcwin(:, nRegress), FNCdyn));
         end
         corrInfo.task_connectivity = task_connectivity;
     end
@@ -371,7 +371,7 @@ else
             a = icatb_corr(squeeze(XWin{ii}), squeeze(YWin{ii}));
             FNCdyn(ii, :, :) = a;
         end
-        FNCdyn = atanh(FNCdyn);
+        FNCdyn = icatb_r_to_z(FNCdyn);
         
     elseif (strcmpi(method, 'mutual information'))
         % Mutual information
@@ -384,7 +384,7 @@ else
         for ii = 1:Nwin
             FNCdyn(ii, :, :) = icatb_partial_corr(squeeze(YWin{ii}), squeeze(XWin{ii}));
         end
-        FNCdyn = atanh(FNCdyn);
+        FNCdyn = icatb_r_to_z(FNCdyn);
     end
     
     
