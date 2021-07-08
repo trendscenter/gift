@@ -314,7 +314,8 @@ if strcmpi(ica_algo{algoType}, 'gig-ica')
     ica_algo{algoType} = 'moo-icar';
 end
 
-if (useTemporalICA || strcmpi(ica_algo{algoType}, 'iva-gl') || strcmpi(ica_algo{algoType}, 'iva-l') ...
+
+if (useTemporalICA || ~isempty(icatb_findstr(lower(ica_algo{algoType}),'iva')) ...
         || strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
     numReductionSteps = 1;
 end
@@ -546,7 +547,8 @@ if strcmpi(ica_algo{algoType}, 'semi-blind infomax')
     % SBICA
     sesInfo = sbICACallback(sesInfo, inputData.refFunNames);
     
-elseif (strcmpi(ica_algo{algoType}, 'constrained ica (spatial)') || strcmpi(ica_algo{algoType}, 'moo-icar'))
+elseif (strcmpi(ica_algo{algoType}, 'constrained ica (spatial)') || strcmpi(ica_algo{algoType}, 'moo-icar') || ...
+        strcmpi(ica_algo{algoType}, 'iva-l-sos-adaptive'))
     % Constrained ICA (Spatial)
     sesInfo = constrainedICACallback(sesInfo, inputData.refFiles);
 end
