@@ -71,7 +71,7 @@ if (strcmpi(algorithmName, 'gig-ica'))
     algorithmName = 'moo-icar';
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos') && ~strcmpi(algorithmName, 'moo-icar') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (isempty(icatb_findstr(lower(algorithmName),'iva')) && ~strcmpi(algorithmName, 'moo-icar') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
     if (which_analysis == 1)
         disp('STARTING GROUP ICA STEP ');
     elseif (which_analysis == 2)
@@ -81,8 +81,13 @@ if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~st
     else
         disp('STARTING GROUP ICA STEP USING Cross ISI');
     end
-elseif (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'iva-l') || strcmpi(algorithmName, 'iva-l-sos'))
+elseif (~isempty(icatb_findstr(lower(algorithmName),'iva')))
+    %(strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'iva-l') || strcmpi(algorithmName, 'iva-l-sos'))
     disp('STARTING GROUP IVA STEP');
+    if (strcmpi(algorithmName, 'iva-l-sos-adaptive'))
+        disp('Using IVA-L-SOS-Adaptive algorithm ...');
+        
+    end
 else
     disp(['STARTING ', upper(algorithmName)]);
 end
@@ -185,13 +190,13 @@ if (strcmpi(modalityType, 'fmri'))
     end
     
     if (useTemporalICA)
-        if (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'iva-l') || strcmpi(algorithmName, 'iva-l-sos') || strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
+        if (~isempty(icatb_findstr(lower(algorithmName),'iva')) || strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
                 strcmpi(algorithmName, 'semi-blind infomax'))
             error(['Temporal ica cannot be run using algorithm ', algorithmName]);
         end
         disp('Using temporal ica ...');
     else
-        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
+        if (isempty(icatb_findstr(lower(algorithmName),'iva')))
             disp('Using spatial ica ...');
         end
     end
@@ -231,7 +236,7 @@ if strcmpi(algorithmName, 'semi-blind infomax')
     sesInfo.userInput.ICA_Options = ICA_Options;
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
+if (isempty(icatb_findstr(lower(algorithmName),'iva')))
     
     if (which_analysis == 1)
         
@@ -573,7 +578,7 @@ icaout = fullfile(outputDir, icaout);
 if (strcmpi(modalityType, 'fmri'))
     if (~useTemporalICA)
         skew = zeros(1, numOfIC);
-        if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
+        if (isempty(icatb_findstr(lower(algorithmName),'iva')))
             [A, W, icasig, skew] = changeSignOfComponents(A, icasig);
         end
     else
@@ -607,7 +612,7 @@ end
 
 msgStr = 'DONE CALCULATING GROUP IVA';
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
+if (isempty(icatb_findstr(lower(algorithmName),'iva')))
     msgStr = 'DONE CALCULATING GROUP ICA';
     icatb_save(icaout, 'A', '-append');
     
@@ -1139,7 +1144,8 @@ end
 for runs = 1 : MaxRuns
     idx = setdiff(1:MaxRuns,runs);
     for j = 1: length(idx)
-        [isi(j),isiGrp(j)]=bss_isi(W{runs},A{idx(j)});
+        %[isi(j),isiGrp(j)]=bss_isi(W{runs},A{idx(j)});
+        [isi(j),isiGrp(j)]=bss_isi(W{idx(j)},A{runs}); % modified by Chunying Jia (chunyin1@umbc.edu)
     end
     crossisi_avg(runs) = mean(isi);clear isi
     crossisi_jnt(runs) = mean(isiGrp);clear isiGrp idx

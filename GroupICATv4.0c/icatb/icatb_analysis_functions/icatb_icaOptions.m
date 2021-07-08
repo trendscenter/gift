@@ -514,7 +514,7 @@ switch (lower(ica_algorithm))
         inputText(numParameters).tag = 'skip_laplace';
         inputText(numParameters).enable = 'on';
         
-         numParameters = numParameters + 1;
+        numParameters = numParameters + 1;
         
         inputText(numParameters).promptString = 'Enter max no. of iterations';
         inputText(numParameters).uiType = 'edit';
@@ -648,7 +648,7 @@ switch (lower(ica_algorithm))
         
         dlg_title = 'Select the options for the IVA-L SOS algorithm';
         
-       numParameters = 1;
+        numParameters = 1;
         
         inputText(numParameters).promptString = 'Enter max no. of iterations';
         inputText(numParameters).uiType = 'edit';
@@ -692,6 +692,87 @@ switch (lower(ica_algorithm))
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'verbose';
         inputText(numParameters).enable = 'on';
+        
+        
+        
+    case 'iva-l-sos-adaptive'
+        %% IVA-L sos adaptive
+        
+        dlg_title = 'Select the options for the IVA-L SOS algorithm';
+        
+        numParameters = 1;
+        
+        inputText(numParameters).promptString = 'Enter max no. of iterations';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1024);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'maxIter';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter stopping tolerance';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = 1e-4;
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'termThreshold';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter learning rate';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = 1;
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'alpha0';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Select stopping criteria';
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).answerString = char('ChangeInW', 'ChangeInCost');
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'terminationCriterion';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Select initial step param for constrained algo update';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '0.5';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'mu';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Select corr threshold for constrained algorithm';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '0.1:0.1:0.9';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'rho_list';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Select lagrange multiplier step parameter';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '3';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'gam';
+        inputText(numParameters).enable = 'on';
+        
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Display statements';
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).answerString = char('true', 'false');
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'verbose';
+        inputText(numParameters).enable = 'on';
+        
         
     case 'complex infomax'
         %% Complex Infomax

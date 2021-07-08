@@ -111,7 +111,7 @@ reductionStepsToRun(reductionStepsToRun > numReductionSteps) = [];
 
 
 try
-    if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos'))
+    if (~isempty(icatb_findstr(algoName,'iva')))
         reductionStepsToRun = 1;
     end
 catch
@@ -129,7 +129,8 @@ if (strcmpi(modalityType, 'fmri'))
     
     if (useTemporalICA)
         reductionStepsToRun = 1;
-        if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos') || strcmpi(algoName, 'moo-icar') || strcmpi(algoName, 'constrained ica (spatial)'))
+        if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos') || strcmpi(algoName, 'moo-icar') || ...
+                strcmpi(algoName, 'constrained ica (spatial)') || strcmpi(algoName, 'iva-l-sos-adaptive'))
             error(['Temporal ICA cannot be run using the algorithm ', algoName]);
         end
     end
@@ -139,7 +140,8 @@ end
 
 intermediatePCA = 1;
 
-if (~strcmpi(algoName, 'iva-gl') && ~strcmpi(algoName, 'iva-l') && ~strcmpi(algoName, 'iva-l-sos'))
+%if (~strcmpi(algoName, 'iva-gl') && ~strcmpi(algoName, 'iva-l') && ~strcmpi(algoName, 'iva-l-sos'))
+if (isempty(icatb_findstr(lower(algoName),'iva')))
     if ((numReductionSteps == 1) && (sesInfo.numOfSub*sesInfo.numOfSess > 1))
         intermediatePCA = 0;
     end
@@ -607,7 +609,7 @@ if (sesInfo.numReductionSteps == 2)
     end
 end
 
-if ((sesInfo.numOfSub*sesInfo.numOfSess == 1) && (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos')))
+if ((sesInfo.numOfSub*sesInfo.numOfSess == 1) && (~isempty(icatb_findstr(lower(algoName),'iva'))))
     try
         conserve_disk_space = sesInfo.conserve_disk_space;
     catch

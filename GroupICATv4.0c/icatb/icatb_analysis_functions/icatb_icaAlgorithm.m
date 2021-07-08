@@ -20,15 +20,17 @@ function varargout = icatb_icaAlgorithm(ica_algorithm, data, ICA_Options)
 
 if (strcmpi(modalityType, 'fmri'))
     % all the available algorithms for fmri data
-    icaAlgo = str2mat('Infomax','Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'MOO-ICAR', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS');
+    icaAlgo = char('Infomax','Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
+        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'MOO-ICAR', ...
+        'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', 'IVA-L-SOS-Adaptive');
 elseif (strcmpi(modalityType, 'smri'))
     % all the available algorithms for EEG data
-    icaAlgo = str2mat('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'MOO-ICAR', 'Sparse ICA-EBM', 'IVA-L-SOS', 'Constrained ICA (Spatial)');
+    icaAlgo = char('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
+        'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'MOO-ICAR', 'Sparse ICA-EBM', 'IVA-L-SOS', ...
+        'Constrained ICA (Spatial)');
 else
     % all the available algorithms for EEG data
-    icaAlgo = str2mat('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
+    icaAlgo = char('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
         'SDD ICA', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS');
 end
 
@@ -244,9 +246,23 @@ if (nargin > 0 && nargin <= 3)
                     secondOrderOpts{end+1} = 'maxIter';
                     secondOrderOpts{end+1} = ICA_Options{2*chkInd};
                 end
+            end            
+            
+            chk_alpha = strmatch(lower('alpha0'), lower(ICA_Options(1:2:end)),'exact');
+            
+            if (~isempty(chk_alpha))
+                secondOrderOpts(end + 1) = {'alpha0'};
+                secondOrderOpts(end + 1) = ICA_Options(2*chk_alpha);
+            end
+            
+            chk_thresh = strmatch(lower('termThreshold'), lower(ICA_Options(1:2:end)),'exact');
+            if (~isempty(chk_thresh))
+                secondOrderOpts(end + 1) = {'WDiffStop'};
+                secondOrderOpts(end + 1) = ICA_Options(2*chk_thresh);
             end
             
             W = icatb_iva_second_order(data, secondOrderOpts{:});
+            
             ICA_Options(end+1:end+4) = {'whiten', false, 'initW', W};
             
             chkInd = strmatch('skip_laplace', lower(ICA_Options(1:2:end)), 'exact');
@@ -325,6 +341,15 @@ if (nargin > 0 && nargin <= 3)
             ICA_Options{end + 1} = 'whiten';
             ICA_Options{end + 1} = false;
             W = icatb_iva_laplace_sos(data, ICA_Options{:});
+            [W, A, icasig_tmp] = correct_sign(W, data);
+            
+        case 'iva-l-sos-adaptive'
+            %% IVA-L SOS adaptive
+            ICA_Options{end + 1} = 'whiten';
+            ICA_Options{end + 1} = false;
+            ref_data = icatb_read_data(ICA_Options{2}{1}, [], ICA_Options{2}{2});
+            ICA_Options(1:2) = [];
+            W = icatb_iva_l_sos_adaptive_constrained(data, ref_data, 1, ICA_Options{:});
             [W, A, icasig_tmp] = correct_sign(W, data);
             
             % Add your own ICA algorithm code below
