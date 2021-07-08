@@ -232,8 +232,8 @@ if (writeInfo)
         disp(['Timecourses will be filtered when computing FNC correlations using HF cutoff of ', num2str(cutoff_frequency), ' Hz ...']);
     end
     
-    numN = [];
-    denN = [];
+    numN = ones(1, length(datasets_in_use));
+    denN = numN;
     
     if (~all(TR == minTR))
         tmpTR = TR;
