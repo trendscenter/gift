@@ -30,7 +30,7 @@ if (strcmpi(modalityType, 'fmri'))
     end
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'iva-l') && ~strcmpi(algorithmName, 'iva-l-sos'))
+if (isempty(icatb_findstr(lower(algorithmName),'iva')))
     
     pcain = [sesInfo.data_reduction_mat_file,num2str(sesInfo.numReductionSteps),'-',num2str(1), '.mat'];
     
