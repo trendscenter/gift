@@ -266,12 +266,13 @@ if (~strcmpi(display_type, 'render'))
     
     gH = icatb_getGraphics('Composite Maps', 'graphics', 'composite_maps', 'on');
     set(gH, 'resize', 'on');
+    set(gH, 'colormap', imagesCmap);
     
     if (exist('fig_pos', 'var'))
         set(gH, 'position', fig_pos);
     end
     
-    colormap(imagesCmap);
+    %colormap(imagesCmap);
     
     handles_data.currentFigure = gH;
     
@@ -299,7 +300,8 @@ if (~strcmpi(display_type, 'render'))
         
         sh = axes('parent', gH, 'units', 'normalized', 'position', axesPos, 'tag', 'image_axes');
         imagesc(im);
-        colormap(imagesCmap);
+        %colormap(imagesCmap);
+        set(gH, 'colormap', imagesCmap);
         set(sh, 'CLIM', [1, size(imagesCmap, 1)]);
         axis(sh,'image');
         axis(sh, 'off');
@@ -475,7 +477,7 @@ else
     axesPos = [0.15, 0.25, 0.7, 0.7];
     gH = icatb_getGraphics('Composite Renderer', 'graphics', 'Image Viewer', 'on');
     sh = axes('parent', gH, 'units', 'normalized', 'position', axesPos);
-    colormap(imagesCmap);
+    set(gH, 'colormap', imagesCmap);
     
     ImageAxis = image(rgb, 'parent', sh);
     axis(sh, 'image');
@@ -507,6 +509,7 @@ if (pos(1) < 0.05)
     pos(1) = 0.05;
 end
 
+drawnow;
 cMax = 0;
 allColorbars = zeros(1, length(files));
 for n = 1:length(files)
@@ -526,6 +529,7 @@ for n = 1:length(files)
     allColorbars(n) = ch;
 end
 
+drawnow;
 handles_data = get(gH, 'userdata');
 
 handles_data.allColorbars = allColorbars;
