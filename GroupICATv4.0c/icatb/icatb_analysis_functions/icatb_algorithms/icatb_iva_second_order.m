@@ -532,7 +532,7 @@ for iter = 1:options.maxIter
     end
     
     %% Check the termination condition
-    if (termCriterion < options.WDiffStop || iter == options.maxIter || (costCriterion < options.WDiffStop))
+    if (termCriterion < options.WDiffStop || iter == options.maxIter)
         break;
     elseif termCriterion > blowup || isnan(cost(iter))
         for k = 1:K
