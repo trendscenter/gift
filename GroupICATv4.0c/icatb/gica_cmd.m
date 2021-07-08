@@ -271,7 +271,7 @@ if (numOfSub*numOfSess == 1)
     numReductionSteps = 1;
 end
 
-if (useTemporalICA || strcmpi(ica_algo{algoType}, 'iva-gl') || strcmpi(ica_algo{algoType}, 'iva-l') || strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
+if (useTemporalICA || ~isempty(icatb_findstr(lower(ica_algo{algoType}),'iva')) || strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
     numReductionSteps = 1;
 end
 
