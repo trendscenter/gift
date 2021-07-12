@@ -422,8 +422,8 @@ for nF = 1:size(compFiles, 1)
     
     gH = icatb_getGraphics([fN, extn, '(Comp ', icatb_returnFileIndex(components(nF)), ')'], 'graphics', 'imviewer', figVisible);
     set(gH, 'resize', 'on');
-    set(gH, 'colormap', cmap);
-    %colormap(cmap);
+    %set(gH, 'colormap', cmap);
+    colormap(cmap);
     
     xOffSet = 0.05;
     yOffSet = 0.05;
