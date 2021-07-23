@@ -694,6 +694,16 @@ switch (lower(ica_algorithm))
         inputText(numParameters).enable = 'on';
         
         
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter initial weights. You can use iva-g or any valid evaluation string.';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = 'iva-g';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'weights';
+        inputText(numParameters).enable = 'on';
+        
+        
         
     case 'iva-l-sos-adaptive'
         %% IVA-L sos adaptive
@@ -771,6 +781,15 @@ switch (lower(ica_algorithm))
         inputText(numParameters).answerString = char('true', 'false');
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'verbose';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter initial weights. You can use iva-g or any valid evaluation string.';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'weights';
         inputText(numParameters).enable = 'on';
         
         

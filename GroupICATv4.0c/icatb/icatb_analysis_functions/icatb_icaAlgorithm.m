@@ -246,7 +246,7 @@ if (nargin > 0 && nargin <= 3)
                     secondOrderOpts{end+1} = 'maxIter';
                     secondOrderOpts{end+1} = ICA_Options{2*chkInd};
                 end
-            end            
+            end
             
             chk_alpha = strmatch(lower('alpha0'), lower(ICA_Options(1:2:end)),'exact');
             
@@ -340,6 +340,10 @@ if (nargin > 0 && nargin <= 3)
             %% IVA-L_SOS
             ICA_Options{end + 1} = 'whiten';
             ICA_Options{end + 1} = false;
+            
+            msgStr = 'Weights from second order IVA are used as initial weights in IVA-L-SOS ...';
+            ICA_Options = updateICAOpts(data, ICA_Options, msgStr);
+            
             W = icatb_iva_laplace_sos(data, ICA_Options{:});
             [W, A, icasig_tmp] = correct_sign(W, data);
             
@@ -349,6 +353,8 @@ if (nargin > 0 && nargin <= 3)
             ICA_Options{end + 1} = false;
             ref_data = icatb_read_data(ICA_Options{2}{1}, [], ICA_Options{2}{2});
             ICA_Options(1:2) = [];
+            msgStr = 'Weights from second order IVA are used as initial weights in IVA-L-SOS adaptive ...';
+            ICA_Options = updateICAOpts(data, ICA_Options, msgStr);
             W = icatb_iva_l_sos_adaptive_constrained(data, ref_data, 1, ICA_Options{:});
             [W, A, icasig_tmp] = correct_sign(W, data);
             
@@ -400,3 +406,52 @@ data = permute(data, [2, 1, 3]);
 data = reshape(data, size(data, 1), size(data, 2)*size(data, 3));
 [groupPCASig, dewhiteM] = icatb_calculate_pca(data, numComp, 'type', 'mpowit', 'whiten', true);
 wM = pinv(dewhiteM);
+
+
+
+function ICA_Options = updateICAOpts(data, ICA_Options, msgStr)
+
+chkWeights = strmatch('weights', ICA_Options(1:2:end), 'exact');
+if (~isempty(chkWeights))
+    val = ICA_Options{2*chkWeights};
+    ICA_Options(2*chkWeights-1:2*chkWeights) = [];
+    W = [];
+    if strcmpi(val, 'iva-g')
+        %% Use second order weights
+        secondOrderOpts = ICA_Options;
+        
+        checkOpts = {'opt_approach', 'complex_valued', 'circular', 'whiten', 'verbose','maxIter','WDiffStop','alpha0'};
+        chk = strmatch('termThreshold', secondOrderOpts(1:2:end),'exact');
+        if (~isempty(chk))
+            secondOrderOpts{2*chk - 1} = 'WDiffStop';
+        end
+        chk = strmatch('terminationCriterion', secondOrderOpts(1:2:end),'exact');
+        if (~isempty(chk))
+            secondOrderOpts(2*chk-1:2*chk) = [];
+        end
+        [ia, ib] = intersect(secondOrderOpts(1:2:end),checkOpts);
+        tmp_second_order_opts = secondOrderOpts;
+        secondOrderOpts = cell(1, 2*length(ib));
+        for nIb = 1:length(ib)
+            secondOrderOpts{2*nIb - 1} = tmp_second_order_opts{2*ib(nIb) - 1};
+            secondOrderOpts{2*nIb} = tmp_second_order_opts{2*ib(nIb)}; 
+        end
+        %secondOrderOpts = secondOrderOpts(2*ib-1:2*ib);
+        disp('Running IVA-G ...');
+        W = icatb_iva_second_order(data, secondOrderOpts{:});
+        disp(msgStr);
+    else
+        try
+            W = eval(val);
+            if (~isempty(W))
+                if ((size(W, 1) ~= size(data, 1)) || (size(W, 2) ~= size(data, 1)))
+                    error('Weights provided don''t match the data rows and columns');
+                end
+            end
+            disp('Starting weights are input from the user ...');
+        catch
+        end
+    end
+    ICA_Options{end + 1} = 'initW';
+    ICA_Options{end + 1} = W;
+end
