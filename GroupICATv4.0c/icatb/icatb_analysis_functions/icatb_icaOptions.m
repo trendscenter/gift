@@ -661,7 +661,7 @@ switch (lower(ica_algorithm))
         
         inputText(numParameters).promptString = 'Enter stopping tolerance';
         inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = 1e-4;
+        inputText(numParameters).answerString = num2str(1e-4);
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'termThreshold';
         inputText(numParameters).enable = 'on';
@@ -670,7 +670,7 @@ switch (lower(ica_algorithm))
         
         inputText(numParameters).promptString = 'Enter learning rate';
         inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = 1;
+        inputText(numParameters).answerString = '1';
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'alpha0';
         inputText(numParameters).enable = 'on';
@@ -702,6 +702,44 @@ switch (lower(ica_algorithm))
         inputText(numParameters).dataType = 'string';
         inputText(numParameters).tag = 'weights';
         inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Select approach (iva-g)';
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).answerString = char('newton', 'quasi');
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'second_order_opt_approach';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter max no. of iterations (iva-g)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1024);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'second_order_maxIter';
+        inputText(numParameters).enable = 'on';
+        
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter stopping tolerance (iva-g)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1e-4);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'second_order_WDiffStop';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter learning rate (iva-g)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '1';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'second_order_alpha0';
+        inputText(numParameters).enable = 'on';
+        
         
         
         
@@ -790,6 +828,43 @@ switch (lower(ica_algorithm))
         inputText(numParameters).answerString = '';
         inputText(numParameters).dataType = 'string';
         inputText(numParameters).tag = 'weights';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Select approach (iva-g)';
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).answerString = char('newton', 'quasi');
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'second_order_opt_approach';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter max no. of iterations (iva-g)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1024);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'second_order_maxIter';
+        inputText(numParameters).enable = 'on';
+        
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter stopping tolerance (iva-g)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1e-4);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'second_order_WDiffStop';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter learning rate (iva-g)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '1';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'second_order_alpha0';
         inputText(numParameters).enable = 'on';
         
         

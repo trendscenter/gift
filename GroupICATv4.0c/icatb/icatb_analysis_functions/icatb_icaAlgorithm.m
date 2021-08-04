@@ -411,47 +411,67 @@ wM = pinv(dewhiteM);
 
 function ICA_Options = updateICAOpts(data, ICA_Options, msgStr)
 
-chkWeights = strmatch('weights', ICA_Options(1:2:end), 'exact');
-if (~isempty(chkWeights))
-    val = ICA_Options{2*chkWeights};
-    ICA_Options(2*chkWeights-1:2*chkWeights) = [];
-    W = [];
-    if strcmpi(val, 'iva-g')
-        %% Use second order weights
-        secondOrderOpts = ICA_Options;
-        
-        checkOpts = {'opt_approach', 'complex_valued', 'circular', 'whiten', 'verbose','maxIter','WDiffStop','alpha0'};
-        chk = strmatch('termThreshold', secondOrderOpts(1:2:end),'exact');
-        if (~isempty(chk))
-            secondOrderOpts{2*chk - 1} = 'WDiffStop';
-        end
-        chk = strmatch('terminationCriterion', secondOrderOpts(1:2:end),'exact');
-        if (~isempty(chk))
-            secondOrderOpts(2*chk-1:2*chk) = [];
-        end
-        [ia, ib] = intersect(secondOrderOpts(1:2:end),checkOpts);
-        tmp_second_order_opts = secondOrderOpts;
-        secondOrderOpts = cell(1, 2*length(ib));
-        for nIb = 1:length(ib)
-            secondOrderOpts{2*nIb - 1} = tmp_second_order_opts{2*ib(nIb) - 1};
-            secondOrderOpts{2*nIb} = tmp_second_order_opts{2*ib(nIb)}; 
-        end
-        %secondOrderOpts = secondOrderOpts(2*ib-1:2*ib);
-        disp('Running IVA-G ...');
-        W = icatb_iva_second_order(data, secondOrderOpts{:});
-        disp(msgStr);
-    else
-        try
-            W = eval(val);
-            if (~isempty(W))
-                if ((size(W, 1) ~= size(data, 1)) || (size(W, 2) ~= size(data, 1)))
-                    error('Weights provided don''t match the data rows and columns');
-                end
-            end
-            disp('Starting weights are input from the user ...');
-        catch
-        end
-    end
-    ICA_Options{end + 1} = 'initW';
-    ICA_Options{end + 1} = W;
+
+chkInd = find(icatb_good_cells(regexp(ICA_Options(1:2:end), 'second\_order\_')));
+secondOrderOpts = {};
+if (~isempty(chkInd))
+    ICA_Options(2*chkInd - 1) = regexprep(ICA_Options(2*chkInd - 1), 'second\_order\_', '');
+    allInds = sort([2.*chkInd - 1, 2.*chkInd]);
+    secondOrderOpts = ICA_Options(allInds);
+    ICA_Options(allInds) = [];
 end
+
+chkWeights = strmatch('weights', ICA_Options(1:2:end), 'exact');
+
+if (isempty(chkWeights))
+    return
+end
+
+chkWeights = strmatch('weights', ICA_Options(1:2:end), 'exact');
+val = ICA_Options{2*chkWeights};
+ICA_Options(2*chkWeights-1:2*chkWeights) = [];
+W = [];
+
+
+if strcmpi(val, 'iva-g')
+    %% Use second order weights
+    %secondOrderOpts = ICA_Options;
+    
+    checkOpts = {'opt_approach', 'complex_valued', 'circular', 'whiten', 'verbose','maxIter','WDiffStop','alpha0'};
+    chk = strmatch('termThreshold', secondOrderOpts(1:2:end),'exact');
+    if (~isempty(chk))
+        secondOrderOpts{2*chk - 1} = 'WDiffStop';
+    end
+    chk = strmatch('terminationCriterion', secondOrderOpts(1:2:end),'exact');
+    if (~isempty(chk))
+        secondOrderOpts(2*chk-1:2*chk) = [];
+    end
+    [ia, ib] = intersect(secondOrderOpts(1:2:end),checkOpts);
+    tmp_second_order_opts = secondOrderOpts;
+    secondOrderOpts = cell(1, 2*length(ib));
+    for nIb = 1:length(ib)
+        secondOrderOpts{2*nIb - 1} = tmp_second_order_opts{2*ib(nIb) - 1};
+        secondOrderOpts{2*nIb} = tmp_second_order_opts{2*ib(nIb)};
+    end
+    secondOrderOpts{end + 1} = 'whiten';
+    secondOrderOpts{end + 1} = false;
+    secondOrderOpts{end + 1} = 'verbose';
+    secondOrderOpts{end + 1} = true;
+    %secondOrderOpts = secondOrderOpts(2*ib-1:2*ib);
+    disp('Running IVA-G ...');
+    W = icatb_iva_second_order(data, secondOrderOpts{:});
+    disp(msgStr);
+else
+    try
+        W = eval(val);
+        if (~isempty(W))
+            if ((size(W, 1) ~= size(data, 1)) || (size(W, 2) ~= size(data, 1)))
+                error('Weights provided don''t match the data rows and columns');
+            end
+        end
+        disp('Starting weights are input from the user ...');
+    catch
+    end
+end
+ICA_Options{end + 1} = 'initW';
+ICA_Options{end + 1} = W;
