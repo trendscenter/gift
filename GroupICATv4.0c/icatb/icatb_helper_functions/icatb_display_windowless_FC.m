@@ -206,6 +206,8 @@ if isappdata(0, 'inputDispData')
     
     
     %% FNC correlations: Correlations are visualized in a matrix plot
+    display_info.FNC = cell(1, size(wfcInfo.ksvd.Dictionary, 2));
+    display_info.comp_network_names = comp_network_names;
     
     for nDict = 1:size(wfcInfo.ksvd.Dictionary, 2)
         
@@ -231,6 +233,10 @@ if isappdata(0, 'inputDispData')
         
         FNCM(isfinite(FNCM) == 0) = 0;
         CLIM = max(abs(FNCM(:)));
+        
+        
+        display_info.FNC{nDict} = FNCM;
+        
         network_values = cellfun(@length, comp_network_names(:,2), 'UniformOutput', false);
         network_values = [network_values{:}];
         gH = icatb_getGraphics('FNC Correlations', 'graphics', 'fnc_corrs', 'on');
@@ -256,6 +262,10 @@ else
     
 end
 
+
+wfcInfo.display_info = display_info;
+
+save(param_file, 'wfcInfo');
 
 icatb_plotNextPreviousExitButtons(GraphicsHandle);
 
