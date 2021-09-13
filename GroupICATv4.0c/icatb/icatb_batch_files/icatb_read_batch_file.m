@@ -284,6 +284,13 @@ if (isfield(inputData, 'algoType'))
 end
 
 ica_algo = lower(cellstr(icatb_icaAlgorithm));
+
+if (ischar(algoType))
+    if strcmpi(algoType, 'gig-ica')
+        algoType = 'moo-icar';
+    end
+end
+
 algoType = getIndex(algoType, ica_algo, 'ICA Algorithm');
 sesInfo.userInput.algorithm = algoType;
 
@@ -308,10 +315,6 @@ end
 
 if (numOfSub*numOfSess == 1)
     numReductionSteps = 1;
-end
-
-if strcmpi(ica_algo{algoType}, 'gig-ica')
-    ica_algo{algoType} = 'moo-icar';
 end
 
 
