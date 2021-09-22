@@ -27,14 +27,17 @@ end
 
 sesInfo.outputDir = outputDir;
 
-if (isempty(sesInfo.userInput.designMatrix.name))
-    tmpSPMFiles = icatb_selectEntry('typeEntity', 'file', 'title', 'Select SPM design matrix/matrices', 'filter', 'SPM.mat', 'typeSelection', 'multiple');
-    if (isempty(tmpSPMFiles))
-        error('Design matrix/matrices is/are not selected');
+try
+    if (isempty(sesInfo.userInput.designMatrix.name))
+        tmpSPMFiles = icatb_selectEntry('typeEntity', 'file', 'title', 'Select SPM design matrix/matrices', 'filter', 'SPM.mat', 'typeSelection', 'multiple');
+        if (isempty(tmpSPMFiles))
+            error('Design matrix/matrices is/are not selected');
+        end
+        sesInfo.userInput.designMatrix.name = tmpSPMFiles;
+        drawnow;
+        save(param_file, 'sesInfo');
     end
-    sesInfo.userInput.designMatrix.name = tmpSPMFiles;
-    drawnow;
-    save(param_file, 'sesInfo');
+catch
 end
 
 spm_files = cellstr(char(sesInfo.userInput.designMatrix.name));
