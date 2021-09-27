@@ -124,6 +124,15 @@ try
 catch
 end
 
+if (strcmpi(results.kmeans_start, 'user input'))
+    results.Cp = handles.Cp;
+    if (results.num_clusters ~= size(results.Cp, 1))
+        warning('No of rows in the initial centroids passed doesn''t match the number of clusters entered');
+        disp('Changing number of centroids to the no of rows in the initial centroids');
+        results.num_clusters = size(results.Cp, 1);
+    end
+end
+
 opts = cellstr(lower(get(handles.meta_method, 'string')));
 val = get(handles.meta_method, 'value');
 results.meta_method = opts{val};
@@ -534,7 +543,7 @@ dlg_title = 'Select K-means options';
 numParameters = 1;
 chk = 1;
 
-kmeans_start_opts = {'Subject Exemplars', 'Default'};
+kmeans_start_opts = {'Subject Exemplars', 'Default', 'User Input'};
 try
     chk = strmatch(lower(handles.kmeans_start), lower(kmeans_start_opts), 'exact');
     if (isempty(chk))
@@ -618,6 +627,14 @@ inputText(numParameters).value = chk;
 answers = icatb_inputDialog('inputtext', inputText, 'Title', dlg_title, 'handle_visibility', 'on');
 
 if (~isempty(answers))
+    
+    if (strcmpi(answers{1}, 'user input'))
+        centroidsFile = icatb_selectEntry('typeEntity', 'file', 'filter', '*.mat;*.asc', 'title', ...
+            'Select MAT/ascii file containing centroids (clusters by centroids))');
+        Cp = icatb_load_ascii_or_mat(centroidsFile);
+        handles.Cp = Cp;
+    end
+    
     handles.kmeans_start = answers{1};
     handles.kmeans_max_iter = answers{2};
     handles.dmethod = answers{3};
