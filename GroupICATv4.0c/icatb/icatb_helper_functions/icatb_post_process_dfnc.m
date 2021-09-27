@@ -135,6 +135,13 @@ catch
 end
 
 
+if (isfield(dfncInfo.postprocess, 'Cp'))
+    Cp = dfncInfo.postprocess.Cp;
+    if (size(Cp, 1) ~= num_clusters)
+        error('No of rows in the initial centroids passed doesn''t match the number of clusters entered');
+    end
+end
+
 if (showGUI)
     
     guiInputs = struct('estimate_clusters', estimate_clusters, 'num_clusters', num_clusters, 'kmeans_max_iter', kmeans_max_iter, 'dmethod', dmethod, ...
@@ -154,12 +161,13 @@ if (showGUI)
         if (isempty(tmp))
             tmp = '';
         end
-        if (isnumeric(tmp))
-            tmp = num2str(tmp);
-        else
-            tmp = ['''', tmp, ''''];
-        end
-        str = [field_Names{n}, '=', tmp, ';'];
+        %         if (isnumeric(tmp))
+        %             tmp = num2str(tmp);
+        %         else
+        %             tmp = ['''', tmp, ''''];
+        %         end
+        %str = [field_Names{n}, '=', tmp, ';'];
+        str = [field_Names{n}, ' = tmp;'];
         eval(str);
     end
     
@@ -253,6 +261,16 @@ dfncInfo.postprocess.ica.num_ica_runs = num_ica_runs;
 dfncInfo.postprocess.ica.num_comps = num_comps_ica;
 dfncInfo.postprocess.regressCovFile = regressCovFile;
 dfncInfo.postprocess.kmeans_start = kmeans_start;
+
+
+if (strcmpi(kmeans_start, 'user Input'))
+    estimate_clusters = 'no';
+    if (~isempty(Cp))
+        disp('Using initial centroids as input in the standard dfnc ...');
+        fprintf('\n');
+    end
+end
+
 
 %% Regress covariates
 %if (~showGUI)
@@ -470,7 +488,7 @@ clear SPflat IDXp SUMDp;
 post_process_opts = struct('max_iter', dfncInfo.postprocess.kmeans_max_iter, 'kmeans_num_replicates', 1, ...
     'kmeans_distance_method', dfncInfo.postprocess.dmethod);
 
-if (~strcmpi(kmeans_start, 'subject exemplars'))
+if (strcmpi(kmeans_start, 'default'))
     post_process_opts.kmeans_num_replicates = dfncInfo.postprocess.kmeans_num_replicates;
     Cp = [];
 end
