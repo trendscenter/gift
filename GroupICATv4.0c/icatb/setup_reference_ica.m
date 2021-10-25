@@ -22,7 +22,7 @@ function varargout = setup_reference_ica(varargin)
 
 % Edit the above text to modify the response to help setup_reference_ica
 
-% Last Modified by GUIDE v2.5 19-Jan-2021 13:41:58
+% Last Modified by GUIDE v2.5 25-Oct-2021 17:46:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -396,17 +396,25 @@ for n = 1:length(compLabels)
     networkOpts{n, 2} = compLabels(n).value;
 end
 
-network_summary_opts.comp_network_names = networkOpts;
 network_summary_opts.threshold = 1.5;
+% convert spatial maps to z-scores
+network_summary_opts.convert_to_z = 'yes';
 
-% structural file
-network_summary_opts.structFile = fullfile(fileparts(which('gift.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
+try
+    network_summary_opts = handles.network_summary_opts;
+catch
+end
 
 % format: options are html and pdf
 network_summary_opts.format = 'html';
 
-% convert spatial maps to z-scores
-network_summary_opts.convert_to_z = 'yes';
+
+% structural file
+network_summary_opts.structFile = fullfile(fileparts(which('gift.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
+
+
+network_summary_opts.comp_network_names = networkOpts;
+
 
 network_summary_opts.save_info = 1;
 
@@ -792,3 +800,130 @@ try
     set(InputHandle.TR, 'string', answer{1});
 catch
 end
+
+
+% --------------------------------------------------------------------
+function disp_defaults_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_defaults (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+conn_threshold = -Inf;
+try
+    conn_threshold = handles.network_summary_opts.conn_threshold;
+catch
+end
+
+display_type = 'slices';
+try
+    display_type = handles.network_summary_opts.display_type;
+catch
+end
+
+slice_plane = 'axial';
+try
+    slice_plane = handles.network_summary_opts.slice_plane;
+catch
+end
+
+display_threshold = 1.0;
+try
+    display_threshold = handles.network_summary_opts.threshold;
+catch
+end
+
+ZOptions = {'No', 'Yes'};
+convert_to_z = 'yes';
+try
+    convert_to_z = handles.network_summary_opts.convert_to_z;
+catch
+end
+
+displayTypeOpts = {'Slices', 'Render'};
+
+display_type_def = matchString(display_type, displayTypeOpts, 1);
+
+planeOptions = {'Axial', 'Sagittal', 'Coronal'};
+
+plane_default = matchString(slice_plane, planeOptions, 1);
+
+z_default = matchString(convert_to_z, ZOptions, 1);
+
+dlg_title = 'Select options for network summary';
+
+numParameters = 1;
+
+inputText(numParameters).promptString =  'Enter FNC connectivity threshold (connectogram)';
+inputText(numParameters).answerString = num2str(conn_threshold);
+inputText(numParameters).uiType = 'edit';
+inputText(numParameters).dataType = 'numeric';
+inputText(numParameters).tag = 'conn_threshold';
+inputText(numParameters).enable = 'on';
+inputText(numParameters).value = 1;
+inputText(numParameters).flag = 'scalar';
+
+numParameters = numParameters + 1;
+
+inputText(numParameters).promptString = 'Select display type';
+inputText(numParameters).answerString = displayTypeOpts;
+inputText(numParameters).uiType = 'popup';
+inputText(numParameters).dataType = 'string';
+inputText(numParameters).tag = 'display_type';
+inputText(numParameters).enable = 'on';
+inputText(numParameters).value = display_type_def;
+inputText(numParameters).flag = 'scalar';
+
+
+numParameters = numParameters + 1;
+
+inputText(numParameters).promptString = 'Select slice plane';
+inputText(numParameters).answerString = planeOptions;
+inputText(numParameters).uiType = 'popup';
+inputText(numParameters).dataType = 'string';
+inputText(numParameters).tag = 'slice_plane';
+inputText(numParameters).enable = 'on';
+inputText(numParameters).value = plane_default;
+inputText(numParameters).flag = 'scalar';
+
+
+numParameters = numParameters + 1;
+
+inputText(numParameters).promptString = 'Convert to z-scores';
+inputText(numParameters).answerString = ZOptions;
+inputText(numParameters).uiType = 'popup';
+inputText(numParameters).dataType = 'string';
+inputText(numParameters).tag = 'z_options';
+inputText(numParameters).enable = 'on';
+inputText(numParameters).value = z_default;
+inputText(numParameters).flag = 'scalar';
+
+
+numParameters = numParameters + 1;
+
+inputText(numParameters).promptString = 'Select display threshold (spatial maps)';
+inputText(numParameters).answerString = num2str(display_threshold);
+inputText(numParameters).uiType = 'edit';
+inputText(numParameters).dataType = 'numeric';
+inputText(numParameters).tag = 'threshold';
+inputText(numParameters).enable = 'on';
+inputText(numParameters).value = 1;
+inputText(numParameters).flag = 'scalar';
+
+
+% display_results.network_summary_opts.threshold = display_results.threshold;
+% display_results.network_summary_opts.convert_to_z = display_results.convert_to_zscores;
+
+
+answers = icatb_inputDialog('inputtext', inputText, 'Title', dlg_title, 'handle_visibility', 'on');
+
+if (~isempty(answers))
+    
+    handles.network_summary_opts.conn_threshold  = answers{1};
+    handles.network_summary_opts.display_type = answers{2};
+    handles.network_summary_opts.slice_plane = answers{3};
+    handles.network_summary_opts.convert_to_z = answers{4};
+    handles.network_summary_opts.threshold = answers{5};
+end
+
+guidata(handles.output, handles);

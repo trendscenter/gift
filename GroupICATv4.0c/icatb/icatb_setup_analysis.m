@@ -1827,7 +1827,16 @@ if (strcmpi(algorithmName, 'constrained ica (spatial)') || strcmpi(algorithmName
         fprintf('Spatial reference image dimensions ([%s]) are not equal to functional image dimensions ([%s]). Resizing template image/images to match functional image\n\n', ...
             num2str(imDims), num2str(funcDims));
         
-        spatial_references = noisecloud_spm_coregister(deblank(sesInfo.userInput.files(1).name(1, :)), deblank(spatial_references(1, :)), spatial_references, sesInfo.userInput.pwd);
+        firstFile = deblank(sesInfo.userInput.files(1).name(1, :));
+        
+        firstFileTmp = deblank(icatb_parseExtn(firstFile));
+        if (strcmpi(firstFileTmp(end-2:end), '.gz'))
+            gzfn = gunzip (firstFileTmp, tempdir);
+            gzfn = char(gzfn);
+            firstFile = icatb_rename_4d_file(gzfn);
+            firstFile = deblank(firstFile(1, :));
+        end
+        spatial_references = noisecloud_spm_coregister(firstFile, deblank(spatial_references(1, :)), spatial_references, sesInfo.userInput.pwd);
     end
     
     % [images, imHInfo] = icatb_loadData(spatial_references);
