@@ -46,7 +46,7 @@ global RAND_SHUFFLE;
 
 if (~isempty(RAND_SHUFFLE) && (RAND_SHUFFLE == 1))
     try
-         rng('shuffle');
+        rng('shuffle');
     catch
     end
 end
@@ -227,8 +227,24 @@ results.formatName = formatName;
 
 drawnow;
 
+giftPath = fileparts(which('gift.m'));
 
-icatb_report_generator(param_file, results);
+resultsFile = fullfile(fileparts(param_file), [sesInfo.userInput.prefix, '_tmp_results_struct.mat']);
+save(resultsFile, 'results');
+
+% Run separate matlab session
+disp('Generating summary ...');
+commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, ''')); icatb_report_generator(''', param_file, ...
+    ''', ''', resultsFile, ''');exit;', '"'];
+[status, message] = system(commandStr);
+
+if (status == 1)
+    error(message);
+end
+
+disp('Done');
+
+%icatb_report_generator(param_file, results);
 
 
 function selectedRegressors = selectRegressors(param_file)
