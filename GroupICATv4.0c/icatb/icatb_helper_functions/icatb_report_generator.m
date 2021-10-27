@@ -26,6 +26,13 @@ appName = 'group_ica_modality';
 
 setappdata(0, appName, modalityType);
 
+
+if (exist('results', 'var') && ischar(results))
+    resultsFile = results;
+    clear results;
+    load(resultsFile);
+end
+
 try
     formatName = results.formatName;
 catch
