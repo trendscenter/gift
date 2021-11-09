@@ -31,7 +31,16 @@ class GICACommandInputSpec(GIFTCommandInputSpec):
     numWorkers = traits.Int( mandatory = False, desc = 'Number of parallel workers')	
     #display_results = traits.Int( mandatory = False, desc = '0 - No display, 1 - HTML report, 2 - PDF')
     display_results = traits.Dict(mandatory=False, desc='dictionary containing results summary options')
+    #network_summary_opts = {'comp_network_names':{'BG':17,'AUD':21,'SM':[23,24,29]}, 
+    #'conn_threshold':0.1, 'structFile':'/path/to/ch2bet.nii', 'threshold':1};
     network_summary_opts = traits.Dict(mandatory=False, desc='dictionary containing network summary options')
+    #icasso_opts = {'sel_mode':'randinit', 'num_ica_runs':10, 'min_cluster_size':8, 'max_cluster_size':10};
+    icasso_opts = traits.Dict(mandatory=False, desc='dictionary containing icasso options')
+    #mst_opts = {'num_ica_runs':10};
+    mst_opts = traits.Dict(mandatory=False, desc='dictionary containing mst options')
+    designMatrix = traits.List(mandatory = False, desc="enter SPM.mat file names in a list. You can enter one design for task based or equal to number of subjects for randomized designs")
+    # example: ['right*bf(1)', 'left*bf(1)']
+    regressors = traits.List(mandatory = False, desc="enter regressors from SPM.mat files")
 	
 
 class GICACommandOutputSpec(MatlabInputSpec):
@@ -79,13 +88,64 @@ class GICACommand(GIFTCommand):
         if isdefined(self.inputs.which_analysis):
         		which_analysis = self.inputs.which_analysis;
         	
+        icasso_opts = {'sel_mode':'randinit', 'num_ica_runs':10, 'min_cluster_size':8, 'max_cluster_size':10};
+        
+        mst_opts = {'num_ica_runs':10};
+        
+        if (isdefined(self.inputs.icasso_opts)):
+            icasso_opts = self.inputs.icasso_opts;
+            
+        if (isdefined(self.inputs.mst_opts)):
+            mst_opts = self.inputs.mst_opts;
+        
+        #Icasso options
+        commandstr = ["%% Batch script for running gica\n"];
+        commandstr.append("\n");
+        commandstr.append("icasso_opts.sel_mode = '%s';\n" % (icasso_opts['sel_mode']));
+        commandstr.append("icasso_opts.num_ica_runs = %d;\n" % (icasso_opts['num_ica_runs']));
+        commandstr.append("icasso_opts.min_cluster_size = %d;\n" % (icasso_opts['min_cluster_size']));
+        commandstr.append("icasso_opts.max_cluster_size = %d;\n" % (icasso_opts['max_cluster_size']));
+        commandstr.append("\n");
+        #MST options
+        commandstr.append("mst_opts.num_ica_runs = %d;\n" % (mst_opts['num_ica_runs']));
+        
+        # Design info
+        designMatrix = [];
+        if isdefined(self.inputs.designMatrix):
+        		designMatrix = self.inputs.designMatrix;
+        
+        keyword_design = 'no'
+        if (len(designMatrix) > 0):
+            if (len(designMatrix) == 1):
+                keyword_design = 'same_sub_same_sess'
+            else:
+                keyword_design = 'diff_sub_diff_sess'
+        
+        commandstr.append("%% Design matrix/matrices\n");
+        commandstr.append("keyword_designMatrix = '%s';\n" % (keyword_design));
+        if (keyword_design == 'same_sub_same_sess'):
+            commandstr.append("OnedesignMat = '%s';\n" % (designMatrix[0]));
+        elif (keyword_design == 'diff_sub_diff_sess'):
+             commandstr.append("input_design_matrices = {");
+             if len(designMatrix) != len(self.inputs.in_files):
+                 raise ValueError("Design matrix and input files must have the same list length")
+             for nDesign in range(len(designMatrix)):
+                 commandstr.append("'%s';\n" % (designMatrix[nDesign]))
+             commandstr.append("};\n\n")
+                 
+        if isdefined(self.inputs.regressors):
+            commandstr.append("%% Regressors\n");
+            commandstr.append("refFunNames = {");
+            for nRegress in range(len(self.inputs.regressors)):
+                commandstr.append("'%s';\n" % (self.inputs.regressors[nRegress]))
+            commandstr.append("};\n\n")
+        
         dummy_scans = 0;
         if isdefined(self.inputs.dummy_scans):
         		dummy_scans = self.inputs.dummy_scans;
         			
-        batch_file_name = os.path.join(os.getcwd(), '%s_gica_batch.m' % (prefix)); 
-        		
-        commandstr = ["%% Batch script for running gica\n"];
+        batch_file_name = os.path.join(os.getcwd(), '%s_gica_batch.m' % (prefix));
+ 		
         commandstr.append("\n");
         commandstr.append("%% Performance type\n");
         commandstr.append("perfType = %d;\n" % (perfType));
@@ -257,12 +317,18 @@ class GICACommand(GIFTCommand):
                     		network_threshold = 1;
                 	commandstr.append("network_summary_opts.threshold = %s;\n" % str(network_threshold));
 
-                	# Anatomical file
+                    # Connectivity threshold
+                	try:
+                            conn_threshold = self.inputs.network_summary_opts['conn_threshold'];
+                            commandstr.append("network_summary_opts.conn_threshold = %s;\n" % str(conn_threshold));
+			except: 
+			    pass;
+                    # Anatomical file
                 	try:
                     		structFile = self.inputs.network_summary_opts['structFile'];
                     		commandstr.append("network_summary_opts.structFile = '%s';\n" % (structFile));
                 	except:
-				pass;
+                            pass;
                     
                 	commandstr.append("network_summary_opts.save_info = 1;\n");
 
@@ -508,14 +574,15 @@ class MancovanCommandInputSpec(GIFTCommandInputSpec):
     
     ica_param_file = traits.List( mandatory = True, desc = 'Enter fullfile path of the ICA parameter file in a list')
     out_dir = traits.Str( mandatory = False, desc = 'Enter fullfile path of the results directory')
-    comp_network_names =  traits.Dict(mandatory=True, desc='dictionary containing network names and network values')
-    TR =  traits.Float(mandatory=True, desc = "Enter experimental TR in seconds");
+    comp_network_names =  traits.Dict(mandatory=False, desc='dictionary containing network names and network values')
+    TR =  traits.Float(mandatory=False, desc = "Enter experimental TR in seconds");
     features = traits.List(mandatory=False, desc = "Enter features like spatial maps, timecourses spectra, fnc correlations")
     covariates = traits.Dict(mandatory=False, desc='covariates. Each covariate must contain a list like category of covariate, file name, transformation (optional)')
     interactions = traits.List(mandatory=False, desc = "interaction terms")
     numOfPCs = traits.List(mandatory=False, desc = "Number of principal components for each feature")
     p_threshold =  traits.Float(mandatory=False, desc = "Enter p-threshold significance");
     feature_params = traits.Dict(mandatory=False, desc='Feature params');
+    write_stats_info = traits.Int( mandatory = False, desc = '1 - Write stats info which is used later in aggregating results across sites.')
     univariate_tests = traits.Dict(mandatory=False, desc='Univariate tests to specify');
     display = traits.Dict(mandatory=False, desc='Display');        
     
@@ -540,6 +607,9 @@ class MancovanCommand(GIFTCommand):
     >>> import nipype.interfaces.gift
     >>> mc = gift.MancovanCommand()
     >>> mc.inputs.ica_param_file = ['/path/to/ica_parameter_file'];
+    >>> mc.inputs.feature_params = {'spatial maps': {'sm_center': 'No', 'sm_mask': ''},
+                          'spectra': {'spectra_detrend' : 3, 'spectra_normalize_subs' : 'yes', 'spectra_transform' : 'yes'},
+                          'fnc': {'fnc_tc_detrend' : 3, 'fnc_tc_despike' : 'yes', 'fnc_tc_filter' : 0.15}};
     >>> #mc.inputs.univariate_tests = {'Gender': ['Age'], 'Age': [], 'Gender_X_Age': []} #univariate tests examples.
     >>> #mc.inputs.univariate_tests={'Ttest':{'datasets':[ [i for i in range(1,26)] ], 'name':['HE']}} #One sample t-test
     >>> #mc.inputs.univariate_tests={'Ttest2':{'datasets':[[i for i in range(1,26)], [j for j in range(26, 51)]], 'name':['HE', 'SZ']}} #Two sample t-test
@@ -548,7 +618,12 @@ class MancovanCommand(GIFTCommand):
     >>> mc.inputs.numOfPCs = [4, 4, 4]
     >>> mc.inputs.covariates = {'Age':['continuous', '/path/toage.txt', 'log'], 'Gender':['categorical', '/path/to/gender.txt']}
     >>> mc.inputs.TR = 2
-    >>> mc.inputs.display = {'freq_limits':[0.1, 0.15], 'structFile':'/icatb_templates/ch2bet.nii', 't_threshold':1.0, 'image_values':'positive', 'threshdesc':'fdr', 'p_threshold':0.05};
+    >>> mc.inputs.feature_params = {'spatial maps': {'sm_center': 'No', 'sm_mask': '/tmp/myMask.nii'},
+                          'spectra': {'spectra_detrend' : 3, 'spectra_normalize_subs' : 'yes', 'spectra_transform' : 'yes'},
+                          'fnc': {'fnc_tc_detrend' : 3, 'fnc_tc_despike' : 'yes', 'fnc_tc_filter' : 0.15}};
+    >>> mc.inputs.display = {'freq_limits':[0.1, 0.15], 'structFile':'/icatb_templates/ch2bet.nii', 
+    't_threshold':1.0, 'image_values':'positive', 'threshdesc':'fdr', 'p_threshold':0.05, 'display_connectogram': 1, 
+    'compFiles':'/icatb_templates/neuromark_53.nii'};
     >>> mc.run()   
     """
     input_spec = MancovanCommandInputSpec
@@ -571,6 +646,62 @@ class MancovanCommand(GIFTCommand):
         for nlist in self.inputs.ica_param_file:
             commandstr.append("'%s'  " % (nlist));
         commandstr.append("};\n");
+        
+        if (isdefined(self.inputs.display)):
+            commandstr.append("%% display parameters \n");
+            for keyN in self.inputs.display.keys():
+                commandstr.append("display.{} = [".format(keyN));
+                if type(self.inputs.display[keyN]) == list:
+                    vals = self.inputs.display[keyN];
+                elif type(self.inputs.display[keyN]) == str:
+                    vals = ["'{}'".format(self.inputs.display[keyN])];
+                else:
+                    vals = [self.inputs.display[keyN]];
+                    
+                for n in range(len(vals)):
+                    commandstr.append("{} ".format(vals[n]));
+                commandstr.append("];");
+                commandstr.append("\n");        
+    
+        # return the params defined for aggregating mancova stats
+        if (self.inputs.ica_param_file[0].endswith('stats_info.mat')):
+            fid = open(batch_file_name, "w+");
+            fid.writelines(commandstr);
+            fid.close();
+            script = "icatb_mancovan_batch('%s')" % (batch_file_name)
+            return script
+        
+        # Feature parameters
+        feature_params = {'spatial maps': {'sm_center': 'No', 'sm_mask': ''},
+                          'spectra': {'spectra_detrend' : 3, 'spectra_normalize_subs' : 'yes', 'spectra_transform' : 'yes'},
+                          'fnc': {'fnc_tc_detrend' : 3, 'fnc_tc_despike' : 'yes', 'fnc_tc_filter' : 0.15}};
+        
+        if isdefined(self.inputs.feature_params):
+            for nFeat in self.inputs.feature_params:
+                current_feature = self.inputs.feature_params[nFeat];
+                for nCFeat in current_feature:
+                    feature_params[nFeat][nCFeat] = current_feature[nCFeat];
+        
+        for nFeat in feature_params.keys():
+            current_feature = feature_params[nFeat];
+            for nCFeat in current_feature.keys():
+                tmp = feature_params[nFeat][nCFeat];
+                if type(tmp) == int:
+                    commandstr.append("feature_params.%s = %d;\n" % (nCFeat, tmp));
+                elif type(tmp) == float:
+                    commandstr.append("feature_params.%s = %f;\n" % (nCFeat, tmp));
+                else:
+                    commandstr.append("feature_params.%s = '%s';\n" % (nCFeat, tmp));
+        
+        
+        write_stats_info = 1
+        if (isdefined(self.inputs.write_stats_info) and self.inputs.write_stats_info is not None):
+            write_stats_info = self.inputs.write_stats_info;
+        
+        commandstr.append("\n")
+        commandstr.append("%% Write stats info \n");
+        commandstr.append("write_stats_info = %s;\n" % str(write_stats_info));
+        
         commandstr.append("%% TR in seconds \n");
         commandstr.append("TR = %s;\n" % str(self.inputs.TR));
 	
@@ -682,24 +813,7 @@ class MancovanCommand(GIFTCommand):
             except:
                 tmp_transform = '';
             commandstr.append("'%s';\n" % (tmp_transform)); 
-        commandstr.append("};\n\n");
-
-
-        if (isdefined(self.inputs.display)):
-            commandstr.append("%% display parameters \n");
-            for keyN in self.inputs.display.keys():
-                commandstr.append("display.{} = [".format(keyN));
-                if type(self.inputs.display[keyN]) == list:
-                    vals = self.inputs.display[keyN];
-                elif type(self.inputs.display[keyN]) == str:
-                    vals = ["'{}'".format(self.inputs.display[keyN])];
-                else:
-                    vals = [self.inputs.display[keyN]];
-
-                for n in range(len(vals)):
-                    commandstr.append("{} ".format(vals[n]));
-                commandstr.append("];");
-                commandstr.append("\n");                  
+        commandstr.append("};\n\n");               
                     
         fid = open(batch_file_name, "w+");
         fid.writelines(commandstr);
