@@ -134,8 +134,9 @@ try
 catch
 end
 
-
+backProject = 0;
 if (isfield(dfncInfo.postprocess, 'Cp'))
+    backProject = 1;
     Cp = dfncInfo.postprocess.Cp;
     if (size(Cp, 1) ~= num_clusters)
         error('No of rows in the initial centroids passed doesn''t match the number of clusters entered');
@@ -508,7 +509,11 @@ if (strcmpi(use_tall_array, 'no'))
     end
 end
 
-[IDXall, Call, SUMDall, Dall] = icatb_kmeans_clustering(FNCdynflat, num_clusters, post_process_opts);
+if (~backProject)
+    [IDXall, Call, SUMDall, Dall] = icatb_kmeans_clustering(FNCdynflat, num_clusters, post_process_opts);
+else
+    [Call, IDXall, Dall, SUMDall] = getCenters(FNCdynflat, Cp);
+end
 
 clusterInfo.Call = Call;
 clusterInfo.Cp = Cp;
@@ -639,3 +644,37 @@ for nSub = 1:dfncInfo.userInput.numOfSub
         end
     end
 end
+
+function [Cn, IDXall, Dall, SumD] = getCenters(result_files, C)
+% Use centers as input and back-project to the data-set and find the
+% resulting centroids
+%
+
+disp('Back-project input centroids on to the data ...');
+
+if (~isnumeric(result_files))
+    e = 0;
+    for nR = 1:length(result_files)
+        load(result_files(nR).name);
+        s = e + 1;
+        e = e + size(FNCdyn, 1);
+        mat(s:e, :) = FNCdyn;
+    end
+else
+    mat = result_files;
+end
+
+xx = pinv(C')*mat';
+Cn = pinv(xx')*mat;
+
+dist = zeros(size(mat, 1), size(Cn, 1));
+for nClust = 1:size(Cn, 1)
+    dist(:, nClust) = sqrt(sum((mat - Cn(nClust, :)).^2, 2));
+end
+
+[dd2, IDXall] = min(dist, [], 2);
+
+SumD = [];
+Dall = dist;
+
+disp('Done');
