@@ -58,7 +58,9 @@ if (size(L, 1) == size(L, 2))
     end
     
     if (isa(L, 'double') && strcmpi(eig_solver, 'selective'))
-        opts = struct('issym', 1, 'disp', 0, 'maxit', 1000);
+        %opts = struct('issym', 1, 'disp', 0, 'maxit', 1000); %This is
+        %commented out to handle Warning: Ignoring issym field in the options structure since the first input is not a function handle.
+        opts = struct('disp', 0, 'maxit', 1000);
         [V, D] = eigs(L, num_eigs, 'lm', opts);
     else
         % All eigen values
