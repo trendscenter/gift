@@ -625,6 +625,10 @@ try
 catch
 end
 
+if (length(files) == 1)
+    numWorkers = 1;
+end
+
 parallel_info.mode = 'serial';
 
 if (numWorkers > 1)

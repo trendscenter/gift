@@ -579,6 +579,17 @@ SPM_STATS_AVG_RUNS = 1;
 %% Experimental TR in seconds
 EXPERIMENTAL_TR = 1;
 
+
+%% FFT For Group Comparison
+% N point FFT used for group comparison
+NPOINT_FFT_GROUP_COMPARISON = 300;
+
+% No. of frequency bins used for group comparison
+NUM_BINS_GROUP_COMPARISON = 150;
+
+% Default TR for spectral group comparision in seconds
+DEFAULT_TR_SPECTRAL_GROUP_COMPARE = EXPERIMENTAL_TR;
+
 %% Timecourse postprocess (FNC and spectra info)
 % 0 - Skip post process step
 % 1 - Write FNC correlations and spectra info to the disk and aggregate summary used in HTML/PDF reports.
@@ -586,23 +597,22 @@ EXPERIMENTAL_TR = 1;
 TIMECOURSE_POSTPROCESS.write = 1; 
 TIMECOURSE_POSTPROCESS.save_timecourses = 0; % save the despiked and filtered timecourses output in nifti
 % spectra parameters
+TIMECOURSE_POSTPROCESS.spectra.option = 1;
+
+% Option 1:
 TIMECOURSE_POSTPROCESS.spectra.tapers = [3, 5];
 TIMECOURSE_POSTPROCESS.spectra.sampling_frequency = 1/min(EXPERIMENTAL_TR);
 TIMECOURSE_POSTPROCESS.spectra.frequency_band = [0, 1/(2*min(EXPERIMENTAL_TR))];
+
+% Option 2:
+TIMECOURSE_POSTPROCESS.spectra.NPointFFT = NPOINT_FFT_GROUP_COMPARISON;
+TIMECOURSE_POSTPROCESS.spectra.NBins = NUM_BINS_GROUP_COMPARISON;
+
 TIMECOURSE_POSTPROCESS.spectra.freq_limits = [0.1, 0.15];
 % FNC parameters
 TIMECOURSE_POSTPROCESS.fnc.despike_tc = 1; % 1 - Despike timecourses
 TIMECOURSE_POSTPROCESS.fnc.cutoff_frequency = 0.15; % High frequency cutoff in Hz
 
-%% FFT For Group Comparison
-% N point FFT used for group comparison
-NPOINT_FFT_GROUP_COMPARISON = 300;
-
-% No. of frequency bins used for group comparison
-NUM_BINS_GROUP_COMPARISON = 6;
-
-% Default TR for spectral group comparision in seconds
-DEFAULT_TR_SPECTRAL_GROUP_COMPARE = EXPERIMENTAL_TR;
 
 %% Enforce MAT files versioning for MATLAB versions greater than 6.5. Use
 % the correct option. For more help on version compatibility, please check
@@ -685,6 +695,9 @@ MANCOVA_DEFAULTS.fnc.domain_average = 1;
 % or component pair if more than 90 percent of subjects are missing at a
 % particular voxel.
 MANCOVA_DEFAULTS.MISSING_SUBJECTS_CUTOFF = 90;
+
+%% Write stats info file (distributed mancova)
+MANCOVA_DEFAULTS.write_stats_info = 1;
 
 %% SBM Defaults
 % Remove mean of ICA loading coefficients
