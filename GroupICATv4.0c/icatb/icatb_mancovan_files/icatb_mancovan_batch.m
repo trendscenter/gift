@@ -9,11 +9,41 @@ addpath(fileparts(which(file_name)));
 %% Read input parameters
 mancovanInfo = readFile(file_name);
 
-%% Create design matrix
-mancovanInfo = create_design(mancovanInfo);
+skipCalc = 0;
+if (isfield(mancovanInfo, 'skipCalc'))
+    skipCalc = mancovanInfo.skipCalc;
+end
 
-%% Run mancovan
-mancovanInfo = icatb_run_mancovan(mancovanInfo, 1);
+if (~skipCalc)
+    
+    %% Create design matrix
+    mancovanInfo = create_design(mancovanInfo);
+    
+    %% Run mancovan
+    mancovanInfo = icatb_run_mancovan(mancovanInfo, 1);
+    
+    if (mancovanInfo.write_stats_info)
+        icatb_mancovan_agg(mancovanInfo);
+    end
+    
+else
+    
+    display_results = [];
+    if (isfield(mancovanInfo, 'display'))
+        display_results = mancovanInfo.display;
+    end
+    
+    outDir = pwd;
+    try
+        outDir = mancovanInfo.outputDir;
+    catch
+        
+    end
+    
+    mancovanInfo = icatb_mancovan_reduce(mancovanInfo.files, outDir, display_results);
+    
+    
+end
 
 %% Display results
 display_results = 0;
@@ -26,6 +56,7 @@ end
 if (display_results)
     mancovan_results_summary(mancovanInfo);
 end
+
 
 
 
@@ -51,9 +82,51 @@ function mancovanInfo = readFile(file_name)
 %% Read file
 %
 
+icatb_defaults;
+global MANCOVA_DEFAULTS;
+
 fprintf('Reading input parameters for mancovan analysis \n');
 
 inputData = icatb_eval_script(file_name);
+
+%% distributed mancova
+write_stats_info = 0;
+try
+    write_stats_info = MANCOVA_DEFAULTS.write_stats_info;
+catch
+end
+
+if (isfield(inputData, 'write_stats_info'))
+    write_stats_info = inputData.write_stats_info;
+end
+
+mancovanInfo.write_stats_info = write_stats_info;
+
+ica_param_file = inputData.ica_param_file;
+
+if (iscell(ica_param_file))
+    variablesIn = whos('-file', ica_param_file{1});
+    if (~isempty(strmatch('uni_results_info', cellstr(char(variablesIn.name)), 'exact')))
+        mancovanInfo.skipCalc = 1;
+        mancovanInfo.files = inputData.ica_param_file;
+        
+        try
+            mancovanInfo.display = inputData.display;
+        catch
+        end
+        
+        try
+            mancovanInfo.userInput.outputDir = inputData.outputDir;
+            mancovanInfo.outputDir = mancovanInfo.userInput.outputDir;
+        catch
+        end
+        
+        return;
+    end
+end
+
+
+
 
 %% Store some information
 features = {'spatial maps', 'timecourses spectra', 'fnc correlations', 'fnc correlations (lag)'};
@@ -73,8 +146,6 @@ mancovanInfo.userInput.outputDir = inputData.outputDir;
 if (exist(mancovanInfo.userInput.outputDir, 'dir') ~= 7)
     mkdir(mancovanInfo.userInput.outputDir);
 end
-
-ica_param_file = inputData.ica_param_file;
 
 comp_network_names = inputData.comp_network_names;
 
