@@ -41,7 +41,9 @@ if ~exist('displayType', 'var')
     displayType = 'other';
 end
 
-load(COLORMAP_FILE);
+cmap_file = COLORMAP_FILE;
+
+load(cmap_file);
 
 %--set up colormap
 colorLength = 64;

@@ -124,7 +124,8 @@ end
 % defaults
 icatb_defaults;
 global COLORMAP_FILE;
-load(COLORMAP_FILE);
+cmap_file = COLORMAP_FILE;
+load(cmap_file);
 
 % %get colormap
 cm = icatb_getColormap(1, imageValues, 1);

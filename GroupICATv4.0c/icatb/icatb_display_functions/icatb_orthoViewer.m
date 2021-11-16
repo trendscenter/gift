@@ -178,7 +178,8 @@ if isa(icasig, 'complex_data')
     icasig = getfield(icasig, 'firstField');
 end
 
-load(COLORMAP_FILE);
+cmap_file = COLORMAP_FILE;
+load(cmap_file);
 
 %  save pre interpolation ica dim
 origICADIM(1) = icaHInfo.V(1).dim(1);
