@@ -303,7 +303,7 @@ ORTHOGONAL_VIEWER_PIC = which('orthogonal_viewer_pic.tif');
 COMPOSITE_VIEWER_PIC =  which('composite_viewer_pic.tif');
 
 % Name of file with colormaps
-COLORMAP_FILE = 'icatb_colors';
+COLORMAP_FILE = 'icatb_colors.mat';
 
 %% Filter for selecting Functional Data.
 % This is also the image extension used for writing component images
