@@ -426,11 +426,19 @@ if ~isempty(psdFile)
     timecourse = figureData.timecourse;
     fftH = axes('parent', fftHandle, 'units', 'normalized', 'position', [0.1 0.1 0.8 0.8]);
     % calculate power spectrum
-    psd(timecourse, 500);
+    try
+        psd(timecourse, 500);
+    catch
+        [pyy, Freq] = pwelch(timecourse, [], [], 512, 1);
+        plot(Freq, pyy);
+        xlabel('Freq (Hz)');
+        ylabel('Power');
+    end
     axis(fftH, 'tight');
     set(fftH, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR);
     % set the color to magenta
     set(get(gca, 'children'), 'color', [1 0 1]);
+    set(fftHandle, 'resize', 'on');
     clear figureData;
 else
     disp('Need signal processing toolbox to view power spectrum');
