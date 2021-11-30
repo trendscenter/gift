@@ -135,12 +135,15 @@ catch
 end
 
 backProject = 0;
-if (isfield(dfncInfo.postprocess, 'Cp'))
-    backProject = 1;
-    Cp = dfncInfo.postprocess.Cp;
-    if (size(Cp, 1) ~= num_clusters)
-        error('No of rows in the initial centroids passed doesn''t match the number of clusters entered');
+try
+    if (isfield(dfncInfo.postprocess, 'Cp'))
+        backProject = 1;
+        Cp = dfncInfo.postprocess.Cp;
+        if (size(Cp, 1) ~= num_clusters)
+            error('No of rows in the initial centroids passed doesn''t match the number of clusters entered');
+        end
     end
+catch
 end
 
 if (showGUI)
