@@ -401,7 +401,7 @@ for nR = 1:length(dfncInfo.outputFiles)
     S = S(findx,:);
     spectra_fnc = sqrt(S.*conj(S));
     
-    save(current_file, 'spectra_fnc', '-append');
+    icatb_save(current_file, 'spectra_fnc', '-append');
     
     %tmp_amp = squeeze(trapz(f, spectra_fnc));
     tmp_amp = squeeze(std(spectra_fnc));
@@ -436,7 +436,7 @@ FNCcm = FNCcm / M;
 
 
 post_process_file = fullfile(outputDir,  [dfncInfo.prefix, '_post_process.mat']);
-save(post_process_file, 'FNCamp', 'FNCcm');
+icatb_save(post_process_file, 'FNCamp', 'FNCcm');
 
 clear FNCamp FNCcm;
 
@@ -526,10 +526,10 @@ clusterInfo.Dall = Dall;
 
 [clusterInfo.corrs_states, clusterInfo.states] = getStateCorr(dfncInfo, clusterInfo);
 
-save(post_process_file, 'clusterInfo', '-append');
+icatb_save(post_process_file, 'clusterInfo', '-append');
 
 if (exist('cluster_estimate_results', 'var'))
-    save(post_process_file, 'cluster_estimate_results', '-append');
+    icatb_save(post_process_file, 'cluster_estimate_results', '-append');
 end
 
 
@@ -546,7 +546,7 @@ if (use_meta_state)
     meta_states_info = icatb_dfnc_meta_state_analysis(FNCdynflat, num_comps_ica, 'dmethod', dmethod, 'kmeans_max_iter', kmeans_max_iter, 'num_ica_runs', num_ica_runs, ...
         'ica_algorithm', lower(ica_algorithm), 'method', meta_method, 'replicates', kmeans_num_replicates);
     
-    save(post_process_file, 'meta_states_info', '-append');
+    icatb_save(post_process_file, 'meta_states_info', '-append');
     
 end
 
@@ -564,11 +564,11 @@ if (tvdfnc)
     tvdfncInfo.Call = Call;
     tvdfncInfo.SUMDall = sumtv;
     tvdfncInfo.Dall = dtv;
-    save(post_process_file, 'tvdfncInfo', '-append');
+    icatb_save(post_process_file, 'tvdfncInfo', '-append');
 end
 
 param_file = fullfile(outputDir, [dfncInfo.prefix, '.mat']);
-save(param_file, 'dfncInfo');
+icatb_save(param_file, 'dfncInfo');
 
 disp('Done');
 
@@ -609,7 +609,7 @@ for nSess = 1:dfncInfo.userInput.numOfSess
         clear FNCdyn;
         FNCdyn = FNC_corrs(nSub, :);
         FNCdyn = reshape(FNCdyn, Nwin, comp_pairs);
-        save(fullfile(dfncInfo.outputDir, results_file), 'FNCdyn', 'FNCdyn_old', '-append');
+        icatb_save(fullfile(dfncInfo.outputDir, results_file), 'FNCdyn', 'FNCdyn_old', '-append');
     end
     
     clear FNC_corrs;
