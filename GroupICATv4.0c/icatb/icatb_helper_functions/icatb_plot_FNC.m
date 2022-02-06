@@ -76,9 +76,9 @@ end
 icatb_simtb_pcolor(1:length(RSN_I), 1:length(RSN_I), FNC');
 set(sh, 'clim', CLIM); axis ij
 c = get(sh, 'Children');
-set(c(find(strcmp(get(c, 'Type'),'line'))), 'Color', foregroundcolor);
-set(c(length(RSN_I)-cMOD+1), 'Color', bgColor)
-set(c(2*(length(RSN_I)+1)-cMOD), 'Color', bgColor)
+set(c(find(strcmp(get(c, 'Type'),'line'))), 'Color', [0.5, 0.5, 0]);
+set(c(length(RSN_I)-cMOD+1), 'Color', foregroundcolor)
+set(c(2*(length(RSN_I)+1)-cMOD), 'Color',  foregroundcolor)
 uistack(c(2*(length(RSN_I)+1)-cMOD), 'top')
 A = sh;
 I = c(find(strcmp(get(c, 'Type'),'image')));
