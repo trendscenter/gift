@@ -14,6 +14,17 @@ outputDir = mancovanInfo.outputDir;
 comps = mancovanInfo.comps;
 results = mancovanInfo.outputFiles;
 
+
+if (length(mancovanInfo.comp) > 1)
+    
+    network_values = zeros(1, length(mancovanInfo.comp));
+    for nV = 1:length(network_values)
+        network_values(nV) = length(mancovanInfo.comp(nV).value);
+    end
+    network_names =  cellstr(char(mancovanInfo.comp.name));
+    
+end
+
 try
     p_threshold = mancovanInfo.display.p_threshold;
 catch
@@ -259,6 +270,8 @@ for nCov = 1:length(covariatesToPlot)
                 S2 = S;
                 S2.p = S.p;
                 S2.logp = M;
+                S2.network_names = network_names;
+                S2.network_values = network_values;
                 vars = {S2, mancovanInfo.comps, mancovanInfo.comps, mancovanInfo.display.p_threshold, mancovanInfo.display.threshdesc, cmap1, 'Component', 'Component', sh, 1};
                 ch1 = plotUnivStats (vars{:});
                 %FNC_MAT = S.logp;
@@ -442,6 +455,8 @@ for nCov = 1:length(covariatesToPlot)
                 S2 = S;
                 S2.p = S.p(nFncPlots, :);
                 S2.logp = M;
+                S2.network_names = network_names;
+                S2.network_values = network_values;
                 vars = {S2, mancovanInfo.comps, mancovanInfo.comps, mancovanInfo.display.p_threshold, mancovanInfo.display.threshdesc, cmap1, 'Component', 'Component', sh, 1};
                 ch1 = plotUnivStats (vars{:});
                 %FNC_MAT = S.logp;
@@ -1193,8 +1208,15 @@ if (strcmpi(threshdesc, 'fdr'))
 end
 
 if (exist('fnc', 'var') && fnc)
-    M = imagesc(1:length(comps),1:length(comps),A);
-    set(axesH,'XTick',1:length(comps),'XTickLabel',T.y, 'TickDir', 'out')
+    
+    if (~isfield(T, 'network_names'))
+        
+        M = imagesc(1:length(comps),1:length(comps),A);
+        set(axesH,'XTick',1:length(comps),'XTickLabel',T.y, 'TickDir', 'out')
+    else
+        icatb_plot_FNC(A, [], cellstr(num2str(comps(:))), (1:length(comps)), get(axesH, 'parent'), '', axesH, ...
+            T.network_values, T.network_names);
+    end
     
 else
     M = imagesc(f,1:length(comps),A);
