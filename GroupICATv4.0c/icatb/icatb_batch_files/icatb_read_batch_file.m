@@ -319,7 +319,7 @@ end
 
 
 if (useTemporalICA || ~isempty(icatb_findstr(lower(ica_algo{algoType}),'iva')) ...
-        || strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
+        || strcmpi(ica_algo{algoType}, 'moo-icar') || icatb_string_compare(ica_algo{algoType}, 'constrained'))
     numReductionSteps = 1;
 end
 
@@ -336,7 +336,7 @@ if (isfield(inputData, 'doEstimation'))
     doEstimation = inputData.doEstimation;
 end
 
-if (strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
+if (strcmpi(ica_algo{algoType}, 'moo-icar') || icatb_string_compare(ica_algo{algoType}, 'constrained'))
     doEstimation = 0;
 end
 
@@ -550,7 +550,7 @@ if strcmpi(ica_algo{algoType}, 'semi-blind infomax')
     % SBICA
     sesInfo = sbICACallback(sesInfo, inputData.refFunNames);
     
-elseif (strcmpi(ica_algo{algoType}, 'constrained ica (spatial)') || strcmpi(ica_algo{algoType}, 'moo-icar') || ...
+elseif (icatb_string_compare(ica_algo{algoType}, 'constrained') || strcmpi(ica_algo{algoType}, 'moo-icar') || ...
         strcmpi(ica_algo{algoType}, 'iva-l-sos-adaptive'))
     % Constrained ICA (Spatial)
     sesInfo = constrainedICACallback(sesInfo, inputData.refFiles);
