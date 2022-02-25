@@ -221,7 +221,7 @@ if (isempty(filesP))
     error('data parameter is missing. Command line usage is gica --o output_directory_name --data files1.nii --n 20 --a infomax');
 end
 
-if strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)')
+if strcmpi(ica_algo{algoType}, 'moo-icar') || icatb_string_compare(ica_algo{algoType}, 'constrained')
     if (~exist('spatial_references', 'var'))
         error('Spatial references doesn''t exist for doing constrained ica');
     end
@@ -271,7 +271,8 @@ if (numOfSub*numOfSess == 1)
     numReductionSteps = 1;
 end
 
-if (useTemporalICA || ~isempty(icatb_findstr(lower(ica_algo{algoType}),'iva')) || strcmpi(ica_algo{algoType}, 'moo-icar') || strcmpi(ica_algo{algoType}, 'constrained ica (spatial)'))
+if (useTemporalICA || ~isempty(icatb_findstr(lower(ica_algo{algoType}),'iva')) || strcmpi(ica_algo{algoType}, 'moo-icar') || ...
+        icatb_string_compare(ica_algo{algoType}, 'constrained'))
     numReductionSteps = 1;
 end
 
