@@ -43,7 +43,7 @@ if (strcmpi(algoName, 'gig-ica'))
     algoName = 'moo-icar';
 end
 
-if (strcmpi(algoName, 'moo-icar') || strcmpi(algoName, 'constrained ica (spatial)'))
+if (strcmpi(algoName, 'moo-icar') || icatb_string_compare(algoName, 'constrained'))
     return;
 end
 
@@ -130,7 +130,7 @@ if (strcmpi(modalityType, 'fmri'))
     if (useTemporalICA)
         reductionStepsToRun = 1;
         if (strcmpi(algoName, 'iva-gl') || strcmpi(algoName, 'iva-l') || strcmpi(algoName, 'iva-l-sos') || strcmpi(algoName, 'moo-icar') || ...
-                strcmpi(algoName, 'constrained ica (spatial)') || strcmpi(algoName, 'iva-l-sos-adaptive'))
+                icatb_string_compare(algoName, 'constrained') || strcmpi(algoName, 'iva-l-sos-adaptive'))
             error(['Temporal ICA cannot be run using the algorithm ', algoName]);
         end
     end

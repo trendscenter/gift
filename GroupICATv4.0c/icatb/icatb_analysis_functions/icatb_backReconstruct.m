@@ -40,7 +40,7 @@ if strcmpi(algorithmName, 'gig-ica')
     algorithmName = 'moo-icar';
 end
 
-if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)') )
+if (strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained') )
     return;
 end
 

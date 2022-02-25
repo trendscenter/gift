@@ -480,7 +480,7 @@ if (conserve_disk_space ~= 1)
     try
         
         if (sesInfo.numOfSub*sesInfo.numOfSess > 1 && (isempty(icatb_findstr(lower(algorithmName),'iva')) ...
-                && ~strcmpi(algorithmName, 'constrained ica (spatial)') && ~strcmpi(algorithmName, 'moo-icar')))
+                && ~icatb_string_compare(algorithmName, 'constrained') && ~strcmpi(algorithmName, 'moo-icar')))
             disp('Comparing mean image with the aggregate ...');
             disp('Value shows how much the mean component is close w.r.t aggregate component');
             %load ica data

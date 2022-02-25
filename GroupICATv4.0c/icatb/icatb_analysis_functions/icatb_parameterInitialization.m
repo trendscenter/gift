@@ -91,7 +91,7 @@ if (strcmpi(modalityType, 'fmri'))
     
     useTemporalICA = strcmpi(sesInfo.group_ica_type, 'temporal');
     if (useTemporalICA)
-        if (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
+        if (strcmpi(algorithmName, 'iva-gl') || strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained') || ...
                 strcmpi(algorithmName, 'semi-blind infomax'))
             error(['Temporal ica cannot be run using algorithm ', algorithmName]);
         end
@@ -99,7 +99,7 @@ if (strcmpi(modalityType, 'fmri'))
     
 end
 
-if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'moo-icar') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (~strcmpi(algorithmName, 'iva-gl') && ~strcmpi(algorithmName, 'moo-icar') && ~icatb_string_compare(algorithmName, 'constrained'))
     
     if (sesInfo.userInput.numOfSub*sesInfo.userInput.numOfSess == 1)
         sesInfo.userInput.numReductionSteps = 1;

@@ -71,7 +71,7 @@ if (strcmpi(algorithmName, 'gig-ica'))
     algorithmName = 'moo-icar';
 end
 
-if (isempty(icatb_findstr(lower(algorithmName),'iva')) && ~strcmpi(algorithmName, 'moo-icar') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (isempty(icatb_findstr(lower(algorithmName),'iva')) && ~strcmpi(algorithmName, 'moo-icar') && ~icatb_string_compare(algorithmName, 'constrained'))
     if (which_analysis == 1)
         disp('STARTING GROUP ICA STEP ');
     elseif (which_analysis == 2)
@@ -190,7 +190,7 @@ if (strcmpi(modalityType, 'fmri'))
     end
     
     if (useTemporalICA)
-        if (~isempty(icatb_findstr(lower(algorithmName),'iva')) || strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)') || ...
+        if (~isempty(icatb_findstr(lower(algorithmName),'iva')) || strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained') || ...
                 strcmpi(algorithmName, 'semi-blind infomax'))
             error(['Temporal ica cannot be run using algorithm ', algorithmName]);
         end
@@ -202,7 +202,7 @@ if (strcmpi(modalityType, 'fmri'))
     end
 end
 
-if (~strcmpi(algorithmName, 'moo-icar') && ~strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (~strcmpi(algorithmName, 'moo-icar') && ~icatb_string_compare(algorithmName, 'constrained'))
     data = icatb_getDataForICA(sesInfo, algorithmName, statusHandle);
 else
     parICAReference(sesInfo, algorithmName, parallel_info, statusHandle);

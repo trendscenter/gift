@@ -264,7 +264,7 @@ try
     end
     
     
-    if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)'))
+    if (strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained'))
         % No data reduction
         stepsToRun(stepsToRun == 3) = [];
         % No back-reconstruction
