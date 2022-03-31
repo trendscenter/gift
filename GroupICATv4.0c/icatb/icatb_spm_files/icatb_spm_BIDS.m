@@ -358,7 +358,7 @@ if exist(pth,'dir')
             subject.fmap(j).acq = regexprep(labels{idx(i)}.acq,'^_[a-zA-Z0-9]+-','');
             subject.fmap(j).dir = labels{idx(i)}.dir;
             subject.fmap(j).run = regexprep(labels{idx(i)}.run,'^_[a-zA-Z0-9]+-','');
-            if spm_existfile(metafile)
+            if icatb_spm_existfile(metafile)
                 subject.fmap(j).meta = icatb_spm_jsonread(metafile);
             else
                 % (!) TODO: file can also be stored at higher levels (inheritance principle)
