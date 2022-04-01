@@ -37,8 +37,7 @@
 function mDemoA
     
     % Create a set of simulated data with 2 groups and 2 covariates. 
-    % Cyrus first commit 040122
-    %
+    
     n          = 100;
     groups     = round(3 * rand(n, 2) + 0.5);
     covariates = randn(n, 2);
