@@ -170,9 +170,11 @@ if (~strcmpi(modalityType, 'eeg'))
     
     if (strcmpi(modalityType, 'fmri'))
         inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Mask is calculated using all the files for subjects and sessions or only the first file for each subject and session depending upon the variable DEFAULT_MASK_OPTION value in defaults. Boolean AND operation is done to include the voxels that surpass the mean of each subject''s session.', ...
-            '2) Select Mask - Masks must be in Analyze or Nifti format.'));
+            '2) Average Mask - An average mask is generated and subjects below a certain correlation threshold are excluded from the analysis. At the end of the mask generation, a GIFT batch file is created which can be used to run the group ICA.', ...
+            '3) Select Mask - Masks must be in Analyze or Nifti format.'));
     else
-        inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Default mask includes voxels greater than or equal to 1% of mean.', '2) Select Mask - Masks must be in Analyze or Nifti format.'));
+        inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Default mask includes voxels greater than or equal to 1% of mean.', ...
+            '2) Select Mask - Masks must be in Analyze or Nifti format.'));
     end
     
     
