@@ -239,7 +239,7 @@ for nSub = 1:numSubjects
 
     if isfield(EEG, 'event')
         % Get events and latency
-        if isfield(EEG.event, 'urevent') && (isfield(EEG, 'urevent') && ~isempty(EEG.urevent))
+        if isfield(EEG.event, 'urevent') && (isfield(EEG, 'urevent') && (length(EEG.urevent)==EEG.trials))
             % Update number of trials
             n_trials = length(EEG.urevent);
             % Update number of events
