@@ -160,7 +160,7 @@ if (~strcmpi(modalityType, 'eeg'))
     numParameters = numParameters + 1;
     
     inputText(numParameters).promptString =  'What Mask Do You Want To Use?';
-    inputText(numParameters).answerString =  char('Default Mask', 'Average', 'Select Mask');
+    inputText(numParameters).answerString =  char('Default Mask', 'Average Mask', 'Select Mask');
     inputText(numParameters).uiType = 'popup';
     inputText(numParameters).dataType = 'string';
     inputText(numParameters).tag = 'maskFile';
@@ -174,7 +174,8 @@ if (~strcmpi(modalityType, 'eeg'))
             '3) Select Mask - Masks must be in Analyze or Nifti format.'));
     else
         inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Default mask includes voxels greater than or equal to 1% of mean.', ...
-            '2) Select Mask - Masks must be in Analyze or Nifti format.'));
+            '2) Average Mask - An average mask is generated and subjects below a certain correlation threshold are excluded from the analysis. At the end of the mask generation, a GIFT batch file is created which can be used to run the group ICA.', ...
+            '3) Select Mask - Masks must be in Analyze or Nifti format.'));
     end
     
     
