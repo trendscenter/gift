@@ -968,7 +968,7 @@ end
 
 if (saveFigInfo)
     if (strcmpi(resultsFormat, 'pdf'))
-        append_pdfs(fullfile(resultsDir, [pdfPrefix, '.pdf']), pdfFiles{:});
+        append_pdfs2(fullfile(resultsDir, [pdfPrefix, '.pdf']), pdfFiles{:}); % new append_pdfs2 function
         for nF = 1:length(pdfFiles)
             try
                 delete(pdfFiles{nF});
