@@ -276,16 +276,45 @@ Nwin = size(clusterInfo.IDXall, 1)/(dfcRoiInfo.userInput.filesInfo.numOfSess*dfc
 states = reshape(clusterInfo.IDXall, dfcRoiInfo.userInput.filesInfo.numOfSess, dfcRoiInfo.userInput.numOfDataSets, Nwin);
 states = permute(states, [2, 1, 3]);
 
-count = 0;
-for nSub = 1:dfcRoiInfo.userInput.numOfDataSets
-    for nSess = 1:dfcRoiInfo.userInput.filesInfo.numOfSess
-        count = count + 1;
-        fn = fullfile(outDir, dfcRoiInfo.outputFiles{count});
-        load(fn);
-        tmp = squeeze(states(nSub, nSess, :));
-        for nState = 1:dfcRoiInfo.postprocess.num_clusters
-            inds = tmp == nState;
-            corrs{nSub, nSess, nState} = FNCdyn(inds, :);
+bInit = true;
+nVoxOpt = 1;
+nVoxOptMax = 2; %temporary variable for while below
+while nVoxOpt <= nVoxOptMax %loop for voxel option
+    count = 0;
+    clear subCorrs; %voxel option needs several correlation matrices, generating sub level
+    for nSub = 1:dfcRoiInfo.userInput.numOfDataSets
+        for nSess = 1:dfcRoiInfo.userInput.filesInfo.numOfSess
+            count = count + 1;
+            fn = fullfile(outDir, dfcRoiInfo.outputFiles{count});
+            load(fn);
+            tmp = squeeze(states(nSub, nSess, :));
+            if iscell(FNCdyn) 
+                % It is voxel option
+                bVox = true;
+                if bInit
+                    % Initiates corrs with number of matrices
+                    nVoxOptMax = length(FNCdyn); %number of cell strings needed
+                    corrs=cell(nVoxOptMax,1);
+                    bInit = false;
+                end
+                for nState = 1:dfcRoiInfo.postprocess.num_clusters
+                    inds = tmp == nState;
+                    subCorrs{nSub, nSess, nState} = FNCdyn{nVoxOpt}(inds, :);
+                end
+            else
+                % It is regular (non voxel option) and only one cell of matrices
+                bVox = false;
+                clear bInit ; %not needed for non voxel
+                for nState = 1:dfcRoiInfo.postprocess.num_clusters
+                    inds = tmp == nState;
+                    corrs{nSub, nSess, nState} = FNCdyn(inds, :);
+                end
+                nVoxOptMax = 0; % looping not needed for non-voxel
+            end
         end
     end
+    if bVox
+        corrs{nVoxOpt} = subCorrs; %save several matrices for voxel opt.
+    end
+    nVoxOpt = nVoxOpt + 1;
 end
