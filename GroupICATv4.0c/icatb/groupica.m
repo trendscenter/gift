@@ -65,8 +65,13 @@ if (length(varargin) >= 1)
         elseif (~strcmpi(tmpChar, 'fmri') && ~strcmpi(tmpChar, 'smri') && ~strcmpi(tmpChar, 'eeg') && ~strcmpi(tmpChar, 'defaults') ...
                 && ~strcmpi(tmpChar, 'about') && ~strcmpi(tmpChar, 'gica_defaults') && ~strcmpi(tmpChar, 'help') && ~strcmpi(tmpChar, 'exit') ...
                 && ~strcmpi(tmpChar, 'gica_defaults_Callback'))
-             % batch callback
-            icatb_eval_script([varargin{:}]);
+            % batch callback
+            if (length(varargin) >= 2)
+                assignin('base', 'gica_inputs', varargin(2:end));
+            end
+            
+            % batch callback
+            icatb_eval_script([varargin{1}]);
             if (exit_gica_app)
                 icatb_exit;
             end
@@ -104,8 +109,8 @@ function groupica_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to groupica (see VARARGIN)
 
-%icatb_defaults;
-%global EXIT_GICA_APP;
+icatb_defaults;
+global EXIT_GICA_APP;
 
 % Choose default command line output for groupica
 handles.output = hObject;
@@ -119,15 +124,15 @@ icatb_check_path;
 % move the gui at the center of the screen
 movegui(hObject, 'center');
 
-% exit_gica_app = 1;
-% try
-%     exit_gica_app = EXIT_GICA_APP;
-% catch
-% end
-% 
-% if (isempty(exit_gica_app))
-%     exit_gica_app = 1;
-% end
+exit_gica_app = 1;
+try
+    exit_gica_app = EXIT_GICA_APP;
+catch
+end
+
+if (isempty(exit_gica_app))
+    exit_gica_app = 1;
+end
 
 if (length(varargin) >= 1)
     if ischar(varargin{1})
@@ -151,12 +156,17 @@ if (length(varargin) >= 1)
             disp('Quitting group ICA');
             % Exit callback
             exit_button_Callback(hObject, eventdata, handles);
-%         else
-%             % batch callback
-%             icatb_eval_script([varargin{:}]);
-%             if (exit_gica_app)
-%                 exit_button_Callback(hObject, eventdata, handles);
-%             end
+        else
+            
+            if (length(varargin) >= 2)
+                assignin('base', 'gica_inputs', varargin(2:end));
+            end
+            
+            % batch callback
+            icatb_eval_script([varargin{1}]);
+            if (exit_gica_app)
+                exit_button_Callback(hObject, eventdata, handles);
+            end
         end
     end
 end
