@@ -20,7 +20,7 @@ runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher.
 
 ### Downloads <a name="secDownload"></a>
 **GroupICAT v4.0c**  - Download by clicking the green clone button on the upper left on this page and then clone the software using hte link using the git clone command in your terminal. Current version of Group ICA. Requires MATLAB R2008a and higher.
-####Stand Alone Versions
+#### Stand Alone Versions
 [**Windows 64**](https://trendscenter.org/trends/software/gift/software/stand_alone/GroupICATv4.0c_standalone_Win64.zip) - Compiled on Windows 64 bit OS and MATLAB R2020a. Please see read me text file for more details.\
 [**Linux-x86-64**](https://trendscenter.org/trends/software/gift/software/stand_alone/GroupICATv4.0c_standalone_Linux_x86_64.zip) - Compiled on Linux-x86-64 bit OS and MATLAB R2016b. Please see read me text file for more details.\
 [**fMRI Data**](https://trendscenter.org/trends/software/gift/data/example_subjects.zip) - Example fMRI datais from a visuomotor paradigm.\
