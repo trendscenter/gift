@@ -6,7 +6,7 @@
 2. [Download](#secDownload)
 3. [Screen Shots](#secScreen)
 4. [Toolboxes](#secTools)
-	1. [Mancovan](#secPluAuto)
+	1. [Mancovan](#secToolMan)
 5. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
@@ -37,7 +37,7 @@ runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher.
 
 
 ### Toolboxes <a name="secTools"></a>
-#### Mancovan <a name="secPlugAuto"></a>
+#### Mancovan <a name="secToolMan"></a>
 Mancovan toolbox is based on the paper (E. Allen, E. Erhardt, E. Damaraju, W. Gruner, J. Segall, R.
 Silva, M. Havlicek, S. Rachakonda, J. Fries, R.Kalyanam, A. Michael, J. Turner, T. Eichele, S.
 Adelsheim, A. Bryan, J. R. Bustillo, V. P. Clark, S. Feldstein,F. M. Filbey, C. Ford, et al, 2011). This
