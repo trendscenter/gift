@@ -1,5 +1,5 @@
 # GIFT 
-###Group ICA/IVA software (MATLAB)
+### Group ICA/IVA software (MATLAB)
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Table of Contents
 1. [Introduction](#secIntro)
