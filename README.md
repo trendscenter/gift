@@ -6,7 +6,7 @@
 2. [Download](#secDownload)
 3. [Screen Shots](#secScreen)
 4. [Toolboxes](#secTools)
-a. [Autolabeller](#secPluAuto)
+	a. [Mancovan](#secPluAuto)
 5. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
