@@ -5,8 +5,9 @@
 1. [Introduction](#secIntro)
 2. [Download](#secDownload)
 3. [Screen Shots](#secScreen)
-3. [Version History](#secVerHist)
-a. [Sub paragraph](#subparagraph1)
+4. [Plugins](#secPlug)
+a. [Autolabeller](#secPluAuto)
+5. [Version History](#secVerHist)
 
 ### Introduction <a name="secIntro"></a>
 GIFT is an application supported by the NIH under grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali. It is a MATLAB toolbox which implements multiple algorithms for independent 
@@ -33,9 +34,10 @@ Complex GIFT - ICA is applied on complex fMRI data. Please follow the read me te
 
 Figure 1. Main menu of GIFT
 
+### Plugins <a name="secPlug"></a>
+#### Autolabeller <a name="secPlugAuto"></a>
+Autolabeller plugin by Salman Mustafa
+
 ### Version History<a name="secVerHist"></a>
 Click the following link for the GIFT version history: [GIFT version history](https://trendscenter.org/trends/software/gift/version_history.html) 
-
-
-
 
