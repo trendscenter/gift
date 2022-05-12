@@ -30,6 +30,7 @@ Complex GIFT - ICA is applied on complex fMRI data. Please follow the read me te
 
 ### Screen Shots <a name="secScreen"></a>
 ![GIFT](https://trendscenter.org/trends/software/gift/images/gift.jpg  "GIFT")
+
 Figure 1. Main menu of GIFT
 
 ### Version History<a name="secVerHist"></a>
