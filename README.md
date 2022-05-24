@@ -4,10 +4,11 @@
 ### Table of Contents
 1. [Introduction](#secIntro)
 2. [Download](#secDownload)
-3. [Screen Shots](#secScreen)
-4. [Toolboxes](#secTools)
+3. [GIFT BIDS-Apps](#secBids)
+4. [Screen Shots](#secScreen)
+5. [Toolboxes](#secTools)
 	1. [Mancovan](#secToolMan)
-5. [Version History](#secVerHist)
+6. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
 GIFT is an application supported by the NIH under grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali. It is a MATLAB toolbox which implements multiple algorithms for independent 
@@ -28,6 +29,8 @@ runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher.
 
 [**Complex GIFT**](https://trendscenter.org/trends/software/gift/software/GroupICATv2.0d_complex.zip) - ICA is applied on complex fMRI data. Please follow the read me text file instructions for doing complex fMRI ICA analysis.\
 
+### GIFT BIDS-Apps <a name="secBids"></a>
+If you have your data in BIDS format or you want to run GIFT under a cluster you may want to our GIFT BIDS-Apps [gift-bids](https://github.com/trendscenter/gift-bids). 
 
 ### Screen Shots <a name="secScreen"></a>
 
