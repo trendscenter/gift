@@ -69,7 +69,7 @@ end
 
 figData.numICs = size(file_names, 1); %% Draw graphics
 figData.comp = [];
-MenuOptions = {'fnc_colorbar_label', 'Corr', 'conn_threshold', [], 'display_type', 'slices', 'slice_plane', 'sagittal', 'imWidth', [], 'cmap', 'coldhot', 'CLIM', []};
+MenuOptions = {'fnc_colorbar_label', 'T-score', 'conn_threshold', [], 'display_type', 'slices', 'slice_plane', 'sagittal', 'imWidth', [], 'cmap', 'coldhot', 'CLIM', []};
 figData.Options = MenuOptions;
 
 figureTag = 'summary_comp_networks_gui';
@@ -254,6 +254,11 @@ if isappdata(0, 'inputDispData')
     
     if (length(network_names) ~= length(network_vals))
         error('Network names must match the network vals');
+    end
+    
+    % Sanity check not to display stats if single subject
+    if (round(sesInfo.numOfSub) == 1) % Only one subject cannot show 2lev stats
+        answers.fnc_colorbar_label = 'correlation'; % show correlation instead
     end
     
     comp_network_names = [network_names(:), network_vals(:)];
@@ -568,6 +573,10 @@ figData.threshold = str2num(get(threshH, 'string'));
 
 %% FNC label
 fnc_colorbar_label = get(findobj(handles, 'tag', 'fnc_label'), 'string');
+% If no label for FNC matrix is chosen pick T-score for multi subjects
+if isempty(fnc_colorbar_label)
+    fnc_colorbar_label = 'T-score';
+end 
 figData.fnc_colorbar_label = fnc_colorbar_label;
 
 %% Image values
@@ -845,6 +854,6 @@ end
 if (sesInfo.numOfSub > 1)
     [pi, tstat] = icatb_ttest(Ct);
 else
-    tstat = squeeze(Ct);
+    tstat = squeeze(Ct); %since it is only one subject it shows Correlation
 end
 C = icatb_vec2mat(tstat);
