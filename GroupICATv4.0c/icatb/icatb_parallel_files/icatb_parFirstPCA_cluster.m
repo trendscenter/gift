@@ -118,7 +118,7 @@ parfor nDataSet = 1:length(dataSetsToRun)
     % and whitening matrices
     if (doGrandMeanPCA)
         V = VM*V;
-        if (exist('dewhiteM', 'var'))
+        if ~(isempty(dewhiteM))
             dewhiteM = VM*dewhiteM;
             whiteM = pinv(dewhiteM);
         end
