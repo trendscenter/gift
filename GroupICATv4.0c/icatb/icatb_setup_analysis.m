@@ -1521,6 +1521,10 @@ try
     % end for checking data reduction steps
     
     drawnow;
+ 
+    if (~isfield(sesInfo.userInput, 'maskType')) %Added to second UI state for mask processing
+        sesInfo.userInput.maskType = lower(deblank(inputText(5).answerString(inputText(5).value, :)));
+    end
     
     if (~isfield(sesInfo.userInput, 'default_mask_opts'))
         sesInfo.userInput.default_mask_opts = icatb_default_mask_opts;

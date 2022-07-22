@@ -8,6 +8,7 @@ removeConstVoxels = 0;
 if (~isempty(REMOVE_CONSTANT_VOXELS))
     removeConstVoxels = REMOVE_CONSTANT_VOXELS;
 end
+bEyeMask = 0; % Keeping track of masks among average, defaultand eye masks
 
 [sesInfo, complexInfo] = icatb_name_complex_images(sesInfo, 'read');
 
@@ -70,6 +71,24 @@ if ~strcmpi(modalityType, 'eeg')
             mask_ind = icatb_parCreateMask(sesInfo.userInput.files, HInfo, ...
                 sesInfo.userInput.dataType, flagMask, complexInfo);
         end
+        if (strcmpi(sesInfo.userInput.maskType, 'default + icv mask'))
+            %Setting varialbles and reslicing mask to fmri resolution
+            bEyeMask = 1;
+            rowchPathIcvBase = which('icatb_spm_reslice');
+            rowchPathIcvBase = rowchPathIcvBase(1:length(rowchPathIcvBase)-35);
+            rowchPathIcvAll = [rowchPathIcvBase 'icatb_templates/mask_ICV.nii'];
+            csVolumeNames = cellstr({sesInfo.userInput.files(1).name(1, :);[rowchPathIcvAll ',1']});
+            flags.mask   = 1;
+            flags.mean   = 0;
+            flags.interp = 0;
+            flags.which  = 1;
+            flags.prefix  = 'tmp';
+            flags.wrap   = [1, 1, 0];
+            icatb_spm_reslice(csVolumeNames,flags);
+            chEyeMask = [rowchPathIcvBase 'icatb_templates/tmpmask_ICV.nii,1'];
+            [V, HInfo] = icatb_returnHInfo(chEyeMask);
+            v3bNoEyeBulbs = icatb_spm_read_vols(V);
+        end
     else
         if (strcmpi(sesInfo.userInput.maskFile, 'average') || strcmpi(sesInfo.userInput.maskFile, 'average mask'))
             sesInfo = compute_avg_mask(sesInfo);
@@ -91,6 +110,15 @@ if ~strcmpi(modalityType, 'eeg')
     
     % Write mask image
     mask(mask_ind) = 1;
+    
+    %Remove eye balls if ICV was chosen
+    if bEyeMask
+        mask = and(mask,v3bNoEyeBulbs);
+        %delete resliced mask after use
+        try
+            delete(chEyeMask(1:length(chEyeMask)-2));
+        end
+    end
     
     V.n(1) = 1;
     if (~isempty(icatb_findstr(lower(sesInfo.userInput.files(1).name(1,:)), '.gii')))
