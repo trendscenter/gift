@@ -62,7 +62,7 @@ if ~strcmpi(modalityType, 'eeg')
     end
     
     % Calculate mask
-    if(isempty(sesInfo.userInput.maskFile) || strcmpi(sesInfo.userInput.maskFile, 'default') || strcmpi(sesInfo.userInput.maskFile, 'default mask'))
+    if(isempty(sesInfo.userInput.maskFile) || strcmpi(sesInfo.userInput.maskFile, 'default') || strcmpi(lower(sesInfo.userInput.maskFile), 'default+icv') || strcmpi(sesInfo.userInput.maskFile, 'default mask'))
         flagMask = 'default';
         if (~runParallel)
             mask_ind = icatb_createMask(sesInfo.userInput.files, HInfo, ...
@@ -71,25 +71,23 @@ if ~strcmpi(modalityType, 'eeg')
             mask_ind = icatb_parCreateMask(sesInfo.userInput.files, HInfo, ...
                 sesInfo.userInput.dataType, flagMask, complexInfo);
         end
-        try %In case sesInfo.userInput.maskType doesnt exist, just leave this clause
-            if (strcmpi(sesInfo.userInput.maskType, 'default + icv mask'))
-                %Setting varialbles and reslicing mask to fmri resolution
-                bEyeMask = 1;
-                rowchPathIcvBase = which('icatb_spm_reslice');
-                rowchPathIcvBase = rowchPathIcvBase(1:length(rowchPathIcvBase)-35);
-                rowchPathIcvAll = [rowchPathIcvBase 'icatb_templates/mask_ICV.nii'];
-                csVolumeNames = cellstr({sesInfo.userInput.files(1).name(1, :);[rowchPathIcvAll ',1']});
-                flags.mask   = 1;
-                flags.mean   = 0;
-                flags.interp = 0;
-                flags.which  = 1;
-                flags.prefix  = 'tmp';
-                flags.wrap   = [1, 1, 0];
-                icatb_spm_reslice(csVolumeNames,flags);
-                chEyeMask = [rowchPathIcvBase 'icatb_templates/tmpmask_ICV.nii,1'];
-                [V, HInfo] = icatb_returnHInfo(chEyeMask);
-                v3bNoEyeBulbs = icatb_spm_read_vols(V);
-            end
+        if strcmpi(lower(sesInfo.userInput.maskFile), 'default+icv')
+            %Setting varialbles and reslicing mask to fmri resolution
+            bEyeMask = 1;
+            rowchPathIcvBase = which('icatb_spm_reslice');
+            rowchPathIcvBase = rowchPathIcvBase(1:length(rowchPathIcvBase)-35);
+            rowchPathIcvAll = [rowchPathIcvBase 'icatb_templates/mask_ICV.nii'];
+            csVolumeNames = cellstr({sesInfo.userInput.files(1).name(1, :);[rowchPathIcvAll ',1']});
+            flags.mask   = 1;
+            flags.mean   = 0;
+            flags.interp = 0;
+            flags.which  = 1;
+            flags.prefix  = 'tmp';
+            flags.wrap   = [1, 1, 0];
+            icatb_spm_reslice(csVolumeNames,flags);
+            chEyeMask = [rowchPathIcvBase 'icatb_templates/tmpmask_ICV.nii,1'];
+            [V, HInfo] = icatb_returnHInfo(chEyeMask);
+            v3bNoEyeBulbs = icatb_spm_read_vols(V);
         end
     else
         if (strcmpi(sesInfo.userInput.maskFile, 'average') || strcmpi(sesInfo.userInput.maskFile, 'average mask'))

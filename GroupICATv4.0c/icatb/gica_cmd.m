@@ -246,6 +246,9 @@ inputData.which_analysis = which_analysis;
 inputData.outputDir = outputDir;
 inputData.prefix = prefix;
 inputData.maskFile = maskFile;
+if (strcmpi(lower(maskFile), 'default+icv')) %ce072522
+    inputData.maskFile = 'default+icv';
+end
 inputData.backReconType = backReconType;
 inputData.preproc_type = preproc_type;
 

@@ -1522,8 +1522,10 @@ try
     
     drawnow;
  
-    if (~isfield(sesInfo.userInput, 'maskType')) %Added to second UI state for mask processing
-        sesInfo.userInput.maskType = lower(deblank(inputText(5).answerString(inputText(5).value, :)));
+    try
+        if (strcmpi(   lower(deblank(inputText(5).answerString(inputText(5).value, :)))   , 'default+icv')) %Added to second UI state for mask processing
+            sesInfo.userInput.maskFile = 'default+icv';
+        end % = maskFile;
     end
     
     if (~isfield(sesInfo.userInput, 'default_mask_opts'))
