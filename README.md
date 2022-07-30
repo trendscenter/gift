@@ -8,6 +8,7 @@
 4. [Screen Shots](#secScreen)
 5. [Toolboxes](#secTools)
 	1. [Mancovan](#secToolMan)
+	2. [NBiC](#secToolNbic)
 6. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
@@ -50,6 +51,8 @@ to determine the significant covariates which are later used in the univariate t
 To invoke the toolbox, select “Mancovan” under “Toolboxes” menu (Figure 3.2). You could also
 invoke toolbox using mancovan_toolbox at the command prompt. Mancovan toolbox (Figure 3.38)
 is divided into four parts like create design matrix, setup features, run mancova and display.
+#### N-BiC <a name="secToolNbic"></a>
+NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a.
 
 ### Version History<a name="secVerHist"></a>
 Click the following link for the GIFT version history: [GIFT version history](https://trendscenter.org/trends/software/gift/version_history.html) 
