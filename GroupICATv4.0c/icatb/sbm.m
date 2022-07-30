@@ -218,6 +218,13 @@ function instructions_Callback(hObject, eventdata, handles)
 % Help Callback
 icatb_openHelp;
 
+function pushbutton15_Callback(hObject, eventdata, handles)
+% Button for NBIC
+% hObject    handle to pushbutton15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+nbic_toolbox;
+
 % --- Executes on button press in results_summary.
 function results_summary_Callback(hObject, eventdata, handles)
 % hObject    handle to results_summary (see GCBO)
