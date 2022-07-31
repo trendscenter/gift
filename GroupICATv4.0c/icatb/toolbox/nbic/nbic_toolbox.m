@@ -628,6 +628,12 @@ function runCallback(hObject, event_data, handles)
     htagEditReps = findobj(handles, 'tag', 'tagEditReps');
     reps = str2num(htagEditReps.String); % repititions
     
+    if size(int16(char(icatbInfo.userInput.comp.value)),2) > 1
+        icatb_dialogBox('title', 'Incorrect Components', 'textBody', 'Detected that single component entry has more than one components in it which is not supported by NBIC. Please make sure each component entry only consists of a single component entry.', 'textType', 'large');
+        disp('Detected that single component entry has more than one components in it which is not supported by NBIC. Please make sure each component entry only consists of a single component entry.');
+        return;
+    end
+    
     matRawData = tc(:,int16(char(icatbInfo.userInput.comp.value))); %selects the components chosen
     csComNames = cellstr(char(icatbInfo.userInput.comp.name)); %store the chosen component names
     csSubjGrpNames = (cellstr(char(icatbInfo.userInput.group.name)));
@@ -672,7 +678,7 @@ function runCallback(hObject, event_data, handles)
                 matdFigLoadsClustGrpSd(iClust,iGrp) = nan; 
             end
         end
-        csXLabel{end + 1} = [num2str(coliFreq(iClust)) '; ' strjoin(cellstr(num2str(coliComClust')),',')];
+        csXLabel{end + 1} = [num2str(coliFreq(iClust)) '; ' strjoin({icatbInfo.userInput.comp(coliComClust').name},',')];
     end  
     
     % Generate NBIC graph
