@@ -6,10 +6,10 @@ function nbic_toolbox(param_file)
 
     %% Select param file
     if (~exist('param_file', 'var'))
-        param_file = icatb_selectEntry('title', 'Select ICA/dFNC Parameter File', 'typeEntity', 'file', 'typeSelection', 'single', 'filter', ['*', PARAMETER_INFO_MAT_FILE, '.mat;*dfnc.mat']);
+        param_file = icatb_selectEntry('title', 'Select Parameter File', 'typeEntity', 'file', 'typeSelection', 'single', 'filter', ['*', PARAMETER_INFO_MAT_FILE, '.mat;*dfnc.mat']);
         drawnow;
         if (isempty(param_file))
-            error('ICA/dFNC parameter file is not selected');
+            error('Parameter file is not selected');
         end
     end
     
@@ -21,7 +21,7 @@ function nbic_toolbox(param_file)
     end
     
     param_file = fullfile(inDir, [paramF, extn]);
-
+    
     load(param_file);
 
     if (exist('sesInfo', 'var'))
@@ -52,7 +52,7 @@ function nbic_toolbox(param_file)
 
         
         
-        outputDir = icatb_selectEntry('typeEntity', 'directory', 'title', 'Select output directory to place dFNC results ...'); 
+        outputDir = icatb_selectEntry('typeEntity', 'directory', 'title', 'Select output directory to place NBIC results ...'); 
         drawnow; 
         if (isempty(outputDir))
             error('Output directory is not selected');
@@ -102,7 +102,7 @@ function nbic_toolbox(param_file)
 
     disp(msg);
 
-    msgH = helpdlg(msg, 'Setup dFNC');
+    msgH = helpdlg(msg, 'Setup NBIC');
 
     drawnow;
 
@@ -172,6 +172,9 @@ function nbic_toolbox(param_file)
 
     listboxPos = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'listbox', 'position', listboxPos, 'string', csSubjGrpNames, 'tag', ...
     'group', 'fontsize', UI_FS - 1, 'min', 0, 'max', 1, 'value', 1, 'callback', {@fAddGroups, InputHandle});
+    rowdButPos = [promptPos(1)+promptPos(3)/2, promptPos(2)-1*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpSubjects', 'fontsize',...
+        UI_FS - 1, 'callback', {@funCallbackHelpSubjects});
 
     addButtonPos = [listboxXOrigin + listboxWidth + xOffset, listboxYOrigin + 0.5*listboxHeight + 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
     removeButtonPos = [listboxXOrigin + listboxWidth + xOffset, listboxYOrigin + 0.5*listboxHeight - 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
@@ -189,7 +192,10 @@ function nbic_toolbox(param_file)
     listboxPos = [listboxXOrigin, listboxYOrigin, listboxWidth, listboxHeight];
     listCompH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'listbox', 'position', listboxPos, 'string', compGroupNames, 'tag', ...
         'comp', 'fontsize', UI_FS - 1, 'min', 0, 'max', 1, 'value', 1, 'callback', {@addCompNetwork, InputHandle}, 'userdata', matchCompNetworkNames);
-
+    rowdButPos = [promptPos(1)+promptPos(3)/2, promptPos(2)-5.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpComponents', 'fontsize',...
+        UI_FS - 1, 'callback', {@funCallbackHelpComponents});
+    
     addButtonPos = [listboxPos(1) + listboxPos(3) + xOffset, listboxPos(2) + 0.5*listboxPos(4) + 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
     removeButtonPos = [listboxPos(1) + listboxPos(3) + xOffset, listboxPos(2) + 0.5*listboxPos(4) - 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', addButtonPos, 'string', '+', 'tag', 'add_comp_button', 'fontsize',...
@@ -204,24 +210,40 @@ function nbic_toolbox(param_file)
     icatb_wrapStaticText(textH);
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
         'position', promptPos + [+.54 -7.5*okHeight -.2 0], 'String', '50', 'fontsize', UI_FS - 1, 'tag', 'tagEditXSize');
+    %inputText(numParameters).help = struct('title', 'Output Files', 'string', 'All the output files will be preprended with this prefix.');
+    %promptPos = [xOffset, yPos - 0.5*yOffset, promptWidth, promptHeight];
+    %addButtonPos = [listboxXOrigin + listboxWidth + xOffset, listboxYOrigin + 0.5*listboxHeight + 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-7.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    % rowdButPos = promptPos + [+promptWidth -7.5*okHeight -promptWidth+.05 0];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos, 'string', '?', 'tag', 'tagHelpXSize', 'fontsize',...
+        UI_FS - 1, 'callback', {@funCallbackHelpXSize});
 
     textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -8.5*okHeight 0 0], ...
         'string', 'Y Size', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
         'position', promptPos + [+.54 -8.5*okHeight -.2 0], 'String', '2', 'fontsize', UI_FS - 1, 'tag', 'tagEditYSize');
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-8.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpYSize', 'fontsize',...
+        UI_FS - 1, 'callback', {@funCallbackHelpYSize});
  
     textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -9.5*okHeight 0 0], ...
         'string', 'Tolerance', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);  
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
         'position', promptPos + [+.54 -9.5*okHeight -.2 0], 'String', '20', 'fontsize', UI_FS - 1, 'tag', 'tagEditTolerance');
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-9.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpTolerance', 'fontsize',...
+        UI_FS - 1, 'callback', {@funCallbackHelpTolerance});
  
     textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -10.5*okHeight 0 0], ...
         'string', 'Repetitions', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
         'position', promptPos + [+.54 -10.5*okHeight -.2 0], 'String', '5', 'fontsize', UI_FS - 1, 'tag', 'tagEditReps');
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-10.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpReps', 'fontsize',...
+        UI_FS - 1, 'callback', {@funCallbackHelpReps});
     
 
 
@@ -709,3 +731,33 @@ function runCallback(hObject, event_data, handles)
     save([icatbInfo.userInput.outputDir '/nbic' striTime '.mat'],'struNbic');
     
     disp('done'); 
+    
+function funCallbackHelpXSize(hObject, event_data, handles)
+    msg = 'Minimum number of components to be accepted for bicluster formation';
+    disp(msg);
+    msgH = helpdlg(msg, 'NBIC Help');
+    
+function funCallbackHelpReps(hObject, event_data, handles)
+    msg = 'Number of expected repetitions. The input component ids would be randomly permutated this many times';
+    disp(msg);
+    msgH = helpdlg(msg, 'NBIC Help');
+
+function funCallbackHelpTolerance(hObject, event_data, handles)
+    msg = 'Allowed percentage of overlap between two biclusters ';
+    disp(msg);
+    msgH = helpdlg(msg, 'NBIC Help');
+
+function funCallbackHelpYSize(hObject, event_data, handles)
+    msg = 'Minimum number of subjects to be accepted for bicluster formation';
+    disp(msg);
+    msgH = helpdlg(msg, 'NBIC Help');
+
+function funCallbackHelpSubjects(hObject, event_data, handles)
+    msg = 'Define groups to add subjects into.';
+    disp(msg);
+    msgH = helpdlg(msg, 'NBIC Help');
+
+function funCallbackHelpComponents(hObject, event_data, handles)
+    msg = 'When naming components to add in the NBIC model you may have one component per name. If a component name contains more than one components, NBIC may fail at a later stage.';
+    disp(msg);
+    msgH = helpdlg(msg, 'NBIC Help');
