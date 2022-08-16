@@ -5,6 +5,14 @@ function icatb_report_generator(param_file, results)
 icatb_defaults;
 global GICA_RESULTS_SUMMARY;
 
+if isdeployed
+    % Note this solution is only inux
+    chDirReport = fileparts('~/.trendsGift/');
+    load([chDirReport 'icatbReportDeployed.mat']);
+    param_file=ch_icatb_report_param_file;
+    results=ch_icatb_report_resultsFile;
+    disp('Running deployed reports');
+end
 sesDir = fileparts(param_file);
 
 if (isempty(sesDir))
