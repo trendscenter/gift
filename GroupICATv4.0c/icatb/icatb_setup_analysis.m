@@ -1523,8 +1523,8 @@ try
     drawnow;
  
     try
-        if (strcmpi(   lower(deblank(inputText(5).answerString(inputText(5).value, :)))   , 'default+icv')) %Added to second UI state for mask processing
-            sesInfo.userInput.maskFile = 'default+icv';
+        if (strcmpi(   lower(deblank(inputText(5).answerString(inputText(5).value, :)))   , 'default&icv')) %Added to second UI state for mask processing
+            sesInfo.userInput.maskFile = 'default&icv';
         end % = maskFile;
     end
     

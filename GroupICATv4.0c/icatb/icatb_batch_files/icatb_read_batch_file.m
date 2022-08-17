@@ -241,8 +241,8 @@ if (~isempty(maskFile) && (strcmpi(modalityType, 'fmri') || strcmpi(modalityType
     
     if (strcmpi(maskFile, 'default') || strcmpi(maskFile, 'default mask'))
         maskFile = [];
-    elseif (strcmpi(lower(maskFile), 'default+icv'))
-        maskFile = ['default+icv'];
+    elseif (strcmpi(lower(maskFile), 'default&icv'))
+        maskFile = ['default&icv'];
     else
         if (strcmpi(maskFile, 'average') || strcmpi(maskFile, 'average mask'))
             

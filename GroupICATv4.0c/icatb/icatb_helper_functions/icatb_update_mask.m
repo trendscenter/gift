@@ -62,7 +62,7 @@ if ~strcmpi(modalityType, 'eeg')
     end
     
     % Calculate mask
-    if(isempty(sesInfo.userInput.maskFile) || strcmpi(sesInfo.userInput.maskFile, 'default') || strcmpi(lower(sesInfo.userInput.maskFile), 'default+icv') || strcmpi(sesInfo.userInput.maskFile, 'default mask'))
+    if(isempty(sesInfo.userInput.maskFile) || strcmpi(sesInfo.userInput.maskFile, 'default') || strcmpi(lower(sesInfo.userInput.maskFile), 'default&icv') || strcmpi(sesInfo.userInput.maskFile, 'default mask'))
         flagMask = 'default';
         if (~runParallel)
             mask_ind = icatb_createMask(sesInfo.userInput.files, HInfo, ...
@@ -71,7 +71,7 @@ if ~strcmpi(modalityType, 'eeg')
             mask_ind = icatb_parCreateMask(sesInfo.userInput.files, HInfo, ...
                 sesInfo.userInput.dataType, flagMask, complexInfo);
         end
-        if strcmpi(lower(sesInfo.userInput.maskFile), 'default+icv')
+        if strcmpi(lower(sesInfo.userInput.maskFile), 'default&icv')
             %Setting varialbles and reslicing mask to fmri resolution
             bEyeMask = 1;
             rowchPathIcvBase = which('icatb_spm_reslice');
@@ -114,6 +114,11 @@ if ~strcmpi(modalityType, 'eeg')
     %Remove eye balls if ICV was chosen
     if bEyeMask
         mask = and(mask,v3bNoEyeBulbs);
+        % reformat mask_ind 
+        coliAllVox = mask(:);
+        coliAllVoxNonZeroInd = (coliAllVox ~= 0);
+        mask_ind = find(coliAllVoxNonZeroInd ~= 0); % replace index for Default&ICV
+        clear coliAllVox coliAllVoxNonZeroInd;
         %delete resliced mask after use
         try
             delete(chEyeMask(1:length(chEyeMask)-2));
