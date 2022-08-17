@@ -258,7 +258,7 @@ else
         ch_icatb_report_param_file = param_file;
         ch_icatb_report_resultsFile = resultsFile;
         save([chDirReport 'icatbReportDeployed.mat'], 'ch_icatb_report_param_file', 'ch_icatb_report_resultsFile');
-        commandStr = ['~/.groupica/compile081122/run_icatb_report_generator.sh ' matlabroot ';exit;'];
+        commandStr = ['~/.icatb_r_v1/compile081122/run_icatb_report_generator.sh ' matlabroot ';exit;'];
         [status, message] = system(commandStr);       
     else
         disp('Error: Unknown operating system to print reports to')
