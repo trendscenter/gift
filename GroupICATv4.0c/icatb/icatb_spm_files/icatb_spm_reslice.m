@@ -160,7 +160,7 @@ if ~isfinite(flags.interp), % Use Fourier method
 end
 
 if flags.mask || flags.mean
-    spm_progress_bar('Init',P(1).dim(3),'Computing available voxels','planes completed');
+    %ce081722 spm_progress_bar('Init',P(1).dim(3),'Computing available voxels','planes completed');
     x1    = repmat((1:P(1).dim(1))',1,P(1).dim(2));
     x2    = repmat( 1:P(1).dim(2)  ,P(1).dim(1),1);
     if flags.mean
@@ -175,7 +175,7 @@ if flags.mask || flags.mean
         end
         if flags.mask, msk{x3} = find(tmp ~= numel(P)); end;
         if flags.mean, Count(:,:,x3) = tmp; end;
-        spm_progress_bar('Set',x3);
+        %ce081722 spm_progress_bar('Set',x3);
     end
 end
 
