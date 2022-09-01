@@ -86,7 +86,7 @@ scaleType = 2;
 algoType = 'moo-icar';
 
 %% Specify spatial reference files for constrained ICA (spatial) or moo-icar.
-refFiles = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\neuromark_53.nii'; 
+refFiles = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\Neuromark_fMRI_1.0.nii'; 
 
 %% Report generator (fmri and smri only)
 display_results.formatName = 'html';
