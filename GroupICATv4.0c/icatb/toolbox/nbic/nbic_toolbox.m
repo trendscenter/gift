@@ -30,27 +30,7 @@ function nbic_toolbox(param_file)
         
         
         [modalityType, dataTitle, compSetFields] = icatb_get_modality;
-        modalityType = 'smri'; %ce071622 hard coded until this is implemented into sbm
-
-        % Below is for fMRI and is not needed since we now use sMRI
-%         if isfield(sesInfo, 'modality')
-%             if ~strcmpi(sesInfo.modality, modalityType)
-%                 if strcmpi(sesInfo.modality, 'fmri')
-%                     error('You have selected the fMRI parameter file. Use GIFT toolbox to analysis information.');
-%                 elseif strcmpi(sesInfo.modality, 'smri')
-%                     error('You have selected the sMRI parameter file. Use SBM toolbox to analysis information.');
-%                 else
-%                     error('You have selected the EEG parameter file. Use EEGIFT toolbox to analysis information.');
-%                 end
-%             end
-%         else
-%             sesInfo.modality = 'fmri';
-%         end
-
-
-%071622 D(size(D,2)+1).string = ['Number of Independent Components : ', num2str(sesInfo.numComp)];    
-
-        
+        modalityType = 'smri';
         
         outputDir = icatb_selectEntry('typeEntity', 'directory', 'title', 'Select output directory to place NBIC results ...'); 
         drawnow; 
@@ -129,17 +109,15 @@ function nbic_toolbox(param_file)
     catch 
     end    
     
-    % Loading scores (non ICA components) initiated below
-    struScoresData = 1:icatbInfo.userInput.numOfSub; 
-    csScores = ''; % Scores (non ica loadings list init
-    if (~isfield(icatbInfo.userInput, 'uiScores'))
-        icatbInfo.userInput.comp = [];
+    % Import scores from CSV file initiated below
+    csScoreNames = ''; % Scores (non ica loadings list init
+    if (~isfield(icatbInfo.userInput, 'scores'))
+        icatbInfo.userInput.scores = [];
     end
     try 
-        csSubjGrpNames = (cellstr(char(icatbInfo.userInput.subjGrp.name))); 
+        csScoreNames = (cellstr(char(icatbInfo.userInput.scores.name))); 
     catch 
-    end
-       
+    end       
     
     clear sesInfo;
     %% Draw graphics % First Main Input GUI 
@@ -185,14 +163,14 @@ function nbic_toolbox(param_file)
     
     
     %%  Components listbox (Group components by name)
-    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -4.5*okHeight 0 0], 'string', 'Add Components', 'tag', ...
+    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -4.25*okHeight 0 0], 'string', 'Add Components', 'tag', ...
         'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);
-    listboxYOrigin = promptPos(2) - 0.5*listboxHeight - 4.5*okHeight;
+    listboxYOrigin = promptPos(2) - 0.5*listboxHeight - 4.25*okHeight;
     listboxPos = [listboxXOrigin, listboxYOrigin, listboxWidth, listboxHeight];
     listCompH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'listbox', 'position', listboxPos, 'string', compGroupNames, 'tag', ...
         'comp', 'fontsize', UI_FS - 1, 'min', 0, 'max', 1, 'value', 1, 'callback', {@addCompNetwork, InputHandle}, 'userdata', matchCompNetworkNames);
-    rowdButPos = [promptPos(1)+promptPos(3)/2, promptPos(2)-5.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    rowdButPos = [promptPos(1)+promptPos(3)/2, promptPos(2)-5.25*okHeight, promptHeight + 0.01, promptHeight - 0.01];
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpComponents', 'fontsize',...
         UI_FS - 1, 'callback', {@funCallbackHelpComponents});
     
@@ -204,44 +182,67 @@ function nbic_toolbox(param_file)
         UI_FS - 1, 'callback', {@removeCompNetwork, InputHandle});
 
 
+    
+    
+    
+     %%  CSV Scores listbox 
+    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -8.5*okHeight 0 0], 'string', 'Import Scores from CSV-File', 'tag', ...
+        'prompt_components', 'fontsize', UI_FS - 1);
+    icatb_wrapStaticText(textH);
+    listboxYOrigin = promptPos(2) - 0.5*listboxHeight - 8.5*okHeight;
+    listboxPos = [listboxXOrigin, listboxYOrigin, listboxWidth, listboxHeight];
+    listCompH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'listbox', 'position', listboxPos, 'string', csScoreNames, 'tag', ...
+        'tagScore', 'fontsize', UI_FS - 1, 'min', 0, 'max', 1, 'value', 1, 'callback', {@fLoadCsvScore, InputHandle});
+    
+    rowdButPos = [promptPos(1)+promptPos(3)/2, promptPos(2)-9.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpComponents', 'fontsize',...
+        UI_FS - 1, 'callback', {@funCallbackHelpScoreCsv});
+    
+    addButtonPos = [listboxPos(1) + listboxPos(3) + xOffset, listboxPos(2) + 0.5*listboxPos(4) + 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
+    removeButtonPos = [listboxPos(1) + listboxPos(3) + xOffset, listboxPos(2) + 0.5*listboxPos(4) - 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', addButtonPos, 'string', 'L', 'tag', 'import_score_button', 'fontsize',...
+        UI_FS - 1, 'callback', {@fLoadCsvScore, InputHandle});
+    icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', removeButtonPos, 'string', '-', 'tag', 'remove_score_button', 'fontsize',...
+        UI_FS - 1, 'callback', {@fRemoveCsvScore, InputHandle});
+    
 
-    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -7.5*okHeight 0 0], ...
+    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -12*okHeight 0 0], ...
         'string', 'X Size', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
-        'position', promptPos + [+.54 -7.5*okHeight -.2 0], 'String', '50', 'fontsize', UI_FS - 1, 'tag', 'tagEditXSize');
+        'position', promptPos + [+.54 -12*okHeight -.2 0], 'String', '50', 'fontsize', UI_FS - 1, 'tag', 'tagEditXSize');
     %inputText(numParameters).help = struct('title', 'Output Files', 'string', 'All the output files will be preprended with this prefix.');
     %promptPos = [xOffset, yPos - 0.5*yOffset, promptWidth, promptHeight];
     %addButtonPos = [listboxXOrigin + listboxWidth + xOffset, listboxYOrigin + 0.5*listboxHeight + 0.5*promptHeight, promptHeight + 0.01, promptHeight - 0.01];
-    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-7.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
-    % rowdButPos = promptPos + [+promptWidth -7.5*okHeight -promptWidth+.05 0];
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-12*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+    % rowdButPos = promptPos + [+promptWidth -12*okHeight -promptWidth+.05 0];
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos, 'string', '?', 'tag', 'tagHelpXSize', 'fontsize',...
         UI_FS - 1, 'callback', {@funCallbackHelpXSize});
 
-    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -8.5*okHeight 0 0], ...
+    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -13*okHeight 0 0], ...
         'string', 'Y Size', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
-        'position', promptPos + [+.54 -8.5*okHeight -.2 0], 'String', '2', 'fontsize', UI_FS - 1, 'tag', 'tagEditYSize');
-    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-8.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+        'position', promptPos + [+.54 -13*okHeight -.2 0], 'String', '2', 'fontsize', UI_FS - 1, 'tag', 'tagEditYSize');
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-13*okHeight, promptHeight + 0.01, promptHeight - 0.01];
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpYSize', 'fontsize',...
         UI_FS - 1, 'callback', {@funCallbackHelpYSize});
  
-    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -9.5*okHeight 0 0], ...
+    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -14*okHeight 0 0], ...
         'string', 'Tolerance', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);  
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
-        'position', promptPos + [+.54 -9.5*okHeight -.2 0], 'String', '20', 'fontsize', UI_FS - 1, 'tag', 'tagEditTolerance');
-    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-9.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+        'position', promptPos + [+.54 -14*okHeight -.2 0], 'String', '20', 'fontsize', UI_FS - 1, 'tag', 'tagEditTolerance');
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-14*okHeight, promptHeight + 0.01, promptHeight - 0.01];
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpTolerance', 'fontsize',...
         UI_FS - 1, 'callback', {@funCallbackHelpTolerance});
  
-    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -10.5*okHeight 0 0], ...
+    textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -15*okHeight 0 0], ...
         'string', 'Repetitions', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
-        'position', promptPos + [+.54 -10.5*okHeight -.2 0], 'String', '5', 'fontsize', UI_FS - 1, 'tag', 'tagEditReps');
-    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-10.5*okHeight, promptHeight + 0.01, promptHeight - 0.01];
+        'position', promptPos + [+.54 -15*okHeight -.2 0], 'String', '5', 'fontsize', UI_FS - 1, 'tag', 'tagEditReps');
+    rowdButPos = [listboxPos(1) + listboxPos(3) + xOffset, promptPos(2)-15*okHeight, promptHeight + 0.01, promptHeight - 0.01];
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', rowdButPos , 'string', '?', 'tag', 'tagHelpReps', 'fontsize',...
         UI_FS - 1, 'callback', {@funCallbackHelpReps});
     
@@ -250,17 +251,17 @@ function nbic_toolbox(param_file)
     
     
     %% Add cancel, save and run buttons
-    cancelPos = [0.25 - 0.5*okWidth, promptPos(2) - yOffset - 11*okHeight, okWidth*2, okHeight];
+    cancelPos = [0.25 - 0.5*okWidth, promptPos(2) - yOffset - 15.5*okHeight, okWidth*2, okHeight];
     cancelPos(2) = cancelPos(2) - 0.5*cancelPos(4);
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', cancelPos, 'string', 'Cancel', 'tag', 'cancel_button', 'fontsize',...
         UI_FS - 1, 'callback', 'delete(gcbf);');
 
-    okPos = [0.75 - 0.5*okWidth, promptPos(2) - yOffset - 11*okHeight, okWidth*2, okHeight];
+    okPos = [0.75 - 0.5*okWidth, promptPos(2) - yOffset - 15.5*okHeight, okWidth*2, okHeight];
     okPos(2) = okPos(2) - 0.5*okPos(4);
     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', okPos, 'string', 'Run', 'tag', 'run_button', 'fontsize',...
         UI_FS - 1, 'callback', {@runCallback, InputHandle});
 
-%     savePos = [0.5 - 0.5*okWidth, promptPos(2) - yOffset - 11*okHeight, okWidth, okHeight];
+%     savePos = [0.5 - 0.5*okWidth, promptPos(2) - yOffset - 15.5*okHeight, okWidth, okHeight];
 %     savePos(2) = savePos(2) - 0.5*savePos(4);
 %     icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', savePos, 'string', 'Save', 'tag', 'save_button', 'fontsize',...
 %         UI_FS - 1, 'callback', {@saveCallback, InputHandle});
@@ -313,6 +314,98 @@ function matchCompNetworkNames = getCompData(file_names)
     matchCompNetworkNames.cmap = cmap;
     matchCompNetworkNames.compData = compData;
 
+function fLoadCsvScore(hObject, event_data, figH)
+    % Imports Scores from CSV file
+
+    %Initiations
+    icatbInfo = get(figH, 'userdata');
+    listH = findobj(figH, 'tag', 'tagScore');
+    val = get(listH, 'value');
+
+    icatb_defaults;
+    global UI_FS;
+
+    figureTag = 'tagImportCsvScore';
+    figNbic = findobj('tag', figureTag);
+    if (~isempty(figNbic))
+        delete(figNbic);
+    end
+    
+    ScoreVal = [];
+    ScoreName = '';
+    if (listH == hObject)
+            return;
+    end
+
+    %Select CSV file
+    chCsvFile = icatb_selectEntry('title', 'Select CSV file, with first row indicating score names and remaining rows loadings per subject', 'typeEntity', 'file', 'typeSelection', 'single', 'filter', ['*.csv;*.txt']);
+    drawnow;
+    if (isempty(chCsvFile))
+        error('CSV file is not selected');
+    end
+    
+    tabScoresCsv = readtable(chCsvFile); 
+
+    [nCsvSubjs nScores] = size(tabScoresCsv);
+    
+    if ~(nCsvSubjs == icatbInfo.userInput.numOfSub)
+        error(['CSV file list ' num2str(nCsvSubjs) ' subjects, but ICA parameter file indicates ' num2str(icatbInfo.userInput.numOfSub) ' subjects']);
+    end
+    
+    try
+        csScoreNames = tabScoresCsv.Properties.VariableNames;
+        icatbInfo.userInput.scores = [];
+        for nScore = 1:nScores
+            ind = length(icatbInfo.userInput.scores) + 1;
+            chScoreName = char(csScoreNames(nScore));
+            coldScoreVals = table2array(tabScoresCsv(:,nScore));
+
+            % Set user selected information in figure
+            icatbInfo.userInput.scores(ind).name = chScoreName;
+            icatbInfo.userInput.scores(ind).val =  coldScoreVals;
+            set(figH, 'userdata', icatbInfo);
+            groupListH = findobj(figH, 'tag', 'tagScore');
+            set(groupListH, 'string', cellstr(char(icatbInfo.userInput.scores.name)));
+        end
+    catch
+        icatb_errorDialog(lasterr, 'Problem reading in scores from CSV file');
+    end
+    
+    %Save subjectID's to match if column is provided
+    for n = 1:length(csScoreNames)
+        if strcmpi(lower(char(csScoreNames(n))),'subjectidmatch')
+            coldSubjectIdMatch = table2array(tabScoresCsv(:,n));
+            save([icatbInfo.userInput.outputDir '/SubjectIdMatch.mat'],'coldSubjectIdMatch'); %save matchin info to sesInfo.userInput.files.name in *parameter_info.mat file
+        end
+    end
+
+function fRemoveCsvScore(hObject, event_data, figH)
+    % Remove single CSV score
+    %
+
+    % Initiations
+    icatbInfo = get(figH, 'userdata');
+    listH = findobj(figH, 'tag', 'tagScore');
+    val = get(listH, 'value');
+    strs = cellstr(get(listH, 'string'));
+
+    if (~isempty(strs))
+        check = icatb_questionDialog('title', 'Remove Score', 'textbody', ['Are you sure you want to remove the score ', strs{val}, ' from the list?']);
+        if (~check)
+            return;
+        end
+    end
+
+    try
+        strs = cellstr(char(icatbInfo.userInput.scores.name));
+        icatbInfo.userInput.scores(val) = [];
+        strs(val) = [];
+        set(listH, 'value', 1);
+        set(listH, 'string', strs);
+        set(figH, 'userdata', icatbInfo);
+    catch
+    end
+    
 function fAddGroups(hObject, event_data, figH)
     % Add groups
 
@@ -636,8 +729,6 @@ function runCallback(hObject, event_data, handles)
     % Run NBIC
     icatbInfo = get(handles, 'userdata');
     chLoadingsFile = [fileparts(icatbInfo.userInput.ica_param_file), '/' , icatbInfo.userInput.prefix, '_ica_c1-1.mat'];
-    % chLoadingsFile = icatb_fullFile('directory', icatbInfo.userInput.outputDir, 'files', [icatbInfo.userInput.prefix, '_ica_c1-1.mat']);
-    %/home/cyrus/Documents/trends/junk/results/070722subj16sep
     load(chLoadingsFile);
     
     % Get the NBIC init variables
@@ -659,6 +750,15 @@ function runCallback(hObject, event_data, handles)
     matRawData = tc(:,int16(char(icatbInfo.userInput.comp.value))); %selects the components chosen
     csComNames = cellstr(char(icatbInfo.userInput.comp.name)); %store the chosen component names
     csSubjGrpNames = (cellstr(char(icatbInfo.userInput.group.name)));
+      
+    nScores = size(icatbInfo.userInput.scores,2);
+    
+    [nSubjects nIcaLoadings] = size(matRawData);
+    for nScore = 1:nScores
+        % Set user selected information in figure
+        matRawData(:,nIcaLoadings+nScore) = icatbInfo.userInput.scores(nScore).val;
+        csComNames(nIcaLoadings+nScore) = {icatbInfo.userInput.scores(nScore).name};
+    end
     
     variable_Ids = 1:size(matRawData,2);
     
@@ -689,18 +789,20 @@ function runCallback(hObject, event_data, handles)
             colixSubjsClustGrp = find(colbSubjsAllClust(icatbInfo.userInput.group(iGrp).val') == 1);
             if (min(size(matRawData(colixSubjsClustGrp, coliComClust))) > 1) %Only reshape if 2dim
                 coldTmpFigLoadsClustGrp = reshape(matRawData(colixSubjsClustGrp, coliComClust),length(colixSubjsClustGrp)*length(coliComClust),1);
+            else
+                coldTmpFigLoadsClustGrp = matRawData(colixSubjsClustGrp, coliComClust);
             end      
             if ~isempty(colixSubjsClustGrp)
-                matdFigLoadsClustGrpMean(iClust,iGrp) = mean(matRawData(colixSubjsClustGrp, coliComClust));
-                matdFigLoadsClustGrpMeanFig(iGrp+((iClust-1)*(iGrps + 1)),iGrp) = mean(matRawData(colixSubjsClustGrp, coliComClust));
-                matdFigLoadsClustGrpSd(iClust,iGrp) = std(matRawData(colixSubjsClustGrp, coliComClust));
-                matdFigLoadsClustGrpSdFig(iGrp+((iClust-1)*(iGrps + 1)),iGrp) = mean(matRawData(colixSubjsClustGrp, coliComClust));
+                matdFigLoadsClustGrpMean(iClust,iGrp) = mean(coldTmpFigLoadsClustGrp);
+                matdFigLoadsClustGrpMeanFig(iGrp+((iClust-1)*(iGrps + 1)),iGrp) = mean(coldTmpFigLoadsClustGrp);
+                matdFigLoadsClustGrpSd(iClust,iGrp) = std(coldTmpFigLoadsClustGrp);
+                matdFigLoadsClustGrpSdFig(iGrp+((iClust-1)*(iGrps + 1)),iGrp) = mean(coldTmpFigLoadsClustGrp);
             else
                 matdFigLoadsClustGrpMean(iClust,iGrp) = nan; 
                 matdFigLoadsClustGrpSd(iClust,iGrp) = nan; 
             end
         end
-        csXLabel{end + 1} = [num2str(coliFreq(iClust)) '; ' strjoin({icatbInfo.userInput.comp(coliComClust').name},',')];
+        csXLabel{end + 1} = [num2str(coliFreq(iClust)) '; ' strjoin({csComNames(coliComClust')},',')];
     end  
     
     % Generate NBIC graph
@@ -711,8 +813,8 @@ function runCallback(hObject, event_data, handles)
         hold on;
     end
     title('N-BIC Averages and SD per Group');
-    ylabel('Loadings');
-    xlabel('Frequency; Cluster components');
+    ylabel('ICA Loadings and/or Scores');
+    xlabel('Frequency; Cluster components and/or Score Types');
     xticks((0:(iGrps+1):iClusts*(iGrps+1)+1)+(iGrps+1)/2)
     xlim([0,(iClusts*(iGrps+1))]);
     grid on
@@ -731,6 +833,19 @@ function runCallback(hObject, event_data, handles)
     save([icatbInfo.userInput.outputDir '/nbic' striTime '.mat'],'struNbic');
     
     disp('done'); 
+
+function funCallbackHelpScoreCsv(hObject, event_data, handles)
+    msg = sprintf(['[L] button loads CSV file for scores to complement ICA loadings. \n' ...
+        'Scores from CSV file may be pruned away scores using the [-] button.\n' ...
+        'The CSV file needs to have a first row with name of each score and \n' ...
+        'then the imported scores will fill the remaining rows and have to be \n' ... 
+        ' in the same subject order as GIFT read the image files.\n' ...
+        'It may help to add a column, having score name SUBJECTIDMATCH, which\n'...
+        ' will save the order of your subjectids in the file SubjectIdMatch.mat\n' ...
+        ' and may be compared with variable sesInfo.userInput.files.name in\n' ...
+        ' your *parameter_info.mat file.']);
+    disp(msg);
+    msgH = helpdlg(msg, 'NBIC Help');   
     
 function funCallbackHelpXSize(hObject, event_data, handles)
     msg = 'Minimum number of components to be accepted for bicluster formation';
