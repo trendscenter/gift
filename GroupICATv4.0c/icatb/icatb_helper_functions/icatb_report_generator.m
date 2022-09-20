@@ -6,12 +6,17 @@ icatb_defaults;
 global GICA_RESULTS_SUMMARY;
 
 if isdeployed
-    % Note this solution is only inux
-    chDirReport = fileparts('~/.trendsGift/');
-    load([chDirReport 'icatbReportDeployed.mat']);
-    param_file=ch_icatb_report_param_file;
-    results=ch_icatb_report_resultsFile;
-    disp('Running deployed reports');
+    % Make sure variables were not passed anyway somehow
+    if (exist('results', 'var') && ischar(results) && (exist('param_file', 'var') && ischar(param_file)))
+        disp('found report variables and dont need to read from variables');
+    else
+        % Note this solution is only Linux
+        chDirReport = fileparts('~/.trendsGift/');
+        load([chDirReport 'icatbReportDeployed.mat']);
+        param_file=ch_icatb_report_param_file;
+        results=ch_icatb_report_resultsFile;
+        disp('Running deployed reports');
+    end
 end
 sesDir = fileparts(param_file);
 

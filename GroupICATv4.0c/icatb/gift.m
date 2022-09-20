@@ -234,7 +234,7 @@ save(resultsFile, 'results');
 
 if ~(isdeployed)
     % Run second matlab instance (matlab is installed on system)
-    disp('Generating summary ...');
+    disp('Generating summary with new matlab process ...');
     commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, ''')); icatb_report_generator(''', param_file, ...
         ''', ''', resultsFile, ''');exit;', '"'];
     [status, message] = system(commandStr);
@@ -245,7 +245,7 @@ if ~(isdeployed)
 else
     % Running deployed compiled second instance of matlab
     % Deployed version only works on Linux and not Windows
-    
+    disp('Generating summary with new compiled process ...');
     if ispc
         %Not supported yet
         disp('Error: Windows is not supported for GUI reports yet')
