@@ -53,7 +53,9 @@ For more details, see the example script 'running_the_code_base.m'
 
 ### Screen Shots <a name="secScreen"></a>
 
-
+| ![GIFT](https://trendscenter.org/trends/software/gift/images/nbic1.png) |
+|:--:|
+| Figure 1. Setting up NBIC|
 
 | ![GIFT](https://trendscenter.org/trends/software/gift/images/nbic2.png) |
 |:--:|
