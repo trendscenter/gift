@@ -16,7 +16,7 @@ The given data matrix has a dimension of #samples x #features
 #### Feature reduction/sorting
 We perform the feature reduction to represent each feature as a (reduced) subset of samples. Another rationale is to represent variables from one dimension as a function of variables from other dimension. Here, we sort the components (features) as a subset of subejects based on a predefiend heuristic. We presented several approaches to perform the sorting in the referred paper. However, the sorting is more intuitively carried out based on the objectives of a study - more study dependent. We need to choose which samples we want to allow for defining a feature. Let's assume we have 100 images (sampels) of traffic signals and one of the feature we extracted is color. Now, for running N-BiC, we need to sort the feature - create a subset of samples defining that feature. For instance,  to sort the feature 'color', we might select samples carrying color = 'red'.    
 
-#### 1. The subroutines:
+#### The subroutines:
  
 The architecture is distributed into three major scripts 
    i.  NBiC: the main function. To run the N-BiC method we need to run this script with appropriate inputs settings. This script will take care of everything 
@@ -29,12 +29,12 @@ The architecture is distributed into three major scripts
    
    iv. Feature_reduction: sort the features for reduced number of samples
    
-#### 2. Running the code base:
+#### Running the code base:
 
 Input: We need a 2D data matrix. Each dimension of the matrix represents a variable i.e., test subjects, neuro components of a ICA loading values. N-BiC biclusters both dimensions simultaneously. 
 
-- Run 'Feature_reduction'- sorting method for defining one dimension as a subset of variables from other dimension  
-- Run N-BiC with sorted variables IDs and the DATA array (of these sorted variables) for biclustering the variables from both dimension.
+1. Run 'Feature_reduction'- sorting method for defining one dimension as a subset of variables from other dimension  
+2. Run N-BiC with sorted variables IDs and the DATA array (of these sorted variables) for biclustering the variables from both dimension.
 
 For more details, see the example script 'running_the_code_base.m'
 
