@@ -8,7 +8,7 @@
 4. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
-NBIC is a clustering algorithm NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. N-BiC is a biclustering method for simultaneously clustering two interacting variables. A bicluster is a two-dimensional submatrix. It clusters a 2D matrix where each dimension represents a variable. Each variable has a set of examples. Variables could be subejcts, neuro components. It uses a sorting method based on user defiend heuristic and data requirements to select a subset of instances for defining a variable. The work horse of N-BiC algorthm is graph-search followed by intersection operation for the merging/composing the biclusters. Independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT works on MATLAB R2008a and higher. Many ICA algorithms were generously contributedby Dr. Andrzej Cichocki. These are also available in Dr. Cichocki's ICALAB toolbox. For any question or comments please contact Md Abdur Rahaman (mrahaman1@gsu.edu), Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu). 
+NBIC is a clustering algorithm NBiC toolbox, based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. N-BiC is a biclustering method for simultaneously clustering two interacting variables. A bicluster is a two-dimensional submatrix. It clusters a 2D matrix where each dimension represents a variable. Each variable has a set of examples. Variables could be subejcts, neuro components. It uses a sorting method based on user defiend heuristic and data requirements to select a subset of instances for defining a variable. The work horse of N-BiC algorthm is graph-search followed by intersection operation for the merging/composing the biclusters. Independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT works on MATLAB R2008a and higher. Many ICA algorithms were generously contributedby Dr. Andrzej Cichocki. These are also available in Dr. Cichocki's ICALAB toolbox. For any question or comments please contact Md Abdur Rahaman (mrahaman1@gsu.edu), Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu). 
 
 ### Manual <a name="secMan"></a>
 The given data matrix has a dimension of [sample x feature] 
@@ -43,7 +43,13 @@ For more details, see the example script 'running_the_code_base.m'
 
 - Further filtering might requires on the final list of biclusters based on the slection of input arguments
 - Be mindful to check the frequency of the biclusters across the permutations   
-
+- If you want to run N-BIC in the Group ICA interface it may be done under source-based morphometry (SBM) by:
+	1. In MATLAB command window enter sbm
+	2. Click [Toolbox: NBIC]
+	3. Enter a parameter file (in dialog)
+	4. Enter a destination directory (in dialog)
+	5. Follow instructions in NBIC screen seen in Fig. 1, including adding both SBM loadings and import neuropsychological scores from csv file.
+	6. Report will display in accordance with Fig. 2.
 
 ### Screen Shots <a name="secScreen"></a>
 
