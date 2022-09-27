@@ -8,16 +8,11 @@
 4. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
-NBIC is a clustering algorithm NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. N-BiC is a biclustering method for simultaneously clustering two interacting variables. A bicluster is a two-dimensional submatrix. It clusters a 2D matrix where each dimension represents a variable. Each variable has a set of examples. Variables could be subejcts, neuro components. It uses a sorting method based on user defiend heuristic and data requirements to select a subset of instances for defining a variable. The work horse of N-BiC algorthm is graph-search followed by intersection operation for the merging or composing the biclusters, We need to represent variables from one dimension as a function of variables from other dimension (as a subset of samples from other dimension) 
-
-component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT works on MATLAB R2008a and higher. Many ICA algorithms were 
-generously contributedby Dr. Andrzej Cichocki. These are also available in Dr. Cichocki's ICALAB toolbox. For any question or comments please contact Md Abdur Rahaman (mrahaman1@gsu.edu), Vince Calhoun (vcalhoun@gsu.edu) or 
-Cyrus Eierud (ceierud@gsu.edu). 
+NBIC is a clustering algorithm NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. N-BiC is a biclustering method for simultaneously clustering two interacting variables. A bicluster is a two-dimensional submatrix. It clusters a 2D matrix where each dimension represents a variable. Each variable has a set of examples. Variables could be subejcts, neuro components. It uses a sorting method based on user defiend heuristic and data requirements to select a subset of instances for defining a variable. The work horse of N-BiC algorthm is graph-search followed by intersection operation for the merging/composing the biclusters. Independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT works on MATLAB R2008a and higher. Many ICA algorithms were generously contributedby Dr. Andrzej Cichocki. These are also available in Dr. Cichocki's ICALAB toolbox. For any question or comments please contact Md Abdur Rahaman (mrahaman1@gsu.edu), Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu). 
 
 ### Manual <a name="secMan"></a>
 The given data matrix has a dimension of #samples x #features 
 We perform the feature reduction to represent each feature as a (reduced) subset of samples. Another rationale is to represent variables from one dimension as a function of variables from other dimension. Here, we sort the components (features) as a subset of subejects based on a predefiend heuristic. We presented several approaches to perform the sorting in the referred paper. However, the sorting is more intuitively carried out based on the objectives of a study - more study dependent. We need to choose which samples we want to allow for defining a feature. Let's assume we have 100 images (sampels) of traffic signals and one of the feature we extracted is color. Now, for running N-BiC, we need to sort the feature - create a subset of samples defining that feature. For instance,  to sort the feature 'color', we might select samples carrying color = 'red'.    
-
 
 2. The subroutines:
  
@@ -32,12 +27,12 @@ The architecture is distributed into three major scripts
    
    iv. Feature_reduction: sort the features for reduced number of samples
    
-
 3. Running the code base:
 
 Input: We need a 2D data matrix. Each dimension of the matrix represents a variable i.e., test subjects, neuro components of a ICA loading values. N-BiC biclusters both dimensions simultaneously. 
-a. run 'Feature_reduction'- sorting method for defining one dimension as a subset of variables from other dimension  
-b. Run N-BiC swith sorted variables IDs and the DATA array (of these sorted variables) for biclustering the variables from both dimension.
+
+- Run 'Feature_reduction'- sorting method for defining one dimension as a subset of variables from other dimension  
+- Run N-BiC swith sorted variables IDs and the DATA array (of these sorted variables) for biclustering the variables from both dimension.
 
 For more details, see the example script 'running_the_code_base.m'
 
