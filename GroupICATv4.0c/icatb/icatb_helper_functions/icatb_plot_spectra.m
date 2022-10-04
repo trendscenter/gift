@@ -47,7 +47,16 @@ if (~exist('xAxis', 'var'))
 end
 
 if (isSpectra)
-    icatb_plot_with_ste_area(axesH, xAxis, data, [], 'm', [.5 .5 1]);
+    chkSEM = 0;
+    try
+        chkSEM = isfield(tc, 'sem');
+    catch
+    end
+    if (~chkSEM)
+        icatb_plot_with_ste_area(axesH, xAxis, data, [], 'm', [.5 .5 1]);
+    else
+        icatb_plot_with_ste_area(axesH, xAxis, data(:)', tc.sem(:)', 'm', [.5 .5 1]);
+    end
 else
     plot(xAxis, data, 'm', 'parent', axesH);
 end
