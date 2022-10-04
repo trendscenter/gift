@@ -16,6 +16,7 @@ tests = UNI.tests;
 
 feature_info = cell(length(mancovanInfo.outputFiles), length(mancovanInfo.comps));
 uni_results_info = cell(length(mancovanInfo.outputFiles), length(mancovanInfo.comps), length(tests));
+FstatInfo = cell(length(mancovanInfo.outputFiles), length(mancovanInfo.comps));
 
 if (~isempty(strmatch('spatial maps', lower(mancovanInfo.features), 'exact')))
     if (strcmpi(mancovanInfo.userInput.feature_params.final.sm_mask, 'default') || isempty(mancovanInfo.userInput.feature_params.final.sm_mask))
@@ -94,6 +95,7 @@ for nF = 1:length(mancovanInfo.outputFiles)
             uni_results_info{nF, nR, nTest} = UNI.stats{nTest};
         end
         
+        FstatInfo{nF, nR} = UNI.FstatInfo;
         
     end
     
@@ -139,7 +141,7 @@ end
 
 mancovanInfo.display.p_threshold = p_threshold;
 
-save(mancova_agg_file, 'feature_info', 'uni_results_info', 'mancovanInfo', '-v7.3');
+save(mancova_agg_file, 'feature_info', 'uni_results_info', 'mancovanInfo', 'FstatInfo', '-v7.3');
 
 disp('Done');
 fprintf('\n');

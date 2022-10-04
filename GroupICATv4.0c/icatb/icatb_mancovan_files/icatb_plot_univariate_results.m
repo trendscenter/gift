@@ -14,17 +14,6 @@ outputDir = mancovanInfo.outputDir;
 comps = mancovanInfo.comps;
 results = mancovanInfo.outputFiles;
 
-
-if (length(mancovanInfo.comp) > 1)
-    
-    network_values = zeros(1, length(mancovanInfo.comp));
-    for nV = 1:length(network_values)
-        network_values(nV) = length(mancovanInfo.comp(nV).value);
-    end
-    network_names =  cellstr(char(mancovanInfo.comp.name));
-    
-end
-
 try
     p_threshold = mancovanInfo.display.p_threshold;
 catch
@@ -270,8 +259,6 @@ for nCov = 1:length(covariatesToPlot)
                 S2 = S;
                 S2.p = S.p;
                 S2.logp = M;
-                S2.network_names = network_names;
-                S2.network_values = network_values;
                 vars = {S2, mancovanInfo.comps, mancovanInfo.comps, mancovanInfo.display.p_threshold, mancovanInfo.display.threshdesc, cmap1, 'Component', 'Component', sh, 1};
                 ch1 = plotUnivStats (vars{:});
                 %FNC_MAT = S.logp;
@@ -395,6 +382,20 @@ for nCov = 1:length(covariatesToPlot)
                 
                 figs(length(figs) + 1).H = gH;
                 
+                
+                if (display_connectogram)
+                    try
+                        % Show connectogram
+                        %                         gH = icatb_plot_connectogram([], comp_network_names, 'C', M, 'image_file_names', mancovanInfo.userInput.compFiles, 'threshold', mancovanInfo.display.t_threshold, ...
+                        %                             'convert_to_zscores', 'yes', 'colorbar_label', '-sign(t) log10(p)', 'title', msgStr);
+                        gH = icatb_plot_connectogram([], comp_network_names,'C', M, 'image_file_names', mancovanInfo.userInput.compFiles, 'iscomposite', 1, 'exclude_zeros', 0, ...
+                            'comp_labels', comp_network_names(:, 1), 'threshold', mancovanInfo.display.t_threshold, ...
+                            'convert_to_zscores', 'yes', 'title', msgStr, 'colorbar_label', '-sign(t) log10(p)');
+                        figs(length(figs) + 1).H = gH;
+                    catch
+                    end
+                end
+                
             end
             
             
@@ -455,8 +456,6 @@ for nCov = 1:length(covariatesToPlot)
                 S2 = S;
                 S2.p = S.p(nFncPlots, :);
                 S2.logp = M;
-                S2.network_names = network_names;
-                S2.network_values = network_values;
                 vars = {S2, mancovanInfo.comps, mancovanInfo.comps, mancovanInfo.display.p_threshold, mancovanInfo.display.threshdesc, cmap1, 'Component', 'Component', sh, 1};
                 ch1 = plotUnivStats (vars{:});
                 %FNC_MAT = S.logp;
@@ -552,11 +551,31 @@ for ii = resultInds
         load(fullfile(outputDir, result_files{ii}), 'freq');
         xdim = length(freq);
     elseif  (strcmpi(featureName, 'fnc correlations'))
-        load(fullfile(outputDir, result_files{ii}), 'fnc_corrs');
-        xdim = size(fnc_corrs, 2);
+        tmp_fnc_name = fullfile(outputDir, result_files{ii});
+        varsInFNCFile = whos('-file', tmp_fnc_name);
+        if (~isempty(strmatch('fnc_corrs', cellstr(char(varsInFNCFile.name)), 'exact')))
+            load(tmp_fnc_name, 'fnc_corrs');
+        end
+        
+        if (exist('fnc_corrs', 'var'))
+            xdim = size(fnc_corrs, 2);
+        else
+            load(tmp_fnc_name, 'UNI');
+            xdim = size(UNI.t{1}, 2);
+        end
     else
-        load(fullfile(outputDir, result_files{ii}), 'fnc_values');
-        xdim = size(fnc_values, 2);
+        tmp_fnc_name = fullfile(outputDir, result_files{ii});
+        varsInFNCFile = whos('-file', tmp_fnc_name);
+        if (~isempty(strmatch('fnc_values', cellstr(char(varsInFNCFile.name)), 'exact')))
+            load(tmp_fnc_name, 'fnc_values');
+        end
+        
+        if (exist('fnc_values', 'var'))
+            xdim = size(fnc_values, 2);
+        else
+            load(tmp_fnc_name, 'UNI');
+            xdim = size(UNI.t{1}, 2);
+        end
         
         %load(fullfile(outputDir, result_files{ii}), 'fnc_corrs');
         %xdim = size(fnc_corrs, 2);
@@ -1208,15 +1227,8 @@ if (strcmpi(threshdesc, 'fdr'))
 end
 
 if (exist('fnc', 'var') && fnc)
-    
-    if (~isfield(T, 'network_names'))
-        
-        M = imagesc(1:length(comps),1:length(comps),A);
-        set(axesH,'XTick',1:length(comps),'XTickLabel',T.y, 'TickDir', 'out')
-    else
-        icatb_plot_FNC(A, [], cellstr(num2str(comps(:))), (1:length(comps)), get(axesH, 'parent'), '', axesH, ...
-            T.network_values, T.network_names);
-    end
+    M = imagesc(1:length(comps),1:length(comps),A);
+    set(axesH,'XTick',1:length(comps),'XTickLabel',T.y, 'TickDir', 'out')
     
 else
     M = imagesc(f,1:length(comps),A);
@@ -1433,6 +1445,7 @@ if (~exist('varName', 'var'))
 end
 
 result_files = mancovanInfo.outputFiles(nF).filesInfo.result_files;
+fnc_corrs = [];
 if (timeNo > 0)
     tmpFnc = load(fullfile(mancovanInfo.outputDir, result_files{loopNum}), 'time', varName);
     fnc_corrs = tmpFnc.(varName);
@@ -1440,13 +1453,16 @@ if (timeNo > 0)
     UNI = time.UNI{timeNo};
 else
     tmpFnc = load(fullfile(mancovanInfo.outputDir, result_files{loopNum}), 'UNI', varName);
-    fnc_corrs = tmpFnc.(varName);
+    try
+        fnc_corrs = tmpFnc.(varName);
+    catch
+    end
     UNI = tmpFnc.UNI;
 end
 
 [term_no, con_no] = getTermAndConNum(term_name, UNI);
 
-if (~isempty(term_no))
+if (~isempty(term_no) && ~isempty(fnc_corrs))
     
     covariateName = UNI.tests{term_no};
     try

@@ -96,6 +96,13 @@ try
 catch
 end
 
+run_fstat = 1;
+if (isfield(inputData, 'run_fstat'))
+    run_fstat = inputData.run_fstat;
+end
+
+mancovanInfo.run_fstat = run_fstat;
+
 if (isfield(inputData, 'write_stats_info'))
     write_stats_info = inputData.write_stats_info;
 end

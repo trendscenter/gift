@@ -6,6 +6,27 @@ catch
     resultsDir = [mancovanInfo.prefix, '_results_summary'];
 end
 
+
+try
+    mancovanInfo.userInput.compFiles = mancovanInfo.display.compFiles;
+catch
+end
+
+display_steps = {'features', 'mult', 'uni'};
+
+try
+    display_steps = mancovanInfo.display.steps;
+catch
+end
+
+t_threshold = 1.5;
+try
+    t_threshold = mancovanInfo.display.t_threshold;
+catch
+end
+
+mancovanInfo.display.t_threshold = t_threshold;
+
 resultsDir = fullfile(mancovanInfo.outputDir, resultsDir);
 
 %resultsDir = fullfile(mancovanInfo.outputDir, [mancovanInfo.prefix, '_results_summary']);
@@ -15,7 +36,15 @@ if (exist(resultsDir, 'dir') ~= 7)
     mkdir (resultsDir);
 end
 
-saveFigInfo = isdeployed;
+saveFigInfo = 0;
+try
+    saveFigInfo = mancovanInfo.display.save_output;
+catch
+end
+
+if (isdeployed)
+    saveFigInfo = 1;
+end
 
 if (saveFigInfo)
     disp('Generating reults summary. Please wait ....');
@@ -43,27 +72,29 @@ mancovanInfo.display.threshdesc = threshdesc;
 
 mancovanInfo.display.image_values = imStr;
 mancovanInfo.display.structFile = structFile;
+htmlSummaryStr = [];
+resultsInfo = [];
 
 %% Features display (Spatial maps, Timecourses spectra, FNC correlations)
 % * *a) Spatial maps and spectra* - Orthogonal slices of T-maps for each component and timecourses spectra is shown.
 % * *b) FNC correlations* -  FNC correlations are averaged across subjects.
 %
-gH = icatb_plot_mancova_features(mancovanInfo);
-
-htmlSummaryStr = [];
-resultsInfo = [];
-
-if (saveFigInfo)
+if (~isempty(strmatch(lower('features'), lower(display_steps), 'exact')))
+    gH = icatb_plot_mancova_features(mancovanInfo);
     
-    resultsInfo(end + 1).title = 'Features';
-    resultsInfo(end).text = ['<ul> <li> <b> a) Spatial maps and spectra </b> - Orthogonal slices of T-maps for each component and timecourses spectra is shown. </li>', ...
-        '<li> <b> b) FNC correlations </b> - FNC correlations are averaged across subjects. </li> ', ...
-        ' </li> </ul>'];
     
-    resultsInfo(end).files = printFigs([gH.H], resultsDir, 'features_comp');
-    htmlSummaryStr(end + 1). title = 'Features';
-    htmlSummaryStr(end).tag = 'features_comp';
-    htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+    if (saveFigInfo)
+        
+        resultsInfo(end + 1).title = 'Features';
+        resultsInfo(end).text = ['<ul> <li> <b> a) Spatial maps and spectra </b> - Orthogonal slices of T-maps for each component and timecourses spectra is shown. </li>', ...
+            '<li> <b> b) FNC correlations </b> - FNC correlations are averaged across subjects. </li> ', ...
+            ' </li> </ul>'];
+        
+        resultsInfo(end).files = printFigs([gH.H], resultsDir, 'features_comp');
+        htmlSummaryStr(end + 1). title = 'Features';
+        htmlSummaryStr(end).tag = 'features_comp';
+        htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+    end
 end
 
 drawnow;
@@ -82,26 +113,28 @@ end
 
 clear gH;
 
-if (strcmpi(designCriteria, 'mancova'))
-    gH(1).H = icatb_plot_mult_mancovan(mancovanInfo);
-    if (isfield(mancovanInfo, 'time'))
-        % Time 1
-        gH(end + 1).H = icatb_plot_mult_mancovan(mancovanInfo, 1);
-        % Time 2
-        gH(end + 1).H  = icatb_plot_mult_mancovan(mancovanInfo, 2);
-    end
-    
-    if (saveFigInfo)
-        resultsInfo(end + 1).title = 'Multivariate results';
-        resultsInfo(end).text = ['<ul> <li>', ...
-            'Multivariate tests are done on the features to determine the significant covariates which are later used in the univariate tests on each feature.</li> </ul>'];
+if (~isempty(strmatch(lower('mult'), lower(display_steps), 'exact')))
+    if (strcmpi(designCriteria, 'mancova'))
+        gH(1).H = icatb_plot_mult_mancovan(mancovanInfo);
+        if (isfield(mancovanInfo, 'time'))
+            % Time 1
+            gH(end + 1).H = icatb_plot_mult_mancovan(mancovanInfo, 1);
+            % Time 2
+            gH(end + 1).H  = icatb_plot_mult_mancovan(mancovanInfo, 2);
+        end
         
-        resultsInfo(end).files = printFigs([gH.H], resultsDir, 'multivariate_results');
-        htmlSummaryStr(end + 1). title = 'Multivariate results';
-        htmlSummaryStr(end).tag = 'multivariate';
-        htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+        if (saveFigInfo)
+            resultsInfo(end + 1).title = 'Multivariate results';
+            resultsInfo(end).text = ['<ul> <li>', ...
+                'Multivariate tests are done on the features to determine the significant covariates which are later used in the univariate tests on each feature.</li> </ul>'];
+            
+            resultsInfo(end).files = printFigs([gH.H], resultsDir, 'multivariate_results');
+            htmlSummaryStr(end + 1). title = 'Multivariate results';
+            htmlSummaryStr(end).tag = 'multivariate';
+            htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+        end
+        
     end
-    
 end
 
 clear gH;
@@ -116,69 +149,73 @@ drawnow;
 outDir = mancovanInfo.outputDir;
 outputFiles = mancovanInfo.outputFiles;
 
-start_terms = {};
-for nO = 1:length(outputFiles)
-    for nR = 1:length(outputFiles(nO).filesInfo.result_files)
-        load(fullfile(outDir, outputFiles(nO).filesInfo.result_files{nR}), 'UNI');
-        for nT = 1:length(UNI.tests)
-            for nC = 1:length(UNI.stats{nT}.Contrast)
-                if (~isempty(UNI.stats{nT}.Contrast{nC}))
-                    start_terms{end + 1} = UNI.stats{nT}.Contrast{nC};
-                else
-                    start_terms{end + 1} = UNI.tests{nT};
+if (~isempty(strmatch(lower('uni'), lower(display_steps), 'exact')))
+    
+    start_terms = {};
+    for nO = 1:length(outputFiles)
+        for nR = 1:length(outputFiles(nO).filesInfo.result_files)
+            load(fullfile(outDir, outputFiles(nO).filesInfo.result_files{nR}), 'UNI');
+            for nT = 1:length(UNI.tests)
+                for nC = 1:length(UNI.stats{nT}.Contrast)
+                    if (~isempty(UNI.stats{nT}.Contrast{nC}))
+                        start_terms{end + 1} = UNI.stats{nT}.Contrast{nC};
+                    else
+                        start_terms{end + 1} = UNI.tests{nT};
+                    end
                 end
             end
         end
     end
-end
-
-if (~isempty(start_terms))
-    [ddd, indbb] = unique(start_terms);
-    start_terms = start_terms(sort(indbb));
-end
-
-load(fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(1).filesInfo.result_files{1}), 'UNI');
-if (~exist('UNI', 'var') || isempty(UNI))
-    error('Please run mancova in order to view results');
-end
-
-gH = [];
-for nF = 1:length(start_terms)
     
-    mancovanInfo.covariatesToPlot = start_terms(nF);
-    figs  = icatb_plot_univariate_results(mancovanInfo);
-    if (~isempty(figs))
-        gH = [gH, [figs.H]];
+    if (~isempty(start_terms))
+        [ddd, indbb] = unique(start_terms);
+        start_terms = start_terms(sort(indbb));
     end
-    drawnow;
     
-    if (isfield(mancovanInfo, 'time'))
-        % Time 1
-        figs = icatb_plot_univariate_results(mancovanInfo, 1);
+    load(fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(1).filesInfo.result_files{1}), 'UNI');
+    if (~exist('UNI', 'var') || isempty(UNI))
+        error('Please run mancova in order to view results');
+    end
+    
+    gH = [];
+    for nF = 1:length(start_terms)
+        
+        mancovanInfo.covariatesToPlot = start_terms(nF);
+        figs  = icatb_plot_univariate_results(mancovanInfo);
         if (~isempty(figs))
             gH = [gH, [figs.H]];
         end
         drawnow;
-        % Time 2
-        figs  =  icatb_plot_univariate_results(mancovanInfo, 2);
-        if (~isempty(figs))
-            gH = [gH, [figs.H]];
+        
+        if (isfield(mancovanInfo, 'time'))
+            % Time 1
+            figs = icatb_plot_univariate_results(mancovanInfo, 1);
+            if (~isempty(figs))
+                gH = [gH, [figs.H]];
+            end
+            drawnow;
+            % Time 2
+            figs  =  icatb_plot_univariate_results(mancovanInfo, 2);
+            if (~isempty(figs))
+                gH = [gH, [figs.H]];
+            end
+            drawnow;
         end
-        drawnow;
     end
-end
-
-if( ~isempty(gH))
-    if (saveFigInfo)
-        resultsInfo(end + 1).title = 'Univariate results';
-        resultsInfo(end).text = ['<ul> <li> <b> a) Spatial Maps </b>  - T-maps of the significant covariate are shown as composite t-maps. Beta-values are averaged over significant clusters. </li>', ...
-            '<li> <b> b) FNC Spectra </b> - Univariate t-tests are done using the significant covariates on the spectra. Beta-values ate averaged over frequency bands. </li> ', ...
-            '<li> <b> c) FNC </b> - Univariate t-tests are done using the significant covariates on the FNC correlations. Connectogram of FNC correlations is also shown. Thumbnails of mean component maps are also plotted.</li></ul>'];
-        resultsInfo(end).files = printFigs(gH, resultsDir, 'univariate_results');
-        htmlSummaryStr(end + 1). title = 'Univariate results';
-        htmlSummaryStr(end).tag = 'univariate';
-        htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+    
+    if( ~isempty(gH))
+        if (saveFigInfo)
+            resultsInfo(end + 1).title = 'Univariate results';
+            resultsInfo(end).text = ['<ul> <li> <b> a) Spatial Maps </b>  - T-maps of the significant covariate are shown as composite t-maps. Beta-values are averaged over significant clusters. </li>', ...
+                '<li> <b> b) FNC Spectra </b> - Univariate t-tests are done using the significant covariates on the spectra. Beta-values ate averaged over frequency bands. </li> ', ...
+                '<li> <b> c) FNC </b> - Univariate t-tests are done using the significant covariates on the FNC correlations. Connectogram of FNC correlations is also shown. Thumbnails of mean component maps are also plotted.</li></ul>'];
+            resultsInfo(end).files = printFigs(gH, resultsDir, 'univariate_results');
+            htmlSummaryStr(end + 1). title = 'Univariate results';
+            htmlSummaryStr(end).tag = 'univariate';
+            htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+        end
     end
+    
 end
 
 if (saveFigInfo)
@@ -288,7 +325,7 @@ for nR = 1:length(sdFNCResults)
     
     if (~strcmpi(extn, '.txt'))
         
-        num_cols = 2;
+        num_cols = 1;
         num_rows = ceil(length(files)/num_cols);
         countF = 0;
         results_string1 = [results_string1, '<table>'];

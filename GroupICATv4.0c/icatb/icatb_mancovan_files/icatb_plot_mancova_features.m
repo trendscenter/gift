@@ -61,23 +61,46 @@ if (plotSM || plotTC)
         countF = countF + 1;
         
         if (plotTC)
-            load(fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(spectra_inds).filesInfo.result_files{nFiles}), 'spectra_tc', 'freq');
-            if (~exist('spectra_tc', 'var') || isempty(spectra_tc))
-                error('Please run setup features in order to view them.');
+            
+            in_file = fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(spectra_inds).filesInfo.result_files{nFiles});
+            %chkAgg = 0;
+            
+            varsInFile = whos('-file', in_file);
+            chkAgg = ~isempty(strmatch('agg', cellstr(char(varsInFile.name)), 'exact'));
+            
+            if (chkAgg)
+                load(in_file, 'freq', 'agg');
+                tc.data = agg.feature.mean;
+                tc.sem = agg.feature.sem;
+                dynamicrange = agg.feature.dynamic_range;
+                fALFF = agg.feature.fALFF;
+            else
+                
+                load(in_file, 'spectra_tc', 'freq');
+                if (~exist('spectra_tc', 'var') || isempty(spectra_tc))
+                    error('Please run setup features in order to view them.');
+                end
+                tc.data = spectra_tc;
+                tc.xAxis = freq;
+                %             tc.isSpectra = 1;
+                %             tc.xlabelStr = 'Frequency (Hz)';
+                %             tc.ylabelStr = 'Power';
+                dynamicrange = zeros(1, size(tc.data, 1));
+                fALFF = dynamicrange;
+                for nS = 1:size(tc.data, 1)
+                    [dynamicrange(nS), fALFF(nS)] = icatb_get_spec_stats(tc.data(nS, :), tc.xAxis, freq_limits);
+                end
+                dynamicrange = mean (mean(dynamicrange));
+                fALFF = mean(mean(fALFF));
             end
-            tc.data = spectra_tc;
+            
             tc.xAxis = freq;
             tc.isSpectra = 1;
             tc.xlabelStr = 'Frequency (Hz)';
             tc.ylabelStr = 'Power';
-            dynamicrange = zeros(1, size(tc.data, 1));
-            fALFF = dynamicrange;
-            for nS = 1:size(tc.data, 1)
-                [dynamicrange(nS), fALFF(nS)] = icatb_get_spec_stats(tc.data(nS, :), tc.xAxis, freq_limits);
-            end
-            dynamicrange = mean(dynamicrange);
-            fALFF = mean(fALFF);
-            tc.titleStr = sprintf('Dynamic range: %0.3f, Power_L_F/Power_H_F: %0.3f', mean(dynamicrange), mean(fALFF));
+            
+            tc.titleStr = sprintf('Dynamic range: %0.3f, Power_L_F/Power_H_F: %0.3f', (dynamicrange), (fALFF));
+            
         end
         
         if (plotTC && plotSM)
@@ -107,11 +130,11 @@ clear spectra_tc
 
 if (~isempty(fnc_inds))
     
-    network_values = zeros(1, length(mancovanInfo.userInput.comp));
+    network_values = zeros(1, length(mancovanInfo.comp));
     for nV = 1:length(network_values)
-        network_values(nV) = length(mancovanInfo.userInput.comp(nV).value);
+        network_values(nV) = length(mancovanInfo.comp(nV).value);
     end
-    network_names =  cellstr(char(mancovanInfo.userInput.comp.name));
+    network_names =  cellstr(char(mancovanInfo.comp.name));
     
     mycmap = jet(64);
     
@@ -125,14 +148,28 @@ if (~isempty(fnc_inds))
             varsIn = 'fnc_corrs';
         end
         
-        tmpFnc = load(fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(fnc_inds(nFnc)).filesInfo.result_files{1}), varsIn);
+        in_file = fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(fnc_inds(nFnc)).filesInfo.result_files{1});
         
-        fnc_corrs = tmpFnc.(varsIn);
+        varsInFile = whos('-file', in_file);
+        chkAgg = ~isempty(strmatch('agg', cellstr(char(varsInFile.name)), 'exact'));
+        
+        if (chkAgg)
+            
+            load(in_file, 'agg');
+            M = agg.feature.mean;
+            
+        else
+            
+            tmpFnc = load(in_file, varsIn);
+            fnc_corrs = tmpFnc.(varsIn);
+            M = icatb_vec2mat(icatb_z_to_r(squeeze(mean(fnc_corrs))), 1);
+            
+        end
         
         compValues = mancovanInfo.comps(:);
         compValues = cellstr(num2str(compValues));
         
-        M = icatb_vec2mat(icatb_z_to_r(squeeze(mean(fnc_corrs))), 1);
+        
         CLIM = max(abs(M(:)));
         fig_title = ['Features ', features{fnc_inds(nFnc)}];
         axesTitle = 'FNC Correlations (Averaged over subjects)';
@@ -171,14 +208,33 @@ if (~isempty(fnc_inds))
         
         
         if (isLag)
+            
             axesTitle = 'Lag in seconds (Averaged over subjects)';
             fig_title = axesTitle;
-            tmpFnc = load(fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(fnc_inds(nFnc)).filesInfo.result_files{2}), varsIn);
-            fnc_corrs = tmpFnc.(varsIn);
-            M = icatb_vec2mat((squeeze(mean(fnc_corrs))), 1);
+            
+            in_file = fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(fnc_inds(nFnc)).filesInfo.result_files{2});
+            
+            
+            varsInFile = whos('-file', in_file);
+            chkAgg = ~isempty(strmatch('agg', cellstr(char(varsInFile.name)), 'exact'));
+            
+            if (chkAgg)
+                
+                load(in_file, 'agg');
+                M = agg.feature.mean;
+                
+            else
+                
+                tmpFnc = load(in_file, varsIn);
+                fnc_corrs = tmpFnc.(varsIn);
+                M = icatb_vec2mat((squeeze(mean(fnc_corrs))), 1);
+                
+            end
+            
             CLIM = max(abs(M(:)));
             gH = plotFNCResults(M, compValues, CLIM, mycmap, fig_title, axesTitle, network_names, network_values);
             graphicsH(length(graphicsH) + 1).H = gH;
+            
         end
         
         
@@ -190,15 +246,27 @@ if (~isempty(fnc_inds))
                 
                 axesTitle = 'FNC Correlations domain averaged (Averaged over subjects)';
                 
-                tmpFnc = load(fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(fnc_inds(nFnc)).filesInfo.result_files{2}), varsIn, 'low_inds');
+                in_file = fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(fnc_inds(nFnc)).filesInfo.result_files{2});
                 
-                fnc_corrs = tmpFnc.(varsIn);
-                lower_inds = tmpFnc.('low_inds');
+                varsInFile = whos('-file', in_file);
+                chkAgg = ~isempty(strmatch('agg', cellstr(char(varsInFile.name)), 'exact'));
+                
+                if (chkAgg)
+                    load(in_file, 'agg', 'low_inds');
+                    M = agg.feature.mean;
+                else
+                    
+                    tmpFnc = load(in_file, varsIn, 'low_inds');
+                    
+                    fnc_corrs = tmpFnc.(varsIn);
+                    lower_inds = tmpFnc.('low_inds');
+                    M = squeeze(icatb_low2Mat(icatb_z_to_r(squeeze(mean(fnc_corrs))), length(network_names), lower_inds));
+                end
                 
                 compValues = (1:length(network_names))';
                 compValues = cellstr(num2str(compValues));
                 
-                M = squeeze(icatb_low2Mat(icatb_z_to_r(squeeze(mean(fnc_corrs))), length(compValues), lower_inds));
+                
                 
                 %M = vec2matN(icatb_z_to_r(squeeze(mean(fnc_corrs))), lower_inds);
                 CLIM = max(abs(M(:)));

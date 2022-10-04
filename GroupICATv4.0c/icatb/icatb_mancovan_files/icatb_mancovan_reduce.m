@@ -53,6 +53,23 @@ for nF = 1:nfeatures
             comp_number = mancovanInfo.comps;
         end
         
+        
+        % Loop over all sites
+        for nFile = 1:length(files)
+            fname = fullfile(fileparts(files{nFile}), [mancovanInfo.prefix, '_stats_info.mat']);
+            matObj = matfile(fname);
+            try
+                tmpFstat =  matObj.FstatInfo(nF, nR);
+                f_stats_all(nFile) = tmpFstat;
+            catch
+            end
+        end
+        
+        if (exist('f_stats_all', 'var'))
+            FstatInfo = icatb_Fstat_reduce(f_stats_all);
+            clear f_stats_all;
+        end
+        
         t = cell(1, nTests);
         p = cell(1, nTests);
         stats = cell(1, nTests);
@@ -95,6 +112,9 @@ for nF = 1:nfeatures
         UNI.stats = stats;
         UNI.R2 = R2;
         MULT = [];
+        if (exist('FstatInfo', 'var'))
+            UNI.FstatInfo = FstatInfo;
+        end
         
         chk = fileparts(mancovanInfo.outputFiles(nF).filesInfo(1).result_files{nR});
         if (~isempty(chk))

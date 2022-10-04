@@ -1249,6 +1249,9 @@ function [MULT, UNI] = run_model(mancovanInfo, data, Stepwise_options, step_P)
 %% Run model
 %
 
+icatb_defaults;
+global MANCOVA_DEFAULTS
+
 if (strcmpi(mancovanInfo.designCriteria, 'mancova'))
     
     X = mancovanInfo.X;
@@ -1352,6 +1355,17 @@ if (strcmpi(mancovanInfo.designCriteria, 'mancova'))
     else
         
         MULT = [];
+        run_fstat = 0;
+        try
+            run_fstat = MANCOVA_DEFAULTS.run_fstat;
+        catch
+        end
+        if (isfield(mancovanInfo, 'run_fstat'))
+            run_fstat = mancovanInfo.run_fstat;
+        end
+        if (run_fstat)
+            UNI.FstatInfo = icatb_computeFStat(data, mancovanInfo.X, mancovanInfo.terms, mancovanInfo.regressors);
+        end
         
         
         test_names = cellstr(char(univInfo.name));
