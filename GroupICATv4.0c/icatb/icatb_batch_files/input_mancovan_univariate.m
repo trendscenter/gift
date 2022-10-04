@@ -24,6 +24,9 @@ covariates = {'Age', 'continuous', 'C:\Users\srrac\gsu\srinivas\data\mancova_sam
              'motion_avg_trans', 'continuous', 'C:\Users\srrac\gsu\srinivas\data\mancova_sample_data\covariates\motion_avg_trans.txt', 'log';
              'motion_avg_rot', 'continuous', 'C:\Users\srrac\gsu\srinivas\data\mancova_sample_data\covariates\motion_avg_rot.txt', 'log';
              'spatialnorm_rho_S', 'continuous', 'C:\Users\srrac\gsu\srinivas\data\mancova_sample_data\covariates\spatialnorm_rho_S.txt', 'atanh'};
+         
+%% Run F-stat on the covariates specified above
+run_fstat = 1;
 
 %% Cell array of dimensions number of network names by 2. Don't duplicate components in different
 % network names
