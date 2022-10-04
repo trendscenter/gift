@@ -699,6 +699,9 @@ MANCOVA_DEFAULTS.MISSING_SUBJECTS_CUTOFF = 90;
 %% Write stats info file (distributed mancova)
 MANCOVA_DEFAULTS.write_stats_info = 1;
 
+%% Run fstat
+MANCOVA_DEFAULTS.run_fstat = 1;
+
 %% SBM Defaults
 % Remove mean of ICA loading coefficients
 % Options are 0 and 1
