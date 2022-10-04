@@ -615,6 +615,7 @@ class MancovanCommand(GIFTCommand):
     >>> #mc.inputs.univariate_tests={'Ttest2':{'datasets':[[i for i in range(1,26)], [j for j in range(26, 51)]], 'name':['HE', 'SZ']}} #Two sample t-test
     >>> #mc.inputs.univariate_tests={'Ttest':{'datasets':[[i for i in range(1,26)], [j for j in range(26, 51)]], 'name':['Condition 1', 'Condition 2']}} #paired t-test
     >>> mc.inputs.comp_network_names = {'BG':21, 'VISUAL':[10, 12, 13]}
+    >>> mc.inputs.run_fstat = 1 (Run univariate F-stat when covariates are specified in univariate_tests)
     >>> mc.inputs.numOfPCs = [4, 4, 4]
     >>> mc.inputs.covariates = {'Age':['continuous', '/path/toage.txt', 'log'], 'Gender':['categorical', '/path/to/gender.txt']}
     >>> mc.inputs.TR = 2
@@ -789,6 +790,12 @@ class MancovanCommand(GIFTCommand):
         
         commandstr.append("%% p-threshold \n");    
         commandstr.append("p_threshold = %f;\n" % (p_threshold));
+        
+        run_fstat = 1
+        if isdefined(self.inputs.run_fstat):
+            run_fstat = self.inputs.run_fstat
+        commandstr.append("%% Run F-stat \n");    
+        commandstr.append("run_fstat = %d;\n" % (run_fstat));
                     
         if isdefined(self.inputs.interactions):
             commandstr.append("%% Interaction terms if any \n");
