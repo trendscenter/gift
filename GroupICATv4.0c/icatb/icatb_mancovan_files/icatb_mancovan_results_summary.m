@@ -149,6 +149,22 @@ drawnow;
 outDir = mancovanInfo.outputDir;
 outputFiles = mancovanInfo.outputFiles;
 
+
+figH = icatb_plot_fstat_mancovan(mancovanInfo);
+if( ~isempty(figH))
+    gH = [figH.H];
+    if (saveFigInfo)
+        resultsInfo(end + 1).title = 'Univariate results (F-Stat)';
+        resultsInfo(end).text = ['<ul> <li> <b> a) Spatial Maps </b>  - T-maps of the significant covariate are shown as composite t-maps. </li>', ...
+            '<li> <b> b) FNC Spectra </b> - Univariate F-tests are done using the significant covariates on the spectra. </li> ', ...
+            '<li> <b> c) FNC </b> - Univariate F-tests are done using the significant covariates on the FNC correlations. Connectogram of FNC correlations is also shown. Thumbnails of mean component maps are also plotted.</li></ul>'];
+        resultsInfo(end).files = printFigs(gH, resultsDir, 'univariate_results_fstat');
+        htmlSummaryStr(end + 1). title = 'Univariate results (F-Stat)';
+        htmlSummaryStr(end).tag = 'univariate_fstat';
+        htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
+    end
+end
+
 if (~isempty(strmatch(lower('uni'), lower(display_steps), 'exact')))
     
     start_terms = {};
