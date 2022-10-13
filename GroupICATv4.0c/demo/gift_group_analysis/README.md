@@ -39,7 +39,7 @@ To make the computer processing less daunting to you we have a dataset that has 
 
 # **Processing The Demo Data** <a name="secProcDemo"></a>
 
-## `bidsify-neuromark.sh` - Format Dataset According to BIDS
+## `bidsify_neuromark_raw.sh` - Format Dataset According to BIDS
 
 BIDS is a guideline providing a tidy and reproducible way to work with neuroimaging dataset. This script adds a dataset description, participants list and formats the names according to the specification. The BIDS dataset will be used in the downstream applications.
 
@@ -77,7 +77,7 @@ This command utilizes fslmaths utility from Freesurfer (available in fmriprep to
 Now, that the data has been preprocessed, we turn to GIFT to actually carry out the Independent component analysis. GIFT is available in several flavors: as a Docker app, Matlab app with a graphical user interface. In following paragraphs, we look closer at all of the different ways to run GIFT.
 
 
-## `run-gift-bids-all.sh` - Processing Independent Component Analysis Using GIFT-BIDS-App
+## `run-all-gift-neuromark.sh` - Processing Independent Component Analysis Using GIFT-BIDS-App
 
 GIFT-BIDS is available as a Docker container from Docker hub. The flavor of GIFT-BIDS, which we refer to as “regular GIFT”, is available as MATLAB GUI application. 
 
