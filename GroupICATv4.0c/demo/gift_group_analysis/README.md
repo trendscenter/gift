@@ -12,6 +12,8 @@
 
 ## Demonstration data for GIFT
 
+Notice Oct 14, 2022: This demo dataset that may be published in November, 2022 does still not exist as it is a work in progress. If you have any questions please email ceierud@gsu.edu.
+
 GIFT is a handy and efficient tool that performs customizable group independent component analysis (GICA) on a study cohort. In this tutorial, we walk you through a typical GIFT analysis explaining the pipeline and its parts. We demonstrate how to use the pipeline on a cohort of 10 males and 10 females from an undisclosed study.
 
 
