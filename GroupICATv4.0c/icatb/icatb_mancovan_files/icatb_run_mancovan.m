@@ -1466,6 +1466,12 @@ if length(s.Term) == 1 %main effect
     if (~iscell(labels))
         labels = {labels};
     end
+    
+    try
+        labels(strcmpi(labels, 'nan')) = [];
+    catch
+    end
+    
     for jj = 1:size(s.Levels,1)
         if s.Levels(jj,2) == 0 && length(labels) == 1
             s.Contrast{jj} = [prefixV, labels{1}];
@@ -1490,6 +1496,16 @@ else %interaction
     
     if (~iscell(labels_2))
         labels_2 = {labels_2};
+    end
+    
+    try
+        labels_2(strcmpi(labels_2, 'nan')) = [];
+    catch
+    end
+    
+    try
+        labels_1(strcmpi(labels_1, 'nan')) = [];
+    catch
     end
     
     
