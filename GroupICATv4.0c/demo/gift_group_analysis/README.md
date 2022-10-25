@@ -14,12 +14,12 @@
 
 Notice Oct 14, 2022: This demo dataset that may be published in November, 2022 does still not exist as it is a work in progress. If you have any questions please email ceierud@gsu.edu.
 
-GIFT is a handy and efficient tool that performs customizable group independent component analysis (GICA) on a study cohort. In this tutorial, we walk you through a typical GIFT analysis explaining the pipeline and its parts. We demonstrate how to use the pipeline on a cohort of 10 males and 10 females from an undisclosed study.
+GIFT is a handy and efficient tool that performs customizable group independent component analysis (GICA) on a study cohort. In this tutorial, we walk you through a typical GIFT analysis explaining the pipeline and its parts. We demonstrate how to use the pipeline on a cohort of 15 males and 15 females from an undisclosed study.
 
 
 ## Different Aspects In Data Processing 
 
-This pipeline processes raw data to the end product, including preprocessing using fmriprep. GICA postprocessing is performed afterwards. This group ICA is guided by Neuromark, a brain atlas derived from a big cohort of fMRI scans, as described in [Du et al. 20201](https://www.sciencedirect.com/science/article/pii/S2213158220302126). At last comes the Dynamic Functional Connectivity step. It calculates connectivity between different brain regions and highlights differences between two groups (healthy controls versus patients).
+This pipeline processes raw data to the end product, including preprocessing using fmriprep. GICA postprocessing is performed afterwards. This group ICA is guided by Neuromark, a brain atlas derived from a big cohort of fMRI scans, as described in [Du et al. 20201](https://www.sciencedirect.com/science/article/pii/S2213158220302126). Finally one may postprocess the ICA using MANCOVAN or Dynamic Functional Connectivity step. It calculates connectivity between different brain regions and highlights differences between two groups (healthy controls versus patients).
 
 
 ## Data Not For Research (Disclaimer) 
@@ -36,7 +36,7 @@ Raw fMRI and structural T1 data is available if you have time to run demo from s
 
 Preprocessed Data
 
-To make the computer processing less daunting to you we have a dataset that has preprocessed all the regular steps ahead.
+To speed up your computer processing, we have a dataset that has processed the time consuming fMRIprep steps that are not ICA focused.
 
 
 # **Processing The Demo Data** <a name="secProcDemo"></a>
@@ -109,7 +109,7 @@ In this command we use Singularity, an alternative virtualization engine to Dock
 
 We bind the temporary directories tmp1 and tmp2 as they are required for temporary GIFT files during the run. Furthermore, please note that the input directory _is required to_ have BIDS formatted data. Also, subjects should have IDs of form sub-001, sub-002, sub-003 and so on. This is because GIFT currently outputs subject results in this ID format.
 
-If you have a different form of subject IDs (say, the first is “M87395841”), you might put this ID in participants.tsv stating the new subject_id as “sub-001”. Later on, you could look the old id in this table. You can consult our way of doing this in bidsify_neuromark_raw.sh script in this directory.
+If you have a different form of subject IDs (say, the first is “M87395841”), you put this ID in participants.tsv stating the new subject_id as “sub-XXX”. Later on, you could look the old id in this table. You can consult our way of doing this in bidsify_neuromark_raw.sh script in this directory. If you don't do so, you could have a hard time matching subject IDs as output by GIFT with your original ones later in the analysis.
 
 Another core part of the analysis is the run configuration.
 
@@ -148,15 +148,6 @@ To find out more parameter possibilities, check out the configuration file examp
 # **Conclusion** <a name="secConc"></a>
 
 We are happy if GIFT-BIDS can deem helpful in your work. Hopefully, this demo made you step closer to utilizing GIFT in your analyses, thus reducing computational burden and processing time.
-
-
-## Please cite GIFT 
-
-If you have used GIFT in your work, please cite:
-
- 
-
-
 
 
 # References <a name="secRef"></a>
