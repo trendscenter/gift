@@ -303,6 +303,7 @@ if ((step == 1) || (step == 2))
     end
     
     
+    
     for nF = 1:length(features)
         
         cF = features{nF};
@@ -362,7 +363,22 @@ if ((step == 1) || (step == 2))
                 end
                 
                 meanmap = squeeze(icatb_nanmean(SM_avg));
-                
+
+                % Code that filters away NAN values in voxels
+                [dummy robNonNanIx] = find(isnan(meanmap) == 0);
+                nTotVoxelsInclNan = length(meanmap);
+                nLostVoxels = nTotVoxelsInclNan - length(robNonNanIx);
+                if (nLostVoxels > nTotVoxelsInclNan*0.05)
+                    error(['icatb_err ' char(datetime) ' icatb_run_mancovan.m: More than 5% of the voxels are NaN based and may be a significant portioin of analysis so it is aborted']);
+                elseif (nLostVoxels == 0)
+                    disp(['icatb_info ' char(datetime) ' icatb_run_mancovan.m: Perfect condition having absolutely no NaN voxels']);
+                    bIxRestore=0; %indeces do not need to be restored in this case
+                else
+                    disp(['icatb_warning ' char(datetime) ' icatb_run_mancovan.m: Less than 5% of voxels contain NaN values and are removed from analysis. There were ' num2str(nLostVoxels) ' NaN-voxels out of a total  number of voxels being ' num2str(nTotVoxelsInclNan)]);
+                    meanmap = meanmap(robNonNanIx);
+                    SM_avg = SM_avg(:,robNonNanIx);
+                    bIxRestore=1; %indeces do not need to be restored in this case
+                end  
                 
                 %% adjust magnitude
                 stdterm = norm(meanmap) / sqrt(length(meanmap) - 1);
@@ -384,7 +400,16 @@ if ((step == 1) || (step == 2))
                 %if (~strcmpi(desCriteria, 'paired t-test'))
                 %tmap = (meanmap*sqrt(size(SM_avg, 1))) ./ icatb_nanstd(SM_avg);
                 [tmp_p_value, tmap, df_value] = icatb_ttest(SM_avg, 0);
-                
+
+                                %Returning NaN values to index vector so voxels' indeces remain accurate
+                if bIxRestore
+                    %Restore size of SM_avg
+                    SM_avgShort = SM_avg;
+                    nSubjects = size(SM_avg, 1);
+                    SM_avg = NaN(nSubjects,nTotVoxelsInclNan);
+                    SM_avg(:,robNonNanIx) = SM_avgShort;
+                    clear SM_avgShort;
+                end       
                 
                 if (~strcmpi(desCriteria, 'paired t-test'))
                     SM = SM_avg;
@@ -445,6 +470,18 @@ if ((step == 1) || (step == 2))
                         close(FH);
                         clear y;
                         
+                        %Returning NaN values to index vector so voxels' indeces remain accurate
+                        if bIxRestore
+                            % Restore size of tmap and meanmap
+                            tmapShort = tmap;
+                            meanmapShort = meanmap;
+                            tmap = NaN(1,nTotVoxelsInclNan);
+                            meanmap = NaN(1,nTotVoxelsInclNan);
+                            tmap(1,robNonNanIx) = tmapShort;
+                            meanmap(1,robNonNanIx) = meanmapShort;
+                            clear tmapShort meanmapShort;
+                        end   
+                        
                         if (t_image_values == 1)
                             % positive and negative voxels
                             mask_rel_inds = (abs(tmap) >= abs(cutoff(2)));
@@ -457,10 +494,21 @@ if ((step == 1) || (step == 2))
                         end
                         
                     else
+                        %Returning NaN values to index vector so voxels' indeces remain accurate
+                        if bIxRestore
+                            % Restore size of tmap and meanmap
+                            tmapShort = tmap;
+                            meanmapShort = meanmap;
+                            tmap = NaN(1,nTotVoxelsInclNan);
+                            meanmap = NaN(1,nTotVoxelsInclNan);
+                            tmap(1,robNonNanIx) = tmapShort;
+                            meanmap(1,robNonNanIx) = meanmapShort;
+                            clear tmapShort meanmapShort;
+                        end                           
                         disp(['Using Z threshold of ', num2str(def_mask_z_thresh), ' on mean map to compute default mask ...']);
                         mask_rel_inds = (abs(meanmap./icatb_nanstd(meanmap)) >= def_mask_z_thresh);
                     end
-                end
+                end       
                 
                 mask_ind = sesInfo.mask_ind(mask_rel_inds);
                 

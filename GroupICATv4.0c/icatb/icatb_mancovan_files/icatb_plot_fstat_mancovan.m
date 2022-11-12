@@ -75,12 +75,13 @@ for nFeature = 1:length(mancovanInfo.outputFiles)
     
     if (strcmpi(feature_name, 'spatial maps'))
         %% Spatial maps
-        out_files = write_composite_sig_effects(mancovanInfo.HInfo, regressors, result_files, ...
+        regressorsUnique = unique(regressors);%only 1 regressor per unique regressor
+        out_files = write_composite_sig_effects(mancovanInfo.HInfo, regressorsUnique, result_files, ...
             prefix, outputDir, p_threshold, threshdesc);
         
         for nT = 1:length(out_files)
             tmpH = icatb_orth_views(out_files{nT}, 'structfile', structFile, 'image_values', image_values, 'convert_to_zscores', 'no', 'threshold', eps, ...
-                'set_to_max_voxel', 1, 'fig_title', ['F-test ', regressors{nT}]);
+                'set_to_max_voxel', 1, 'fig_title', ['F-test ', regressorsUnique{nT}]);
             cH = findobj(tmpH, 'tag', 'compviewerColorbar');
             xlabel('-log_1_0(p-value)', 'parent', cH, 'Interpreter', 'tex')
             figH(end + 1).H = tmpH;
@@ -89,13 +90,13 @@ for nFeature = 1:length(mancovanInfo.outputFiles)
     elseif (strcmpi(feature_name, 'timecourses spectra'))
         %% Timecourses spectra
         
-        %
-        for term = 1:length(regressors)
+        regressorsUnique = unique(regressors); %only 1 regressor per unique regressor
+        for term = 1:length(regressorsUnique)
             figTitle = ['Univariate Results ', feature_name, ' F-test'];
             gH = icatb_getGraphics(figTitle, 'graphics', 'univariate_results_sepctra', 'on');
             
             load(fullfile(mancovanInfo.outputDir, result_files{1}), 'freq');
-            msgStr = [feature_name, ' F-test ', regressors{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
+            msgStr = [feature_name, ' F-test ', regressorsUnique{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
             
             [S, status] = gather_univariate_stats(mancovanInfo, nFeature, term, 0);
             if (~status)
@@ -118,11 +119,11 @@ for nFeature = 1:length(mancovanInfo.outputFiles)
         
     elseif (strcmpi(feature_name, 'fnc correlations'))
         %% FNC correlations
-        
-        for term = 1:length(regressors)
+        regressorsUnique = unique(regressors); %only 1 regressor per unique regressor
+        for term = 1:length(regressorsUnique)
             figTitle = ['Univariate Results ', feature_name];
             [S, status] = gather_univariate_stats(mancovanInfo, nFeature, term, 0, 1);
-            msgStr = [feature_name, ' F-test ', regressors{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
+            msgStr = [feature_name, ' F-test ', regressorsUnique{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
             if (~status)
                 delete(gH);
                 disp(['Feature ',feature_name, ': No ', msgStr]);
@@ -173,7 +174,7 @@ for nFeature = 1:length(mancovanInfo.outputFiles)
                 % network average
                 [S, status] = gather_univariate_stats(mancovanInfo, nFeature, term, 0, 2, comp_network_names(:,1));
                 %[S, status] = gather_univariate_stats(mancovanInfo, nF, covariatesToPlot{nCov}, timeNo, 2, comp_network_names(:,1));
-                msgStr = [feature_name, ' F-test ' , regressors{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ') network averaged'];
+                msgStr = [feature_name, ' F-test ' , regressorsUnique{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ') network averaged'];
                 if (~status)
                     %delete(gH);
                     disp(['Feature ',feature_name, ': No ', msgStr]);
@@ -226,7 +227,8 @@ for nFeature = 1:length(mancovanInfo.outputFiles)
     else
         %% FNC lag
         figTitle = ['Univariate Results ', feature_name];
-        for term = 1:length(regressors)
+        regressorsUnique = unique(regressors); %only 1 regressor per unique regressor
+        for term = 1:length(regressorsUnique)
             [S, status] = gather_univariate_stats(mancovanInfo, nFeature, term, 0, 1:2, '', 1);
             
             %[S, status] = gather_univariate_stats(mancovanInfo, nF, covariatesToPlot{nCov}, timeNo, 1:2, '', 1);
@@ -242,7 +244,7 @@ for nFeature = 1:length(mancovanInfo.outputFiles)
             S.p(:, chk_good_inds == 0) = 0;
             S.logp(:, chk_good_inds == 0) = 0;
             
-            msgStr = [feature_name, ' F-test ', regressors{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
+            msgStr = [feature_name, ' F-test ', regressorsUnique{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
             
             if (~status)
                 %delete(gH);
@@ -262,7 +264,7 @@ for nFeature = 1:length(mancovanInfo.outputFiles)
                 colorbarTitle = '-log10(p) (corr)';
                 if (nFncPlots == 2)
                     colorbarTitle = '-log10(p) (Lag)';
-                    msgStr = [feature_name, ' F-test ', regressors{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
+                    msgStr = [feature_name, ' F-test ', regressorsUnique{term}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
                     plot_arrows = 1;
                 end
                 
