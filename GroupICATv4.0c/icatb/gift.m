@@ -232,39 +232,15 @@ giftPath = fileparts(which('gift.m'));
 resultsFile = fullfile(fileparts(param_file), [sesInfo.userInput.prefix, '_tmp_results_struct.mat']);
 save(resultsFile, 'results');
 
-if ~(isdeployed)
-    % Run second matlab instance (matlab is installed on system)
-    disp('Generating summary with new matlab process ...');
-    commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, ''')); icatb_report_generator(''', param_file, ...
-        ''', ''', resultsFile, ''');exit;', '"'];
-    [status, message] = system(commandStr);
+% Run second matlab instance (matlab is installed on system)
+disp('Generating summary with new matlab process ...');
+commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, ''')); icatb_report_generator(''', param_file, ...
+    ''', ''', resultsFile, ''');exit;', '"'];
+[status, message] = system(commandStr);
 
-    if (status ~= 0)
-        error(message);
-    end
-else
-    % Running deployed compiled second instance of matlab
-    % Deployed version only works on Linux and not Windows
-    disp('Generating summary with new compiled process ...');
-    if ispc
-        %Not supported yet
-        disp('Error: Windows is not supported for GUI reports yet')
-    elseif isunix || ismac
-        %Create temporary output and report directories
-        chDirReport = fileparts('~/.trendsGift/');
-        if (exist(chDirReport, 'dir') ~= 7)
-            mkdir(chDirReport);
-        end
-        ch_icatb_report_param_file = param_file;
-        ch_icatb_report_resultsFile = resultsFile;
-        save([chDirReport 'icatbReportDeployed.mat'], 'ch_icatb_report_param_file', 'ch_icatb_report_resultsFile');
-        commandStr = ['~/.icatb_r_v1/compile081122/run_icatb_report_generator.sh ' matlabroot ';exit;'];
-        [status, message] = system(commandStr);       
-    else
-        disp('Error: Unknown operating system to print reports to')
-    end
+if (status ~= 0)
+    error(message);
 end
-
 
 disp('Done');
 
