@@ -20,7 +20,7 @@ GIFT is a handy and efficient tool that performs customizable group independent 
 
 ## Different Aspects In Data Processing 
 
-This pipeline processes raw data to the end product, including preprocessing using fmriprep. GICA postprocessing is performed afterwards. This group ICA is guided by Neuromark, a brain atlas derived from a big cohort of fMRI scans, as described in [Du et al. 20201](https://www.sciencedirect.com/science/article/pii/S2213158220302126). Finally one may postprocess the ICA using MANCOVAN or Dynamic Functional Connectivity step. It calculates connectivity between different brain regions and highlights differences between two groups (healthy controls versus patients).
+This pipeline processes raw data to the end product, including preprocessing using fmriprep. GICA postprocessing is performed afterwards. This group ICA is guided by Neuromark, a brain atlas derived from a big cohort of fMRI scans, as described in [Du et al. (2020)](#refDu2020). Finally one may postprocess the ICA using MANCOVAN or Dynamic Functional Connectivity step. It calculates connectivity between different brain regions and highlights differences between two groups (healthy controls versus patients).
 
 
 ## Data Not For Research (Disclaimer) 
@@ -44,11 +44,11 @@ To speed up your computer processing, we have a dataset that has processed the t
 
 ## `bidsify_neuromark_raw.sh` - Format Dataset According to BIDS
 
-BIDS is a guideline providing a tidy and reproducible way to work with neuroimaging dataset. This script adds a dataset description, participants list and formats the names according to the specification. The BIDS dataset will be used in the downstream applications.
+Brain imaging data structure (BIDS) is a guideline providing a reproducible way to work with neuroimaging dataset. This script adds a dataset description, participants list and formats the names according to the specification. The BIDS dataset will be used in the downstream applications. This script is optional to run the GIFT demo as we also provide the upstream dataset after the time consuming fMRIprep processing.
 
 ## `run-fmriprep.sh` - Preprocessing the Raw Data 
 
-Data preprocessing includes alignment with the MNI space and different other standartization/artifact removal procedures. We use fMRIprep (Esteban et al., 2019)<sup><a href="#bookmark=id.x3n4vrij65zt">2</a></sup> for data preprocessing. It is possible to run this tool on cluster using e.g. Singularity (or Docker):
+Data preprocessing includes normalization the MNI space and different other standartization/artifact removal procedures. We use fMRIprep ([Esteban et al., 2019](#refEsteban2019)) for data preprocessing. Also this step is optional (as above) as you may save time running the GIFT demo using the ||LINK TO DATASET WILL SOON BE HERE|| dataset (post the time consuming fMRIprep processing). Please refer to [fMRIprep documentation](https://fmriprep.org/en/1.5.1/index.html) for installation and detailed preprocessing steps and methods. fMRIprep may be run using a container (Singularity or Docker) and this example shows how to run Singularity:
 
 
 ```
@@ -59,9 +59,9 @@ $ singularity run --cleanenv fmriprep.simg
 ```
 
 
-Please refer to [fMRIprep documentation3](https://fmriprep.org/en/1.5.1/index.html) for further information on preprocessing steps and methods. Furthermore, we attach our fMRIprep run script to the present repository under run-fmriprep.sh.
+Furthermore, we attach our fMRIprep run script to the present repository under run-fmriprep.sh.
 
-## `smooth_fmriprep_results.sh` and `smooth_subjects.sh` - Smooth the fMRIprep output
+## Smooth the fMRIprep output
 For a better ICA reconstruction in GIFT, we smooth the data using a Gaussian kernel. The core functionality is provided by `smooth_subjects.sh`:
 
 
@@ -80,7 +80,7 @@ This command utilizes fslmaths utility from Freesurfer (available in fmriprep to
 Now, that the data has been preprocessed, we turn to GIFT to actually carry out the Independent component analysis. GIFT is available in several flavors: as a Docker app, Matlab app with a graphical user interface. In following paragraphs, we look closer at all of the different ways to run GIFT.
 
 
-## `run-all-gift-neuromark.sh` - Processing Independent Component Analysis Using GIFT-BIDS-App
+## Processing Independent Component Analysis Using GIFT-BIDS-App
 
 GIFT-BIDS is available as a Docker container from Docker hub. The flavor of GIFT-BIDS, which we refer to as “regular GIFT”, is available as MATLAB GUI application. 
 
@@ -88,7 +88,7 @@ Please find the source code and Docker link for GIFT-BIDS at [trendscenter/gift-
 
 GIFT-BIDS does **not **require you to have a MATLAB license.
 
-We launch GIFT-BIDS with the command of the following form: 
+We launch GIFT-BIDS with the command of the following form (run-all-gift-neuromark.sh): 
 
 
 ```
@@ -114,12 +114,10 @@ If you have a different form of subject IDs (say, the first is “M87395841”),
 
 Another core part of the analysis is the run configuration.
 
+*GIFT run configuration*
+Too highlight the different possibilities the gift-bids app has, showing other possibilities a small background of the different batch files flavors exists. While MATLAB GUI version of GIFT allows to configure the run in the GUI directly, GIFT-BIDS utilizes a pre-written *_config.m file to specify all the necessary properties (key values) before the run.
 
-## GIFT run configuration 
-
-While MATLAB GUI version of GIFT allows to configure the run in the GUI directly, GIFT-BIDS utilizes a pre-written *_config.m file to choose the run mode.
-
-Config file contents are simple “key=value” pairs written in MATLAB. For example, here is an excerpt of config_spatial_ica_bids.m we use in this demo:
+The config file contains “key=value” pairs written in MATLAB. For example, here is an excerpt of config_spatial_ica_bids.m we use in this demo:
 
 ```
 %% Modality. Options are fMRI and EEG 
@@ -147,27 +145,28 @@ To find out more parameter possibilities, check out the configuration file examp
 
 # Groups difference with MANCOVAN <a name="secMancovan"></a>
 
-To finally find the differences between the groups visualize them, we will run MANCOVAN. MANCOVAN
-is a toolbox developed in adjacence to GIFT. It allows to compare individual ICs and subjects using statistical tests.
+To finally find the differences between the groups visualize them, we will run the MANCOVAN toolbox, included in GIFT. MANCOVAN allows to compare individual ICs and subjects using statistical tests. In this example we will use the GIFT GUI, where you need to start MATLAB and then in the MATLAB command line enter a couple of lines to start gift:
+-  addpath(genpath('/my/gift/path'));
+-  gift
 
-To launch MANCOVAN, select it from the main GIFT toolbox menu: ![images/image1.png](images/image1.png)
+To launch MANCOVAN, select it from the main GIFT toolbox menu: ![images/image1.png](images/image1.png)Fig. 1.
 
-The main window appears. 
-We need to create design matrix first. Click on the corresponding box. The window will prompt you a parameter file.
-It is located in the output directory of the GIFT analysis. ![images/image2.png](images/image2.png)
+The main MANCOVAN window appears. 
+We need to create design matrix first. Click on the corresponding box. The window will prompt you for a parameter file.
+It is located in the output directory of the GIFT analysis (output from gift-bids app). ![images/image2.png](images/image2.png)
 
-In the next step, choose a MANCOVAN output directory. Press "." to chose the directory in the left selecting pane and press "OK" in the bottom to confirm.
+In the next step, traverse down to a MANCOVAN output directory (that you perhaps have previously made) and press "." in the right pane to chose the directory and press "OK" in the bottom to confirm.
 
 Next, the test configuration window appears. We will be using a "2-sample t-test" with no covariates. <a name="image3"></a>
 ![images/image3.png](images/image3.png)
 
-In the screen that appears, define groups. Give a name to a group, and hold "CTRL" to select multiple subjects.
-Click "OK" when all the subjects of a group have been highlighted. ![images/image4.png](images/image4.png)
+In the screen that appears, define groups. Give a name to a group (e.g., males), and hold "CTRL" to select multiple subjects of the male group (e.g.: 1, 3, 4, 5, 10, 12, 14, 15, 17, 18, 21, 23, 25, 29, 30, please note that figure is slightly wrong). Click "OK" when all the subjects of a group have been highlighted. 
+![images/image4.png](images/image4.png)
 
-Now, define the second groups. Same rules as for the first apply. ![images/image5.png](images/image5.png)
+Now, define the second, female groups, analogously as the first group, but with different subjects (e.g.: 2, 6, 7, 8, 9, 11, 13, 16, 19, 20, 22, 24, 26, 27, 28). ![images/image5.png](images/image5.png)
 
 Click "OK". Return to the "Setup MANCOVAN Design" window ([as shown above](#image3)). Click "Create..." in the bottom of the window.
-It gets us back to the main menu. The design matrix is set up. It is time to set up features. 
+It gets us back to the main menu (Fig. 5). The design matrix is set up. It is time to set up features. 
 Click on the corresponding button. ![images/image6.png](images/image6.png)
 A prompt to select mancovan setup file appears. It is located in the output directory 
 you have appointed in the previous steps. ![images/image7.png](images/image7.png)
@@ -218,8 +217,7 @@ We are happy if GIFT-BIDS and adjacent toolboxes can deem helpful in your work. 
 
 # References <a name="secRef"></a>
 
-1.  Du, Y., Fu, Z., Sui, J., Gao, S., Xing, Y., Lin, D., ... & Alzheimer's Disease Neuroimaging Initiative. (2020). NeuroMark: An automated and adaptive ICA based pipeline to identify reproducible fMRI markers of brain disorders. _NeuroImage: Clinical_, _28_, 102375.
+1.  Du, Y., Fu, Z., Sui, J., Gao, S., Xing, Y., Lin, D., ... & Alzheimer's Disease Neuroimaging Initiative. (2020). NeuroMark: An automated and adaptive ICA based pipeline to identify reproducible fMRI markers of brain disorders. _NeuroImage: Clinical_, _28_, 102375. <a name="refDu2020"></a> [Click here for article](https://www.sciencedirect.com/science/article/pii/S2213158220302126)
 
-2.  Esteban, O., Markiewicz, C. J., Blair, R. W., Moodie, C. A., Isik, A. I., Erramuzpe, A., ... & Gorgolewski, K. J. (2019). fMRIPrep: a robust preprocessing pipeline for functional MRI. _Nature methods_, _16_(1), 111-116.
+2.  Esteban, O., Markiewicz, C. J., Blair, R. W., Moodie, C. A., Isik, A. I., Erramuzpe, A., ... & Gorgolewski, K. J. (2019). fMRIPrep: a robust preprocessing pipeline for functional MRI. _Nature methods_, _16_(1), 111-116. <a name="refEsteban2019"></a>
 
-3.  https://fmriprep.org/en/1.5.1/index.html
