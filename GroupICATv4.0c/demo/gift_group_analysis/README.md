@@ -149,65 +149,65 @@ To finally find the differences between the groups visualize them, we will run t
 -  addpath(genpath('/my/gift/path'));
 -  gift
 
-To launch MANCOVAN, select it from the main GIFT toolbox menu: ![images/image1.png](images/image1.png)Fig. 1.
+To launch MANCOVAN, select it from the main GIFT toolbox menu: ![images/image1.png](images/image1.png)Figure 1.
 
 The main MANCOVAN window appears. 
 We need to create design matrix first. Click on the corresponding box. The window will prompt you for a parameter file.
-It is located in the output directory of the GIFT analysis (output from gift-bids app). ![images/image2.png](images/image2.png)
+It is located in the output directory of the GIFT analysis (output from gift-bids app). ![images/image2.png](images/image2.png)Figure 2.
 
 In the next step, traverse down to a MANCOVAN output directory (that you perhaps have previously made) and press "." in the right pane to chose the directory and press "OK" in the bottom to confirm.
 
 Next, the test configuration window appears. We will be using a "2-sample t-test" with no covariates. <a name="image3"></a>
-![images/image3.png](images/image3.png)
+![images/image3.png](images/image3.png)Figure 3.
 
 In the screen that appears, define groups. Give a name to a group (e.g., males), and hold "CTRL" to select multiple subjects of the male group (e.g.: 1, 3, 4, 5, 10, 12, 14, 15, 17, 18, 21, 23, 25, 29, 30, please note that figure is slightly wrong). Click "OK" when all the subjects of a group have been highlighted. 
-![images/image4.png](images/image4.png)
+![images/image4.png](images/image4.png)Figure 4.
 
-Now, define the second, female groups, analogously as the first group, but with different subjects (e.g.: 2, 6, 7, 8, 9, 11, 13, 16, 19, 20, 22, 24, 26, 27, 28). ![images/image5.png](images/image5.png)
+Now, define the second, female groups, analogously as the first group, but with different subjects (e.g.: 2, 6, 7, 8, 9, 11, 13, 16, 19, 20, 22, 24, 26, 27, 28). ![images/image5.png](images/image5.png)Figure 5.
 
 Click "OK". Return to the "Setup MANCOVAN Design" window ([as shown above](#image3)). Click "Create..." in the bottom of the window.
 It gets us back to the main menu (Fig. 5). The design matrix is set up. It is time to set up features. 
-Click on the corresponding button. ![images/image6.png](images/image6.png)
+Click on the corresponding button. ![images/image6.png](images/image6.png)Figure 6.
 A prompt to select mancovan setup file appears. It is located in the output directory 
-you have appointed in the previous steps. ![images/image7.png](images/image7.png)
+you have appointed in the previous steps. ![images/image7.png](images/image7.png)Figure 7.
 
 After selecting the parameter file, MANCOVAN Setup Analysis appears. 
-We will be using FNC correlation without lags. ![images/image8.png](images/image8.png)
+We will be using FNC correlation without lags. ![images/image8.png](images/image8.png)Figure 8.
 Components are the meaningful groupings of ICs used during analysis. In our case they are dictated by the Neuromark template
-![images/image9.png](images/image9.png) ![images/image10.png](images/image10.png)
+![images/image9.png](images/image9.png)Figure 9. ![images/image10.png](images/image10.png)Figure 10.
 
 Select multiple indices (hold CTRL to select multiple manually, or SHIFT to select a range) and press "S..." in the bottom.
-A functional image of selected components appears. ![images/image11.png](images/image11.png)
+A functional image of selected components appears. ![images/image11.png](images/image11.png)Figure 11.
 
 Press "Done" to confirm. The defined component is now enlisted. Repeat for all the components you wish to define.
-![images/image12.png](images/image12.png)
+![images/image12.png](images/image12.png)Figure 12.
 
 We are free to change the P-Value threshold and TR accordingly. To define Number of components for each vector manually, proceed as following:
-first, tick "Autoselect No. of components..." ![images/image13.png](images/image13.png)
+first, tick "Autoselect No. of components..." ![images/image13.png](images/image13.png)Figure 13.
 
-Then, untick "Autoselect No. of components...". An input frame appears. Enter the default number of components. ![images/image14.png](images/image14.png)
+Then, untick "Autoselect No. of components...". An input frame appears. Enter the default number of components. ![images/image14.png](images/image14.png)Figure 14.
 
-Click "Run" in the bottom of the window. MANCOVAN loads subjects. ![images/image15.png](images/image15.png)
+Click "Run" in the bottom of the window. MANCOVAN loads subjects. ![images/image15.png](images/image15.png)Figure 15.
 
-When loading is complete, we are ready to run MANCOVAN. ![images/image16.png](images/image16.png)
-Press "Run MANCOVAN" in the main menu. We do not want to remove nuisance covariates. ![images/image17.png](images/image17.png)
+When loading is complete, we are ready to run MANCOVAN. ![images/image16.png](images/image16.png)Figure 16.
+Press "Run MANCOVAN" in the main menu. We do not want to remove nuisance covariates. ![images/image17.png](images/image17.png)Figure 17.
 
 Select MANCOVAN parameter file as done previously (in the projected MANCOVAN output directory). MANCOVAN prints the output
-to the MATLAB console. ![images/image18.png](images/image18.png)
+to the MATLAB console. ![images/image18.png](images/image18.png)Figure 18.
 
-After MATLAB ceases to display "Processing..." marker in the left bottom part, we can display the results. ![images/image19.png](images/image19.png)
+After MATLAB ceases to display "Processing..." marker in the left bottom part, we can display the results. ![images/image19.png](images/image19.png)Figure 19.
 
-Display univariate results. ![images/image20.png](images/image20.png)
-Define T-Threshold to be 1.0, positive and negative image values. We will not do any multiple test correction leave fALFF defaults and display the connectogram. ![images/image21.png](images/image21.png)
+Display univariate results. ![images/image20.png](images/image20.png)Figure 20.
+Define T-Threshold to be 1.0, positive and negative image values. We will not do any multiple test correction leave fALFF defaults and display the connectogram. ![images/image21.png](images/image21.png)Figure 21.
 
-Connectogram appears. We see some significant differences in the functional connectivities between components. ![images/image22.png](images/image22.png)
+Connectogram appears. We see some significant differences in the functional connectivities between components. ![images/image22.png](images/image22.png)Figure 22.
 
 Another figure gives a hint on how significantly different components pairs differ from each other, plotted on a heatmap.
-![images/image23.png](images/image23.png)
+![images/image23.png](images/image23.png)Figure 23.
 
 The final figure hints on which components from manually defined have different connectivity across groups. It looks 
 like in our setup, Default Mode network and Cognitive-Control network might have significantly different functional 
-connectivity patterns across groups. ![images/image24.png](images/image24.png)
+connectivity patterns across groups. ![images/image24.png](images/image24.png)Figure 24.
 
 
 # **Conclusion** <a name="secConc"></a>
