@@ -33,12 +33,9 @@ This data is partitioned to show results with few subjects and is biased and may
 
 ## Raw Data
 
-Raw fMRI and structural T1 data is available if you have time to run demo from scratch. Please contact the authors.
+Raw fMRI and structural T1 data is available if you have time to run demo from scratch the following link will soon contain the raw data [here (link will soon come)](no link). Please contact the authors.
 
-Preprocessed Data
-
-To speed up your computer processing, we have a dataset that has processed the time consuming fMRIprep steps that are not ICA focused.
-
+If you want to step to the "Running GIFT" section you may start with preprocessed data found [here (link will soon come)](no link).
 
 # **Processing The Demo Data** <a name="secProcDemo"></a>
 
@@ -76,6 +73,7 @@ To run `fslmaths`, I start the fmriprep container in `smooth_fmriprep_results.sh
 This command utilizes fslmaths utility from Freesurfer (available in fmriprep too). Of course, you are welcome to use a different smoothing tool to achieve the same end.
 
 # Running GIFT <a name="secGift"></a>
+If you did not run the previous steps you may start with preprocessed data found [here (link will soon come)](no link).
 
 Now, that the data has been preprocessed, we turn to GIFT to actually carry out the Independent component analysis. GIFT is available in several flavors: as a Docker app, Matlab app with a graphical user interface. In following paragraphs, we look closer at all of the different ways to run GIFT.
 
