@@ -160,21 +160,25 @@ In the next step, traverse down to a MANCOVAN output directory (that you perhaps
 Next, the test configuration window appears. We will be using a "2-sample t-test" with no covariates. <a name="image3"></a>
 ![images/image3.png](images/image3.png)Figure 3.
 
-In the screen that appears, define groups. Give a name to a group (e.g., males), and hold "CTRL" to select multiple subjects of the male group (e.g.: 1, 3, 4, 5, 10, 12, 14, 15, 17, 18, 21, 23, 25, 29, 30, please note that figure is slightly wrong). Click "OK" when all the subjects of a group have been highlighted. 
+In the screen that appears, define groups. Give a name to a group (e.g., males), and hold "CTRL" to select multiple subjects of the male group (e.g.: 1, 3, 4, 5, 10, 12, 14, 15, 17, 18, 21, 23, 25, 29, 30, please note that Fig. 4 is slightly wrong). Click "OK" when all the subjects of a group have been highlighted. 
 ![images/image4.png](images/image4.png)Figure 4.
 
 Now, define the second, female groups, analogously as the first group, but with different subjects (e.g.: 2, 6, 7, 8, 9, 11, 13, 16, 19, 20, 22, 24, 26, 27, 28). ![images/image5.png](images/image5.png)Figure 5.
 
-Click "OK". Return to the "Setup MANCOVAN Design" window ([as shown above](#image3)). Click "Create..." in the bottom of the window.
-It gets us back to the main menu (Fig. 5). The design matrix is set up. It is time to set up features. 
-Click on the corresponding button. ![images/image6.png](images/image6.png)Figure 6.
-A prompt to select mancovan setup file appears. It is located in the output directory 
+Click "OK". Return to the "Setup MANCOVAN Design" window ([Fig. 3](#image3)). Click "Create..." in the bottom of the window.
+It gets us back to the main menu (Fig. 6). The design matrix is set up. It is time to set up features. 
+Click the [Setup Features] button. ![images/image6.png](images/image6.png)Figure 6.
+
+A prompt to select mancovan parameter file appears (Fig. 7). It is located in the output directory 
 you have appointed in the previous steps. ![images/image7.png](images/image7.png)Figure 7.
 
 After selecting the parameter file, MANCOVAN Setup Analysis appears. 
-We will be using FNC correlation without lags. ![images/image8.png](images/image8.png)Figure 8.
-Components are the meaningful groupings of ICs used during analysis. In our case they are dictated by the Neuromark template
-![images/image9.png](images/image9.png)Figure 9. ![images/image10.png](images/image10.png)Figure 10.
+We will be using FNC correlation without lags (Fig. 8). ![images/image8.png](images/image8.png)Figure 8.
+
+In this demo we will use the Neuromark template (Figures 9-10).
+![images/image9.png](images/image9.png)Figure 9. 
+
+![images/image10.png](images/image10.png)Figure 10.
 
 Select multiple indices (hold CTRL to select multiple manually, or SHIFT to select a range) and press "S..." in the bottom.
 A functional image of selected components appears. ![images/image11.png](images/image11.png)Figure 11.
