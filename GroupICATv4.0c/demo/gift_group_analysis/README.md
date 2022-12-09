@@ -176,9 +176,11 @@ After selecting the parameter file, MANCOVAN Setup Analysis appears.
 We will be using FNC correlation without lags (Fig. 8). ![images/image8.png](images/image8.png)Figure 8.
 
 In this demo we will use the Neuromark template (Figures 9-10).
-![images/image9.png](images/image9.png)Figure 9. 
+![images/image9.png](images/image9.png)
+Figure 9. 
 
-![images/image10.png](images/image10.png)Figure 10.
+![images/image10.png](images/image10.png)
+Figure 10.
 
 Select multiple indices (hold CTRL to select multiple manually, or SHIFT to select a range) and press "S..." in the bottom.
 A functional image of selected components appears. ![images/image11.png](images/image11.png)Figure 11.
