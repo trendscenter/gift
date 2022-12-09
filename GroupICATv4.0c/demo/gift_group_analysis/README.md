@@ -173,52 +173,55 @@ A prompt to select mancovan parameter file appears (Fig. 7). It is located in th
 you have appointed in the previous steps. ![images/image7.png](images/image7.png)Figure 7.
 
 After selecting the parameter file, MANCOVAN Setup Analysis appears. 
-We will be using FNC correlation without lags (Fig. 8). ![images/image8.png](images/image8.png)Figure 8.
+We will be using FNC correlation without lags (Fig. 8). Then press the [+] button to add components.
+![images/image8.png](images/image8.png)Figure 8.
 
 In this demo we will use the Neuromark template (Figures 9-10).
-![images/image9.png](images/image9.png)
-<br>Figure 9. 
+![images/image9.png](images/image9.png)<br> 
+Figure 9. 
 
 ![images/image10.png](images/image10.png)<br> 
 Figure 10.
 
-Select multiple indices (hold CTRL to select multiple manually, or SHIFT to select a range) and press "S..." in the bottom.
-A functional image of selected components appears. ![images/image11.png](images/image11.png)Figure 11.
+In accordance with Fig. 11, name the main network and select its subcomponents, selecting multiple indices (hold CTRL to select multiple manually, or SHIFT to select a range). To see each subnetwork you have selected you may press [S...] at the bottom. Which subnetwork that belongs to the main network is found in Fig. 9. 
+![images/image11.png](images/image11.png)Figure 11.
 
-Press "Done" to confirm. The defined component is now enlisted. Repeat for all the components you wish to define.
+Press "Done" to confirm the network name, having its subnetworks. The defined network is now enlisted. Repeat for all the components you wish to define.
 ![images/image12.png](images/image12.png)Figure 12.
 
 We are free to change the P-Value threshold and TR accordingly. To define Number of components for each vector manually, proceed as following:
 first, tick "Autoselect No. of components..." ![images/image13.png](images/image13.png)Figure 13.
 
-Then, untick "Autoselect No. of components...". An input frame appears. Enter the default number of components. ![images/image14.png](images/image14.png)Figure 14.
+Then, untick "Autoselect No. of components...". An input frame appears (Fig. 14). Enter 2 as the default number of components. ![images/image14.png](images/image14.png)Figure 14.
 
-Click "Run" in the bottom of the window. MANCOVAN loads subjects. ![images/image15.png](images/image15.png)Figure 15.
+Click "Run" (Fig. 14) in the bottom of the window. MANCOVAN loads subjects. ![images/image15.png](images/image15.png)Figure 15.
 
-When loading is complete, we are ready to run MANCOVAN. ![images/image16.png](images/image16.png)Figure 16.
-Press "Run MANCOVAN" in the main menu. We do not want to remove nuisance covariates. ![images/image17.png](images/image17.png)Figure 17.
+When loading is complete, we are ready to run MANCOVAN (Fig. 16). ![images/image16.png](images/image16.png)Figure 16.<br> 
+
+Press "Run MANCOVAN" in the main menu (Fig. 16). We do not want to remove nuisance covariates (Fig. 17). ![images/image17.png](images/image17.png)Figure 17.<br> 
 
 Select MANCOVAN parameter file as done previously (in the projected MANCOVAN output directory). MANCOVAN prints the output
 to the MATLAB console. ![images/image18.png](images/image18.png)Figure 18.
 
-After MATLAB ceases to display "Processing..." marker in the left bottom part, we can display the results. ![images/image19.png](images/image19.png)Figure 19.
+After MATLAB ceases to display "Processing..." marker in the left bottom part, we can display the results (Fig. 19). ![images/image19.png](images/image19.png)Figure 19.
 
-Display univariate results. ![images/image20.png](images/image20.png)Figure 20.
-Define T-Threshold to be 1.0, positive and negative image values. We will not do any multiple test correction leave fALFF defaults and display the connectogram. ![images/image21.png](images/image21.png)Figure 21.
+Display univariate results (Fig. 20). ![images/image20.png](images/image20.png)Figure 20.<br> 
 
-Connectogram appears. We see some significant differences in the functional connectivities between components. ![images/image22.png](images/image22.png)Figure 22.
+Define T-Threshold to be 1.0, positive and negative image values. We will not do any multiple test correction, leave fALFF defaults and display the connectogram (Fig. 21). ![images/image21.png](images/image21.png)Figure 21.<br> 
 
-Another figure gives a hint on how significantly different components pairs differ from each other, plotted on a heatmap.
+Connectogram appears. We see significant differences in the functional connectivities between components (Fig. 22). ![images/image22.png](images/image22.png)Figure 22.
+
+Another figure gives a hint on how significantly different components pairs differ between males and females in a matrix (Fig. 23).
 ![images/image23.png](images/image23.png)Figure 23.
 
-The final figure hints on which components from manually defined have different connectivity across groups. It looks 
+The final figure (Fig. 24) the difference between groups for each main network. It looks 
 like in our setup, Default Mode network and Cognitive-Control network might have significantly different functional 
-connectivity patterns across groups. ![images/image24.png](images/image24.png)Figure 24.
+connectivity patterns between males and females. ![images/image24.png](images/image24.png)Figure 24.
 
 
 # **Conclusion** <a name="secConc"></a>
 
-We are happy if GIFT-BIDS and adjacent toolboxes can deem helpful in your work. Hopefully, this demo made you step closer to utilizing GIFT in your analyses, thus reducing computational burden and processing time.
+We are happy if GIFT-BIDS and adjacent toolboxes can deem helpful in your work. Hopefully, this demo helped you a step closer to utilizing GIFT in your analyses, thus reducing computational burden and processing time.
 
 
 # References <a name="secRef"></a>
@@ -226,4 +229,3 @@ We are happy if GIFT-BIDS and adjacent toolboxes can deem helpful in your work. 
 1.  Du, Y., Fu, Z., Sui, J., Gao, S., Xing, Y., Lin, D., ... & Alzheimer's Disease Neuroimaging Initiative. (2020). NeuroMark: An automated and adaptive ICA based pipeline to identify reproducible fMRI markers of brain disorders. _NeuroImage: Clinical_, _28_, 102375. <a name="refDu2020"></a> [Click here for article](https://www.sciencedirect.com/science/article/pii/S2213158220302126)
 
 2.  Esteban, O., Markiewicz, C. J., Blair, R. W., Moodie, C. A., Isik, A. I., Erramuzpe, A., ... & Gorgolewski, K. J. (2019). fMRIPrep: a robust preprocessing pipeline for functional MRI. _Nature methods_, _16_(1), 111-116. <a name="refEsteban2019"></a>
-
