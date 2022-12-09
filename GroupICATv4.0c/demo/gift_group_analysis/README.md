@@ -147,15 +147,16 @@ To finally find the differences between the groups visualize them, we will run t
 -  addpath(genpath('/my/gift/path'));
 -  gift
 
-To launch MANCOVAN, select it from the main GIFT toolbox menu: ![images/image1.png](images/image1.png)Figure 1.
+To launch MANCOVAN, select it from the main GIFT toolbox menu (Fig. 1). ![images/image1.png](images/image1.png)<br> 
+Figure 1.
 
 The main MANCOVAN window appears. 
-We need to create design matrix first. Click on the corresponding box. The window will prompt you for a parameter file.
+We need to create design matrix first. Click on the corresponding box (Fig. 2). The window will prompt you for a parameter file.
 It is located in the output directory of the GIFT analysis (output from gift-bids app). ![images/image2.png](images/image2.png)Figure 2.
 
 In the next step, traverse down to a MANCOVAN output directory (that you perhaps have previously made) and press "." in the right pane to chose the directory and press "OK" in the bottom to confirm.
 
-Next, the test configuration window appears. We will be using a "2-sample t-test" with no covariates. <a name="image3"></a>
+Next, the test configuration window appears. We will be using a "2-sample t-test" with no covariates (Fig. 3). <a name="image3"></a>
 ![images/image3.png](images/image3.png)Figure 3.
 
 In the screen that appears, define groups. Give a name to a group (e.g., males), and hold "CTRL" to select multiple subjects of the male group (e.g.: 1, 3, 4, 5, 10, 12, 14, 15, 17, 18, 21, 23, 25, 29, 30, please note that Fig. 4 is slightly wrong). Click "OK" when all the subjects of a group have been highlighted. 
