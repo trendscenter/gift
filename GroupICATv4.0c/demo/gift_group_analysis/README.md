@@ -45,7 +45,7 @@ Brain imaging data structure (BIDS) is a guideline providing a reproducible way 
 
 ## `run-fmriprep.sh` - Preprocessing the Raw Data 
 
-Data preprocessing includes normalization the MNI space and different other standartization/artifact removal procedures. We use fMRIprep ([Esteban et al., 2019](#refEsteban2019)) for data preprocessing. Also this step is optional (as above) as you may save time skipping to the "Running GIFT" section (using the dataset that already has completed the time consuming fMRIprep processing). Please refer to [fMRIprep documentation](https://fmriprep.org/en/1.5.1/index.html) for installation and detailed preprocessing steps and methods. fMRIprep may be run using a container (Singularity or Docker) and this example shows how to run Singularity:
+Data preprocessing includes normalization from native space into the MNI space and different other standartization/artifact removal procedures. We use fMRIprep ([Esteban et al., 2019](#refEsteban2019)) for data preprocessing. Also this step is optional (as above) as you may save time skipping to the "Running GIFT" section (using the dataset that already has completed the time consuming fMRIprep processing). Please refer to [fMRIprep documentation](https://fmriprep.org/en/1.5.1/index.html) for installation and detailed preprocessing steps and methods. fMRIprep may be run using a container (Singularity or Docker) and this example shows how to run Singularity:
 
 
 ```
