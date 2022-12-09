@@ -75,7 +75,7 @@ This command utilizes fslmaths utility from Freesurfer (available in fmriprep to
 # Running GIFT <a name="secGift"></a>
 If you did not run the previous steps you may start with preprocessed data found [here (link will soon come)](no link).
 
-Now, that the data has been preprocessed, we turn to GIFT to actually carry out the Independent component analysis. GIFT is available in several flavors: as a Docker app, Matlab app with a graphical user interface. In following paragraphs, we look closer at all of the different ways to run GIFT.
+Now, that the data has been preprocessed, we turn to GIFT to actually carry out the Independent component analysis. GIFT is available in several flavors: as a Docker app, Matlab app with a graphical user interface. In following paragraphs, we look closer at different ways to run GIFT.
 
 
 ## Processing Independent Component Analysis Using GIFT-BIDS-App
