@@ -206,7 +206,7 @@ After MATLAB ceases to display "Processing..." marker in the left bottom part, w
 
 Display univariate results (Fig. 20). ![images/image20.png](images/image20.png)Figure 20.<br> 
 
-Define T-Threshold to be 1.0, positive and negative image values. We will not do any multiple test correction, leave fALFF defaults and display the connectogram (Fig. 21). ![images/image21.png](images/image21.png)Figure 21.<br> 
+Define T-Threshold to be 1.0, positive and negative image values. We will not do any multiple comparisons correction (too few subjects), leave fALFF defaults and display the connectogram (Fig. 21). ![images/image21.png](images/image21.png)Figure 21.<br> 
 
 Connectogram appears. We see significant differences in the functional connectivities between components (Fig. 22). ![images/image22.png](images/image22.png)Figure 22.
 
