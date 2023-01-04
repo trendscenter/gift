@@ -191,7 +191,7 @@ Press "Done" to confirm the network name, having its subnetworks. The defined ne
 We are free to change the P-Value threshold and TR accordingly. To define Number of components for each vector manually, proceed as following:
 first, tick "Autoselect No. of components..." ![images/image13.png](images/image13.png)Figure 13.
 
-Then, untick "Autoselect No. of components...". An input frame appears (Fig. 14). Enter 2 as the default number of components. ![images/image14.png](images/image14.png)Figure 14.
+Then, untick "Autoselect No. of components...". An input frame appears (Fig. 14). Enter 15 as the default number of components (2, as shown in Fig. 14 may also work). ![images/image14.png](images/image14.png)Figure 14.
 
 Click "Run" (Fig. 14) in the bottom of the window. MANCOVAN loads subjects. ![images/image15.png](images/image15.png)Figure 15.
 
