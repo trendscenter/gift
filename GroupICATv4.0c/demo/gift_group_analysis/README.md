@@ -35,7 +35,7 @@ This data is partitioned to show results with few subjects and is biased and may
 
 Raw fMRI and structural T1 data is available if you have time to run demo from scratch the following link will soon contain the raw data [here (link will soon come)](no link). Please contact the authors.
 
-If you want to step to the "Running GIFT" section you may start with preprocessed data found [here (link will soon come)](no link).
+If you want to step to the "Running GIFT" section you may start with preprocessed data found [here](https://trendscenter.org/trends/software/gift/data/giftdemo2022prep.zip).
 
 # **Processing The Demo Data** <a name="secProcDemo"></a>
 
