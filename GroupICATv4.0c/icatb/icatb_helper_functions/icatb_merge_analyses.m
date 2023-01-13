@@ -102,9 +102,7 @@ for n = 1:length(param_files)
     
     tmpSub = sesInfo.numOfSub*sesInfo.numOfSess;
     
-    if (isempty(comp_network_names{n}))
-        comp_network_names{n} = {'ALL', (1:sesInfo.numComp)};
-    end
+    % 
     
     if (strcmpi(merge_type, 'stack_subjects'))
         
