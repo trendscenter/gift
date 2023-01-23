@@ -178,14 +178,6 @@ end
 
 HInfo = sesInfo.HInfo;
 
-% batch support for head motion matching the GUI
-covariate_files = sesInfo.userInput.hd;
-if ~isempty(covariate_files)
-    disp('Timecourses will be removed head motion covariates...');
-else
-    disp('Head motion covariates are not provided...');
-end
-
 %% Write results
 if (writeInfo)
     
@@ -295,9 +287,8 @@ if (writeInfo)
         countS = datasets_in_use(countDataset);
         nSub = ceil(countS/numOfSess);
         nSess = mod(countS - 1, numOfSess) + 1;
-        % Support added for head motion in batch to match GUI
         timecourses = icatb_loadComp(sesInfo, components, 'subjects', nSub, 'sessions', nSess, 'vars_to_load', 'tc', 'detrend_no', ...
-            detrendNumber, 'subject_ica_files', subjectICAFiles, 'covariates', covariate_files);
+            detrendNumber, 'subject_ica_files', subjectICAFiles);
         tc = timecourses;
         kvals = [];
         if (compute_kurtosis)
@@ -353,9 +344,8 @@ if (writeInfo)
             countS = datasets_in_use(countDataset);
             nSub = ceil(countS/numOfSess);
             nSess = mod(countS - 1, numOfSess) + 1;
-            % Support added for head motion in batch to match GUI
             ic = icatb_loadComp(sesInfo, components, 'subjects', nSub, 'sessions', nSess, 'vars_to_load', 'ic', 'subject_ica_files', ...
-                subjectICAFiles, 'covariates', covariate_files);
+                subjectICAFiles);
             if (compute_kurtosis)
                 kurt_ic = kurt(ic);
                 icatb_parSave(tmpFiles{countDataset}, {kurt_ic}, {'kurt_ic'}, '-append');

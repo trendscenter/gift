@@ -208,18 +208,12 @@ sesInfo.userInput.read_complex_images = lower(read_complex_images);
 sesInfo.userInput.write_complex_images = lower(write_complex_images);
 
 %% Read data
-% Support to handle motion regression in batch as well as in the GUI
-if ~isfield(inputData, 'input_data_hd_patterns')
-    inputData.input_data_hd_patterns = '';
-end
-
 [sesInfo] = icatb_name_complex_images(sesInfo, 'read');
 
 [files, designMatrix, numOfSub, numOfSess, dataSelMethod, diffTimePoints, spmMatFlag] = icatb_dataSelection(...
     inputData, sesInfo.userInput.pwd, sesInfo.userInput.prefix, ...
     sesInfo.userInput.read_complex_file_naming, sesInfo.userInput.read_complex_images);
 sesInfo.userInput.files = files;
-sesInfo.userInput.hd    = inputData.input_data_hd_patterns; %support for motion reg
 SPMFiles = designMatrix;
 sesInfo.userInput.dataSelMethod = dataSelMethod;
 sesInfo.userInput.designMatrix = designMatrix;
