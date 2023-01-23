@@ -54,7 +54,7 @@ Search_BIC(ComPlusSm,components,simC, simS,1);
 ListofBics = BicList;
 initBicList();
 BicId = 1;
-fprintf("Permuted Run 1 Completed! \n");
+fprintf('Permuted Run 1 Completed! \n');
 end
 %end
 %% Searching biclusters for secondary run: for other permutations depending on repititions expected  
@@ -63,7 +63,7 @@ temp = randperm(length(permutations));
 n_perm= temp(1:reps);
 for perm = 1:reps 
 if(length(n_perm(perm))>=minCmp)
-fprintf("Permutation %u running... \n", perm);
+fprintf('Permutation %u running... \n', perm);
 Search_BIC(permutations(n_perm(perm),:),components,simC, simS,1); 
 end
 
@@ -91,6 +91,6 @@ BicId = 1;
 initBicList();
 end
 bic = ListofBics;
-fprintf("All the biclusters has been enlisted\n");
+fprintf('All the biclusters has been enlisted\n');
 end
 %%

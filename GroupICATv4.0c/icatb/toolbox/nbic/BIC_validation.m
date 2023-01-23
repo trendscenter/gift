@@ -32,7 +32,7 @@ for cl =1:BicId-1 % For the first one it will not enter to this for loop
         BicList(cl).comps = union(BicList(cl).comps,simCmp);
         duplicate = 1; % Flag for duplicate
         BicList(cl).freq = BicList(cl).freq+1;
-        fprintf("similar voxels\n")
+        fprintf('similar voxels\n')
         break;
     end
     if(Cjk>=minCmp && Sjk<=ovrlookedSub) % If Components are almost similar but no Subjects similar or <=1
@@ -41,7 +41,7 @@ for cl =1:BicId-1 % For the first one it will not enter to this for loop
         %BicList(cl).comps = union(BicList(cl).comps,simCmp);% Changed very recently for more traits  
         duplicate = 1; % Flag for duplicate
         BicList(cl).freq = BicList(cl).freq+1;
-        fprintf("similar comps\n")
+        fprintf('similar comps\n')
         break;
     end
     F1 = (2*Sjk*Cjk)/(Nj+Nk);
@@ -69,11 +69,11 @@ if(maxF1>=0.28)
   if(length(interSub)>=minSub && length(interCmp)>=minCmp)
   BicList(simBICidx).subs = interSub;
   BicList(simBICidx).comps = interCmp;
-  fprintf("Merged in %d!\n",simBICidx);
+  fprintf('Merged in %d!\n',simBICidx);
   end
   %--------------------------------------------------------------- 
   % No new BIC, so, Don't increase the BicId
-  %fprintf("Frequency increased at %d!\n",simBICidx);
+  %fprintf('Frequency increased at %d!\n',simBICidx);
   BicList(simBICidx).freq = BicList(simBICidx).freq+1;
   validity = 0;
 else
