@@ -87,12 +87,23 @@ dfncInfo.userInput.comp = comp;
 
 
 %% TR
-if (isfield(sesInfo, 'TR'))
-    dfncInfo.userInput.TR = sesInfo.TR;
+% Take the batch TR preference since the TR from the parameter file not
+% changes results at the level before this and could have been ignorantly
+% incorrect before
+if (isfield(sesInfo, 'TR') & isfield(inputData, 'TR'))
+    % Both param file and batch contains TRs
+     dfncInfo.userInput.TR = inputData.TR;
+     if sesInfo.TR ~= inputData.TR
+         fprintf(['icatbWarning ' char(datetime) ' icatb_dfnc_batch.m: TR in the parameter file DIFFERS from the TR in the batch file! \n']);
+         fprintf(['icatbWarning ' char(datetime) ' icatb_dfnc_batch.m: GIFT will pick the BATCH file TR for future processing. \n']);
+     end
 else
-    dfncInfo.userInput.TR = inputData.TR;
+    if (isfield(inputData, 'TR'))
+        dfncInfo.userInput.TR = inputData.TR;
+    else
+        dfncInfo.userInput.TR = sesInfo.TR; % Pick TR from parameter file as last resort
+    end
 end
-
 
 aswc = 22;
 tv_dfnc = 1;
