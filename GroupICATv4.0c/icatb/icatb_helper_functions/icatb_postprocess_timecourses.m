@@ -169,14 +169,19 @@ try
 catch
 end
 
-%ce011823
-% % batch support for head motion matching the GUI
-% covariate_files = sesInfo.userInput.hd;
-% if ~isempty(covariate_files)
-%     disp('Timecourses will be removed head motion covariates...');
-% else
-%     disp('Head motion covariates are not provided...');
-% end
+% batch support for head motion matching the GUI
+try
+    covariate_files = sesInfo.userInput.hd;
+catch %In GUI head motion regression may not be supported for static FNC
+    sesInfo.userInput.hd = '';
+    covariate_files = sesInfo.userInput.hd;
+end
+
+if ~isempty(covariate_files)
+    disp('Timecourses will be removed head motion covariates...');
+else
+    disp('Head motion covariates are not provided...');
+end
 
 %% Write results
 if (writeInfo)
@@ -314,7 +319,7 @@ if (writeInfo)
             countS = countS + 1;
             % Support added for head motion in batch to match GUI
             timecourses = icatb_loadComp(sesInfo, components, 'subjects', subjects(nSub), 'sessions', nSess, 'vars_to_load', 'tc', ...
-                'detrend_no', DETRENDNUMBER, 'subject_ica_files', subjectICAFiles); %ce0118 , 'covariates', covariate_files
+                'detrend_no', DETRENDNUMBER, 'subject_ica_files', subjectICAFiles, 'covariates', covariate_files);
             if (compute_kurtosis)
                 kvals = kurt(timecourses);
                 kurt_tc_mean = kurt_tc_mean + kvals;

@@ -179,7 +179,12 @@ end
 HInfo = sesInfo.HInfo;
 
 % batch support for head motion matching the GUI
-covariate_files = sesInfo.userInput.hd;
+try
+    covariate_files = sesInfo.userInput.hd;
+catch %In GUI head motion regression may not be supported for static FNC
+    sesInfo.userInput.hd = '';
+    covariate_files = sesInfo.userInput.hd;
+end
 if ~isempty(covariate_files)
     disp('Timecourses will be removed head motion covariates...');
 else

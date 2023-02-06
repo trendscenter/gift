@@ -90,7 +90,7 @@ dfncInfo.userInput.comp = comp;
 % Take the batch TR preference since the TR from the parameter file not
 % changes results at the level before this and could have been ignorantly
 % incorrect before
-if (isfield(sesInfo, 'TR') & isfield(inputData, 'TR'))
+if (isfield(sesInfo, 'TR') && isfield(inputData, 'TR'))
     % Both param file and batch contains TRs
      dfncInfo.userInput.TR = inputData.TR;
      if sesInfo.TR ~= inputData.TR
