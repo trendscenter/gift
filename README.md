@@ -1,7 +1,4 @@
 # GIFT 
-<!-- PLEASE DO NOT EDIT BELOW THIS LINE -->
-### Group ICA/IVA software (MATLAB) v4.0.4.0
-<!-- PLEASE DO NOT EDIT ABOVE THIS LINE -->
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Table of Contents
 1. [Introduction](#secIntro)
