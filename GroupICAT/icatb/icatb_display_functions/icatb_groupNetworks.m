@@ -12,6 +12,48 @@ function icatb_groupNetworks(file_names, network_names, network_vals, varargin)
 %   d. prefix - Prefix for plotting title. Default is IC
 %   e. convert_to_z - Options are 'yes' and 'no'.
 %
+% % -------------------------------
+% % Example that plots 3 different networks (A, B and C),
+% % calculated with 2 different methods 
+% % side by side with exact matching coordinates
+% % for easy comparison
+% 
+% network_names = {'Network A', 'Network B', 'Network C'};
+% prefix = 'Comp ';
+% structFile = 'C:\path\to\GIFT\GroupICAT\icatb\icatb_templates\ch2bet.nii';
+% files = {'C:\path\to\my\data\networks_method1.nii,1'; % Network A
+%          'C:\path\to\my\data\networks_method2.nii,1'; % Network A
+%          'C:\path\to\my\data\networks_method1.nii,2'; % Network B
+%          'C:\path\to\my\data\networks_method2.nii,2'; % Network B
+%          'C:\path\to\my\data\networks_method1.nii,3'; % Network C
+%          'C:\path\to\my\data\networks_method2.nii,3'; % Network C
+% };
+% 
+% % Set coordinates and threshold to data
+% coords=[];
+% for i=0:2
+%     [data, ~, XYZ] = icatb_loadData(char(files{i*2+1}));
+%     [~, inds] = max((data(:)));
+%     maxVoxelPos = XYZ(:, inds);
+%     maxVoxelPos = maxVoxelPos(:)';
+%     maxVoxelPos = repmat(maxVoxelPos, 2, 1);
+%     coords{i+1,1}=maxVoxelPos;
+%     range=[min(data(:)),max(data(:))];
+%     threshold(i+1,:)=[max(abs(range))/5,max(abs(range))];
+% end
+% 
+% % Methods 1 & 2 will be paired with same threshold
+% network_vals={[1, 2],[3, 4],[5, 6]};
+% % for "positive and negative case, 
+% % a threshold [4, 10] will retain values
+% % between 4<intensity<10 and -10<intensity<-4
+% 
+% % Plot network maps
+% icatb_groupNetworks(files, network_names, network_vals, ...
+%     'threshold', threshold, 'coords', coords, ...
+%     'structfile', structFile, 'interMediatePlot', 0, ...
+%     'image_values', 'positive and negative', ...
+%     'convert_to_z', 1, 'prefix', prefix);
 
 icatb_defaults;
 global UI_FS;
