@@ -72,6 +72,8 @@ if (~isempty(RAND_SHUFFLE) && (RAND_SHUFFLE == 1))
     end
 end
 
+handles.text1.String = {'Source Based Morphometry' ; ['SBM ' icatb_version()]};
+
 group_ica_modality = 'smri';
 
 setappdata(0, 'group_ica_modality', group_ica_modality);

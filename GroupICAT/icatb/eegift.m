@@ -70,6 +70,7 @@ if (~isempty(RAND_SHUFFLE) && (RAND_SHUFFLE == 1))
     end
 end
 
+handles.text1.String = {'Group ICA/IVA of EEG Toolbox' ; ['EEGIFT ' icatb_version()]};
 
 group_ica_modality = 'eeg';
 

@@ -115,6 +115,9 @@ global EXIT_GICA_APP;
 % Choose default command line output for groupica
 handles.output = hObject;
 
+% Update the version number
+handles.title_text.String = {'Group ICA /IVA Toolbox' ; ['GroupICAT ' icatb_version()]};
+
 % Update handles structure
 guidata(hObject, handles);
 
