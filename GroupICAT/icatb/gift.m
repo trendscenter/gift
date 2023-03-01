@@ -55,8 +55,6 @@ group_ica_modality = 'fmri';
 
 setappdata(0, 'group_ica_modality', group_ica_modality);
 
-handles.text1.String = {'Group ICA/IVA of fMRI Toolbox' ; ['GIFT ' icatb_version()]};
-
 % Choose default command line output for gift
 handles.output = hObject;
 
@@ -64,6 +62,9 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 icatb_check_path;
+
+% Retrives version number
+handles.text1.String = {'Group ICA/IVA of fMRI Toolbox' ; ['GIFT ' icatb_version()]};
 
 % move the gui at the center of the screen
 movegui(hObject, 'center');

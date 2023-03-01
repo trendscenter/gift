@@ -115,14 +115,14 @@ global EXIT_GICA_APP;
 % Choose default command line output for groupica
 handles.output = hObject;
 
-% Update the version number
-handles.title_text.String = {'Group ICA /IVA Toolbox' ; ['GroupICAT ' icatb_version()]};
-
 % Update handles structure
 guidata(hObject, handles);
 
 % Check gift path
 icatb_check_path;
+
+% Update the version number
+handles.title_text.String = {'Group ICA /IVA Toolbox' ; ['GroupICAT ' icatb_version()]};
 
 % move the gui at the center of the screen
 movegui(hObject, 'center');

@@ -72,8 +72,6 @@ if (~isempty(RAND_SHUFFLE) && (RAND_SHUFFLE == 1))
     end
 end
 
-handles.text1.String = {'Source Based Morphometry' ; ['SBM ' icatb_version()]};
-
 group_ica_modality = 'smri';
 
 setappdata(0, 'group_ica_modality', group_ica_modality);
@@ -85,6 +83,9 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 icatb_check_path;
+
+% Retrieves version number
+handles.text1.String = {'Source Based Morphometry' ; ['SBM ' icatb_version()]};
 
 % move the gui at the center of the screen
 movegui(hObject, 'center');
