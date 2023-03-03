@@ -276,7 +276,7 @@ if (sesInfo.which_analysis == 2)
                         
                         for nPdfs = 1:length(icassoFigs)
                             countPdfs = countPdfs + 1;
-                            tmpImFile = [pdfPrefix, '_', num2str(countPdfs), '.pdf'];
+                            tmpImFile = [pdfPrefix, '_icasso', num2str(countPdfs), '.pdf'];
                             set(icassoFigs(nPdfs), 'PaperPositionMode', 'auto');
                             print(icassoFigs(nPdfs), fullfile(resultsDir, tmpImFile), printOptions{:});
                             pdfFiles{countPdfs} = fullfile(resultsDir, tmpImFile);
