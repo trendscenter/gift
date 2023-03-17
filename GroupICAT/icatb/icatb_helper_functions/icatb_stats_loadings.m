@@ -29,7 +29,7 @@ loading_coeff = loadCoeff(fileName, extn);
 
 drawnow;
 
-desCriteriaOptions = {'One sample t-test', 'Anova', 'Multiple Regression'};
+desCriteriaOptions = {'One sample t-test', 'Two sample t-test', 'Anova', 'Multiple Regression'};
 figureData.outputDir = outDir;
 figureData.prefix = fN;
 figureData.data = loading_coeff;
@@ -408,14 +408,21 @@ try
     designCriteriaVal = get(designCriteriaH, 'value');
     designCriteria = designOptions{designCriteriaVal};
     
-    if (isempty(figData.cov) && ~strcmpi(designCriteria, 'one sample t-test'))
+    if (isempty(figData.cov) && ~strcmpi(designCriteria, 'one sample t-test') && ~strcmpi(designCriteria, 'two sample t-test'))
         error('Please enter covariates in order to do stats');
+    end
+    
+    if strcmpi(designCriteria, 'two sample t-test')
+        if (~isfield(figData, 'ttest_opts'))
+            error('Select subjects to run two sample t-test');
+        end
+        ttest_opts = figData.ttest_opts;
     end
     
     data = figData.data;
     
     %% Covariates
-    if (~strcmpi(designCriteria, 'one sample t-test'))
+    if (~strcmpi(designCriteria, 'one sample t-test') && ~strcmpi(designCriteria, 'two sample t-test'))
         covH = findobj(handles, 'tag', 'cov');
         covVal = get(covH, 'value');
         if (isempty(covVal))
@@ -490,7 +497,7 @@ try
     titlePrint = ['Design critera: ', designCriteria];
     
     if (strcmpi(designCriteria, 'one sample t-test'))
-        %% T-test
+        %% One sample t-test
         
         pValue = zeros(1, size(data, 2));
         tValue = pValue;
@@ -503,6 +510,31 @@ try
             tmpDat = data(:, nComp);
             tmpDat(isnan(tmpDat)) = [];
             [pValue(nComp), tValue(nComp)] = icatb_ttest(tmpDat);
+            tbl(nComp + 1, :) = {num2str(nComp), num2str(pValue(nComp)), num2str(tValue(nComp))};
+        end
+        
+        icatb_print_table(tbl, fid, 'a+', 0);
+        fprintf(fid, '\n\n');
+        fclose(fid);
+        
+        
+    elseif (strcmpi(designCriteria, 'two sample t-test'))
+        %% Two sample t-test
+        
+        pValue = zeros(1, size(data, 2));
+        tValue = pValue;
+        
+        fid = fopen(outFileName, 'a+');
+        fprintf(fid, '%s\n\n', titlePrint);
+        tbl = cell(size(data, 2) + 1, 3);
+        ttest_str = ['T-value (', ttest_opts.groups(1).name, ' vs ', ttest_opts.groups(2).name, ')'];
+        tbl(1, :) = {'Component Number', 'p-value', ttest_str};
+        for nComp = 1:size(data, 2)
+            tmpDat = data(:, nComp);
+            group1_data = tmpDat(ttest_opts.groups(1).val);
+            group2_data = tmpDat(ttest_opts.groups(2).val);
+            %tmpDat(isnan(tmpDat)) = [];
+            [pValue(nComp), tValue(nComp)] = icatb_ttest2(group1_data, group2_data);
             tbl(nComp + 1, :) = {num2str(nComp), num2str(pValue(nComp)), num2str(tValue(nComp))};
         end
         
@@ -655,16 +687,41 @@ designCriteria = designOptions{designCriteriaVal};
 covH = findobj(handles, 'tag', 'cov');
 addCovH = findobj(handles, 'tag', 'add_cov_button');
 removeCovH = findobj(handles, 'tag', 'remove_cov_button');
+figureData = get(handles, 'userdata');
 
 % contrastListH = findobj(handles, 'tag', 'selContrasts');
 % addContrastsH = findobj(handles, 'tag',  'addContrasts');
 % removeContrastsH = findobj(handles, 'tag',  'removeContrasts');
 
-if (strcmpi(designCriteria, 'one sample t-test'))
+subjectString = cellstr([repmat('Subject ', figureData.numOfSub, 1), num2str((1:figureData.numOfSub)')]);
+
+if (strcmpi(designCriteria, 'one sample t-test') || strcmpi(designCriteria, 'two sample t-test'))
     
     set(covH, 'enable', 'off');
     set(addCovH, 'enable', 'off');
     set(removeCovH, 'enable', 'off');
+    
+    drawnow;
+    if (strcmpi(designCriteria, 'two sample t-test'))
+        % Select group 1
+        [group1, val1] = icatb_select_groups_gui(subjectString, 'Group 1', 'Select Group 1', '',[]);
+        if (isempty(group1))
+            error('Subjects are not selected for group 1');
+        end
+        % Select group 2
+        [group2, val2] = icatb_select_groups_gui(subjectString, 'Group 2', 'Select Group 2', '',[]);
+        if (isempty(group2))
+            error('Subjects are not selected for group 2');
+        end
+        ttest_opts.groups(1).name = group1;
+        ttest_opts.groups(1).val = val1;
+        ttest_opts.groups(2).name = group2;
+        ttest_opts.groups(2).val = val2;
+        
+        figureData.ttest_opts = ttest_opts;
+        set(handles, 'userdata', figureData);
+    end
+    
     %     set(contrastListH, 'enable', 'off');
     %     set(addContrastsH, 'enable', 'off');
     %     set(removeContrastsH, 'enable', 'off');
