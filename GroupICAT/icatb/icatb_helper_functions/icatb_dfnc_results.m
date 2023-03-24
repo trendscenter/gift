@@ -974,22 +974,32 @@ else
     
     %% State vector stats
     
-    aFR = zeros(M, dfncInfo.postprocess.num_clusters);
-    aTM = zeros(M, dfncInfo.postprocess.num_clusters, dfncInfo.postprocess.num_clusters);
-    aMDT = zeros(M, dfncInfo.postprocess.num_clusters);
-    aNT = zeros(M, 1);
+    matFractStateTime = zeros(M, dfncInfo.postprocess.num_clusters);
+    matTransitions = zeros(M, dfncInfo.postprocess.num_clusters, dfncInfo.postprocess.num_clusters);
+    matMeanDwellTime = zeros(M, dfncInfo.postprocess.num_clusters);
+    matNumTransitions = zeros(M, 1);
     for ii = 1:M
         [FRii, TMii, MDTii, NTii] = icatb_dfnc_statevector_stats(aIND(:,ii), dfncInfo.postprocess.num_clusters);
-        aFR(ii,:) = FRii;
-        aTM(ii,:,:) = TMii;
-        aMDT(ii,:) = MDTii;
-        aNT(ii) = NTii;
+        matFractStateTime(ii,:) = FRii;
+        matTransitions(ii,:,:) = TMii;
+        matMeanDwellTime(ii,:) = MDTii;
+        matNumTransitions(ii) = NTii;
     end
+    
+    % save the summary statistics
+    README_icatb={'Score Summary Information'; ...
+            'Type following commands to get statistacal reports'; ...
+            'mean(matFractStateTime(:,:)) % returns the average fractal state time for the group'; ...
+            'squeeze(mean(matTransitions(:,:,:))) % returns the mean of the transition matrix' ; ...
+            'mean(matMeanDwellTime) % returns the mean of the subject mean dwell times' ; ...
+            'matNumTransitions % returns the number of transitions per subject'};
+    save(fullfile(dfncInfo.outputDir, [dfncInfo.prefix '_display_sum_scores.mat']), 'README_icatb', 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime');
+    disp(['dFNC summary statistics saved to ' fullfile(dfncInfo.outputDir, [dfncInfo.prefix '_display_sum_scores.mat'])]);
     
     H(end+1).H = icatb_getGraphics('State Vector Stats', 'graphics', 'dfnc_summary4', figVisible);
     colormap(jet);
     
-    icatb_dfnc_plot_statevector_stats(dfncInfo.postprocess.num_clusters, aFR, aTM, aMDT, aNT, H(end).H);
+    icatb_dfnc_plot_statevector_stats(dfncInfo.postprocess.num_clusters, matFractStateTime, matTransitions, matMeanDwellTime, matNumTransitions, H(end).H);
     
     set(findobj(H(end).H, 'type', 'axes'), 'YColor', FONT_COLOR, 'XColor', FONT_COLOR);
     
