@@ -28,5 +28,4 @@ try
     s = fclose(fid);
 catch
     cd(sDirBefore);
-    s = fclose(fid);
 end
