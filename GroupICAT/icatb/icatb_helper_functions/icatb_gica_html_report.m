@@ -1234,7 +1234,7 @@ if strcmpi(selected_ica_algorithm, 'moo-icar')
 end
 
 
-if (~(strcmpi(selected_ica_algorithm, 'iva-gl') || strcmpi(selected_ica_algorithm, 'gig-ica') || strcmpi(selected_ica_algorithm, 'constrained ica (spatial)') || useTemporalICA))
+if (~(strcmpi(selected_ica_algorithm, 'iva-gl') || strcmpi(selected_ica_algorithm, 'gig-ica') || icatb_string_compare(selected_ica_algorithm, 'constrained') || useTemporalICA))
     backReconType = 'Regular';
     if (isfield(sesInfo, 'backReconType'))
         backReconType = sesInfo.backReconType;

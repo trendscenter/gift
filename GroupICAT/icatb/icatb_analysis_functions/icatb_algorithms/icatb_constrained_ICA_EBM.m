@@ -1,5 +1,6 @@
 function W = icatb_constrained_ICA_EBM(X,guess_mat,rho,varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Constrained EBM
 % ICA-EBM: ICA by Entropy Bound Minimization (real-valued version)
 % Four nonlinearities
 % x^4,  |x|/(1+|x|),    x|x|/(10+|x|),  and     x/(1+x^2)
@@ -11,18 +12,25 @@ function W = icatb_constrained_ICA_EBM(X,guess_mat,rho,varargin)
 %       is the number of reference signals.
 % output:
 % W:    demixing matrix
-% Program by Xi-Lin Li. Please contact me at lixilin@umbc.edu
+% Program by Hanlu Yang. Please contact me at hyang3@umbc.edu
+% Example:  W= Constrained_ICA_EBM(X,guess_mat,rho); 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % References:
+
+% [1] Yang, H., Ghayem F., Gabrielson B., M. A. B. S. Akhonda, Calhoun, V. D., and  Adali, T.,
+% "Constrained independent component analysis based on entropy bound minimization 
+% for subgroup identification from multisubject fMRI data"
+
+% [2] Li, X. L., & Adali, T. (2009, September). A novel entropy estimator and its application to ICA.
+% In 2009 IEEE International Workshop on Machine Learning for Signal Processing (pp. 1-6). IEEE.
 % 
-% [1] Xi-Lin Li and Tulay Adali, "A novel entropy estimator and its application to ICA," 
-% IEEE International Workshop on Machine Learning for Signal Processing 2009. 
-%
-% [2] Xi-Lin Li and Tulay Adali, "Independent component analysis by entropy bound minimization"
-% IEEE Transaction on Signal Processing, submitted.
+% [3] Li, X. L., & Adali, T. (2010). Independent component analysis by entropy bound minimization. 
+% IEEE Transactions on Signal Processing, 58(10), 5151-5164.
 % 
 %
 %
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Part 0: Here begins some pre-processing
@@ -40,8 +48,9 @@ options=struct( ...
    'maxIter',512, ... % max number of iterations
    'WDiffStop',1e-6, ... % stopping criterion
    'alpha0',1.0, ... % initial step size scaling (will be doubled for complex-valued)
-   'Save_W',false ...
-   );
+   'Save_W',false, ...
+   'gam',3 ... % lagrange multiplier step parameter (default 3)F
+);
 
 % load in user supplied options
 options=getopt(options,varargin{:});
@@ -49,12 +58,12 @@ options=getopt(options,varargin{:});
 supplyA=~isempty(options.A); % set to true if user has supplied true mixing matrices
 blowup = 1e3;
 alphaScale=0.9; % alpha0 to alpha0*alphaScale when cost does not decrease
+options.rho = rho;
 alphaMin=options.WDiffStop; % alpha0 will max(alphaMin,alphaScale*alpha0)
 outputISI=false;
 opt_approach=find(strcmp(options.opt_approach, ...
    {'gradient','newton','quasi'}),1); % 1='gradient', 2='newton', 3='quasi'
 % options.whiten=(options.whiten || (opt_approach==3)); % whitening required for real-valued quasi & complex-valued gradient approach
-% filename = 'IVAG_results.txt';
 
 
 
@@ -66,12 +75,9 @@ saddle_test_enable = 1;
 tolerance = 1e-4;
 max_cost_increase_number = 5;
 stochastic_search_factor = 1;
-% mu_c = 0.5;
-mu_c = 0;
+mu_c = (1-options.rho)*options.gam ;
 
 gam = 3;
-% rho = rho;
-num_guess=size(guess_mat,2);
 
 verbose = 0;        % report the progress if verbose==1
 show_cost = 0;      % show the cost values vs. iterations at each stage if show_cost==1
@@ -92,6 +98,32 @@ else
 end
 
 W = symdecor(W);
+
+num_guess=size(guess_mat,2);
+mu_c = mu_c * ones(num_guess,1);
+num_W=size(W,1);
+%Re-sort existing W based on correlation with matrix W:
+ for kl=1:num_guess
+        r_n_c=guess_mat(:,kl);
+        for lp=1:num_W
+            w=W(lp,:).';
+            R_par = corrcoef(X'*w,r_n_c); %corr(y',rnc)
+            corr_w_guess(kl,lp)=R_par(1,2);
+        end
+ end
+%We may need to use auction to chose order:
+[~,max_idx]=max(abs(corr_w_guess),[],2); % ; Added by Zois 
+
+if length(unique(max_idx)) ~= num_guess
+    [colsol, ~] = auction((1-abs(corr_w_guess))');
+    max_idx=colsol';
+end
+
+c = setxor((1:num_W).', max_idx);
+sort_order=[max_idx ;c];
+
+W=W(sort_order,:);
+
 last_W = W;
 best_W = W;
 Cost = zeros(max_iter_fastica,1);
@@ -176,7 +208,8 @@ for iter = 1 : max_iter_fastica
         Cost(iter) = Cost(iter) - max_NE;
         
     end
-    
+
+        
     if Cost(iter)<min_cost
         min_cost = Cost(iter);
         best_W = last_W;
@@ -208,7 +241,6 @@ if show_cost
 end
 
 % [End of Part 0]
-i=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %           Part I: orthogonal ICA
 %  varying step size, stochastic gradient search
@@ -216,6 +248,31 @@ i=1;
 if verbose
     fprintf('\nOrthogonal ICA stage.');
 end
+
+num_guess=size(guess_mat,2);
+num_W=size(W,1);
+%Re-sort existing W based on correlation with matrix W:
+ for kl=1:num_guess
+        r_n_c=guess_mat(:,kl);
+        for lp=1:num_W
+            w=W(lp,:).';
+            R_par = corrcoef(X'*w,r_n_c); %corr(y',rnc)
+            corr_w_guess(kl,lp)=R_par(1,2);
+        end
+ end
+%We may need to use auction to chose order:
+[~,max_idx]=max(abs(corr_w_guess),[],2); % ; Added by Zois 
+
+if length(unique(max_idx)) ~= num_guess
+    [colsol, ~] = auction((1-abs(corr_w_guess))');
+    max_idx=colsol';
+end
+
+c = setxor((1:num_W).', max_idx);
+sort_order=[max_idx ;c];
+
+W=W(sort_order,:);
+
 last_W = W;
 best_W = W;
 Cost = zeros(max_iter_orth,1);
@@ -368,7 +425,8 @@ for iter = 1 : max_iter_orth
                 otherwise
                     ;
             end
-            
+        
+        
             if fastica_on
                 w1 = grad - Edgx*w;
             else  
@@ -828,8 +886,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % sort all the component
-[max_negentropy, index_sort] = sort(max_negentropy, 'descend');
-W = W(index_sort, :);
+% [max_negentropy, index_sort] = sort(max_negentropy, 'descend');
+% W = W(index_sort, :);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -839,6 +897,34 @@ W = W(index_sort, :);
 if verbose
     fprintf('\nNonorthogonal ICA stage.');
 end
+
+% have to realign W since there is a sorting of W based on NG in earlier
+% section
+num_guess=size(guess_mat,2);
+num_W=size(W,1);
+%Re-sort existing W based on correlation with matrix W:
+ for kl=1:num_guess
+        r_n_c=guess_mat(:,kl);
+        for lp=1:num_W
+            w=W(lp,:).';
+            R_par = corrcoef(X'*w,r_n_c); %corr(y',rnc)
+            corr_w_guess(kl,lp)=R_par(1,2);
+        end
+ end
+%We may need to use auction to chose order:
+[~,max_idx]=max(abs(corr_w_guess),[],2); % ; Added by Zois 
+
+if length(unique(max_idx)) ~= num_guess
+    [colsol, ~] = auction((1-abs(corr_w_guess))');
+    max_idx=colsol';
+end
+
+c = setxor((1:num_W).', max_idx);
+sort_order=[max_idx ;c];
+
+W=W(sort_order,:);
+
+
 last_W = W;
 best_W = W;
 Cost = zeros(max_iter_nonorth,1);
@@ -849,16 +935,15 @@ mu = 1/25;    %step size
 min_mu = 1/200;
 max_cost_increase_number = 3;
 cost_increase_counter = 0;
+
+
+       
 for iter = 1 : max_iter_nonorth
     
-    Cost(iter) = -log(abs(det(W)));
-    % CONSTRAINT
-   
+    Cost(iter) = -log(abs(det(W)));   
     %W = W(randperm(N),:);
     for n = 1 : N
-%          if n <= num_guess
-%             r_n_c = guess_mat(:,n);
-%          end
+
         % if N is too large, we adopt a smarter way to calculate h_n to
         % reduce the computational load
         if N>7
@@ -966,34 +1051,22 @@ for iter = 1 : max_iter_nonorth
         end
                        
         [max_NE, max_i] = max( NE_Bound );      % select the tightest bound
-%         Cost(iter) = Cost(iter) - max_NE;
-  
+        Cost(iter) = Cost(iter) - max_NE;
+
          % CONSTRAINT         
          if n <= num_guess
-%              if constraint_type == 0
-%                  e_pair = corrcoef(V_1(:,:,k)*W(n,:,k)',r_n_c); % correlation of w and r_n,W(n,:,k)'\V(:,:,k)
-%                  dis_wr=abs(e_pair(1,2));
-%              else
-                 r_n_c = guess_mat(:,n);
-                 e_pair = corrcoef(y',r_n_c); %correlation of y and r_n
-                 dis_wr=abs(e_pair(1,2));
-%              end
-             mu_old(n) = mu_c;
-             mu_new(n)=max(0,mu_c + gam*(rho-dis_wr));
-             mu_c=sign(e_pair(1,2))*mu_new(n);
+             %constrain reference signals
+             r_n_c = guess_mat(:,n);
+             e_pair = corrcoef(y',r_n_c); %correlation of y and r_n
+             dis_wr=abs(e_pair(1,2));
 
-             %Modify r_i: whitening
-%              if constraint_type == 0 % constrain w
-%                  r_n_mu=VV(:,:,k)*r_n_c; % If r_n is for w, it should be whiten,r_n\(V(:,:,k)')
-%                  r_n_mu=r_n_mu/norm(r_n_mu);
-%                  w1 = w + mu*grad - mu_c(n).*r_n_mu; % A column vector
-%              else
-                 r_n_c=r_n_c/norm(r_n_c);
-%                  w1 = w + mu*grad - mu_c.*(X*r_n_c); % A column vector
-%              end 
+             mu_old(n) = mu_c(n);
+             mu_new(n)=max(0,mu_c(n) + gam*(rho-dis_wr));
+             mu_c(n)=sign(e_pair(1,2))*mu_new(n);
+
+             r_n_c=r_n_c/norm(r_n_c);
+             dis_wr_all (iter,n) = dis_wr;
          end
-%         Cost(iter) = Cost(iter) - max_NE - (sum(sum(mu_new(n).^2 - mu_old(n).^2)))/(2*gam);
-
                     
             switch max_i
                 
@@ -1039,22 +1112,17 @@ for iter = 1 : max_iter_nonorth
                 otherwise
                     ;
             end
+         grad = grad + mu_c(n).*(X*r_n_c)  ; % A column vector. Gradient should be the original one and the constraint one
          grad = grad - (w'*grad)*w;
          grad = grad / norm(grad);
-       
          
-           w1 = w + mu*grad - mu_c.*(X*r_n_c); % A column vector
-
-            w1 = w1 / norm(w1);
-            W(n,:) = w1';
-            Cost(iter) = Cost(iter) - max_NE - (sum(mu_new(n).^2 - mu_old(n).^2))/(2*gam);
+         w1 = w + mu*grad;
+         w1 = w1 / norm(w1);
+         W(n,:) = w1';
 
     end
-%     Cost(iter) = Cost(iter) - max_NE;
+     Cost(iter) = Cost(iter) - sum((mu_new(n).^2 - mu_old(n).^2))/(2*gam); 
 
-%     Cost(iter) = Cost(iter) - (sum(sum(mu_new.^2 - mu_old.^2)))/(2*gam);
-
-    
     if Cost(iter) < min_cost
         cost_increase_counter = 0;
         min_cost = Cost(iter);
@@ -1229,3 +1297,100 @@ end
 if ~isempty(TargetField)
    error('Property names and values must be specified in pairs.');
 end
+
+function [colsol, rowsol] = auction(assignCost)
+
+%function [colsol, rowsol] = auction(assignCost, guard)
+%AUCTION : performs assignment using Bertsekas' auction algorithm
+%          The auction is 1-sided and uses a fixed epsilon.
+%  colsol = auction(assignCost) returns column assignments: colsol(j) gives the
+%           row assigned to column j.
+%
+%           assignCost is an m x n matrix of costs for associating each row
+%           with each column.  m >= n (rectangular assignment is allowed).
+%           Auction finds the assignment that minimizes the costs.
+%
+%  colsol = auction(assignCost, guard) sets the cost of column
+%           non-assignment = guard.  All assignments will have cost < guard.
+%           A column will not be assigned if the savings from eliminating it
+%           exceeds the guard cost.  colsol(j) = 0 indicates that the optimal
+%           solution does not assign column j to any row.
+%
+%  [colsol,rowsol] = auction(assignCost) also returns the row assignments:
+%           rowsol(i) gives the column assigned to row j.
+%
+%  Reference
+%  Bertsekas, D. P., "The Auction Algorithm: A Distributed Relaxation Method
+%  for the Assignment Problem," Annals of Operations Research, 14, 1988, pp.
+%  103-123.
+
+% Mark Levedahl
+% 
+%=================================================================================
+
+[m,n] = size(assignCost);
+
+if m < n
+	error('cost matrix must have no more columns than rows.')
+end
+
+% augment cost matrix with a guard row if specified.
+m0 = m;
+% if isfinite(guard) %%% DONE BY JS
+% 	m = m+1;
+% 	assignCost(m,:) = guard;
+% end
+
+% init return arrays
+colsol = zeros(1,n);
+rowsol = zeros(m,1);
+price = zeros(m,1);
+EPS = sqrt(eps) / (n+1);
+
+% 1st step is a full parallel solution.  Get bids for all columns
+jp = 1:n;
+f = assignCost;
+[b1,ip] = min(f);                   % cost and row of best choice
+f(ip + m*(0:n-1)) = inf;            % eliminate best from contention
+bids = min(f) - b1;                 % cost of runner up choice hence bid
+
+% Arrange bids so highest (best) are last and will overwrite the lower bids.
+[tmp,ibid] = sort(bids(:));
+
+% Now assign best bids (lesser bids are overwritten by better ones).
+price(ip(ibid)) = price(ip(ibid)) + EPS + tmp;
+rowsol(ip(ibid)) = jp(ibid);        % do row assignments
+iy = find(rowsol);
+colsol(rowsol(iy)) = iy;            % map to column assignments
+
+% The guard row cannot be assigned (always available)
+if m0 < m
+	price(m) = 0;
+	rowsol(m) = 0;
+end
+
+% Now Continue with non-parallel code handling any contentions.
+while ~all(colsol)
+	for jp = find(~colsol)
+		f = assignCost(:,jp) + price;   % costs
+		[b1,ip] = min(f);               % cost and row of best choice
+		if ip > m0
+			colsol(jp) = m;
+		else
+			f(ip) = inf;                    % eliminate from contention
+			price(ip) = price(ip) + EPS + min(f) - b1; % runner up choice hence bid
+			if rowsol(ip)                   % take the row away if already assigned
+				colsol(rowsol(ip)) = 0;
+			end
+			rowsol(ip) = jp;                % update row and column assignments
+			colsol(jp) = ip;
+		end % if ip == m
+	end
+end
+
+% screen out infeasible assignments
+if m > m0
+	colsol(colsol == m) = 0;
+	rowsol(m) = [];
+end
+return
