@@ -803,7 +803,7 @@ DFNC_DEFAULTS.use_tall_array = 'no';
 
 % Interpolation (spm sample vol)
 % Default: 0 - Nearest neighbor interpolation
-INTERP_VAL = 0;
+INTERP_VAL = 1;
 
 
 % for docker apps set this variable to 0 for copying the data from the container. 
