@@ -444,7 +444,7 @@ switch (lower(ica_algorithm))
         
         inputText(numParameters).promptString = 'Select positive constant (rho)';
         inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = '0.5';
+        inputText(numParameters).answerString = '1.0e-2';
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'rho';
         inputText(numParameters).enable = 'on';
