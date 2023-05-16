@@ -137,10 +137,11 @@ if (strcmpi(modalityType, 'fmri'))
             network_opts.file_names = compFiles;
             postProcessFile = fullfile(sesInfo.outputDir, [sesInfo.userInput.prefix, '_postprocess_results.mat']);
             aggregate = [];
-            try
+            
+            varsInMat = whos('-file', postProcessFile);
+            chkAgg = strmatch('aggregate', cellstr(char(varsInMat.name)), 'exact');
+            if ~(isempty(chkAgg))
                 load(postProcessFile, 'aggregate');
-            catch
-                
             end
             
             if (~isempty(aggregate))

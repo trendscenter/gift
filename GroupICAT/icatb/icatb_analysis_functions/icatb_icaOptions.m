@@ -936,7 +936,7 @@ switch (lower(ica_algorithm))
         inputText(numParameters).enable = 'on';
         
         
-    case 'constrained_ica_ebm'
+    case 'constrained ica ebm'
         %% Constrained ica ebm
         
         dlg_title = 'Select the Options for the constrained ICA EBM algorithm';
@@ -998,7 +998,7 @@ switch (lower(ica_algorithm))
         
         inputText(numParameters).promptString = 'Select corr threshold for constrained algorithm';
         inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = '0.7';
+        inputText(numParameters).answerString = '0.5';
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'rho';
         inputText(numParameters).enable = 'on';

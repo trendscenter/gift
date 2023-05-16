@@ -22,7 +22,7 @@ if (strcmpi(modalityType, 'fmri'))
     % all the available algorithms for fmri data
     icaAlgo = char('Infomax','Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
         'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'MOO-ICAR', ...
-        'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', 'IVA-L-SOS-Adaptive');% 'Constrained_ICA_EBM', 'Adaptive_Constrained_ICA_EBM');
+        'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', 'IVA-L-SOS-Adaptive', 'Constrained ICA EBM');% 'Constrained_ICA_EBM', 'Adaptive_Constrained_ICA_EBM');
 elseif (strcmpi(modalityType, 'smri'))
     % all the available algorithms for EEG data
     icaAlgo = char('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
@@ -359,7 +359,7 @@ if (nargin > 0 && nargin <= 3)
             [W, A, icasig_tmp] = correct_sign(W, data);
             
             
-        case 'constrained_ica_ebm'
+        case 'constrained ica ebm'
             %% Constrained ICA EBM
             ICA_Options{end + 1} = 'whiten';
             ICA_Options{end + 1} = false;
@@ -372,7 +372,7 @@ if (nargin > 0 && nargin <= 3)
             catch
             end
             
-            rho = 0.7;
+            rho = 0.5;
             try
                 chk = strmatch('rho', ICA_Options(1:2:end));
                 rho = ICA_Options{2*chk(1)};

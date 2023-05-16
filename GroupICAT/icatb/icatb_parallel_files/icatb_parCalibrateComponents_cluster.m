@@ -57,7 +57,7 @@ refImage = NaN;
 writeLoadings = 0;
 
 if (~useTemporalICA)
-    if (isempty(icatb_findstr(lower(algorithmName),'iva')) && ~strcmpi(algorithmName, 'constrained ica (spatial)') ...
+    if (isempty(icatb_findstr(lower(algorithmName),'iva')) && ~icatb_string_compare(algorithmName, 'constrained') ...
             && ~strcmpi(algorithmName, 'moo-icar'))
         %--load reference image
         %---------------------------------------------------------
