@@ -17,7 +17,7 @@ function [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(ic
 %       structuralImage = 3d (x,y,z) structural image
 %       icaDIM = = dimensions of spatial components
 %       structDIM = dimensions of structural components
-%       imageValues = 
+%       imageValues: 1='positive and negative', 2='positive', 3='absolute value', 4='negative'
 %       imageScale = set the colorbar scale and should scale components based on the threshold specified like [lower limit, uppoer limit]
 %   OUTPUT:
 %       im = image with components overlaid on structural
