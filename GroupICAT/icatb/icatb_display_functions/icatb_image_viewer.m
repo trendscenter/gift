@@ -219,8 +219,12 @@ for nF = 1:size(allFileNames, 1)
         
         % return overlayed images depending upon the data type of icasig and
         % structuralImage
-        [icasig,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_check_overlayComp(icasig, structuralImage, ...
-            returnValue, 1);
+%         [icasig,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_check_overlayComp(icasig, structuralImage, ...
+%             returnValue, 1);
+
+        icaDIM = [size(icasig, 1), size(icasig, 2), size(icasig, 3)];
+        
+        [icasig,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_overlayImages(icasig,structuralImage, icaDIM, structDIM, returnValue, threshold);
         
         icasig = reshape(icasig, structDIM);
         
@@ -800,4 +804,28 @@ for n = 1:length(varargin)
     midPoint = ceil(number_chars/2);
     startPoint = max([ceil(midPoint - 0.5*length(current_char)), 1]);
     strs(n, startPoint:startPoint + length(current_char)-1) = current_char;
+end
+
+function [minICAIM, maxICAIM] = set_ic_limits(minICAIM, maxICAIM, threshold, returnValue)
+% Set IC limits
+%
+
+minICAIM = abs(minICAIM);
+maxICAIM = abs(maxICAIM);
+threshold = abs(threshold);
+
+if ((returnValue == 2) || (returnValue == 3))
+    % absolute or positive values
+    minICAIM = min([minICAIM, threshold]);
+    maxICAIM = max([maxICAIM, threshold]);
+elseif (returnValue == 4)
+    % negative values
+    tmp_maxicaim = max([minICAIM, maxICAIM, threshold]);
+    tmp_minicaim = min([minICAIM, maxICAIM, threshold]);
+    minICAIM = -tmp_maxicaim;
+    maxICAIM = -tmp_minicaim;
+else
+    % positive and negative
+    maxICAIM = max([minICAIM, maxICAIM, threshold]);
+    minICAIM = -maxICAIM;
 end

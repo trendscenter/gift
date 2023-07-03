@@ -1,6 +1,6 @@
 # GIFT 
 <!-- PLEASE DO NOT EDIT THIS LINE OR LINE BELOW -->
-### Group ICA/IVA software (MATLAB) v4.0.4.7
+### Group ICA/IVA software (MATLAB) v4.0.4.8
 <!-- PLEASE DO NOT EDIT ABOVE THIS LINE -->
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Table of Contents
@@ -23,7 +23,7 @@ Please note that all the toolboxes in GIFT require only MATLAB and not dependent
 runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher. 
 
 ### Downloads <a name="secDownload"></a>
-**GroupICAT v4.0c**  - Download by clicking the green code button on the upper right on this page and then clone the software using the link and the git clone command in your terminal. Current version of Group ICA. Requires MATLAB R2008a and higher.
+**GroupICAT**  - Download latest version by clicking the green code button on the upper right on this page and then clone the software using the link and the git clone command in your terminal. Current version of Group ICA. Requires MATLAB R2008a and higher.
 #### Stand Alone Versions
 [**Windows 64**](https://trendscenter.org/trends/software/gift/software/stand_alone/GroupICATv4.0c_standalone_Win64.zip) - Compiled on Windows 64 bit OS and MATLAB R2020a. Please see read me text file for more details.\
 [**Linux-x86-64**](https://trendscenter.org/trends/software/gift/software/stand_alone/GroupICATv4.0c_standalone_Linux_x86_64.zip) - Compiled on Linux-x86-64 bit OS and MATLAB R2016b. Please see read me text file for more details.\

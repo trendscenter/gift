@@ -1,14 +1,14 @@
-function [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(icasig,structuralImage,icaDIM,structDIM,imageValues)
+function [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(icasig,structuralImage,icaDIM,structDIM,imageValues, imageScale)
 %  [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(icasig,structuralImage,icaDIM,structDIM)
 %--------------------------------------------------------------------------
-% CREATED BY: Eric Egolf 
+% CREATED BY: Eric Egolf
 % LAST MODIFIED: 12-29-03
-% ABOUT: Puts components on top of structural image 
+% ABOUT: Puts components on top of structural image
 %
 % #########################################################################
-% 
+%
 % USAGE:
-%  
+%
 %  -[im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(icasig,structuralImage,icaDIM,structDIM)
 %   INFO: Puts components on top of structural image and scales the images
 %   as needed
@@ -27,7 +27,7 @@ function [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(ic
 %       minICAIM = same as maxICAIM but min
 %       maxInterval = vector of maxInterval values
 %               intervals that each component and the structural image is
-%               scaled between. 
+%               scaled between.
 %               *if you had 3 components and 1 structural image component 1
 %               would be scaled between 0 and 100 component two would be
 %               scaled between 100+unitColor and 200, component 3 would be
@@ -39,10 +39,10 @@ function [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(ic
 %       minValue = ?
 %       maxValue = ?
 % #############################################################
-% 
+%
 % LICENSING:
-% 
-% 
+%
+%
 %------------------------------------------------------
 
 if(~exist('imageValues','var'))
@@ -63,66 +63,66 @@ numToOverlay = size(icasig,1);
 
 
 for i=1:numToOverlay
-        [tempMax] = max(icasig(i,:));
-        [tempMin] = min(icasig(i,:));
+    [tempMax] = max(icasig(i,:));
+    [tempMin] = min(icasig(i,:));
+    
+    %case: When Empty Icasig
+    if(tempMax==0 & tempMin ==0)
+        icasig(i,1) = 1;
+    end
+    
+    %case: Positive and Negative
+    if(imageValues ==1)
         
-        %case: When Empty Icasig
-        if(tempMax==0 & tempMin ==0)
-            icasig(i,1) = 1;
+        if(tempMax>abs(tempMin))
+            maxICAIM(i) = tempMax;
+            minICAIM(i) = -tempMax;
+        else
+            maxICAIM(i) = abs(tempMin);
+            minICAIM(i) = tempMin;
         end
-        
-        %case: Positive and Negative    
-        if(imageValues ==1)
-            
-            if(tempMax>abs(tempMin))
-                maxICAIM(i) = tempMax;
-                minICAIM(i) = -tempMax;    
-            else
-                maxICAIM(i) = abs(tempMin);
-                minICAIM(i) = tempMin;    
-            end
         
         %case: Positive Only
-        elseif(imageValues ==2)
-            
-            maxICAIM(i) = tempMax;
-            minICAIM(i) = tempMin;
+    elseif(imageValues ==2)
+        
+        maxICAIM(i) = tempMax;
+        minICAIM(i) = tempMin;
         
         %case: Absolute Value
-        elseif(imageValues==3)
-            maxICAIM(i) = tempMax;
-            minICAIM(i) = tempMin;
-            
+    elseif(imageValues==3)
+        maxICAIM(i) = tempMax;
+        minICAIM(i) = tempMin;
+        
         % case: Negative Value
-        elseif(imageValues==4)
-            maxICAIM(i) = tempMax;
-            minICAIM(i) = tempMin; 
-            
+    elseif(imageValues==4)
+        maxICAIM(i) = tempMax;
+        minICAIM(i) = tempMin;
+        
         %case: Error
-        else
-            %infoCell{1} = imageValues;
-            %icatb_error('Invalid Image Value Parameter',InfoCell);    
-            error('Invalid image value parameter');
-        end
-     
+    else
+        %infoCell{1} = imageValues;
+        %icatb_error('Invalid Image Value Parameter',InfoCell);
+        error('Invalid image value parameter');
+    end
+    
 end
 %   %---------------------Get maxs and mins for scaling
-%   for i =1:numToOverlay  
+%   for i =1:numToOverlay
 %     minICAVal(i) = min(icaFlat(i,:));
 %     maxICAVal(i) = max(icaFlat(i,:));
 %     %--case when nothing is in image
 %     if(minICAVal(i)==0 & maxICAVal(i)==0)
 %         icaFlat(i,1) = 1;
 %         maxICAVal(i)=1;
-%     end    
+%     end
 %     minICAIM(i) = minICAVal(i);
 %     maxICAIM(i) = maxICAVal(i);
-%     
+%
 %     if(min(min(min(icasig)))<0)
 %         negValues = 1;
 %     else
 %         negValues =0;
-%     end   
+%     end
 %     if( abs(minICAVal(i)) > abs(maxICAVal(i)) & negValues)
 %         maxICAIM(i) = -minICAVal(i);
 %     elseif(negValues)
@@ -130,25 +130,52 @@ end
 %     end
 % end
 
+if (exist('imageScale', 'var') && (length(imageScale) == 2))
+    IMAGE_DISP_THRESHOLD = imageScale;
+    MAX_ICAIM = max(abs(IMAGE_DISP_THRESHOLD));
+    %MIN_ICAIM = min(abs(imageScale));
+    if(imageValues ==1)
+        MIN_ICAIM = - MAX_ICAIM;
+    elseif (imageValues ==2)
+        MIN_ICAIM = 0;
+    elseif(imageValues==3)
+        MIN_ICAIM = 0;
+    else
+        MIN_ICAIM = -MAX_ICAIM;
+        MAX_ICAIM = 0;
+    end
+end
+
+
 
 %--Loop through each component to scale and overlay
-for i =1:numToOverlay  
+for i =1:numToOverlay
     %get unit color
-    unitColor = icatb_range(icaFlat(i,:))/(min([256 64*(numToOverlay+1)])/(numToOverlay+1));
+    %% If maxICAIM(i) is equal to zero
+    if(maxICAIM(i) == 0)
+        maxICAIM(i) = 10^-8;
+    end
+    tmp_max_ica_im =  maxICAIM(i);
+    tmp_min_ica_im = minICAIM(i);
+    
+    if (exist('IMAGE_DISP_THRESHOLD', 'var'))
+        tmp_max_ica_im = MAX_ICAIM;
+        tmp_min_ica_im = MIN_ICAIM;
+    end
+    
+    unitColor = icatb_range([tmp_min_ica_im, tmp_max_ica_im])/(min([256 64*(numToOverlay+1)])/(numToOverlay+1));
     
     indices(i).ind = find(icaFlat(i,:) ~= 0);
     
-    %% If maxICAIM(i) is equal to zero
-    if(maxICAIM(i) == 0) 
-        maxICAIM(i) = 10^-8;
-    end
-    
-    icaFlat(i,find(icaFlat(i,:)==maxICAIM(i))) = icaFlat(i,find(icaFlat(i,:)==maxICAIM(i)))-unitColor;
+    icaFlat(i,find(icaFlat(i,:)==tmp_max_ica_im)) = icaFlat(i,find(icaFlat(i,:)==tmp_max_ica_im))-unitColor;
     
     %scale values in component from minInterval to maxInterval
-    multi = maxICAIM(i)/icatb_range([minICAIM(i) maxICAIM(i)]);
-    icaFlat(i,:) = ( (icaFlat(i,:)./maxICAIM(i)) +  abs(minICAIM(i))/maxICAIM(i)) * (multi) * maxInterval;
+    multi = tmp_max_ica_im/icatb_range([tmp_min_ica_im, tmp_max_ica_im]);
+    icaFlat(i,:) = ( (icaFlat(i,:)./tmp_max_ica_im) +  abs(tmp_min_ica_im)/tmp_max_ica_im) * (multi) * maxInterval;
     icaFlat(i,:) = icaFlat(i,:) + (i-1)*maxInterval;
+    
+    maxICAIM(i) = tmp_max_ica_im;
+    minICAIM(i) = tmp_min_ica_im;
     
 end
 
