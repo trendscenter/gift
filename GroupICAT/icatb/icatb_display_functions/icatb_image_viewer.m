@@ -8,8 +8,10 @@ function dispParameters = icatb_image_viewer(file_names, varargin)
 %   b. Image_values - Positive and Negative, Positive, Absolute, Negative
 %   c. anatomical view - Axial, sagittal or coronal (for montage)
 %   d. convert_to_zscores - Convert to z-scores
-%   e. threshold - Threshold
+%   e. threshold - Threshold, including both a lower and an optional upper limit (e.g., 2 if only a lower limit or [2, 8], having both lower and upper limit)
 %
+%  example command, where file may be a string to a nii with several spatial components: icatb_image_viewer(file, 'display_type', 'montage', 'structfile',fullfile(fileparts(which('gift.m')), 'icatb_templates', 'ch2bet.nii'), 'threshold', [2, 8], 'slices_in_mm', (-40:4:72), 'convert_to_zscores','yes', 'image_values', 'positive and negative','yes','iscomposite','yes');
+
 
 image_values = 'positive and negative';
 threshold = 0;
