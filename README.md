@@ -1,6 +1,6 @@
 # GIFT 
 <!-- PLEASE DO NOT EDIT THIS LINE OR LINE BELOW -->
-### Group ICA/IVA software (MATLAB) v4.0.4.9
+### Group ICA/IVA software (MATLAB) v4.0.4.10
 <!-- PLEASE DO NOT EDIT ABOVE THIS LINE -->
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Table of Contents
@@ -50,7 +50,7 @@ Adelsheim, A. Bryan, J. R. Bustillo, V. P. Clark, S. Feldstein,F. M. Filbey, C. 
 toolbox works on MATLAB versions greater than R2008a. Features used are subject component
 spatial maps, timecourses spectra and FNC correlations. Multivariate tests are done on the features
 to determine the significant covariates which are later used in the univariate tests on each feature.
-To invoke the toolbox, select “Mancovan” under “Toolboxes” menu (Figure 3.2). You could also
+To invoke the toolbox, select “Mancovan�? under “Toolboxes�? menu (Figure 3.2). You could also
 invoke toolbox using mancovan_toolbox at the command prompt. Mancovan toolbox (Figure 3.38)
 is divided into four parts like create design matrix, setup features, run mancova and display.
 #### N-BiC <a name="secToolNbic"></a>
