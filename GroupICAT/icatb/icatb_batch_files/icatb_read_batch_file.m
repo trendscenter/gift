@@ -271,6 +271,31 @@ if (~isempty(maskFile) && (strcmpi(modalityType, 'fmri') || strcmpi(modalityType
         if (~exist(icatb_parseExtn(maskFile), 'file'))
             error([maskFile, ' doesn''t exist']);
         end
+      
+        % If mask resolution do not match the mask will be resliced
+        [dT, extns, maskDim] = icatb_get_countTimePoints(icatb_parseExtn(maskFile));
+        [dT, extns, dims] = icatb_get_countTimePoints(icatb_parseExtn(deblank(sesInfo.userInput.files(1).name(1, :))));
+        if length(find(maskDim == dims)) ~= length(maskDim)
+            fprintf('Mask dimensions ([%s]) are not equal to image dimensions ([%s]). Resizing mask image/images to match functional image\n\n', ...
+                num2str(maskDim), num2str(dims));
+            
+            firstFile = deblank(sesInfo.userInput.files(1).name(1, :));
+            
+            % Handle gz files
+            firstFileTmp = deblank(icatb_parseExtn(firstFile));
+            if (strcmpi(firstFileTmp(end-2:end), '.gz'))
+                gzfn = gunzip (firstFileTmp, tempdir);
+                gzfn = char(gzfn);
+                firstFile = icatb_rename_4d_file(gzfn);
+                firstFile = deblank(firstFile(1, :));
+            end
+            
+            sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd); 
+            [sFPath,sFName,sFExt] = fileparts(sTemp);
+            % Rename tmp output to the mask name
+            maskFile = [sesInfo.userInput.pwd filesep sesInfo.userInput.prefix 'Mask' sFExt];
+            movefile(sTemp, maskFile, 'f')
+        end
         
     end
     
