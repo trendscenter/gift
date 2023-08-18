@@ -76,7 +76,7 @@ if ~strcmpi(modalityType, 'eeg')
             bEyeMask = 1;
             rowchPathIcvBase = which('icatb_spm_reslice');
             rowchPathIcvBase = rowchPathIcvBase(1:length(rowchPathIcvBase)-35);
-            rowchPathIcvAll = [rowchPathIcvBase 'icatb_templates/mask_ICV.nii'];
+            rowchPathIcvAll = [rowchPathIcvBase 'icatb_templates' filesep 'mask_ICV.nii'];
             csVolumeNames = cellstr({sesInfo.userInput.files(1).name(1, :);[rowchPathIcvAll ',1']});
             flags.mask   = 1;
             flags.mean   = 0;
@@ -85,7 +85,7 @@ if ~strcmpi(modalityType, 'eeg')
             flags.prefix  = 'tmp';
             flags.wrap   = [1, 1, 0];
             icatb_spm_reslice(csVolumeNames,flags);
-            chEyeMask = [rowchPathIcvBase 'icatb_templates/tmpmask_ICV.nii,1'];
+            chEyeMask = [rowchPathIcvBase 'icatb_templates' filesep 'tmpmask_ICV.nii,1'];
             [V, HInfo] = icatb_returnHInfo(chEyeMask);
             v3bNoEyeBulbs = icatb_spm_read_vols(V);
         end
