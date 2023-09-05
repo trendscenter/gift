@@ -35,7 +35,7 @@ This data is partitioned to show results with few subjects and is biased and may
 
 Raw fMRI and structural T1 data is available if you have time to run demo from scratch the following link will soon contain the raw data [here (link will soon come)](no link). Please contact the authors.
 
-If you want to step to the "Running GIFT" section you may start with preprocessed data found [here](https://trendscenter.org/trends/software/gift/data/demo_input3neuromark.zip).
+If you want to step to the "Running GIFT" section you may start with preprocessed data found [here](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip).
 
 If you just want to run the last step you may choose "root/demo_input3neuromark/gift_out/neuromark_ica_parameter_info.mat" as the parameter file, following instructions under section "Groups differences with MANCOVAN".
 
