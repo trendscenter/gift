@@ -178,7 +178,7 @@ editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', '
 promptPos(2) = promptPos(2) - promptPos(4) - 1.5*yOffset - 0.5*promptHeight;
 promptPos(3) = promptWidth;
 textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', ...
-    'Enter average sliding window in seconds. Set 0 for default dfnc', 'tag', 'prompt_p_avg_sw', 'fontsize', UI_FS - 1);
+    'Enter average sliding window in TRs. Set 0 for default dfnc', 'tag', 'prompt_p_avg_sw', 'fontsize', UI_FS - 1);
 icatb_wrapStaticText(textH);
 
 editPos = promptPos;
