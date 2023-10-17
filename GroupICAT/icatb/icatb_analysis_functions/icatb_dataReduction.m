@@ -227,8 +227,10 @@ if (intermediatePCA)
                 disp(msg_string);
                 
                 tmpPreprocType = 'none';
+                removeMean = 1;
                 if strcmpi(modalityType, 'smri')
                     tmpPreprocType = preproc_type;
+                    removeMean = 0;
                 end
                 
                 if ~strcmpi(modalityType, 'smri')
@@ -250,12 +252,12 @@ if (intermediatePCA)
                 if (conserve_disk_space ~= 1)
                     %% Do PCA with whitening
                     [pcasig, dewhiteM, Lambda, V, whiteM] = icatb_calculate_pca(data, numOfPC, 'type', pcaType, 'mask', mask, 'whiten', 1, 'verbose', 1, 'preproc_type', tmpPreprocType, ...
-                        'pca_options', pca_opts);
+                        'pca_options', pca_opts, 'remove_mean', removeMean);
                     
                 else
                     %% Do pca
                     [V, Lambda] = icatb_calculate_pca(data, numOfPC, 'type', pcaType, 'mask', mask, 'whiten', 0, 'verbose', 1, 'preproc_type', tmpPreprocType, ...
-                        'pca_options', pca_opts);
+                        'pca_options', pca_opts, 'remove_mean', removeMean);
                     
                 end
                 

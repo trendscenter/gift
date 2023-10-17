@@ -10,8 +10,14 @@ function out = icatb_preproc_data(out, preProcType, verbose)
 %    4 - Variance normalization
 %
 
-options = {'Remove Mean Per Timepoint', 'Remove Mean Per Voxel', 'Intensity Normalization', 'Variance Normalization'};
-alias_options = {'rt', 'rv', 'in', 'vn'};
+modalityType = icatb_get_modality;
+if ~(strcmpi(modalityType, 'smri'))
+    options = {'Remove Mean Per Timepoint', 'Remove Mean Per Voxel', 'Intensity Normalization', 'Variance Normalization'};
+    alias_options = {'rt', 'rv', 'in', 'vn'};
+else
+    options = {'Remove Mean Per Subject', 'None'};
+    alias_options = {'rt', 'none'};
+end
 if (nargin == 0)
     out = options;
     return;
@@ -40,8 +46,12 @@ nLoops = ceil(voxels / blockSize);
 
 msg = '';
 switch (preProcType)
-    case {'remove mean per timepoint', 'rt'}
-        msg = 'Removing mean per time point ...';
+    case {'remove mean per timepoint', 'remove mean per subject', 'rt'}
+        if ~(strcmpi(modalityType, 'smri'))
+            msg = 'Removing mean per time point ...';
+        else
+            msg = 'Removing mean per subject ...';
+        end
         %% Remove mean per time point
         out = icatb_remove_mean(out);
     case {'remove mean per voxel', 'rv'}
