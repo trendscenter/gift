@@ -858,7 +858,11 @@ try
         if (isfield(sesInfo.userInput, preprocTag))
             preprocType = getfield(sesInfo.userInput, preprocTag);
         else
-            preprocType = 'remove mean per timepoint';
+            if ~(strcmpi(modalityType, 'smri'))
+                preprocType = 'remove mean per timepoint';
+            else
+                preprocType = 'remove mean per subject';
+            end
         end
         
         preprocType = lower(preprocType);
@@ -867,6 +871,9 @@ try
         if ~isempty(preprocIndex)
             
             preprocVal = strmatch(preprocType, lower(inputText(preprocIndex).answerString), 'exact');
+            if (isempty(preprocVal))
+                preprocVal = 1;
+            end
             inputText(preprocIndex).value = preprocVal;
         end
         
@@ -1233,7 +1240,7 @@ try
         end
         [dT, extns, maskDim] = icatb_get_countTimePoints(icatb_parseExtn(maskFile));
         [dT, extns, dims] = icatb_get_countTimePoints(icatb_parseExtn(deblank(sesInfo.userInput.files(1).name(1, :))));
-
+        
         % If mask resolution do not match the mask will be resliced
         if length(find(maskDim == dims)) ~= length(maskDim)
             fprintf('Mask dimensions ([%s]) are not equal to image dimensions ([%s]). Resizing mask image/images to match functional image\n\n', ...
@@ -1250,7 +1257,7 @@ try
                 firstFile = deblank(firstFile(1, :));
             end
             
-            sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd); 
+            sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd);
             [sFPath,sFName,sFExt] = fileparts(sTemp);
             % Rename tmp output to the mask name
             maskFile = [sesInfo.userInput.pwd filesep sesInfo.userInput.prefix 'Mask' sFExt];
@@ -1540,7 +1547,7 @@ try
     % end for checking data reduction steps
     
     drawnow;
- 
+    
     try
         if (strcmpi(   lower(deblank(inputText(5).answerString(inputText(5).value, :)))   , 'default&icv')) %Added to second UI state for mask processing
             sesInfo.userInput.maskFile = 'default&icv';
