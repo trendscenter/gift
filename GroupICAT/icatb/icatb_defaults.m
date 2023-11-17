@@ -801,6 +801,11 @@ DFNC_DEFAULTS.META_STATE = 1;
 % Use tall array for large data (k-means)
 DFNC_DEFAULTS.use_tall_array = 'no';
 
+% Modulation frequency (SSB_SWPC)
+DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY = 0.1;
+% Options are tukey and rect
+DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE = 'rect';
+
 % Interpolation (spm sample vol)
 % Default: 0 - Nearest neighbor interpolation
 INTERP_VAL = 1;
