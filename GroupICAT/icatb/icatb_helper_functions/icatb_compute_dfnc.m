@@ -208,6 +208,25 @@ if (task_dfnc)
     modelTC = modelTC(1:minTP, :);
 end
 
+winType = 'rect';
+modulation_frequency = 0.1;
+try
+    winType = DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE;
+    modulation_frequency = DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY;
+catch
+end
+
+if (strcmpi(method, 'ssb swpc'))
+    % Ashkan's method
+    disp('Using SSB SWPC method for computing dFNC ...');
+    FNCdyn = icatb_calculate_SSB_SWPC(X, wsize, minTR, modulation_frequency, winType, 0);
+    corrInfo.X = X;
+    corrInfo.Y = Y;
+    corrInfo.FNCdyn = FNCdyn;
+    disp('Done');
+    return
+end
+
 
 %% Windowing related
 window_step_size = 1;
