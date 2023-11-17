@@ -92,6 +92,14 @@ try
 catch
 end
 
+
+if (mod(wsize, 2) == 0)
+    if (strcmpi(method, 'ssb swpc'))
+        disp('Window size must be odd for SSB SWPC. Incrementing window size by 1 ...');
+        wsize = wsize + 1;
+    end
+end
+
 %% Tukey window option is disabled for now.
 if (strcmpi(window_type, 'tukey'))
     %if (window_alpha <= 1)
