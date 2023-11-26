@@ -37,7 +37,7 @@ If you have your data in BIDS format or you want to run GIFT under a cluster you
 
 ### Screen Shots <a name="secScreen"></a>
 
-| ![GIFT](https://trendscenter.org/trends/software/gift/images/gift.jpg) |
+| ![GIFT](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/images/gift.jpg) |
 |:--:|
 | Figure 1. Main menu of GIFT|
 
@@ -50,7 +50,7 @@ Adelsheim, A. Bryan, J. R. Bustillo, V. P. Clark, S. Feldstein,F. M. Filbey, C. 
 toolbox works on MATLAB versions greater than R2008a. Features used are subject component
 spatial maps, timecourses spectra and FNC correlations. Multivariate tests are done on the features
 to determine the significant covariates which are later used in the univariate tests on each feature.
-To invoke the toolbox, select “Mancovan�? under “Toolboxes�? menu (Figure 3.2). You could also
+To invoke the toolbox, select â€œMancovanâ€? under â€œToolboxesâ€? menu (Figure 3.2). You could also
 invoke toolbox using mancovan_toolbox at the command prompt. Mancovan toolbox (Figure 3.38)
 is divided into four parts like create design matrix, setup features, run mancova and display.
 #### N-BiC <a name="secToolNbic"></a>
