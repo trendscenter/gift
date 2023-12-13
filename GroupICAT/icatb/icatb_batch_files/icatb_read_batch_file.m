@@ -188,7 +188,12 @@ if (isfield(inputData, 'outputDir'))
 end
 
 if (~exist(outputDir, 'dir'))
-    [ParDir, ChildDir] = fileparts(outputDir);
+    sLastChar =  outputDir(length(outputDir));
+    if (sLastChar == '/' || sLastChar == '\') %slash bugs out the folder creation
+        [ParDir, ChildDir] = fileparts(outputDir(1:end-1)); %fix
+    else
+        [ParDir, ChildDir] = fileparts(outputDir);
+    end
     mkdir(ParDir, ChildDir);
 end
 
