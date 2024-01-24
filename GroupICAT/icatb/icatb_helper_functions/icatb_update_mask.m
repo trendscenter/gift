@@ -77,6 +77,9 @@ if ~strcmpi(modalityType, 'eeg')
             rowchPathIcvBase = which('icatb_spm_reslice');
             rowchPathIcvBase = rowchPathIcvBase(1:length(rowchPathIcvBase)-35);
             rowchPathIcvAll = [rowchPathIcvBase 'icatb_templates' filesep 'mask_ICV.nii'];
+            % Fix for server versions of GIFT to copy the mask to a local dir surely with write permissions
+            bStat = copyfile(rowchPathIcvAll, sesInfo.userInput.pwd);
+            rowchPathIcvAll = [sesInfo.userInput.pwd filesep 'mask_ICV.nii'];
             csVolumeNames = cellstr({sesInfo.userInput.files(1).name(1, :);[rowchPathIcvAll ',1']});
             flags.mask   = 1;
             flags.mean   = 0;
@@ -85,7 +88,7 @@ if ~strcmpi(modalityType, 'eeg')
             flags.prefix  = 'tmp';
             flags.wrap   = [1, 1, 0];
             icatb_spm_reslice(csVolumeNames,flags);
-            chEyeMask = [rowchPathIcvBase 'icatb_templates' filesep 'tmpmask_ICV.nii,1'];
+            chEyeMask = [sesInfo.userInput.pwd filesep 'tmpmask_ICV.nii,1'];
             [V, HInfo] = icatb_returnHInfo(chEyeMask);
             v3bNoEyeBulbs = icatb_spm_read_vols(V);
         end
@@ -122,6 +125,7 @@ if ~strcmpi(modalityType, 'eeg')
         %delete resliced mask after use
         try
             delete(chEyeMask(1:length(chEyeMask)-2));
+            delete([sesInfo.userInput.pwd filesep 'mask_ICV.nii']);
         end
     end
     
