@@ -248,6 +248,9 @@ global INTERP_VAL;
 %% Exit groupica app
 global EXIT_GICA_APP;
 
+%% Datavis Alpha map threshold
+global DATA_VIS_THRESHOLD;
+
 modalityType = icatb_get_modality;
 
 %% Naming Convention Output Files( Analyze Format)
@@ -809,4 +812,5 @@ INTERP_VAL = 1;
 % for docker apps set this variable to 0 for copying the data from the container. 
 EXIT_GICA_APP =1;
 
-
+% Data vis (Tmap threshold)
+DATA_VIS_THRESHOLD = 2;
