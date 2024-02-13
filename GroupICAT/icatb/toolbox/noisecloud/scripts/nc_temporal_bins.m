@@ -1,4 +1,4 @@
-function feature = nc_temporal_bins(T);
+function feature = nc_temporal_bins(T)
       global TR;
           % TR should already be defined in the workspace;
      % Labels:;
@@ -23,7 +23,7 @@ function feature = nc_temporal_bins(T);
      bucket_starts = [0 0.008 0.02 0.05 0.1];
      bucket_ends = [0.008 0.02 0.05 0.1 0.25];
      start_index = 0;
-          for i=1:length(bucket_starts);
+          for i=1:length(bucket_starts)
           bucket_start_freq = bucket_starts(i);
  % starting frequency of your bucket;
          bucket_end_freq = bucket_ends(i);
@@ -31,9 +31,9 @@ function feature = nc_temporal_bins(T);
           %ts = rand(180,1);
  % ts is timeseries data. replace it with actual data.;
          ntime = length(T);
-         nfft = ntime/2;
-          bucket_start_index = (nfft*bucket_start_freq)/(1/(2*TR));
-         bucket_end_index = (nfft*bucket_end_freq)/(1/(2*TR));
+         nfft = floor(ntime/2);
+          bucket_start_index = floor(nfft*bucket_start_freq)/(1/(2*TR));
+         bucket_end_index = floor(nfft*bucket_end_freq)/(1/(2*TR));
              % chosen to remove components having most of the energy in the range f > 0.1 Hz;
          bucket_start_index = round(bucket_start_index);
          bucket_end_index = round(bucket_end_index);
@@ -44,9 +44,9 @@ function feature = nc_temporal_bins(T);
          % This spits out a warning, but I think that it's OK;
           % compute energy in the bucket;
          bucket_energy = 0;
-         for column = bucket_start_index+1:bucket_end_index-1;
+         for column = bucket_start_index+1:bucket_end_index-1
                  bucket_energy = bucket_energy + freq_data(column)^2;
-         end;
+         end
          feature(start_index + i) = bucket_energy;
-      end;
+          end
  end
