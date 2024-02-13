@@ -68,7 +68,7 @@ inputParameters(numParameters).listString = 'Dynamic FNC';
 optionNumber = 1;
 % Option 1 of parameter 2
 options(optionNumber).promptString = 'Select dFNC method';
-options(optionNumber).answerString = char('Correlation', 'L1', 'Shared Trajectory');
+options(optionNumber).answerString = char('Correlation', 'L1', 'Shared Trajectory', 'SSB SWPC');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'method'; options(optionNumber).answerType = 'string';
 options(optionNumber).flag = 'delete';
@@ -78,7 +78,7 @@ options(optionNumber).callback = {@L1ControlCallback};
 optionNumber = optionNumber + 1;
 % Option 2 of parameter 2
 options(optionNumber).promptString = 'Window size (TRs)';
-options(optionNumber).answerString = '30';
+options(optionNumber).answerString = '29';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'wsize'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
