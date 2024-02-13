@@ -1,4 +1,5 @@
-function [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(icasig,structuralImage,icaDIM,structDIM,imageValues, imageScale)
+function [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(icasig,structuralImage,icaDIM,structDIM,imageValues, ...
+    imageScale, datavis_opts)
 %  [im,maxICAIM,minICAIM,minInterval,maxInterval] = icatb_overlayImages(icasig,structuralImage,icaDIM,structDIM)
 %--------------------------------------------------------------------------
 % CREATED BY: Eric Egolf
@@ -57,7 +58,7 @@ maxInterval = 100;
 
 %reshape structural
 structFlat = reshape(structuralImage,structDIM(1)*structDIM(2)*structDIM(3),1);
-clear structuralImage;
+%clear structuralImage;
 icaFlat=reshape(icasig,size(icasig,1),icaDIM(1)*icaDIM(2)*icaDIM(3));
 
 numToOverlay = size(icasig,1);
@@ -198,3 +199,21 @@ for i =1:numToOverlay
 end
 im=overlayImage;
 overlayMap = [];
+
+if (exist('datavis_opts', 'var') && ~(isempty(datavis_opts)))
+    icasig_tmp = reshape(icasig, structDIM);
+    tmap = datavis_opts{1};
+    datavis_threshold = datavis_opts{2};
+    cmap = datavis_opts{3};
+    tmap = reshape(tmap, structDIM);
+    
+    thresh_map = tmap >= datavis_threshold;
+    
+    images = cell(1, size(icasig_tmp, 3));
+    for count = 1:size(icasig_tmp, 3)
+        tmp = icatb_dualcodeImage(squeeze(icasig_tmp(:, :, count)), squeeze(tmap(:, :, count)), thresh_map(:, :, count), squeeze(structuralImage(:, :, count)), cmap);
+        images{count} = tmp;
+    end
+    
+    im = cat(4, images{:});
+end

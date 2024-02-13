@@ -28,9 +28,13 @@ global UI_FS;
 global UI_FONTNAME;
 global TEXT_DISPLAY_SLICES_IN_MM;
 global FONT_COLOR;
+global DATA_VIS_THRESHOLD;
 
 labels = '';
 useColorbar = 1;
+
+datavis = 'no';
+tmapFiles = '';
 
 %% Loop over variable no. of arguments
 for n = 1:2:length(varargin)
@@ -62,6 +66,10 @@ for n = 1:2:length(varargin)
         useGUI = varargin{n + 1};
     elseif (strcmpi(varargin{n}, 'colorbar_title'))
         colorbar_title = varargin{n + 1};
+    elseif (strcmpi(varargin{n}, 'datavis'))
+        datavis = varargin{n + 1};
+    elseif (strcmpi(varargin{n}, 'tmap_files_datavis'))
+        tmapFiles = varargin{n + 1};
     end
 end
 
@@ -104,6 +112,8 @@ if (useGUI)
     anatomical_view = dispParameters.slice_plane;
     slices_in_mm = dispParameters.slices_in_mm;
     isComposite = dispParameters.isComposite;
+    datavis = dispParameters.datavis;
+    datavis_threshold = dispParameters.datavis_threshold;
     
 end
 
@@ -134,6 +144,18 @@ if (isempty(structFile))
 end
 
 allFileNames = file_names;
+
+
+if strcmpi(datavis, 'yes')
+    if (isempty(tmapFiles))
+        tmapFiles = icatb_selectEntry('typeEntity', 'file', 'typeSelection', 'multiple', 'title', 'Select tmap/mean files for dual image', 'filter', ...
+            '*.img;*.nii', 'fileType', 'image');
+    end
+    tmapFiles = icatb_rename_4d_file(tmapFiles);
+    if (size(tmapFiles, 1) ~= size(allFileNames, 1))
+        error('Tmap files size doesn''t match the file names selected for display');
+    end
+end
 
 for nF = 1:size(allFileNames, 1)
     
@@ -201,6 +223,11 @@ for nF = 1:size(allFileNames, 1)
         [images, coords, HInfo, slices_in_mm, text_left_right] = icatb_resizeImage(structVol, file_names, anatomical_view, ...
             slices_in_mm, 1);
         
+        if (exist('tmapFiles', 'var') && ~isempty(tmapFiles))
+            tmap = icatb_resizeImage(structVol, deblank(tmapFiles(nF, :)), anatomical_view, slices_in_mm, 1);
+            tmap = tmap(2:end, :, :, :);
+        end
+        
         % get the structural image
         structuralImage = squeeze(images(1, :, :, :));
         
@@ -211,6 +238,9 @@ for nF = 1:size(allFileNames, 1)
         
         % [structuralImage, icasig, coords, HInfo] = icatb_returnResizedImage(structVol, file_names, anatomical_view, slices_in_mm, 'real', [], 1);
         structDIM = HInfo.DIM;
+        if strcmpi(datavis, 'yes')
+            tmap = reshape(tmap, structDIM);
+        end
         icasig = reshape(icasig, 1, prod(structDIM));
         % apply display parameters
         icasig = icatb_applyDispParameters(icasig, convertToZ, returnValue, threshold, structDIM, HInfo);
@@ -221,32 +251,71 @@ for nF = 1:size(allFileNames, 1)
         
         % return overlayed images depending upon the data type of icasig and
         % structuralImage
-%         [icasig,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_check_overlayComp(icasig, structuralImage, ...
-%             returnValue, 1);
-
-        icaDIM = [size(icasig, 1), size(icasig, 2), size(icasig, 3)];
+        %         [icasig,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_check_overlayComp(icasig, structuralImage, ...
+        %             returnValue, 1);
         
-        [icasig,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_overlayImages(icasig,structuralImage, icaDIM, structDIM, returnValue, threshold);
+        icaDIM = [size(icasig, 1), size(icasig, 2), size(icasig, 3)];
         
         icasig = reshape(icasig, structDIM);
         
         if strcmpi(anatomical_view, 'sagittal')
             icasig = permute(icasig, [2, 3, 1]);
+            structuralImage = permute(structuralImage, [2, 3, 1]);
+            structDIM = [structDIM(2), structDIM(3), structDIM(1)];
             HInfo.VOX = [HInfo.VOX(2) HInfo.VOX(3) HInfo.VOX(1)];
+            if strcmpi(datavis, 'yes')
+                tmap = permute(tmap, [2, 3, 1]);
+            end
         end
         
         if strcmpi(anatomical_view, 'coronal')
             icasig = permute(icasig, [1, 3, 2]);
+            structuralImage = permute(structuralImage, [1, 3, 2]);
+            structDIM = [structDIM(1), structDIM(3), structDIM(2)];
             HInfo.VOX = [HInfo.VOX(1) HInfo.VOX(3) HInfo.VOX(2)];
+            if strcmpi(datavis, 'yes')
+                tmap = permute(tmap, [1, 3, 2]);
+            end
         end
+        
+        icasig = reshape(icasig, icaDIM);
+        
+        datavis_opts = {};
+        if strcmpi(datavis, 'yes')
+            tmap = icatb_applyDispParameters(tmap, 0, returnValue, eps, structDIM, HInfo);
+            tmap = reshape(tmap, size(structuralImage));
+            datavis_opts = {tmap, datavis_threshold, cmap};
+        end
+        
+        [icasig,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_overlayImages(icasig, structuralImage, icaDIM, structDIM, returnValue, threshold, datavis_opts);
+        %         else
+        %             [~,  maxICAIM, minICAIM, minInterval, maxInterval] = icatb_overlayImages(icasig, structuralImage, icaDIM, structDIM, returnValue, threshold);
+        %         endz
+        
+        if ( numel(icasig) == length(icasig))
+            icasig = reshape(icasig, structDIM);
+        end
+        
+        %         if strcmpi(anatomical_view, 'sagittal')
+        %             icasig = permute(icasig, [2, 3, 1]);
+        %             HInfo.VOX = [HInfo.VOX(2) HInfo.VOX(3) HInfo.VOX(1)];
+        %         end
+        %
+        %         if strcmpi(anatomical_view, 'coronal')
+        %             icasig = permute(icasig, [1, 3, 2]);
+        %             HInfo.VOX = [HInfo.VOX(1) HInfo.VOX(3) HInfo.VOX(2)];
+        %         end
         
         DIM(1) = size(icasig, 1);
         DIM(2) = size(icasig, 2);
-        DIM(3) = size(icasig, 3);
+        DIM(3) = length(slices_in_mm); %size(icasig, 3);
         
-        
+        %if strcmpi(datavis, 'no')
         [im, numImagesX, numImagesY, slices_in_mm_new] = icatb_returnMontage(icasig, [], DIM, HInfo.VOX, slices_in_mm);
-        
+        %else
+        %    [im, numImagesX, numImagesY, slices_in_mm_new] = dualImage(icasig, tmap, datavis_threshold, structuralImage, HInfo.VOX, slices_in_mm, cmap);
+        %cmap = cmap(1:4:end, :);
+        %end
         
         colormap(cmap);
         
@@ -484,6 +553,7 @@ global CONVERT_Z;
 global IMAGE_VALUES;
 global THRESHOLD_VALUE;
 global ANATOMICAL_PLANE;
+global DATA_VIS_THRESHOLD;
 
 %% Draw graphics
 figureTag = 'setup_image_viewer_gui';
@@ -529,7 +599,7 @@ editPos(1) = editPos(1) + editPos(3) + xOffset;
 editPos(3) = controlWidth;
 chkInd = strmatch('no', lower(compositeOptions), 'exact');
 popupH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'popup', 'position', editPos, 'string', {'No', 'Yes'}, 'tag', 'isComposite', 'fontsize', UI_FS - 1, ...
-    'value', chkInd);
+    'value', chkInd, 'callback', {@isCompositeCallback, InputHandle});
 
 %% Z-scores
 promptPos(2) = promptPos(2) - yOffset - 0.5*promptHeight;
@@ -606,6 +676,32 @@ editPos(1) = editPos(1) + editPos(3) + xOffset;
 editPos(3) = controlWidth;
 popupH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', 'position', editPos, 'string', '', 'tag', ...
     'slices_in_mm', 'fontsize', UI_FS - 1, 'value', 1);
+
+%% Data vis option
+promptPos(2) = promptPos(2) - yOffset - 0.5*promptHeight;
+promptPos(3) = promptWidth;
+textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', 'Do You Want To Use DualImage?', ...
+    'tag', 'prompt_datavis', 'fontsize', UI_FS - 1);
+icatb_wrapStaticText(textH);
+
+popupPos = promptPos;
+popupPos(1) = popupPos(1) + popupPos(3) + xOffset;
+popupPos(3) = controlWidth;
+popupH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'popup', 'position', popupPos, 'string', char('No', 'Yes'), 'tag', ...
+    'datavis', 'fontsize', UI_FS - 1, 'value', 1, 'callback', {@dualImageCallback, InputHandle});
+
+%% Data vis option
+promptPos(2) = promptPos(2) - yOffset - 0.5*promptHeight;
+promptPos(3) = promptWidth;
+textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', 'Select Dual Image Threshold', ...
+    'tag', 'prompt_datavis_threshold', 'fontsize', UI_FS - 1);
+icatb_wrapStaticText(textH);
+
+editPos = promptPos;
+editPos(1) = editPos(1) + editPos(3) + xOffset;
+editPos(3) = controlWidth;
+editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', 'position', editPos, 'string', num2str(DATA_VIS_THRESHOLD), 'tag', ...
+    'datavis_threshold', 'fontsize', UI_FS - 1, 'value', 1, 'enable', 'off');
 
 
 %% Load anatomical
@@ -787,6 +883,14 @@ imVal = get(imH, 'value');
 isComposite = lower(imStr{imVal});
 dispParameters.isComposite = isComposite;
 
+
+datavisH = findobj(handles, 'tag', 'datavis');
+dStr = cellstr(get(datavisH, 'string'));
+dVal = get(datavisH, 'value');
+datavis = lower(dStr{dVal});
+dispParameters.datavis = datavis;
+dispParameters.datavis_threshold = str2num(get(findobj(handles, 'tag', 'datavis_threshold'), 'string'));
+
 setappdata(0, 'disp_para_data', dispParameters);
 
 delete(handles);
@@ -831,3 +935,66 @@ else
     maxICAIM = max([minICAIM, maxICAIM, threshold]);
     minICAIM = -maxICAIM;
 end
+
+function [im, numImagesX, numImagesY, slices_in_mm] = dualImage(icasig_tmp, tmap, datavis_threshold, structuralImage, VOX, slices_in_mm, cmap)
+% Dual image
+
+tmap = reshape(tmap, size(icasig_tmp));
+
+thresh_map = tmap >= datavis_threshold;
+
+images = cell(1, size(icasig_tmp, 3));
+for count = 1:size(icasig_tmp, 3)
+    tmp = icatb_dualcodeImage(squeeze(icasig_tmp(:, :, count)), squeeze(tmap(:, :, count)), thresh_map(:, :, count), squeeze(structuralImage(:, :, count)), cmap);
+    images{count} = tmp;
+end
+
+images = cat(4, images{:});
+
+DIM = size(images);
+
+a1b = zeros([DIM(2), DIM(1), DIM(3), DIM(4)], class(images));
+
+for k=1:DIM(4)
+    a1b(:,:,:,end-k+1) = permute(images(:,end:-1:1,:,k), [2, 1, 3, 4]); %(images(:,end:-1:1,:,k)');
+end
+clear temp;
+temp = reshape(a1b, [DIM(2), DIM(1), DIM(3), DIM(4)]);
+slices_in_mm = slices_in_mm(end:-1:1);
+%[im(:,:) numImagesX numImagesY] = icatb_get_montage(temp, structHInfo.VOX);
+[im, numImagesX, numImagesY] = icatb_get_montage(temp, VOX);
+
+function dualImageCallback(hObject, event_data, handles)
+
+isCompH = findobj(handles, 'tag', 'isComposite');
+str_val = cellstr(get(isCompH, 'string'));
+val = get(isCompH, 'value');
+
+if strcmpi(str_val{val}, 'yes')
+    set(hObject, 'value', 1);
+    return;
+end
+
+str_val = cellstr(get(hObject, 'string'));
+val = get(hObject, 'value');
+threshH = findobj(handles, 'tag', 'datavis_threshold');
+
+set(threshH, 'enable', 'off');
+if strcmpi(str_val{val}, 'yes')
+    set(threshH, 'enable', 'on');
+end
+
+
+function isCompositeCallback(hObject, event_data, handles)
+
+str_val = cellstr(get(hObject, 'string'));
+val = get(hObject, 'value');
+
+datavisH = findobj(handles, 'tag', 'datavis');
+
+if strcmpi(str_val{val}, 'yes')
+    set(datavisH, 'value', 1);
+    threshH = findobj(handles, 'tag', 'datavis_threshold');
+    set(threshH, 'enable', 'off');
+end
+
