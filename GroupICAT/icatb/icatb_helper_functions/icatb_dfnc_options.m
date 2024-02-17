@@ -4,7 +4,6 @@ function input_parameters = icatb_dfnc_options(varargin)
 
 icatb_defaults;
 global DETRENDNUMBER;
-global DFNC_DEFAULTS;
 
 for ii = 1:2:length(varargin)
     if (strcmpi(varargin{ii}, 'covInfo'))
@@ -79,7 +78,7 @@ options(optionNumber).callback = {@L1ControlCallback};
 optionNumber = optionNumber + 1;
 % Option 2 of parameter 2
 options(optionNumber).promptString = 'Window size (TRs)';
-options(optionNumber).answerString = num2str(DFNC_DEFAULTS.aswc);
+options(optionNumber).answerString = '29';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'wsize'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
