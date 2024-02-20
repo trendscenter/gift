@@ -1,10 +1,12 @@
 # **GIFT Updates**
 
 ## GIFT 4.0.4.15 (2/20/24):
-- Added average mask for fMRI
-- Fixed report generation for Windows platform
-- ROI-voxel option in dFC tool fixed so voxel maps are not prevented
-- groupica.m now handles multiple arguments when called in batch
+- Neuromark fMRI 2.0
+    - Multiorder constrained maps supplied
+- Implemented Datavis
+- GIFT version displayed in main window
+- Added automatic slicing feature for both fMRI and SBM
+- Implemented SSB SWPC option by Ashkan
 - Default&ICV mask optoin to remove eyeballs
 - Implemented NBIC toolbox, including import function and example script
 - GIFT MATLAB Runtime Compiler
@@ -24,19 +26,18 @@
 - Corrected icasso figures plots out as they should when clicking button [Results Summary]
 - T-test added to sbm
 - ROI based FC stats summary is now saved
-- Neuromark fMRI 2.0
-- Multiorder constrained maps supplied
 - Plotting components faster
 - Trilinear interpolation for the display of function on the structural template (icatb_default.m)
 - Implemented cEBM to GIFT
 - Added colorbar to icatb_overlayImages
-- Added automatic slicing feature for both fMRI and SBM
-- Implemented SSB SWPC option by Ashkan
 - For batch fix so folder is created even if extra slash is supplied
 - Fix for matlab2023b bug
 - Default&icv mask for GIFT when run on server installation
-- Implemented Datavis
-- GIFT version displayed in main window
+- Added average mask for fMRI
+- Fixed report generation for Windows platform
+- ROI-voxel option in dFC tool fixed so voxel maps are not prevented
+- groupica.m now handles multiple arguments when called in batch
+
  
 ***
 
