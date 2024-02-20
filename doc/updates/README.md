@@ -1,6 +1,6 @@
 # **GIFT Updates**
 
-## GIFT 4.0.4.15 (2/20/24):
+## GIFT 4.0.4.15 (2/20/2024):
 - Changed name of Neuromark template to Neuromark_fMRI_1.0.nii
 - Added Neuromark fMRI 2.0
     - Multiorder constrained maps supplied
@@ -24,7 +24,7 @@
 - Batch fix for head motion variables
 - GIFT will pick the batch file TR for DFNC processing if if TR is different in the parameter file
 - Corrected icasso figures plots out as they should when clicking button [Results Summary]
-- T-test added to sbm
+- T-test added to SBM
 - ROI based FC stats summary is now saved
 - Plotting components faster
 - Trilinear interpolation for the display of function on the structural template (icatb_default.m)
