@@ -1,5 +1,58 @@
 # **GIFT Updates**
 
+## Miscellaneous enhancements & fixes to GroupICAT v4.0c (Feb 24, 2022):
+- Using double precision to avoid any errors in the spatial chronnectome when using default despike option
+- Display results structure is added in nipype model file, including network summary options
+- Gig-ica algorithm name is changed to MOO-ICAR
+- Subject ICA loadings are generated when using algorithms like Infomax, fast ICA, etc
+- Default template is changed to ch2bet_3x3x3mm.nii
+- Evaluation criteria for estimating clusters like daviesbouldin and ray turi
+- icatb_nan_mT function handles multiple contrasts
+- Kurtosis graphs y limits are changed separately for the spatial maps and timecourses
+- Subject loading coefficients are written
+- Updated mex binaries, including for SPM12 
+- Option added, to remove components from testing data-sets in the noise cloud toolbox
+- Timecourses entered as row vectors are internally converted to column vectors
+- Merge analysis only uses timecourse information if spatial components information is not present
+- Added INTERP_VAL interpolation when resizing images (icatb_defaults.m)
+- GIFT now creates output directory when saving concatenated component timecourses
+- Nans are used in timecourses or fnc correlations if subject back-reconstucted files are missing
+- Added modified getStateCorrs sub-function (originally found in icatb_post_process_dfnc.m) to roi-based dFC post-processing. Adds call to getStateCorrrs after kmeans clustering is run on the full input dataset (all subjects and windows). This provides users with two additional fields (corrs_state and states) in clusterInfo which are needed for group or individual subject analyses.
+- Added options to turn off mutual information and kurtosis in reports
+- moo-icar option is changed to use reference file names instead of reference data to handle large number of references
+- icatb_save ica data is handled to use single component
+- Post process timecourses is saved incrementally
+- Added options to compute aggregate spectra, fnc, etc in post process step to speedup display results. Files are saved individual subject-wise instead of one big file.
+- Options are provided to compute aggregate fnc, spectra, etc in post-process step. Individual subject files are saved instead of one big file.
+- "chkSize undefined value", "too many input args", "Brace indexing is not supported for this variable type", missing field "postprocess" and "Error using reshape" errors fixed
+- Anisotropic template is resliced to isotropic
+- Tall array DFNC option added when using kmeans
+- Ratio to interpolate is computed once and used in resampling timecourses when the TRs are different across subjects
+- r_to_z function is used instead of atanh
+- Added IVA-L-SOS-Adaptive algorithm
+    - iva second order is updated to use only weight change as the stopping criteria
+	- Options to initialize weights using IVA-G
+- Colormap is used in figure property instead of calling colormap function
+- Option to store FNC matrices displayed in field wfcInfo.display_info.FNC
+- Option to replace gig-ica with moo-icar to read batch file inputs from previous version
+- Options to initial centroids as user input in standard dfnc
+- Supporting coregistering files when the format is nifti gzip
+- Report generator allows results structure in mat file  and is opened in background mode when using GUI to handle empty plots
+- options are added in defaults to write stats info (mancova) and spectra. 
+    - Spm stats, calculate stats and single trial amplitude are removed from options dropdown box
+- Warning message related to eigs function is fixed
+- Decentralized option in mancova
+- Option is provided to use spectra options like Npoint FFT and bins when TIMECOURSE_POSTPROCESS.spectra.option is set to 2
+- Added decentralized mancova options
+- Input Kmeans centroids are back-projected on to the data to find centroids on the new data-set
+- Power spectra is computed using pwelch
+- Fixed gii file issue which gives error no private field
+- Added algorithm table
+- Use gray instead of white color for separating cells in the matrix plot
+- FNC network plot is used when network names are passed in the univariate results
+ 
+***
+
 ## GroupICAT v4.0c (Oct 10, 2020):
 - We upgraded some tools like adding neuromark template in constrained ica, display summary tools for source based morphometry and mancovan toolbox in the stand alone version of gift. Docker for group ica is now available. Please download tools at https://trendscenter.org/software/gift/. Docker can also be accessed using https://github.com/trendscenter/gift-bids.
 - New GUI is provided to run automated ICA algorithms like MOO-ICAR (previously GIG-ICA) and Constrained ICA (spatial) with less options. This option can be accessed when you click on Setup ICA analysis button. Batch example is given in icatb/icatb_batch_files/batch_constrained_ica.m.
