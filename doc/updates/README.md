@@ -11,7 +11,7 @@
 - Implemented NBIC toolbox, including import function and example script
 - GIFT MATLAB Runtime Compiler
     - Reports working
-    - Removed rspm_progress_bar in deployed cases
+    - Removed rspm_progress_bar in deployed cases (preventing a crash)
 - Changed name of Neuromark template to Neuromark_fMRI_1.0.nii
 - Modified report for bidsapp
 - MANCOVAN
