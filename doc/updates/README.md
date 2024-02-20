@@ -59,7 +59,7 @@
 - Nans are used in timecourses or fnc correlations if subject back-reconstucted files are missing
 - Added modified getStateCorrs sub-function (originally found in icatb_post_process_dfnc.m) to roi-based dFC post-processing. Adds call to getStateCorrrs after kmeans clustering is run on the full input dataset (all subjects and windows). This provides users with two additional fields (corrs_state and states) in clusterInfo which are needed for group or individual subject analyses.
 - Added options to turn off mutual information and kurtosis in reports
-- moo-icar option is changed to use reference file names instead of reference data to handle large number of references
+- MOO-ICAR option is changed to use reference file names instead of reference data to handle large number of references
 - icatb_save ica data is handled to use single component
 - Post process timecourses is saved incrementally
 - Added options to compute aggregate spectra, fnc, etc in post process step to speedup display results. Files are saved individual subject-wise instead of one big file.
@@ -74,7 +74,7 @@
 	- Options to initialize weights using IVA-G
 - Colormap is used in figure property instead of calling colormap function
 - Option to store FNC matrices displayed in field wfcInfo.display_info.FNC
-- Option to replace gig-ica with moo-icar to read batch file inputs from previous version
+- Option to replace gig-ica with MOO-ICAR to read batch file inputs from previous version
 - Options to initial centroids as user input in standard dfnc
 - Supporting coregistering files when the format is nifti gzip
 - Report generator allows results structure in mat file  and is opened in background mode when using GUI to handle empty plots
