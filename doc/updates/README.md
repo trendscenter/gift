@@ -1,6 +1,6 @@
 # **GIFT Updates**
 
-## GIFT 4.0.4.15 (2/20/2024):
+## GIFT 4.0.4.15 (Feb. 20, 2024):
 - Changed name of Neuromark template to Neuromark_fMRI_1.0.nii
 - Added Neuromark fMRI 2.0
     - Multiorder constrained maps supplied
