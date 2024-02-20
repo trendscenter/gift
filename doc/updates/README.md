@@ -1,7 +1,8 @@
 # **GIFT Updates**
 
 ## GIFT 4.0.4.15 (2/20/24):
-- Neuromark fMRI 2.0
+- Changed name of Neuromark template to Neuromark_fMRI_1.0.nii
+- Added Neuromark fMRI 2.0
     - Multiorder constrained maps supplied
 - Implemented Datavis
 - GIFT version displayed in main window
@@ -12,7 +13,6 @@
 - GIFT MATLAB Runtime Compiler
     - Reports working
     - Removed rspm_progress_bar in deployed cases (preventing a crash)
-- Changed name of Neuromark template to Neuromark_fMRI_1.0.nii
 - Modified report for bidsapp
 - MANCOVAN
     - F-stat option when using univariate results (icatb_defaults)
