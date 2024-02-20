@@ -1,5 +1,45 @@
 # **GIFT Updates**
 
+## GIFT 4.0.4.15 (2/20/24):
+- Added average mask for fMRI
+- Fixed report generation for Windows platform
+- ROI-voxel option in dFC tool fixed so voxel maps are not prevented
+- groupica.m now handles multiple arguments when called in batch
+- Default&ICV mask optoin to remove eyeballs
+- Implemented NBIC toolbox, including import function and example script
+- GIFT MATLAB Runtime Compiler
+    - Reports working
+    - Removed rspm_progress_bar in deployed cases
+- Changed name of Neuromark template to Neuromark_fMRI_1.0.nii
+- Modified report for bidsapp
+- MANCOVAN
+    - F-stat option when using univariate results (icatb_defaults)
+	- contrasts label excludes nan in univariate results
+	- ANOVA fixes
+- New demo data for GIFT (Stefan Dvoretski )
+- Fixed report generation for spatial constraint ica
+- Fix of "out of range" error when inconsistency between comp_network_names, sesInfo.numComp and number of subjects appears
+- Batch fix for head motion variables
+- GIFT will pick the batch file TR for DFNC processing if if TR is different in the parameter file
+- Corrected icasso figures plots out as they should when clicking button [Results Summary]
+- T-test added to sbm
+- ROI based FC stats summary is now saved
+- Neuromark fMRI 2.0
+- Multiorder constrained maps supplied
+- Plotting components faster
+- Trilinear interpolation for the display of function on the structural template (icatb_default.m)
+- Implemented cEBM to GIFT
+- Added colorbar to icatb_overlayImages
+- Added automatic slicing feature for both fMRI and SBM
+- Implemented SSB SWPC option by Ashkan
+- For batch fix so folder is created even if extra slash is supplied
+- Fix for matlab2023b bug
+- Default&icv mask for GIFT when run on server installation
+- Implemented Datavis
+- GIFT version displayed in main window
+ 
+***
+
 ## Miscellaneous enhancements & fixes to GroupICAT v4.0c (Feb 24, 2022):
 - Using double precision to avoid any errors in the spatial chronnectome when using default despike option
 - Display results structure is added in nipype model file, including network summary options
