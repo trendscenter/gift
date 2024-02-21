@@ -7,7 +7,7 @@
 - Implemented Datavis
 - GIFT version displayed in main window
 - Added automatic slicing feature for both fMRI and SBM
-- Implemented SSB SWPC option by Ashkan
+- Implemented single side band modulation sliding window Pearson correlation (SSB+SWPC) option by Ashkan
 - Default&ICV mask optoin to remove eyeballs
 - Implemented NBIC toolbox, including import function and example script
 - GIFT MATLAB Runtime Compiler
