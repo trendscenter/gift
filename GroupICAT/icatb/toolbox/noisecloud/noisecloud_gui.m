@@ -364,7 +364,7 @@ function help_test_tr_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-H = helpdlg('Experimental TR in seconds', 'Testing set');
+H = helpdlg('Experimental TR in seconds (max TR is 2 seconds)', 'Testing set');
 waitfor(H);
 
 
@@ -464,7 +464,7 @@ function help_train_tr_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-H = helpdlg('Experimental TR in seconds', 'Training set');
+H = helpdlg('Experimental TR in seconds (max TR is 2 seconds)', 'Training set');
 waitfor(H);
 
 
