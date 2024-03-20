@@ -2059,7 +2059,6 @@ set(handles, 'userdata', handles_data);
 function icaTypeCallback(hObject, event_data, handles)
 %% ICA Type callback
 %
-
 menuH = findobj(handles, 'tag', 'SetupICA-Defaults');
 numCompH = findobj(handles, 'tag', 'numComp');
 set(numCompH, 'enable', 'on');
@@ -2067,6 +2066,7 @@ set(numCompH, 'enable', 'on');
 icaTypes = cellstr(get(hObject, 'string'));
 icaVal = get(hObject, 'value');
 whichAnalysisH = findobj(handles, 'tag', 'which_analysis');
+
 set(whichAnalysisH, 'enable', 'on');
 % if (strcmpi(icaTypes{icaVal}, 'iva-gl'))
 %     set(whichAnalysisH, 'enable', 'inactive');
@@ -2079,6 +2079,32 @@ if (strcmpi(icaTypes{icaVal}, 'iva-l-sos-adaptive') || strcmpi(icaTypes{icaVal},
 end
 
 set_data_para(handles, menuH);
+
+% Adjust the nomber of components enabled (between constraint and blind)
+[modalityType, dataTitle] = icatb_get_modality;
+
+hFigAll = get(handles, 'Children');
+for nChi = 1:length(hFigAll)
+    if strcmpi(hFigAll(nChi).Tag, 'numcomp')
+        hNumOfIc=hFigAll(nChi);
+    end
+end
+
+if (strcmpi(modalityType, 'fmri'))
+    if (icaVal == 10) || (icaVal == 16) || (icaVal == 21)
+        hNumOfIc.Enable='inactive';
+        hNumOfIc.String='';
+    else
+        hNumOfIc.Enable='on';
+    end
+elseif (strcmpi(modalityType, 'smri'))
+    if (icaVal == 15) || (icaVal == 18)
+        hNumOfIc.Enable='inactive';
+        hNumOfIc.String='';
+    else
+        hNumOfIc.Enable='on';
+    end
+end
 
 
 function group_ica_typeCallback(hObject, event_data, handles)
