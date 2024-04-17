@@ -94,6 +94,21 @@ if (subjectsIn == 0)
 end
 
 
+% flip order of sessions based on the user input
+if (~isempty(sessions))
+    
+    sess_order = [];
+    sess_str = cellstr(char(result_bids.subjects.session));
+    
+    for nSess = 1:length(sessions)
+        chk_inds = strmatch(sessions{nSess}, sess_str, 'exact');
+        sess_order = [sess_order, chk_inds(:)'];
+    end
+    
+    result_bids.subjects = result_bids.subjects(sess_order);
+    
+end
+
 input_data_file_patterns = cell(length(result_bids.subjects), 1);
 
 for nR = 1:length(result_bids.subjects)
@@ -111,6 +126,27 @@ input_data_file_patterns = input_data_file_patterns(inds);
 if (isempty(input_data_file_patterns))
     error('No fmri files found with the matching tasks');
 end
+
+
+%if (~isempty(sessions))
+% split file patterns by sessions
+
+numSessions = length(unique(cellstr(char(result_bids.subjects.session))));
+numRep = length(unique(cellstr(char(result_bids.subjects.path))));
+numTasks = length(input_data_file_patterns)/(numRep);
+numSubjects = length(input_data_file_patterns) / (numTasks*numSessions);
+
+if (~isempty(sessions))
+    input_data_file_patterns2 = reshape(input_data_file_patterns, numTasks, numSubjects, numSessions);
+    %input_data_file_patterns2 = permute(input_data_file_patterns2, [1, 1, 3]);
+else
+    input_data_file_patterns2 = reshape(input_data_file_patterns, numTasks, numSessions, numSubjects);
+    input_data_file_patterns2 = permute(input_data_file_patterns2, [1, 3, 2]);
+end
+input_data_file_patterns2 = reshape(input_data_file_patterns2, size(input_data_file_patterns2, 1)*size(input_data_file_patterns2, 2), size(input_data_file_patterns2, 3));
+input_data_file_patterns = input_data_file_patterns2;
+%end
+
 
 disp('Done');
 fprintf('\n');
