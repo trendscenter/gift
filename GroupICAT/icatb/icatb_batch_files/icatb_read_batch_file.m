@@ -164,21 +164,30 @@ sesInfo.userInput.prefix = prefix;
 
 %% Pre-processing type
 preproc_options = icatb_preproc_data;
-preproc_type = 'remove mean per timepoint';
-
-alias_options = {'rt', 'rv', 'in', 'vn'};
-
-if (~strcmpi(modalityType, 'smri'))
-    if (isfield(inputData, 'preproc_type'))
-        preproc_type = inputData.preproc_type;
-    end
+if ~(strcmpi(modalityType, 'smri'))
+    preproc_type = 'remove mean per timepoint';
+    alias_options = {'rt', 'rv', 'in', 'vn'};
+else
+    preproc_type = 'remove mean per subject';
+    alias_options = {'rt', 'none'};
 end
+
+%if (~strcmpi(modalityType, 'smri'))
+if (isfield(inputData, 'preproc_type'))
+    preproc_type = inputData.preproc_type;
+end
+%end
 
 try
     ind = getIndex(preproc_type, preproc_options, 'Data Pre-processing Type');
 catch
     ind = getIndex(preproc_type, alias_options, 'Data Pre-processing Type');
 end
+
+if (isempty(ind))
+    ind = 1;
+end
+
 sesInfo.userInput.preproc_type = lower(preproc_options{ind});
 
 %% Output directory

@@ -153,6 +153,22 @@ if (~strcmpi(modalityType, 'smri'))
     inputText(numParameters).help = struct('title', 'Pre-processing', 'string', char('Data is pre-processed prior to the first data reduction. Options are discussed below:', '1) Remove Mean Per Timepoint - At each time point, image mean is removed.', ...
         '2) Remove Mean Per Voxel - Time-series mean is removed at each voxel', '3) Intensity Normalization - At each voxel, time-series is scaled to have a mean of 100. Since the data is already scaled to percent signal change, there is no need to scale the components.', ...
         '4) Variance Normalization - At each voxel, time-series is linearly detrended and converted to Z-scores.'));
+    
+    
+else
+    
+    numParameters = numParameters + 1;
+    
+    inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
+    inputText(numParameters).answerString = char('Remove Mean Per Subject', 'None');
+    inputText(numParameters).uiType = 'popup';
+    inputText(numParameters).dataType = 'string';
+    inputText(numParameters).tag = 'preproc_type';
+    inputText(numParameters).enable = 'on';
+    inputText(numParameters).value = 1;
+    inputText(numParameters).flag = 'scalar';
+    inputText(numParameters).help = struct('title', 'Pre-processing', 'string', 'Option is provided to remove voxel mean for each subject or skip the mean removal prior to PCA step.');
+    
 end
 
 if (~strcmpi(modalityType, 'eeg'))
