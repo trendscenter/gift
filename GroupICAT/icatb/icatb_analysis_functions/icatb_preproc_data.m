@@ -15,7 +15,7 @@ if ~(strcmpi(modalityType, 'smri'))
     options = {'Remove Mean Per Timepoint', 'Remove Mean Per Voxel', 'Intensity Normalization', 'Variance Normalization'};
     alias_options = {'rt', 'rv', 'in', 'vn'};
 else
-    options = {'Remove Mean Per Subject', 'None'};
+    options = {'Remove Mean Per Timepoint', 'None'}; %May change to Mean Per Subject since SBM
     alias_options = {'rt', 'none'};
 end
 if (nargin == 0)
