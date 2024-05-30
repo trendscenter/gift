@@ -2,7 +2,7 @@ function icatb_groupNetworks(file_names, network_names, network_vals, varargin)
 %% Group components by network names and display slices as a ortho plot.
 % 1. file_names - File names.
 % 2. structFile - Anatomical file.
-% 3. netowrk_names - Network names in a cell array.
+% 3. network_names - Network names in a cell array.
 % 4. network_vals - File numbers for each network in a cell array.
 % varargin - arguments must be passed in pairs
 %   a. image_values - Options are 'positive and negative', 'positive',
@@ -53,7 +53,7 @@ function icatb_groupNetworks(file_names, network_names, network_vals, varargin)
 %     'threshold', threshold, 'coords', coords, ...
 %     'structfile', structFile, 'interMediatePlot', 0, ...
 %     'image_values', 'positive and negative', ...
-%     'convert_to_z', 1, 'prefix', prefix);
+%     'convert_to_z', 'yes', 'prefix', prefix);
 
 icatb_defaults;
 global UI_FS;
