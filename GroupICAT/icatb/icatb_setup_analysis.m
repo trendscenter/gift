@@ -1752,7 +1752,7 @@ end
 
 % Select the options of the ICA algorithm other than Erica ICA algorithm
 matchedInd = strmatch(algorithmName, lower({'Infomax', 'Fast ICA', 'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'FBSS', 'ERBM', 'IVA-GL', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', ...
-    'IVA-L-SOS-Adaptive', 'Constrained ICA EBM', 'Adaptive_Constrained_ICA_EBM'}), 'exact');
+    'IVA-L-SOS-Adaptive', 'Adaptive Reverse Constrained ICA EBM'}), 'exact');
 
 sesInfo.userInput.ICA_Options = {};
 
@@ -2100,14 +2100,14 @@ end
 if (strcmpi(modalityType, 'fmri'))
     if (icaVal == 10) || (icaVal == 16) || (icaVal == 21)
         hNumOfIc.Enable='inactive';
-        hNumOfIc.String='';
+        % hNumOfIc.String=''; % may cause errors for constrained ICA
     else
         hNumOfIc.Enable='on';
     end
 elseif (strcmpi(modalityType, 'smri'))
     if (icaVal == 15) || (icaVal == 18)
         hNumOfIc.Enable='inactive';
-        hNumOfIc.String='';
+        % hNumOfIc.String=''; % may cause errors for constrained ICA
     else
         hNumOfIc.Enable='on';
     end

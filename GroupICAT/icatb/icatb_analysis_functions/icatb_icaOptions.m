@@ -936,10 +936,10 @@ switch (lower(ica_algorithm))
         inputText(numParameters).enable = 'on';
         
         
-    case 'constrained ica ebm'
-        %% Constrained ica ebm
+    case 'adaptive reverse constrained ica ebm'
+        %% adaptive reverse Constrained ica ebm
         
-        dlg_title = 'Select the Options for the constrained ICA EBM algorithm';
+        dlg_title = 'Select the Options for the adaptive reverse constrained ICA EBM algorithm';
         
         numParameters = 1;
         
@@ -993,16 +993,6 @@ switch (lower(ica_algorithm))
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'maxIter';
         inputText(numParameters).enable = 'on';
-        
-         numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString = 'Select corr threshold for constrained algorithm';
-        inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = '0.5';
-        inputText(numParameters).dataType = 'numeric';
-        inputText(numParameters).tag = 'rho';
-        inputText(numParameters).enable = 'on';
-        
         
         
     case 'complex infomax'
