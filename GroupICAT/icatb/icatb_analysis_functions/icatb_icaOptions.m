@@ -867,75 +867,6 @@ switch (lower(ica_algorithm))
         inputText(numParameters).tag = 'second_order_alpha0';
         inputText(numParameters).enable = 'on';
         
-    case 'adaptive_constrained_ica_ebm'
-        %% Adaptive constrained ica ebm
-        
-        % dialog Title
-        dlg_title = 'Select the Options for the adaptive constrained ICA EBM algorithm';
-        
-        numParameters = 1;
-        
-        inputText(numParameters).promptString = 'Select optimization approach';
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).answerString = char('newton', 'quasi');
-        inputText(numParameters).dataType = 'string';
-        inputText(numParameters).tag = 'opt_approach';
-        inputText(numParameters).enable = 'on';
-        
-        numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString = 'Select verbose';
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).answerString = char('true', 'false');
-        inputText(numParameters).dataType = 'numeric';
-        inputText(numParameters).tag = 'verbose';
-        inputText(numParameters).enable = 'on';
-        
-        numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString = 'Enter initial weights. You can use any valid evaluation string.';
-        inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = '';
-        inputText(numParameters).dataType = 'string';
-        inputText(numParameters).tag = 'W_init';
-        inputText(numParameters).enable = 'on';
-        
-        numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString = 'Enter stopping tolerance';
-        inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = num2str(1e-6);
-        inputText(numParameters).dataType = 'numeric';
-        inputText(numParameters).tag = 'WDiffStop';
-        inputText(numParameters).enable = 'on';
-        
-        numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString = 'Enter learning rate';
-        inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = '1';
-        inputText(numParameters).dataType = 'numeric';
-        inputText(numParameters).tag = 'alpha0';
-        inputText(numParameters).enable = 'on';
-        
-        numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString = 'Select corr threshold for constrained algorithm';
-        inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = '0.001:0.1:0.9';
-        inputText(numParameters).dataType = 'numeric';
-        inputText(numParameters).tag = 'rho_list';
-        inputText(numParameters).enable = 'on';
-        
-        numParameters = numParameters + 1;
-        inputText(numParameters).promptString = 'Enter max no. of iterations';
-        inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = num2str(512);
-        inputText(numParameters).dataType = 'numeric';
-        inputText(numParameters).tag = 'maxIter';
-        inputText(numParameters).enable = 'on';
-        
-        
     case 'adaptive reverse constrained ica ebm'
         %% adaptive reverse Constrained ica ebm
         
@@ -985,7 +916,7 @@ switch (lower(ica_algorithm))
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'alpha0';
         inputText(numParameters).enable = 'on';
-        
+
         numParameters = numParameters + 1;
         inputText(numParameters).promptString = 'Enter max no. of iterations';
         inputText(numParameters).uiType = 'edit';

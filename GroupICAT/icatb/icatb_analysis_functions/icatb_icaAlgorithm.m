@@ -22,7 +22,7 @@ if (strcmpi(modalityType, 'fmri'))
     % all the available algorithms for fmri data
     icaAlgo = char('Infomax','Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
         'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'MOO-ICAR', ...
-        'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', 'IVA-L-SOS-Adaptive', 'Adaptive Reverse Constrained ICA EBM');% 'Constrained_ICA_EBM', 'Adaptive_Constrained_ICA_EBM');
+        'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', 'IVA-L-SOS-Adaptive', 'Adaptive Reverse Constrained ICA EBM');
 elseif (strcmpi(modalityType, 'smri'))
     % all the available algorithms for EEG data
     icaAlgo = char('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
@@ -374,26 +374,6 @@ if (nargin > 0 && nargin <= 3)
             [data, dewhiteM] = (icatb_calculate_pca(data', size(ref_data, 2)));
             data = data';
             W = icatb_AR_Constrainguess_mated_ICA_EBM(data, ref_data, ICA_Options{:});
-            icasig_tmp = W*data;
-            A = dewhiteM*pinv(W);
-            W = pinv(A);
-            
-        case 'adaptive_constrained_ica_ebm'
-            %% Adaptive constrained ICA EBM
-            ICA_Options{end + 1} = 'whiten';
-            ICA_Options{end + 1} = false;
-            ref_data = icatb_read_data(ICA_Options{2}{1}, [], ICA_Options{2}{2});
-            ICA_Options(1:2) = [];
-            try
-                chk = strmatch(ICA_Options(1:2:end), 'W_init');
-                W_init = eval(ICA_Options{2*chk(1)});
-                ICA_Options{2*chk(1)} = W_init;
-            catch
-            end
-            
-            [data, dewhiteM] = (icatb_calculate_pca(data', size(ref_data, 2)));
-            data = data';
-            W = icatb_adaptive_constrained_ICA_EBM(data, ref_data, ICA_Options{:});
             icasig_tmp = W*data;
             A = dewhiteM*pinv(W);
             W = pinv(A);

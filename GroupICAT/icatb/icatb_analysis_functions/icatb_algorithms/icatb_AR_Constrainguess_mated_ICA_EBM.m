@@ -1,4 +1,4 @@
-function [W, rho_n_arr, Cost] = icatb_AR_Constrainguess_mated_ICA_EBM(X, guess_mat, varargin)
+function [W, rho, Cost] = icatb_AR_Constrainguess_mated_ICA_EBM(X, guess_mat, varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Adaptive Reverse Constrained EBM
 % ICA-EBM: ICA by Entropy Bound Minimization (real-valued version)
@@ -12,6 +12,13 @@ function [W, rho_n_arr, Cost] = icatb_AR_Constrainguess_mated_ICA_EBM(X, guess_m
 %       is the number of reference signals.
 % output:
 % W:    demixing matrix
+%
+% rho: tuned constrained parameter at each iteration (num_guess x K x iter)
+% matrix where num_guess is number of constraints, iter is number of
+% iteration algorithm runs
+%
+% Cost: number of iterations it took to get results
+%
 % Program by Hanlu Yang. Please contact me at hyang3@umbc.edu
 % Example:  [W, rho_n_arr, ~]= icatb_AR_Constrained_ICA_EBM(X,guess_mat);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
