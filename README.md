@@ -27,10 +27,10 @@ runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher.
 #### Stand Alone Versions
 [**Windows 64**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/stand_alone/GroupICATv4.0c_standalone_Win64.zip) - Compiled on Windows 64 bit OS and MATLAB R2020a. Please see read me text file for more details.\
 [**Linux-x86-64**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/stand_alone/GroupICATv4.0.3.3_standalone_Linux_x86_64.zip) - Compiled on Linux-x86-64 bit OS and MATLAB R2016b. Please see read me text file for more details.\
-[**fMRI Data**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/example_subjects.zip) - Example fMRI datais from a visuomotor paradigm.\
+[**fMRI Data**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/example_subjects.zip) - Example fMRI datais from a visuomotor paradigm.
 [**Mancovan Sample Data**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/mancova_sample_data.zip) - Sample data to use in mancovan analysis or temporal dfnc analysis.\
 
-[**Complex GIFT**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/GroupICATv2.0d_complex.zip) - ICA is applied on complex fMRI data. Please follow the read me text file instructions for doing complex fMRI ICA analysis.\
+[**Complex GIFT**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/GroupICATv2.0d_complex.zip) - ICA is applied on complex fMRI data. Please follow the read me text file instructions for doing complex fMRI ICA analysis.
 
 ### GIFT BIDS-Apps <a name="secBids"></a>
 If you have your data in BIDS format or you want to run GIFT under a cluster you may want to our GIFT BIDS-Apps [gift-bids](https://github.com/trendscenter/gift-bids). 
