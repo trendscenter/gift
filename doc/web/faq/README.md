@@ -1,18 +1,18 @@
-[Question 1: What preprocessing steps should be done before analyzing a single subject/ single session in GIFT?](#q1)
-[Question 2: What is assumed about the image intensity scale? Do images need to be scaled in a certain way, or conform to a certain format?](#q2)
-[Question 3: How do I change the defaults?](#q3)
-[Question 4: How do I handle out of memory errors?](#q4)
-[Question 5: What do I do if I see the following error dialog boxes: "functional data not selected", "out of memory error for estimating components", and "not a valid number for PC"?](#q5)
-[Question 6: Are there any guidelines for choosing the number of components?](#q6)
-[Question 7: Are there any other reasons to change the default settings for Infomax (other than the "Select Extended 0/1" option)?](#q7)
-[Question 8: What is done during the "Group ICA" step for a single subject single session analysis?](#q8)
-[Question 9: Are there any benefits to running subjects in a group vs. running them individually?](#q9)
-[Question 10: A single subject might be reduced from 53*63*34*220 to 53*63*34*50." During the data reduction step, are specific time points taken out or averaged?](#q10)
-[Question 11: What happens if the calculate ICA step doesn't converge during the analysis?](#q11)
-[Question 12: How does the SPM2/SPM5/SPM8 design matrix affect ICA?](#q12)
-[Question 13: Which components will be displayed during sorting when component explorer visualization method is used?](#q13)
-[Question 14: How do I view all subject time courses at once?](#q14)
-[Question 15: How to do I quickly do analyses using different parameters like changing the mask or selecting different numbers for data-reduction steps with the same functional data.](#q15)
+[Question 1: What preprocessing steps should be done before analyzing a single subject/ single session in GIFT?](#q1)<br>
+[Question 2: What is assumed about the image intensity scale? Do images need to be scaled in a certain way, or conform to a certain format?](#q2)<br>
+[Question 3: How do I change the defaults?](#q3)<br>
+[Question 4: How do I handle out of memory errors?](#q4)<br>
+[Question 5: What do I do if I see the following error dialog boxes: "functional data not selected", "out of memory error for estimating components", and "not a valid number for PC"?](#q5)<br>
+[Question 6: Are there any guidelines for choosing the number of components?](#q6)<br>
+[Question 7: Are there any other reasons to change the default settings for Infomax (other than the "Select Extended 0/1" option)?](#q7)<br>
+[Question 8: What is done during the "Group ICA" step for a single subject single session analysis?](#q8)<br>
+[Question 9: Are there any benefits to running subjects in a group vs. running them individually?](#q9)<br>
+[Question 10: A single subject might be reduced from 53*63*34*220 to 53*63*34*50." During the data reduction step, are specific time points taken out or averaged?](#q10)<br>
+[Question 11: What happens if the calculate ICA step doesn't converge during the analysis?](#q11)<br>
+[Question 12: How does the SPM2/SPM5/SPM8 design matrix affect ICA?](#q12)<br>
+[Question 13: Which components will be displayed during sorting when component explorer visualization method is used?](#q13)<br>
+[Question 14: How do I view all subject time courses at once?](#q14)<br>
+[Question 15: How to do I quickly do analyses using different parameters like changing the mask or selecting different numbers for data-reduction steps with the same functional data.](#q15)<br>
 
 ---
 ### Introduction 
