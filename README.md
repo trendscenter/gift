@@ -12,7 +12,8 @@
 6. [Toolboxes](#secTools)
 	1. [Mancovan](#secToolMan)
 	2. [NBiC](#secToolNbic)
-7. [Version History](#secVerHist)
+7. [Documentation/Manual](#manual)
+8. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
 GIFT is an application supported by the NIH under grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali. It is a MATLAB toolbox which implements multiple algorithms for independent 
@@ -59,6 +60,9 @@ invoke toolbox using mancovan_toolbox at the command prompt. Mancovan toolbox (F
 is divided into four parts like create design matrix, setup features, run mancova and display.
 #### N-BiC <a name="secToolNbic"></a>
 NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. [Click here for more info](https://github.com/trendscenter/gift/blob/master/GroupICATv4.0c/icatb/toolbox/nbic/README.md).
+
+### Documentation/Manual<a name="manual"></a>
+[Click here for link to manual](https://github.com/trendscenter/gift/blob/master/doc)
 
 ### Version History<a name="secVerHist"></a>
 More information about about the GIFT version history is found at the following link: [GIFT version history](https://github.com/trendscenter/gift/blob/master/doc/web/updates/README.md) 
