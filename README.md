@@ -8,19 +8,17 @@
 2. [Download](#secDownload)
 3. [GIFT BIDS-Apps](#secBids)
 4. [Screen Shots](#secScreen)
-5. [Toolboxes](#secTools)
+5. [Version Compatability](#verComp)
+6. [Toolboxes](#secTools)
 	1. [Mancovan](#secToolMan)
 	2. [NBiC](#secToolNbic)
-6. [Version History](#secVerHist)
+7. [Version History](#secVerHist)
 ---
 ### Introduction <a name="secIntro"></a>
 GIFT is an application supported by the NIH under grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali. It is a MATLAB toolbox which implements multiple algorithms for independent 
 component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT works on MATLAB R2008a and higher. Many ICA algorithms were 
 generously contributedby Dr. Andrzej Cichocki. These are also available in Dr. Cichocki's ICALAB toolbox. For any question or comments please contact Vince Calhoun (vcalhoun@gsu.edu) or 
 Cyrus Eierud (ceierud@gsu.edu).
-
-Please note that all the toolboxes in GIFT require only MATLAB and not dependent on additional MATLAB toolboxes like Image Processing, Signal Processing, etc. Basic GIFT analysis (without GUI) 
-runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher. 
 
 ### Downloads <a name="secDownload"></a>
 **GroupICAT**  - Download latest version by clicking the green code button on the upper right on this page and then clone the software using the link and the git clone command in your terminal. Current version of Group ICA. Requires MATLAB R2008a and higher.
@@ -40,6 +38,12 @@ If you have your data in BIDS format or you want to run GIFT under a cluster you
 | ![GIFT](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/images/gift.jpg) |
 |:--:|
 | Figure 1. Main menu of GIFT|
+
+### Version Compatability <a name="verComp"></a>
+All the toolboxes in GIFT require only MATLAB and not dependent on additional MATLAB toolboxes like Image Processing, Signal Processing, etc. Basic GIFT analysis (without GUI) runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher. Please see below for specific details related to toolboxes in GIFT:
+
+- MANCOVAN runs on MATLAB R2008a and higher. From R2012b onwards, Optimization toolbox is not required to compute t-threshold based on distribution of voxelwise t-stats. There is an option to use Z-threshold or select mask if Optimization toolbox is not installed on MATLAB versions less than R2012b.
+- Temporal and Spatial dFNC runs on MATLAB R2008a and higher.
 
 
 ### Toolboxes <a name="secTools"></a>
