@@ -1,0 +1,27 @@
+# Publications
+- X. L. Li and T. Adali, "Blind spatiotemporal separation of second and/orhigher-order correlated sources by entropy rate minimization" in IEEEInternational Conference on Acoustics, Speech and Signal Processing 2010.
+- X. L. Li and T. Adali, "A novel entropy estimator and its application toICA," in Proc. IEEE Workshop on Machine Learning for Signal Processing (MLSP),Grenoble, France, Sep. 2009.
+- E. Allen, E. Erhardt, T. Eichele, A. R. Mayer, and V. D. Calhoun, Comparison of pre-normalization methods on the accuracy of group ICA results , in Proc. HBM, Barcelona, Spain, 2010.
+- E. Erhardt, S. Rachakonda, E. Bedrick, T. Adali, and V. D. Calhoun, Comparison of multi-subject ICA methods for analysis of fMRI data , in Proc.HBM, Barcelona, Spain, 2010.
+- A. R. Franco, A. Pritchard, V. D. Calhoun, A. R Mayer, Inter-rater andInter-method Reliability for Selecting the Default Mode Network duringData-Driven Analyses, HBM, vol. 30, pp. 2293-2303, 2009.
+- V. D. Calhoun, T. Adali, M. Stevens, K. A. Kiehl, and J. J. Pekar,Semi-Blind ICA of FMRI: A Method for Utilizing Hypothesis-Derived Time Coursesin a Spatial ICA Analysis, NeuroImage, vol. 25, pp. 527-538, 2005.
+- V. D. Calhoun, J. J. Pekar, and G. D. Pearlson, Alcohol IntoxicationEffects on Simulated Driving: Exploring Alcohol-Dose Effects on BrainActivation Using Functional MRI, Neuropsychopharmacology, vol. 29, pp.2097-2107, 2004.
+- V. D. Calhoun, K. A. Kiehl, P. F. Liddle, and G. D. Pearlson,Aberrant Localization of Synchronous Hemodynamic Activity in Auditory CortexReliably Characterizes Schizophrenia, Biol. Psychiatry, vol. 55, pp.842-849, 2004.
+- V. D. Calhoun, T. Adali, and J. J. Pekar, A Method for Testing Conjunctiveand Subtractive Hypotheses on Group FMRI Data Using Independent ComponentAnalysis, Mag. Res. Imag., vol. 9, pp. 1181-1191, 2004.
+- V. D. Calhoun, T. Adali, and G. D. Pearlson, Independent ComponentAnalysis Applied to FMRI Data: A Generative Model for Validating Results,Journal of VLSI Signal Proc. Systems, vol. 37, pp. 281-291, 2004.
+- V. D. Calhoun, T. Adali, J. J. Pekar, and G. D. Pearlson,Latency (in)Sensitive ICA: Group Independent Component Analysis of FMRI Datain the Temporal Frequency Domain, NeuroImage, vol. 20, pp. 1661-1669,2003.
+- V. D. Calhoun, T. Adali, J. C. Hansen, J. Larsen, and J. J. Pekar,ICA of FMRI: An Overview,in Proc. Int. Conf. on ICA and BSS, Nara, Japan,2003.
+- V. D. Calhoun, J. J. Pekar, V. B. McGinty, T. Adali, T. D. Watson, and G.D. Pearlson,Different Activation Dynamics in Multiple Neural Systems During SimulatedDriving, Hum. Brain Map., vol. 16, pp. 158-167, 2002.
+- V. D. Calhoun, T. Adali, G. D. Pearlson, P. C. van Zijl, and J. J. Pekar,Independent Component Analysis of FMRI Data in the Complex Domain Magn Reson.Med., vol. 48, pp. 180-192, 2002.
+- V.Calhoun, T.Adali, G.Pearlson, and J.Pekar,A Method for Making Group Inferences From Functional MRI Data UsingIndependent Component Analysis Hum.Brain Map., vol. 14, pp. 140-151, 2001.
+- V.Calhoun, T.Adali, V.McGinty, J.Pekar, T.Watson, and G.Pearlson,FMRI Activation In A Visual-Perception Task: Network Of Areas Detected UsingThe General Linear Model And Independent Components Analysis NeuroImage,2001.
+- V.Calhoun, T.Adali, G.Pearlson, and J.Pekar,Group ICA of Functional MRI Data: Separability, Stationarity, and InferenceProceedings, ICA2001, San Diego, CA, 2001.
+- V.Calhoun, T.Adali, and G.Pearlson,Independent Components Analysis Applied To fMRI Data: A Generative Model forValidating Results Proceedings, NNSP, Falmouth, MA, 2001.
+- V.D.Calhoun, T.Adali, G.D.Pearlson, and J.J.Pekar,Spatial and Temporal Independent Component Analysis of Functional MRI DataContaining a Pair of Task-Related Waveforms Hum.Brain Map., vol. 13, pp.43-53, 2001.
+- V.Calhoun, V.McGinty, J.Pekar, T.Watson, and G.Pearlson,Investigation of Marinol (THC) Effects upon fMRI Activation During Active andPassive Driving Using Independent Component Analysis and SPM NeuroImage,vol. 13, no. 6, p. S388, 2001.
+- V.Calhoun, J.Pekar, T.Adali, and G.Pearlson,fMRI Of Visual Perception: Networks Identified By SPM And IndependentComponent Analysis Proceedings, ISMRM, 10th Annual Meeting, Glasgow,Scotland, p. 1742, 2001.
+- V.Calhoun, T.Adali, and G.Pearlson,Independent Components Analysis Applied To fMRI Data: A Natural Model AndOrder Selection Proceedings, NSIP, Baltimore, 2001.
+- V.Calhoun, T.Adali, G.Pearlson, and J.Pekar,A Method for Making Group Inferences Using Independent Component Analysis ofFunctional MRI Data: Exploring the Visual System NeuroImage, vol. 13, no.6, p. S88, 2001.
+- V.Calhoun, J.Pekar, T.Adali, and G.Pearlson,An fMRI Analysis of Driving-Related Networks with Independent ComponentAnalysis Applied in a Between-Condition (BC-ICA) and Within-Condition (WC-ICA)MannerProceedings, ISMRM, 10th Annual Meeting, Glasgow, Scotland, p. 668, 2001.
+- J.Pekar, V.Calhoun, T.Adali, and G.Pearlson,Spatial & Temporal Independent Component Analysis of fMRI Data with TwoTask-Related Waveforms Proceedings, ISMRM, 10th Annual Meeting, Glasgow,Scotland, p. 24, 2001.
+- V.Calhoun and J.Pekar,Where and Where Are Components Independent? On the Applicability of Spatial-and Temporal- ICA to Functional MRI Data NeuroImage, vol. 11, p. S682,2000.
