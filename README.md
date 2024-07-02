@@ -74,5 +74,5 @@ NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Compone
 More information about about the GIFT version history is found at the following link: [GIFT version history](https://github.com/trendscenter/gift/blob/master/doc/web/updates/README.md) 
 
 ### Publications<a name="pubs"></a>
-GIFT related publications: [GIFT version history](https://github.com/trendscenter/gift/blob/master/doc/web/publications/README.md) 
+[Click here for a list of GIFT related publications](https://github.com/trendscenter/gift/blob/master/doc/web/publications/README.md) 
 
