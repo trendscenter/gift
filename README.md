@@ -9,7 +9,7 @@
 3. [GIFT BIDS-Apps](#secBids)
 4. [Screen Shots](#secScreen)
 5. [Version Compatability](#verComp)
-6. [Toolboxes](#secTools)
+6. [Toolboxes and Features added to GIFT](#secTools)
 	1. [Mancovan](#secToolMan)
 	2. [NBiC](#secToolNbic)
 7. [Documentation/Manual](#manual)
@@ -18,10 +18,7 @@
 10. [Publications](#pubs)
 ---
 ### Introduction <a name="secIntro"></a>
-GIFT is an application supported by the NIH under grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali. It is a MATLAB toolbox which implements multiple algorithms for independent 
-component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT works on MATLAB R2008a and higher. Many ICA algorithms were 
-generously contributedby Dr. Andrzej Cichocki. These are also available in Dr. Cichocki's ICALAB toolbox. For any question or comments please contact Vince Calhoun (vcalhoun@gsu.edu) or 
-Cyrus Eierud (ceierud@gsu.edu).
+GIFT is an application, originally supported by the NIH grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali and has been extended by NIH and NSF. The MATLAB application implements multiple algorithms for independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. For any question or comments please contact Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu).
 
 ### Downloads <a name="secDownload"></a>
 **GroupICAT**  - Download latest version by clicking the green code button on the upper right on this page and then clone the software using the link and the git clone command in your terminal. Current version of Group ICA. Requires MATLAB R2008a and higher.
@@ -49,7 +46,7 @@ All the toolboxes in GIFT require only MATLAB and not dependent on additional MA
 - Temporal and Spatial dFNC runs on MATLAB R2008a and higher.
 
 
-### Toolboxes <a name="secTools"></a>
+### Toolboxes and Features added to GIFT <a name="secTools"></a>
 #### Mancovan <a name="secToolMan"></a>
 Mancovan toolbox is based on the paper (E. Allen, E. Erhardt, E. Damaraju, W. Gruner, J. Segall, R.
 Silva, M. Havlicek, S. Rachakonda, J. Fries, R.Kalyanam, A. Michael, J. Turner, T. Eichele, S.
