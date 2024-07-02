@@ -1,3 +1,5 @@
+# Frequently Asked Questions
+Some of the frequently asked questions are givenbelow:
 [Question 1: What preprocessing steps should be done before analyzing a single subject/ single session in GIFT?](#q1)<br>
 [Question 2: What is assumed about the image intensity scale? Do images need to be scaled in a certain way, or conform to a certain format?](#q2)<br>
 [Question 3: How do I change the defaults?](#q3)<br>
@@ -15,7 +17,6 @@
 [Question 15: How to do I quickly do analyses using different parameters like changing the mask or selecting different numbers for data-reduction steps with the same functional data.](#q15)<br>
 
 ---
-### Introduction 
 
 ### Question 1: What preprocessing steps should be done before analyzing a single subject/ single session in GIFT?<a name="q1"></a>
 
