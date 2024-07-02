@@ -28,7 +28,7 @@ Cyrus Eierud (ceierud@gsu.edu).
 [**Windows 64**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/stand_alone/GroupICATv4.0c_standalone_Win64.zip) - Compiled on Windows 64 bit OS and MATLAB R2020a. Please see read me text file for more details.\
 [**Linux-x86-64**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/stand_alone/GroupICATv4.0.3.3_standalone_Linux_x86_64.zip) - Compiled on Linux-x86-64 bit OS and MATLAB R2016b. Please see read me text file for more details.\
 [**fMRI Data**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/example_subjects.zip) - Example fMRI datais from a visuomotor paradigm.
-[**Mancovan Sample Data**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/mancova_sample_data.zip) - Sample data to use in mancovan analysis or temporal dfnc analysis.\
+[**Mancovan Sample Data**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/mancova_sample_data.zip) - Sample data to use in mancovan analysis or temporal dfnc analysis.
 
 [**Complex GIFT**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/GroupICATv2.0d_complex.zip) - ICA is applied on complex fMRI data. Please follow the read me text file instructions for doing complex fMRI ICA analysis.
 
@@ -63,8 +63,8 @@ is divided into four parts like create design matrix, setup features, run mancov
 NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. [Click here for more info](https://github.com/trendscenter/gift/blob/master/GroupICAT/icatb/toolbox/nbic/README.md).
 
 ### Documentation/Manual<a name="manual"></a>
-[Click here for link to manual in PDF format](https://github.com/trendscenter/gift/blob/master/doc/v4.0b_gica_manual.pdf)
-[Click here for link to manual in Word format](https://github.com/trendscenter/gift/blob/master/doc/v4.0b_gica_manual.docx)
+[Click here for link to manual in PDF format](https://github.com/trendscenter/gift/blob/master/doc/v4.0b_gica_manual.pdf) <br>
+[Click here for link to manual in Word format](https://github.com/trendscenter/gift/blob/master/doc/v4.0b_gica_manual_jan16_2020.docx)
 
 ### FAQ<a name="faq"></a>
 [Click here for FAQ](https://github.com/trendscenter/gift/blob/master/doc/web/faq/README.md)
