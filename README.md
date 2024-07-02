@@ -15,6 +15,7 @@
 7. [Documentation/Manual](#manual)
 8. [FAQ](#faq)
 9. [Version History](#secVerHist)
+10. [Publications](#pubs)
 ---
 ### Introduction <a name="secIntro"></a>
 GIFT is an application supported by the NIH under grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali. It is a MATLAB toolbox which implements multiple algorithms for independent 
@@ -71,4 +72,7 @@ NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Compone
 
 ### Version History<a name="secVerHist"></a>
 More information about about the GIFT version history is found at the following link: [GIFT version history](https://github.com/trendscenter/gift/blob/master/doc/web/updates/README.md) 
+
+### Publications<a name="pubs"></a>
+GIFT related publications: [GIFT version history](https://github.com/trendscenter/gift/blob/master/doc/web/publications/README.md) 
 
