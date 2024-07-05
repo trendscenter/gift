@@ -35,9 +35,9 @@ If you have your data in BIDS format or you want to run GIFT under a cluster you
 
 ### Screen Shots <a name="secScreen"></a>
 
-| ![GIFT](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/images/gift.jpg) |
+| ![GIFT](https://github.com/trendscenter/gift/blob/master/doc/web/img/20240705Gift4Ims.png) |
 |:--:|
-| Figure 1. Main menu of GIFT|
+| Figure 1. GIFT Sceenshots|
 
 ### Version Compatability <a name="verComp"></a>
 All the toolboxes in GIFT require only MATLAB and not dependent on additional MATLAB toolboxes like Image Processing, Signal Processing, etc. Basic GIFT analysis (without GUI) runs on MATLAB R13 and higher. GIFT GUI works on R2008a and higher. Please see below for specific details related to toolboxes in GIFT:
