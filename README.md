@@ -18,7 +18,7 @@
 10. [Publications](#pubs)
 ---
 ### Introduction <a name="secIntro"></a>
-GIFT is an application, originally supported by the NIH grant 1RO1EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali and has been extended by NIH and NSF. The MATLAB application implements multiple algorithms for independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT has been downloaded by more than 18500 times by researchers world wide. For any question or comments please contact Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu).
+GIFT is an application, originally supported by NIH grant 1RO1 EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali and has been continuous support by NIH and NSF. The MATLAB application implements multiple algorithms for independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT has been downloaded by more than 18581 times (as of 7/6/24) by researchers world wide. For question or comments please contact Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu).
 
 ### Downloads <a name="secDownload"></a>
 **GroupICAT**  - Download latest version by clicking the green code button on the upper right on this page and then clone the software using the link and the git clone command in your terminal. Current version of Group ICA. Requires MATLAB R2008a and higher.
