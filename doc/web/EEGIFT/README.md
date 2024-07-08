@@ -23,7 +23,7 @@ EEGIFT is based on research work by Dr. Vince Calhoun and Dr. Tom Eichele. EEGIF
 | Figure 1. EEGIFT Sceenshots|
 
 ### Documentation/Manual<a name="manual"></a>
-[Click here for link to manual in PDF format](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/eegift/docs/v1.0c_EEGIFT_Walk_Through.pdf) <br>
+Step by step explanation of the Group ICA of EEG Toolbox: [Click here for link to manual in PDF format](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/eegift/docs/v1.0c_EEGIFT_Walk_Through.pdf) <br>
 
 ### Version History<a name="secVerHist"></a>
 The EEGIFT update history is the same as the GIFT update history. [Click here for the EEGIFT update history of features](https://github.com/trendscenter/gift/blob/master/doc/web/updates/README.md) <br>
