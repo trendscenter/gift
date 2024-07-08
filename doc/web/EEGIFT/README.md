@@ -19,7 +19,7 @@ EEGIFT is based on research work by Dr. Vince Calhoun and Dr. Tom Eichele. EEGIF
 
 ### Screen Shots <a name="secScreen"></a>
 
-| ![GIFT](https://github.com/trendscenter/GIFT/blob/master/doc/web/img/20240805EEGIFT4Ims.png) |
+| ![EEGIFT](https://github.com/trendscenter/gift/blob/master/doc/web/img/20240708EEGIFT4Ims.png) |
 |:--:|
 | Figure 1. EEGIFT Sceenshots|
 
