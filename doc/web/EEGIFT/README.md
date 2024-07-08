@@ -18,7 +18,6 @@ EEGIFT is based on research work by Dr. Vince Calhoun and Dr. Tom Eichele. EEGIF
 [**Example Subjects**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/eegift/data/eeg_example_subjects.zip) - Example EEG data is from an auditory oddball paradigm.<br>
 
 ### Screen Shots <a name="secScreen"></a>
-
 | ![EEGIFT](https://github.com/trendscenter/gift/blob/master/doc/web/img/20240708EEGIFT4Ims.png) |
 |:--:|
 | Figure 1. EEGIFT Sceenshots|
