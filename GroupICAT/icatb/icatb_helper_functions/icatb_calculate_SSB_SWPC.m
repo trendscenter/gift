@@ -47,8 +47,10 @@ function [SSBSWPC,win_idx] = icatb_calculate_SSB_SWPC(Tc,winsize,Tr,mod_fs,varar
     %   Journal B, 2012, 85, pp. 1-21
     % 
     
-    
-    win_type = 'rect';
+    icatb_defaults;
+    global DFNC_DEFAULTS;
+
+    win_type = DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE;
     plot_flag = 0;
     if length(varargin)==1
         win_type = varargin{1};
@@ -72,7 +74,7 @@ function [SSBSWPC,win_idx] = icatb_calculate_SSB_SWPC(Tc,winsize,Tr,mod_fs,varar
         case 'rect'
             window_tc = rectwin(winsize);
         case 'gauss'
-            window_tc = gausswin(winsize);
+            window_tc = gausswin(winsize, DFNC_DEFAULTS.GAUSS_WIN_ALPHA);
         case 'tukey'
             window_tc = tukeywin(winsize,.5);
         otherwise

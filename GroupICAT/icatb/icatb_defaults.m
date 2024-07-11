@@ -785,6 +785,9 @@ GICA_RESULTS_SUMMARY.compute.fnc = 1;
 
 %% dFNC defaults
 
+% Default window size, in TRs, for multiple dFNC algos
+DFNC_DEFAULTS.WINDOW_SIZE = 29;
+
 % dFNC step size (dfnc is computed in discrete window intervals).
 DFNC_DEFAULTS.step_size = 1;
 
@@ -805,9 +808,12 @@ DFNC_DEFAULTS.META_STATE = 1;
 DFNC_DEFAULTS.use_tall_array = 'no';
 
 % Modulation frequency (SSB_SWPC)
-DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY = 0.1;
+DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY = 0.015;
 % Options are tukey and rect
-DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE = 'rect';
+DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE = 'gauss'; %rect, gauss or tukey
+
+%
+DFNC_DEFAULTS.GAUSS_WIN_ALPHA = 3; % read to SSB as well
 
 % Interpolation (spm sample vol)
 % Default: 0 - Nearest neighbor interpolation
