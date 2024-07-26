@@ -1,4 +1,4 @@
-function [W, rho, Cost] = icatb_AR_Constrainguess_mated_ICA_EBM(X, guess_mat, varargin)
+function [imSpatialIcsOut, arTcMixingOut, W, rho, Cost] = icatb_AR_Constrainguess_mated_ICA_EBM(X, guess_mat, varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Adaptive Reverse Constrained EBM
 % ICA-EBM: ICA by Entropy Bound Minimization (real-valued version)
@@ -7,11 +7,14 @@ function [W, rho, Cost] = icatb_AR_Constrainguess_mated_ICA_EBM(X, guess_mat, va
 % are used for entropy bound calculation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % inputs:
-% X:    mixtures
+%X is the observed data with size of timepoints*voxelvolums£»
 % guess_mat: matrix where each column is a reference vector. num_guess
-%       is the number of reference signals.
-% output:
-% W:    demixing matrix
+%       is the number of reference signals
+
+%Output
+% imSpatialIcsOut: includes the estimated ICs;
+% arTcMixingOut:  the obtained mixing matrix;
+% W:              demixing matrix
 %
 % rho: tuned constrained parameter at each iteration (num_guess x K x iter)
 % matrix where num_guess is number of constraints, iter is number of
@@ -49,6 +52,9 @@ function [W, rho, Cost] = icatb_AR_Constrainguess_mated_ICA_EBM(X, guess_mat, va
 %
 %
 %
+data_orig = X;
+[X, dewhiteM] = (icatb_calculate_pca(data_orig', size(guess_mat, 2)));
+X = X';
 
 xOrig=X;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1244,6 +1250,11 @@ if show_cost
     ylabel('Cost')
     title('(c) Nonorthogonal ICA')
 end
+
+% Calculate spatial component and mixing matrix (A) similar with MOO-ICAR
+imSpatialIcsOut = W*xOrig;
+arTcMixingOut = (1/size(data_orig,2))*data_orig*imSpatialIcsOut';
+
 % [EOF ICA]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

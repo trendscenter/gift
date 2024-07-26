@@ -371,12 +371,8 @@ if (nargin > 0 && nargin <= 3)
                 ICA_Options{2*chk(1)} = W_init;
             catch
             end
-            [data, dewhiteM] = (icatb_calculate_pca(data', size(ref_data, 2)));
-            data = data';
-            W = icatb_AR_Constrainguess_mated_ICA_EBM(data, ref_data, ICA_Options{:});
-            icasig_tmp = W*data;
-            A = dewhiteM*pinv(W);
-            W = pinv(A);
+
+            [icasig_tmp, A, W] = icatb_AR_Constrainguess_mated_ICA_EBM(data, ref_data, ICA_Options{:});
             
             
             % Add your own ICA algorithm code below
