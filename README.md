@@ -61,8 +61,8 @@ is divided into four parts like create design matrix, setup features, run mancov
 NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. [Click here for more info](https://github.com/trendscenter/gift/blob/master/GroupICAT/icatb/toolbox/nbic/README.md).
 
 ### Documentation/Manual<a name="manual"></a>
-[Click here for link to manual in PDF format](https://github.com/trendscenter/gift/blob/master/doc/v4.0b_gica_manual.pdf) <br>
-[Click here for link to manual in Word format](https://github.com/trendscenter/gift/blob/master/doc/v4.0b_gica_manual_jan16_2020.docx)
+[Click here for link to manual in PDF format](https://github.com/trendscenter/gift/blob/master/doc/gica_manual.pdf) <br>
+[Click here for link to manual in Word format](https://github.com/trendscenter/gift/blob/master/doc/gica_manual.docx)
 
 ### FAQ<a name="faq"></a>
 [Click here for FAQ](https://github.com/trendscenter/gift/blob/master/doc/web/faq/README.md)
