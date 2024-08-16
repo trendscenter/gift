@@ -175,31 +175,31 @@ editPos(3) = controlWidth;
 editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', 'position', editPos, 'string', num2str(dfncInfo.userInput.TR), 'tag', 'tr', 'fontsize', UI_FS - 1);
 
 
-promptPos(2) = promptPos(2) - promptPos(4) - 1.5*yOffset - 0.5*promptHeight;
-promptPos(3) = promptWidth;
-textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', ...
-    'Enter average sliding window in TRs. Set 0 for default dfnc', 'tag', 'prompt_p_avg_sw', 'fontsize', UI_FS - 1);
-icatb_wrapStaticText(textH);
-
-editPos = promptPos;
-editPos(1) = editPos(1) + editPos(3) + xOffset;
-editPos(3) = controlWidth;
-editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', 'position', editPos, 'string', num2str(DFNC_DEFAULTS.aswc),...
-    'tag', 'awsc', 'fontsize', UI_FS - 1);
-
-
-
-promptPos(2) = promptPos(2) - 1.5*yOffset - 0.5*promptHeight;
-promptPos(3) = promptWidth;
-textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', ...
-    'Do you want to compute temporal variation of dfnc?', 'tag', 'prompt_p_tv_dfnc', 'fontsize', UI_FS - 1);
-icatb_wrapStaticText(textH);
-
-editPos = promptPos;
-editPos(1) = editPos(1) + editPos(3) + xOffset;
-editPos(3) = controlWidth;
-editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'popup', 'position', editPos, 'string', {'Yes', 'No'},...
-    'tag', 'tv_dfnc', 'fontsize', UI_FS - 1);
+% promptPos(2) = promptPos(2) - promptPos(4) - 1.5*yOffset - 0.5*promptHeight;
+% promptPos(3) = promptWidth;
+% textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', ...
+%     'Enter average sliding window in TRs. Set 0 for default dfnc', 'tag', 'prompt_p_avg_sw', 'fontsize', UI_FS - 1);
+% icatb_wrapStaticText(textH);
+%
+% editPos = promptPos;
+% editPos(1) = editPos(1) + editPos(3) + xOffset;
+% editPos(3) = controlWidth;
+% editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', 'position', editPos, 'string', num2str(DFNC_DEFAULTS.aswc),...
+%     'tag', 'awsc', 'fontsize', UI_FS - 1);
+%
+%
+%
+% promptPos(2) = promptPos(2) - 1.5*yOffset - 0.5*promptHeight;
+% promptPos(3) = promptWidth;
+% textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', ...
+%     'Do you want to compute temporal variation of dfnc?', 'tag', 'prompt_p_tv_dfnc', 'fontsize', UI_FS - 1);
+% icatb_wrapStaticText(textH);
+%
+% editPos = promptPos;
+% editPos(1) = editPos(1) + editPos(3) + xOffset;
+% editPos(3) = controlWidth;
+% editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'popup', 'position', editPos, 'string', {'Yes', 'No'},...
+%     'tag', 'tv_dfnc', 'fontsize', UI_FS - 1);
 
 
 %% Add an option to do MDL estimation or give the user the option to enter
@@ -475,21 +475,43 @@ try
         error('Please check if there are duplicate entries of the same component in different networks');
     end
     
-    aswcH = findobj(handles, 'tag', 'awsc');
-    if ~isempty(aswcH)
-        aswc = str2num(get(aswcH, 'string'));
-        dfncInfo.userInput.aswc = aswc;
+    chkMethod = [];
+    try
+        chkMethod = icatb_findstr(lower(dfncInfo.userInput.feature_params.final.method),'correlation');
+        dfncInfo.userInput.aswc = dfncInfo.userInput.feature_params.final.awsc;
+        tv_dfnc = dfncInfo.userInput.feature_params.final.tv_dfnc;
+    catch
+    end
+    
+    if isempty(chkMethod)
+        dfncInfo.userInput.aswc = 0;
+        tv_dfnc = 'no';
     end
     
     
-    tvDFNCH = findobj(handles, 'tag', 'tv_dfnc');
-    if ~isempty(tvDFNCH)
-        tv_dfnc = (get(tvDFNCH, 'string'));
-        tvdfncVal = get(tvDFNCH, 'value');
-        dfncInfo.userInput.tv_dfnc = strcmpi(tv_dfnc{tvdfncVal}, 'yes');
-    end
+    dfncInfo.userInput.tv_dfnc = strcmpi(tv_dfnc, 'yes');
     
-    dfncInfo.userInput.aswc = aswc;
+    %     aswcH = findobj(handles, 'tag', 'awsc');
+    %     if ~isempty(aswcH)
+    %         aswc = str2num(get(aswcH, 'string'));
+    %         dfncInfo.userInput.aswc = aswc;
+    %     else
+    %         try
+    %             dfncInfo.userInput.aswc = dfncInfo.userInput.feature_params.final.awsc;
+    %         catch
+    %             dfncInfo.userInput.aswc = 0;
+    %         end
+    %     end
+    
+    
+    %     tvDFNCH = findobj(handles, 'tag', 'tv_dfnc');
+    %     if ~isempty(tvDFNCH)
+    %         tv_dfnc = (get(tvDFNCH, 'string'));
+    %         tvdfncVal = get(tvDFNCH, 'value');
+    %         dfncInfo.userInput.tv_dfnc = strcmpi(tv_dfnc{tvdfncVal}, 'yes');
+    %     end
+    
+    %dfncInfo.userInput.aswc = aswc;
     
     
     

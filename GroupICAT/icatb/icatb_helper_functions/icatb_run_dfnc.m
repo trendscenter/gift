@@ -79,6 +79,13 @@ try
 catch
 end
 
+modulation_frequency = 0.1;
+try
+    winType = DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE;
+    modulation_frequency = DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY;
+catch
+end
+
 try
     detrend_no = dfncInfo.userInput.feature_params.final.tc_detrend;
     doDespike = dfncInfo.userInput.feature_params.final.tc_despike;
@@ -89,8 +96,17 @@ try
     method = dfncInfo.userInput.feature_params.final.method;
     covariates = dfncInfo.userInput.feature_params.final.tc_covariates;
     window_type = dfncInfo.userInput.feature_params.final.window_type;
+    modulation_frequency = dfncInfo.userInput.feature_params.final.modulation_freq;
 catch
 end
+
+
+if isempty(icatb_findstr(lower(dfncInfo.userInput.feature_params.final.method),'correlation'))
+    aswc = 0;
+    tvdfnc = 0;
+end
+
+
 
 
 if (mod(wsize, 2) == 0)
@@ -229,6 +245,7 @@ windowing_params.wsize = dfncInfo.wsize;
 windowing_params.window_alpha = dfncInfo.window_alpha;
 windowing_params.num_L1_repetitions = dfncInfo.num_repetitions;
 windowing_params.window_type = dfncInfo.window_type;
+windowing_params.modulation_frequency = modulation_frequency;
 
 varsToSave = {'FNCdyn', 'tc'};
 
