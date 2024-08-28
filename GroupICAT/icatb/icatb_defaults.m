@@ -787,6 +787,7 @@ GICA_RESULTS_SUMMARY.compute.fnc = 1;
 
 % Default window size, in TRs, for multiple dFNC algos
 DFNC_DEFAULTS.WINDOW_SIZE = 29;
+DFNC_DEFAULTS.WINDOW_SIZE_STRAJECT = 0; % special for shared trajectory
 
 % dFNC step size (dfnc is computed in discrete window intervals).
 DFNC_DEFAULTS.step_size = 1;

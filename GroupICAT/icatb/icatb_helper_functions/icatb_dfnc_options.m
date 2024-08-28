@@ -90,7 +90,7 @@ options(optionNumber).callback = {@L1ControlCallback};
 optionNumber = optionNumber + 1;
 % Option 2 of parameter 2
 options(optionNumber).promptString = 'Window size (TRs)';
-options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE;
+options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE_STRAJECT;
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'wsize'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
