@@ -134,6 +134,12 @@ if (exist('windowing_params', 'var'))
         window_type = windowing_params.window_type;
     catch
     end
+    
+    try
+        modulation_frequency = windowing_params.modulation_frequency;
+    catch
+    end
+    
 end
 
 if (strcmpi(method, 'shared trajectory'))
@@ -209,14 +215,18 @@ if (task_dfnc)
 end
 
 winType = 'rect';
-modulation_frequency = 0.1;
-try
-    winType = DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE;
-    modulation_frequency = DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY;
-catch
+
+if (~exist('modulation_frequency', 'var'))
+    modulation_frequency = 0.1;
+    try
+        winType = DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE;
+        modulation_frequency = DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY;
+    catch
+    end
 end
 
-if (strcmpi(method, 'ssb swpc'))
+
+if ((strcmpi(method, 'ssb swpc')) || (strcmpi(method, 'ssb + swpc')))
     % Ashkan's method
     disp('Using SSB SWPC method for computing dFNC ...');
     FNCdyn = icatb_calculate_SSB_SWPC(X, wsize, minTR, modulation_frequency, winType, 0);
@@ -295,7 +305,7 @@ if (isempty(Y))
     
     FNCdyn = zeros(Nwin, numComp1*(numComp1 - 1)/2);
     
-    if (strcmpi(method, 'none') || strcmpi(method, 'correlation'))
+    if (strcmpi(method, 'none') || (~isempty(icatb_findstr(lower(method), 'correlation'))))
         % No L1
         for ii = 1:Nwin
             a = icatb_corr(squeeze(XWin{ii}));

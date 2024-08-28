@@ -48,7 +48,7 @@ end
 % regarding uitype, strings, etc.
 
 % Setup figure for GUI
-[InputHandle] = icatb_getGraphics(titleFig, 'displaygui', titleFig, figVisibility);
+[InputHandle] = icatb_getGraphics(titleFig, 'optionswindow', titleFig, figVisibility);
 
 % Set no menu bar for the figure
 set(InputHandle, 'Menubar', 'None', 'userdata', inputParameters);
@@ -100,7 +100,8 @@ listboxPos = [listboxXOrigin listboxYOrigin listboxWidth listboxHeight];
 % determine frame Positions & Slider Positions
 horzSliderHeight = 0.05; verSliderWidth = 0.04;
 frameXOrigin = listboxPos(1) + listboxPos(3) + xOffset;
-frameYOrigin = listboxPos(2) + horzSliderHeight + yOffset;
+%frameYOrigin = listboxPos(2) + horzSliderHeight + yOffset;
+frameYOrigin = listboxPos(2) + yOffset;
 frameWidth = (1 - frameXOrigin - 2*xOffset - verSliderWidth);
 frameHeight = listboxPos(2) + listboxPos(4) - frameYOrigin;
 
@@ -161,11 +162,19 @@ for numParameters = 1:length(inputParameters)
             tagPrefix(count).text = 'prefix';
             tag{count} = [tagPrefix(count).text, inputParameters(numParameters).options(numUIControls).tag];
             % Draw prompt string
+            
+            uiVisibleTmp = uiVisible;
+            try
+                uiVisibleTmp = nputParameters(numParameters).options(numUIControls).visible;
+            catch
+            end
+            
+            
             promptH = uicontrol('parent', InputHandle, 'units', 'normalized', 'style', ...
                 'text', 'position', controlPosition, 'BackgroundColor', BG2_COLOR, ...
                 'ForegroundColor', FONT_COLOR, 'string', ...
                 inputParameters(numParameters).options(numUIControls).promptString, 'fontsize', UI_FS, 'fontname', UI_FONTNAME, 'fontunits', UI_FONTUNITS, ...
-                'enable', uiEnable, 'visible', uiVisible);
+                'enable', uiEnable, 'visible', uiVisibleTmp);
             if ~iscell(inputParameters(numParameters).options(numUIControls).promptString)
                 oldString = {inputParameters(numParameters).options(numUIControls).promptString};
             end
@@ -214,13 +223,13 @@ for numParameters = 1:length(inputParameters)
         callbackStr = '';
         if (isfield(inputParameters(numParameters).options(numUIControls), 'callback') && ~isempty(inputParameters(numParameters).options(numUIControls).callback))
             callbackStr = inputParameters(numParameters).options(numUIControls).callback;
-        end                       
+        end
         
         uih = uicontrol('parent', InputHandle, 'units', 'normalized', 'style', ...
             inputParameters(numParameters).options(numUIControls).uiType, 'position', answerPos, ...
             'BackgroundColor', BG2_COLOR, 'ForegroundColor', FONT_COLOR, 'tag', ...
             tag{count}, 'string', inputParameters(numParameters).options(numUIControls).answerString, 'value', inputParameters(numParameters).options(numUIControls).value, ...
-            'fontsize', UI_FS, 'fontname', UI_FONTNAME, 'fontunits', UI_FONTUNITS, 'callback', callbackStr, 'enable', 'on', 'visible', 'on');
+            'fontsize', UI_FS, 'fontname', UI_FONTNAME, 'fontunits', UI_FONTUNITS, 'callback', callbackStr, 'enable', 'on', 'visible', uiVisibleTmp);
         
         answerH = findobj(InputHandle, 'tag', tag{count});
         
@@ -241,7 +250,7 @@ for numParameters = 1:length(inputParameters)
         
         set(answerH, 'enable', uiEnable);
         set(answerH, 'visible', uiVisible);
-              
+        
         if (isfield(inputParameters(numParameters).options(numUIControls), 'enable') && ~isempty(inputParameters(numParameters).options(numUIControls).enable))
             set(answerH, 'enable', inputParameters(numParameters).options(numUIControls).enable);
         end
@@ -312,9 +321,16 @@ for ii = 1:length(inputParameters)
         % get prefix tag
         if listboxValue == ii
             if ~isempty(promptHandle)
-                set(promptHandle, 'visible', 'on', 'enable', 'on'); % prompt handle
+                uiVisibleTmp = 'on';
+                try
+                    if ~isempty(inputParameters(ii).options(jj).visible)
+                        uiVisibleTmp = inputParameters(ii).options(jj).visible;
+                    end
+                catch
+                end
+                set(promptHandle, 'visible', uiVisibleTmp, 'enable', 'on'); % prompt handle
             end
-            set(answerHandle, 'visible', 'on');
+            set(answerHandle, 'visible', uiVisibleTmp);
             %set(answerHandle, 'visible', 'on', 'enable', 'on'); % answer handle
         else
             if ~isempty(promptHandle)
@@ -324,6 +340,11 @@ for ii = 1:length(inputParameters)
             %set(answerHandle, 'visible', 'off', 'enable', 'inactive'); % answer handle
         end
     end
+end
+
+try
+    feval(inputParameters(listboxValue).options(1).callback{1});
+catch
 end
 
 % function callbacks

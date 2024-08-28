@@ -6,6 +6,17 @@ icatb_defaults;
 global DETRENDNUMBER;
 global DFNC_DEFAULTS;
 
+modulation_freq = '';
+try
+    modulation_freq = num2str(DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY);
+catch
+    
+end
+
+if (isempty(modulation_freq))
+    modulation_freq = '0.015';
+end
+
 for ii = 1:2:length(varargin)
     if (strcmpi(varargin{ii}, 'covInfo'))
         covInfo = varargin{ii + 1};
@@ -69,7 +80,7 @@ inputParameters(numParameters).listString = 'Dynamic FNC';
 optionNumber = 1;
 % Option 1 of parameter 2
 options(optionNumber).promptString = 'Select dFNC method';
-options(optionNumber).answerString = char('Correlation', 'L1', 'Shared Trajectory', 'SSB SWPC');
+options(optionNumber).answerString = char('SWPC (Correlation)', 'L1 Reg. SWPC', 'Shared Trajectory', 'SSB + SWPC');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'method'; options(optionNumber).answerType = 'string';
 options(optionNumber).flag = 'delete';
@@ -79,7 +90,7 @@ options(optionNumber).callback = {@L1ControlCallback};
 optionNumber = optionNumber + 1;
 % Option 2 of parameter 2
 options(optionNumber).promptString = 'Window size (TRs)';
-options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE;
+options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE_STRAJECT;
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'wsize'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
@@ -95,7 +106,7 @@ options(optionNumber).uiPos = [0.12 0.045];
 % options(optionNumber).uiPos = [0.16 0.045];
 
 optionNumber = optionNumber + 1;
-% Option 4 of parameter 2
+% Option 3 of parameter 2
 options(optionNumber).promptString = 'Gaussian Window Alpha Value (TRs)';
 options(optionNumber).answerString = '3';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 0;
@@ -104,7 +115,27 @@ options(optionNumber).flag = 'delete';
 options(optionNumber).uiPos = [0.12 0.045];
 
 optionNumber = optionNumber + 1;
+% Option 4 of parameter 2
+options(optionNumber).promptString = 'Enter average sliding window in TRs. Set 0 for default dfnc';
+options(optionNumber).answerString = '0';
+options(optionNumber).uiType = 'edit'; options(optionNumber).value = 0;
+options(optionNumber).tag = 'awsc'; options(optionNumber).answerType = 'numeric';
+options(optionNumber).flag = 'delete';
+options(optionNumber).uiPos = [0.12 0.045];
+
+optionNumber = optionNumber + 1;
 % Option 5 of parameter 2
+options(optionNumber).promptString = 'Do you want to compute temporal variation of dfnc?';
+options(optionNumber).answerString = char('No', 'Yes');
+options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
+options(optionNumber).tag = 'tv_dfnc'; options(optionNumber).answerType = 'string';
+options(optionNumber).flag = 'delete';
+options(optionNumber).uiPos = [0.12 0.045];
+
+
+
+optionNumber = optionNumber + 1;
+% Option 6 of parameter 2
 options(optionNumber).promptString = 'No. of repetitions (L1 regularisation)';
 options(optionNumber).answerString = '10';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
@@ -113,6 +144,20 @@ options(optionNumber).flag = 'delete';
 options(optionNumber).uiPos = [0.12 0.045];
 options(optionNumber).callback = {@L1ControlCallback};
 options(optionNumber).enable = 'inactive';
+options(optionNumber).visible = 'off';
+
+optionNumber = optionNumber + 1;
+% Option 7 of parameter 2
+options(optionNumber).promptString = 'Modulation Frequency (Hz)';
+options(optionNumber).answerString = modulation_freq;
+options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
+options(optionNumber).tag = 'modulation_freq'; options(optionNumber).answerType = 'numeric';
+options(optionNumber).flag = 'delete';
+options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).callback = {@L1ControlCallback};
+options(optionNumber).enable = 'inactive';
+options(optionNumber).visible = 'off';
+
 
 inputParameters(numParameters).options = options; % will be used in plotting the controls in a frame
 clear options;
@@ -291,12 +336,66 @@ delete(hObject);
 
 function L1ControlCallback(hObject, event_data, handles)
 
+
 methodH = findobj(gcbf, 'tag', 'answermethod');
 methodval = get(methodH, 'value');
+strs = cellstr(get(methodH, 'string'));
 repH = findobj(gcbf, 'tag', 'answernum_repetitions');
+prompt_repH = findobj(gcbf, 'tag', 'prefixnum_repetitions');
+modH = findobj(gcbf, 'tag', 'answermodulation_freq');
+prompt_modH = findobj(gcbf, 'tag', 'prefixmodulation_freq');
+
+aswcH = findobj(gcbf, 'tag', 'answerawsc');
+prompt_aswcH = findobj(gcbf, 'tag', 'prefixawsc');
+
+tv_dfncH = findobj(gcbf, 'tag', 'answertv_dfnc');
+prompt_tv_dfncH = findobj(gcbf, 'tag', 'prefixtv_dfnc');
+
 enableval = 'inactive';
+methodSel = lower(strs{methodval});
+
+
 if (methodval == 2)
     enableval = 'on';
 end
 
+set(prompt_repH, 'visible', 'off');
+set(repH, 'visible', 'off');
+set(repH, 'enable', 'off');
+set(prompt_modH, 'visible', 'off');
+set(modH, 'visible', 'off');
+set(modH, 'enable', 'off');
+
+set(aswcH, 'visible', 'off');
+set(prompt_aswcH, 'visible', 'off');
+
+set(tv_dfncH, 'visible', 'off');
+set(prompt_tv_dfncH, 'visible', 'off');
+
+
+if strcmpi(methodSel, 'swpc (correlation)')
+    set(tv_dfncH, 'visible', 'on');
+    set(prompt_tv_dfncH, 'visible', 'on');
+    
+    set(aswcH, 'visible', 'on');
+    set(prompt_aswcH, 'visible', 'on');
+    
+end
+
+
+
+if (strcmpi(methodSel, 'l1 reg. swpc'))
+    set(prompt_repH, 'visible', 'on');
+    set(repH, 'visible', 'on');
+end
+
+
+if (strcmpi(methodSel, 'ssb + swpc'))
+    set(prompt_modH, 'visible', 'on');
+    set(modH, 'visible', 'on');
+    set(modH, 'enable', 'on');
+end
+
 set(repH, 'enable', enableval);
+
+
