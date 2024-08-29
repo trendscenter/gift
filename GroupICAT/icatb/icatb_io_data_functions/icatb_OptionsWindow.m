@@ -369,6 +369,20 @@ for ii = 1:length(inputParameters)
         inputParameters(ii).options(jj).value = get(objectHandle, 'value'); % get the value
     end
 end
+% if method is shared trajectory and then cp trad winsize time to winsize
+nFields = size(inputParameters(2).options,2);
+for i=1:nFields
+    if strcmpi(inputParameters(2).options(i).tag,'wsize_tmp')
+        for ii=1:nFields
+            if strcmpi(inputParameters(2).options(ii).tag,'wsize')
+                if inputParameters(2).options(1).value == 3
+                    % if method is shared trajectory and then cp trad winsize time to winsize
+                    inputParameters(2).options(ii).answerString = inputParameters(2).options(i).answerString;
+                end
+            end
+        end
+    end
+end
 output_parameters.inputParameters = inputParameters;
 setappdata(0, 'optionsAppData', output_parameters); % application data
 delete(handles);

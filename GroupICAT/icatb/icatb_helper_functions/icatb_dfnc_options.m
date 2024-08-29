@@ -90,7 +90,7 @@ options(optionNumber).callback = {@L1ControlCallback};
 optionNumber = optionNumber + 1;
 % Option 2 of parameter 2
 options(optionNumber).promptString = 'Window size (TRs)';
-options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE_STRAJECT;
+options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE;
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'wsize'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
@@ -107,6 +107,15 @@ options(optionNumber).uiPos = [0.12 0.045];
 
 optionNumber = optionNumber + 1;
 % Option 3 of parameter 2
+options(optionNumber).promptString = 'Window size (TRs) for Shared Traj';
+options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE_STRAJECT;
+options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
+options(optionNumber).tag = 'wsize_tmp'; options(optionNumber).answerType = 'numeric';
+options(optionNumber).flag = 'delete';
+options(optionNumber).uiPos = [0.12 0.045];
+
+optionNumber = optionNumber + 1;
+% Option 4 of parameter 2
 options(optionNumber).promptString = 'Gaussian Window Alpha Value (TRs)';
 options(optionNumber).answerString = '3';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 0;
@@ -115,7 +124,7 @@ options(optionNumber).flag = 'delete';
 options(optionNumber).uiPos = [0.12 0.045];
 
 optionNumber = optionNumber + 1;
-% Option 4 of parameter 2
+% Option 5 of parameter 2
 options(optionNumber).promptString = 'Enter average sliding window in TRs. Set 0 for default dfnc';
 options(optionNumber).answerString = '0';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 0;
@@ -124,7 +133,7 @@ options(optionNumber).flag = 'delete';
 options(optionNumber).uiPos = [0.12 0.045];
 
 optionNumber = optionNumber + 1;
-% Option 5 of parameter 2
+% Option 6 of parameter 2
 options(optionNumber).promptString = 'Do you want to compute temporal variation of dfnc?';
 options(optionNumber).answerString = char('No', 'Yes');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
@@ -135,7 +144,7 @@ options(optionNumber).uiPos = [0.12 0.045];
 
 
 optionNumber = optionNumber + 1;
-% Option 6 of parameter 2
+% Option 7 of parameter 2
 options(optionNumber).promptString = 'No. of repetitions (L1 regularisation)';
 options(optionNumber).answerString = '10';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
@@ -147,7 +156,7 @@ options(optionNumber).enable = 'inactive';
 options(optionNumber).visible = 'off';
 
 optionNumber = optionNumber + 1;
-% Option 7 of parameter 2
+% Option 8 of parameter 2
 options(optionNumber).promptString = 'Modulation Frequency (Hz)';
 options(optionNumber).answerString = modulation_freq;
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
@@ -345,6 +354,12 @@ prompt_repH = findobj(gcbf, 'tag', 'prefixnum_repetitions');
 modH = findobj(gcbf, 'tag', 'answermodulation_freq');
 prompt_modH = findobj(gcbf, 'tag', 'prefixmodulation_freq');
 
+winSizeH = findobj(gcbf, 'tag', 'answerwsize');
+prompt_winSizeH = findobj(gcbf, 'tag', 'prefixwsize');
+
+winSize2H = findobj(gcbf, 'tag', 'answerwsize_tmp');
+prompt_winSize2H = findobj(gcbf, 'tag', 'prefixwsize_tmp');
+
 aswcH = findobj(gcbf, 'tag', 'answerawsc');
 prompt_aswcH = findobj(gcbf, 'tag', 'prefixawsc');
 
@@ -359,12 +374,18 @@ if (methodval == 2)
     enableval = 'on';
 end
 
+set(prompt_winSizeH, 'visible', 'off');
+set(winSizeH, 'visible', 'off');
+
+
+set(prompt_winSize2H, 'visible', 'off');
+set(winSize2H, 'visible', 'off');
+
 set(prompt_repH, 'visible', 'off');
 set(repH, 'visible', 'off');
-set(repH, 'enable', 'off');
+
 set(prompt_modH, 'visible', 'off');
 set(modH, 'visible', 'off');
-set(modH, 'enable', 'off');
 
 set(aswcH, 'visible', 'off');
 set(prompt_aswcH, 'visible', 'off');
@@ -374,6 +395,9 @@ set(prompt_tv_dfncH, 'visible', 'off');
 
 
 if strcmpi(methodSel, 'swpc (correlation)')
+    set(prompt_winSizeH, 'visible', 'on');
+    set(winSizeH, 'visible', 'on');
+
     set(tv_dfncH, 'visible', 'on');
     set(prompt_tv_dfncH, 'visible', 'on');
     
@@ -385,17 +409,26 @@ end
 
 
 if (strcmpi(methodSel, 'l1 reg. swpc'))
+    set(prompt_winSizeH, 'visible', 'on');
+    set(winSizeH, 'visible', 'on');
+
     set(prompt_repH, 'visible', 'on');
     set(repH, 'visible', 'on');
 end
 
 
 if (strcmpi(methodSel, 'ssb + swpc'))
+    set(prompt_winSizeH, 'visible', 'on');
+    set(winSizeH, 'visible', 'on');
+
     set(prompt_modH, 'visible', 'on');
     set(modH, 'visible', 'on');
-    set(modH, 'enable', 'on');
 end
 
-set(repH, 'enable', enableval);
+if (strcmpi(methodSel, 'shared trajectory'))
+    set(prompt_winSize2H, 'visible', 'on');
+    set(winSize2H, 'visible', 'on');
+end
+
 
 
