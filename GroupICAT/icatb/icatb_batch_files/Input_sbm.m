@@ -42,6 +42,10 @@ prefix = 'smri_test';
 % or use Default mask which is []
 maskFile = [];
 
+%% Data Pre-processing options
+% 1 - Remove mean per time point
+preproc_type = 1;
+
 %% PCA Type. Also see options associated with the selected pca option. EM
 % PCA options and SVD PCA are commented.
 % Options are 1, 2, 3, 4 and 5.
