@@ -1,4 +1,4 @@
-function [varargout] = icatb_scaleICA(icasig, A, fmriFiles, scaleType, dataType, complexInfo, mask_ind)
+function [varargout] = icatb_scaleICA(icasig, A, fmriFiles, scaleType, dataType, complexInfo, mask_ind, preprocType)
 % [scaledICASig scaledA]=scaleICA(icasig,A,origData)
 % ---------------------------------------------------------------
 % This function takes the timecourses and the images resulting from ICA. It also
@@ -23,6 +23,12 @@ global SBM_Z_SCORES_RMMEAN;
 
 if (isempty(SBM_Z_SCORES_RMMEAN))
     SBM_Z_SCORES_RMMEAN = 1;
+end
+
+if exist('preprocType', 'var')
+    if (strcmpi(preprocType,'none')) % No leave the original data when no scale
+        SBM_Z_SCORES_RMMEAN = 0;
+    end
 end
 
 [modalityType, dataTitle] = icatb_get_modality;

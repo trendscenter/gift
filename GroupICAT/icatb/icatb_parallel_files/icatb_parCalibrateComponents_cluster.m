@@ -148,7 +148,7 @@ parfor i = 1:length(dataSetsToRun)
     
     
     [tempICs, tempTCs] = icatb_scaleICA(tempICs, tempTCs, tmpSessInfo.inputFiles(i).name, ...
-        tmpSessInfo.scaleType, tmpSessInfo.dataType, [], mask_ind);
+        tmpSessInfo.scaleType, tmpSessInfo.dataType, [], mask_ind, tmpSessInfo.preproc_type);
     
     
     

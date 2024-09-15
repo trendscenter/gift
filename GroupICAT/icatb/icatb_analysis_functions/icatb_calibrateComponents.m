@@ -351,7 +351,7 @@ else
         %         sesInfo.scaleType, sesInfo.dataType, complexInfoRead, mask_ind);
         
         [tempIC, tempTC] = icatb_scaleICA(tempIC, tempTC, sesInfo.inputFiles(i).name, ...
-            sesInfo.scaleType, sesInfo.dataType, [], mask_ind);
+            sesInfo.scaleType, sesInfo.dataType, [], mask_ind, sesInfo.preproc_type);
         
         if ~isempty(statusHandle)
             
