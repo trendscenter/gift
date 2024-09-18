@@ -818,7 +818,7 @@ DFNC_DEFAULTS.GAUSS_WIN_ALPHA = 3; % read to SSB as well
 
 % Interpolation (spm sample vol)
 % Default: 0 - Nearest neighbor interpolation
-INTERP_VAL = 1;
+INTERP_VAL = 0;
 
 
 % for docker apps set this variable to 0 for copying the data from the container. 
