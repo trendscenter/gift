@@ -12,6 +12,8 @@
 6. [Toolboxes and Features added to GIFT](#secTools)
 	1. [Mancovan](#secToolMan)
 	2. [NBiC](#secToolNbic)
+ 	3. [Noise Cloud](#secToolNoise)
+  	4. [Autolabeller](#secToolAutolabeller) 
 7. [Documentation/Manual](#manual)
 8. [FAQ](#faq)
 9. [Version History](#secVerHist)
@@ -59,6 +61,10 @@ invoke toolbox using mancovan_toolbox at the command prompt. Mancovan toolbox (F
 is divided into four parts like create design matrix, setup features, run mancova and display.
 #### N-BiC <a name="secToolNbic"></a>
 NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. [Click here for more info](https://github.com/trendscenter/gift/blob/master/GroupICAT/icatb/toolbox/nbic/README.md).
+#### Noise Cloud <a name="secToolNoise"></a>
+Noise cloud uses both spatial and temporal features to identify noise/artifact components from the specified components. More information about Noisecloud will soon come here...
+#### Autolabeller <a name="secToolAutolabeller"></a>
+Autolabeller info will soon come here ...
 
 ### Documentation/Manual<a name="manual"></a>
 [Click here for link to manual in PDF format](https://github.com/trendscenter/gift/blob/master/doc/gica_manual.pdf) <br>
