@@ -1,4 +1,4 @@
-function f = nc_spatial_features(sm, convertToZ)
+function f = nc_spatial_features(sm, convertToZ, threshold)
 %% Compute spatial map features
 %
 
@@ -15,7 +15,7 @@ end
 
 tmp = nc_spatial_kurtosis(sm);
 f{1} = tmp(:)';
-tmp = nc_spatial_aal(sm);
+tmp = nc_spatial_aal(sm, threshold);
 f{2} = tmp(:)';
 tmp = nc_spatial_degreecluster(sm);
 f{3} = tmp(:)';
@@ -27,7 +27,7 @@ tmp = nc_spatial_mirror(sm);
 f{6} = tmp(:)';
 tmp = nc_spatial_skewness(sm);
 f{7} = tmp(:)';
-tmp = nc_spatial_tissues(sm);
+tmp = nc_spatial_tissues(sm, threshold);
 f{8} = tmp(:)';
 
 f = [f{:}];

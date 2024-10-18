@@ -25,6 +25,10 @@ function varargout = noisecloud_gui(varargin)
 % Last Modified by GUIDE v2.5 17-Feb-2021 16:32:54
 
 % Begin initialization code - DO NOT EDIT
+
+icatb_defaults;
+global NOISECLOUD;
+
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
     'gui_Singleton',  gui_Singleton, ...
@@ -56,17 +60,11 @@ function noisecloud_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for noisecloud_gui
 handles.output = hObject;
 
-if (isempty(which('spm.m')))
-    error('SPM does not exist on path');
-end
-
-
 chk = uigetdir(pwd, 'Select output directory ...');
 
 if (isnumeric(chk) && ~chk)
     error('Output directory is not selected');
 end
-
 
 handles.outputDir = chk;
 
@@ -94,6 +92,8 @@ function run_class_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+icatb_defaults;
+global NOISECLOUD;
 
 outputDir = pwd;
 
@@ -185,6 +185,8 @@ try
 catch
     training_opts.regress_cov = [];
 end
+
+training_opts.pretrain = NOISECLOUD.pretrain;
 
 % Run classifier
 [class_labels, fit_mdl, result_nc_classifier] = noisecloud_run(training_opts, testing_opts, 'convert_to_z', convert_to_z, 'outDir', outputDir, 'coregister', 1, ...

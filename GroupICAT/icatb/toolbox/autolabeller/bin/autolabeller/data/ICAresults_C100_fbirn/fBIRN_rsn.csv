@@ -1,0 +1,48 @@
+IC,LABEL,DOMAIN
+75,SN,SC
+13,caudate,SC
+1,putamen head,SC
+2,putamen tail,SC
+18,thalamus,SC
+58,STG2,AUD
+51,STG2,AUD
+5,ventral motor,SM
+6,r motor,SM
+10,l motor,SM
+74,vSMA,SM
+9,paracentral,SM
+59,Bi Postcentral,SM
+76,Lingual,VIS
+78,d Cuneus,VIS
+43,Calcarine,VIS
+7,v Cuneus (heart),VIS
+57,FFG,VIS
+91,R MOG,VIS
+42,MT/MOG,VIS
+20,IOG,VIS
+60,SOG,VIS
+12,Calcarine,VIS
+80,MTG,ATTN
+24,SPL,ATTN
+66,R IPL,ATTN
+94,L IPL,ATTN
+89,IPL,ATTN
+63,ITG,ATTN
+35,Precuneus,ATTN
+40,Precuneus,ATTN
+96,SMG,ATTN
+41,pInsula,FRN
+28,aInsula,FRN
+34,precentral,FRN
+21,MiFG,FRN
+61,L MTG+IFG,FRN
+65,IFG,FRN
+69,dMPFC,FRN
+30,PCC,DMN
+47,PCC,DMN
+84,R AG,DMN
+95,L AG,DMN
+90,AG,DMN
+53,ACC,DMN
+46,CB,CB
+88,CB,CB

@@ -1,4 +1,4 @@
-function [features_norm, feature_labels] = noisecloud(TR_value, network_paths, timeseries_paths, varargin)
+function [features_norm, feature_labels, features] = noisecloud(TR_value, network_paths, timeseries_paths, varargin)
 %% Noise cloud feature extraction. Adapted from original noise cloud function
 %at https://github.com/vsoch/noisecloud
 %
@@ -16,6 +16,9 @@ function [features_norm, feature_labels] = noisecloud(TR_value, network_paths, t
 %
 
 % -------------------------------------------------------------------------
+icatb_defaults;
+global NOISECLOUD;
+
 % Add path for noisecloud
 fullpath = fileparts(which('noisecloud'));
 addpath(genpath(fullpath));
@@ -25,6 +28,7 @@ global NOISE_ATLAS_DIRS;
 %convert_to_z = 'no';
 %outDir = pwd;
 coregister_im = 1;
+threshold = NOISECLOUD.threshold_default;
 for nV = 1:length(varargin)
     if (strcmpi(varargin{nV}, 'convert_to_z'))
         convert_to_z = varargin{nV + 1};
@@ -32,13 +36,15 @@ for nV = 1:length(varargin)
         outDir = varargin{nV + 1};
     elseif (strcmpi(varargin{nV}, 'coregister'))
         coregister_im = varargin{nV + 1};
+    elseif (strcmpi(varargin{nV}, 'threshold'))
+        threshold = varargin{nV + 1};
     end
 end
 
-% Check for SPM
-if isempty(which('spm'))
-    error('Please download SPM and add it to your path!');
-end
+% % % % % % % Check for SPM
+% % % % % % if isempty(which('spm'))
+% % % % % %     error('Please download SPM and add it to your path!');
+% % % % % % end
 
 % Ask the user to input images TR
 %TR = input('Enter TR value:');
@@ -74,13 +80,16 @@ end
 addpath (outDir);
 
 if (~isempty(network_paths))
-    VV = spm_vol(char(network_paths));
+    VV = icatb_spm_vol(char(network_paths));
     file_names = cell(length(VV), 1);
     for nV = 1:length(VV)
         file_names{nV} = [VV(nV).fname, ',', num2str(VV(nV).n(1))];
     end
     network_paths = file_names;
     network_row_names = network_paths;
+else
+        network_paths = [];
+        network_row_names = [];  
 end
 
 numComp2 = [];
@@ -130,25 +139,21 @@ features = zeros(numComp, length(feature_labels));
 
 %% Step 2: Extract features
 for s = 1:numComp
-    
+    disp(['Extracting features from component ' num2str(s) ' of ' num2str(numComp)])
     sm = []; tc = [];
     if (~isempty(network_paths))
         current_image = network_paths{s};
-        current_image = spm_read_vols(spm_vol(current_image));
+        current_image = icatb_spm_read_vols(icatb_spm_vol(current_image));
         current_image(isfinite(current_image) == 0) = 0;
-        sm = nc_spatial_features(current_image, convert_to_z);
+        sm = nc_spatial_features(current_image, convert_to_z, threshold);
     end
     
     if (~isempty(timeseries_paths))
         tc = nc_temporal_features(TC(:, s), convert_to_z);
     end
     
-    tmp = [sm, tc];
-    
-    features(s, :) = tmp;
-    
+    features(s, :) = [sm, tc];
 end
-
 
 %% Step 3: Normalization
 
@@ -234,7 +239,7 @@ else
     data = [];
     
     for nT = 1:size(time_text, 1)
-        dat = spm_read_vols(spm_vol(deblank(time_text(nT, :))));
+        dat = icatb_spm_read_vols(icatb_spm_vol(deblank(time_text(nT, :))));
         dat(isfinite(dat) == 0) = 0;
         data = [data,dat];
     end
@@ -245,7 +250,7 @@ function feature_labels = getFeatureLabels(network_paths, timeseries_paths)
 
 load('noise_cloud_params.mat');
 
-feature_labels = [];
+feature_labels = {};
 idx = 1;
 
 if (~isempty(network_paths))

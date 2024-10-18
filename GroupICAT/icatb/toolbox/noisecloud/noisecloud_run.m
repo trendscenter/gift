@@ -1,6 +1,4 @@
 function [class_labels, fit_mdl, result_nc_classifier] = noisecloud_run(training_opts, testing_opts, varargin)
-%% Run noise cloud (requires SPM)
-%
 % Inputs:
 % 1. training_opts: data structure
 % a. TR - TR in seconds
@@ -25,12 +23,15 @@ function [class_labels, fit_mdl, result_nc_classifier] = noisecloud_run(training
 %
 % nc_class_labels.txt file containing labels (Noise or network) is written in the output directory specified.
 
+icatb_defaults;
+global NOISECLOUD;
 
 outDir = pwd;
 coregister_im = 1;
 num_iterations = 1;
 num_cross_validation = 10;
 convert_to_z = 'yes';
+threshold = NOISECLOUD.threshold_default;
 for nV = 1:length(varargin)
     if (strcmpi(varargin{nV}, 'convert_to_z'))
         convert_to_z = varargin{nV + 1};
@@ -42,12 +43,14 @@ for nV = 1:length(varargin)
         num_iterations = varargin{nV + 1};
     elseif (strcmpi(varargin{nV}, 'cross_validation'))
         num_cross_validation = varargin{nV + 1};
+    elseif (strcmpi(varargin{nV}, 'threshold'))
+        threshold = varargin{nV + 1};
     end
 end
 
 
-file_names_testing = [];
-file_names_training = [];
+file_names_testing = {};
+file_names_training = {};
 
 if (isfield(training_opts, 'sm') && ~isempty(training_opts.sm))
     
@@ -105,7 +108,21 @@ end
 
 %% Get the features of training data
 disp('Computing spatial and temporal features of training data ...');
-[features_norm, feature_labels] = noisecloud(training_opts.TR, file_names_training, training_tc, 'convert_to_z', convert_to_z, 'outDir', outDir, 'coregister', coregister_im);
+
+if ~training_opts.pretrain
+    [features_norm, feature_labels] = noisecloud(training_opts.TR, file_names_training, training_tc, 'convert_to_z', convert_to_z, 'outDir', outDir, 'coregister', coregister_im, 'threshold', threshold);
+    coregister_im = 0;
+else
+    % load precomputed features from file
+    feature_labels = training_opts.feature_labels;
+    features_norm = training_opts.features_norm;
+    testing_tc = testing_opts.tc;
+end
+% save features
+t1 = num2cell( features_norm );
+t1 = [feature_labels; t1];
+writecell( t1, fullfile(outDir, 'training_features.csv') )
+
 
 if (isnumeric(training_opts.class_labels))
     tmpLa = training_opts.class_labels;
@@ -115,7 +132,7 @@ end
 
 labels.decision = tmpLa(:);
 disp('Building classifier using logistic regression ...');
-result_nc_classifier = noisecloud_classify(features_norm, feature_labels, labels, 'iterations', num_iterations, 'cross_validation', num_cross_validation);
+result_nc_classifier = noisecloud_classify(features_norm, feature_labels, labels, 'iterations', num_iterations, 'cross_validation', num_cross_validation, 'threshold', threshold);
 
 %% Use the best lambda parameter to train the data again
 options = glmnetSet;
@@ -126,8 +143,13 @@ fit_mdl = glmnet(features_norm, labels.decision, 'binomial', options);
 
 %% Use testing data-set to predict the labels
 disp('Computing spatial and temporal features of testing data ...');
-[features_norm_test, feature_labels_test] = noisecloud(testing_opts.TR, file_names_testing, testing_tc, 'convert_to_z', convert_to_z, 'outDir', outDir, ...
-    'coregister', 0);
+[features_norm_test, feature_labels_test, features_raw] = noisecloud(testing_opts.TR, file_names_testing, testing_tc, 'convert_to_z', convert_to_z, 'outDir', outDir, ...
+    'coregister', coregister_im, 'threshold', threshold);
+% save features
+t1 = num2cell( features_raw );
+t1 = [feature_labels_test; t1];
+writecell( t1, fullfile(outDir, 'testing_features.csv') )
+
 disp('Predicting ...');
 class_labels = glmnetPredict(fit_mdl, 'class', features_norm_test);
 class_labels(class_labels == 2) = 0;
@@ -148,11 +170,10 @@ if (~isempty(orig_data))
 end
 
 
-
 function [file_names, dims] = getFilenames(network_paths)
 % Form full filenames from 4D nifti data
 %
-VV = spm_vol(network_paths);
+VV = icatb_spm_vol(network_paths);
 dims = VV(1).dim(1:3);
 file_names = cell(length(VV), 1);
 for nV = 1:length(VV)
@@ -201,8 +222,8 @@ for nS = 1:length(training_tc)
         tc = icatb_load_ascii_or_mat(cF);
     else
         % load as nifti
-        V = spm_vol(cF);
-        tc = spm_read_vols(V);
+        V = icatb_spm_vol(cF);
+        tc = icatb_spm_read_vols(V);
     end
     covTc = icatb_load_ascii_or_mat(regress_training_cov{nS});
     if (numel(covTc) == length(covTc))
@@ -217,11 +238,10 @@ for nS = 1:length(training_tc)
     else
         % save as nifti file
         V.fname = outName;
-        spm_write_vol(V, tc);
+        icatb_spm_write_vol(V, tc);
     end
     training_tc{nS} = outName;
 end
-
 
 function removeNoiseData(orig_data, file_names_testing, class_labels, outDir)
 % Remove noise components from the data

@@ -111,10 +111,18 @@ function selectFolderButton_Callback(hObject, eventdata, handles)
 
 
 % Ask user to select ica folders
-selected = 0;
-while selected == 0
-    [folders,selected] = spm_select([1 Inf],'dir','Select FSL ICA directories:','','','.ica');
+folders = {};
+b_repeat = 1;
+while b_repeat
+    %[folders,selected] = spm_select([1 Inf],'dir','Select FSL ICA directories:','','','.ica');
+    s_folder = icatb_selectEntry('typeEntity', 'directory', 'title', 'Select one FSL ICA directory with .ica extensions at a time');
+
+    folders{end + 1} = s_folder;
+    % open a popup window asking the user to select the data
+    b_repeat = icatb_questionDialog('title', 'Add Directory?', 'textbody', 'Do you want to select one more FSL ICA directory?');    
+
 end
+folders = char(folders);
 
 % After we've selected, we might as well make it impossible to do again
 set(handles.selectFolderButton,'Enable','off');

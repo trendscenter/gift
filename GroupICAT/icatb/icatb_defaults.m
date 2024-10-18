@@ -251,6 +251,9 @@ global EXIT_GICA_APP;
 %% Datavis Alpha map threshold
 global DATA_VIS_THRESHOLD;
 
+%% Noisecloud
+global NOISECLOUD;
+
 modalityType = icatb_get_modality;
 
 %% Naming Convention Output Files( Analyze Format)
@@ -826,3 +829,8 @@ EXIT_GICA_APP =1;
 
 % Data vis (Tmap threshold)
 DATA_VIS_THRESHOLD = 2;
+
+% Noisecloud
+NOISECLOUD.threshold_default = 1;
+NOISECLOUD.pretrain = 0;
+

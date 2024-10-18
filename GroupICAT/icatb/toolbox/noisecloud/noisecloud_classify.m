@@ -22,7 +22,7 @@ end
 addpath(genpath('3rdparty/glmnet_matlab'));
 
 %     % Step 1: Ask user for network labels
-%     [label_file,~] = spm_select(1,'mat','Select component labels (noise/real) .mat file ','','','.mat');
+%     [label_file,~] = icatb_spm_select(1,'mat','Select component labels (noise/real) .mat file ','','','.mat');
 %     labels = load(label_file);  labels = labels.output;
 %
 %     % The labels are 1==noise, 0==not.  Change 0s to 2s

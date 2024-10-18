@@ -36,14 +36,14 @@ fprintf('%s\n','Reading in spatial tissue maps and atlases...');
 
 % MAPS REQUIRED FOR SPATIAL FEATURE EXTRACTION 
 % Use spm_read_vols and spm_vol to get actual data!
-atlas = spm_read_vols(spm_vol(atlas));
-wm_map = spm_read_vols(spm_vol(wm_map));
-gm_map = spm_read_vols(spm_vol(gm_map));
-csf_map = spm_read_vols(spm_vol(csf_map));
-edges_map = spm_read_vols(spm_vol(edges_map));
-midbrain_map = spm_read_vols(spm_vol(midbrain_map));
-eyeballs_map = spm_read_vols(spm_vol(eyeballs_map));
-skull_map = spm_read_vols(spm_vol(skull_map));
+atlas = icatb_spm_read_vols(icatb_spm_vol(atlas));
+wm_map = icatb_spm_read_vols(icatb_spm_vol(wm_map));
+gm_map = icatb_spm_read_vols(icatb_spm_vol(gm_map));
+csf_map = icatb_spm_read_vols(icatb_spm_vol(csf_map));
+edges_map = icatb_spm_read_vols(icatb_spm_vol(edges_map));
+midbrain_map = icatb_spm_read_vols(icatb_spm_vol(midbrain_map));
+eyeballs_map = icatb_spm_read_vols(icatb_spm_vol(eyeballs_map));
+skull_map = icatb_spm_read_vols(icatb_spm_vol(skull_map));
 
 % Break midbrain map into atlases for different components
 ventricles_map = midbrain_map == 5; % Ventricles: 5

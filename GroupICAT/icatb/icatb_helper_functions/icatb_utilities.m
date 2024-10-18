@@ -93,6 +93,10 @@ switch lower(selectedString)
         % Noise cloud
         addpath(genpath(fullfile(giftPath, 'toolbox', 'noisecloud')));
         noisecloud_gui;
+    case 'autolabeller'
+        % Autolabeller
+        addpath(genpath(fullfile(giftPath, 'toolbox', 'autolabeller')));
+        icatb_auto_tb_gui;        
     case 'dynamic coherence'
         % Dynamic coherence
         addpath(genpath(fullfile(giftPath, 'toolbox', 'dynamic_coherence')));

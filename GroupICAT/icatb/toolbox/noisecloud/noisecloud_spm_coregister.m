@@ -11,6 +11,10 @@ function resliced_files = noisecloud_spm_coregister(coregRefImage, coregSourceIm
 % Output images are written to the disk with r* prefix.
 %
 
+coreg = 1;
+reslice = 1;
+
+%ce090524
 %verFlag = lower(spm('ver'));
 %verNum = char(strrep(verFlag, 'spm', ''));
 
@@ -95,12 +99,12 @@ header_files(chk) = [];
 disp('Reslicing ...');
 P = strvcat(coregRefImage, char(files_to_reslice));
 % Reslice options used from spm_defaults
-flags.mask   = 0;
+flags.mask   = defaults.coreg.write.mask;
 flags.mean   = 0;
 %flags.interp = defaults.coreg.write.interp;
 flags.interp=0;
 flags.which  = 1;
-flags.wrap   = [0, 0, 0];
+flags.wrap   = defaults.coreg.write.wrap;
 
 icatb_spm_reslice(P, flags);
 
@@ -146,3 +150,4 @@ end
 
 tmp_files = icatb_rename_4d_file(coregSourceImage);
 coregSourceImage = deblank(tmp_files(1, :));
+fprintf('Done\n');

@@ -1,5 +1,12 @@
-function feature = nc_spatial_tissues(spatialMap);
+function feature = nc_spatial_tissues(spatialMap, threshold);
           global gm_map wm_map csf_map edges_map midbrain_map eyeballs_map skull_map cerebellum_map ventricles_map cord_map;
+
+    % salman 20200602
+    % without thresholding every SM returns the same tissue features
+    if ~isnan(threshold)
+        spatialMap( abs( spatialMap(:) ) < threshold ) = 0;
+    end
+
           % Labels are;
       % perc_activation_wm,perc_activation_gray,perc_activation_csf,perc_activation_eyeballs,perc_activation_mni152edges,perc_activation_midbrain,perc_activation_skull,perc_activation_ventricles,perc_activation_cerebellum,perc_activation_spinalcord,;
       % PROPORTION VOXELS IN TISSUE TYPES;

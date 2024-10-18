@@ -37,7 +37,7 @@ catch
     else
         spmConn = 6;
     end
-    L = spm_bwlabel(double(BW), spmConn);
+    L = icatb_spm_bwlabel(double(BW), spmConn);
 end
 
 % The number of objects is the maximum value of L.  Initialize the
