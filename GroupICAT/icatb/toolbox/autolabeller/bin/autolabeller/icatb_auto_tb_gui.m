@@ -14,7 +14,7 @@ function icatb_auto_tb_gui()
         delete(figHandle);
     end
 
-    InputHandle = icatb_getGraphics('Auto Labeler', 'normal', figureTag, 'off');
+    InputHandle = icatb_getGraphics('Auto Labeller', 'normal', figureTag, 'off');
     set(InputHandle, 'menubar', 'none');
     set(InputHandle, 'userdata', 5);
 
@@ -187,7 +187,7 @@ function icatb_auto_tb_gui()
     %% label file used for noise_training dataset
     d_ypos_plus = 1.25; 
     textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos + [0 -(d_ypos_plus+14)*okHeight 0 0], ...
-        'string', 'label file prefix (for noise_training dataset)', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
+        'string', 'Label file prefix for noise_training', 'tag', 'prompt_components', 'fontsize', UI_FS - 1);
     icatb_wrapStaticText(textH);  
     editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'edit', ...
         'position', promptPos + [+.54 -(d_ypos_plus+14)*okHeight -.2 0], 'String', 'pre_fbirn_sub', 'fontsize', UI_FS - 1, 'tag', 'tag_prefix_label_train');
@@ -397,47 +397,62 @@ function runCallback(hObject, event_data, handles)
 function funCallbackHelpScoreCsv(hObject, event_data, handles)
     msg = sprintf(['Skip functional labels of your independent components']);
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');   
+    msgH = helpdlg(msg, 'Auto Labeller Help');   
     
 function fun_ic_threshold(hObject, event_data, handles)
     msg = 'Threshold level of independent components';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');
+    msgH = helpdlg(msg, 'Auto Labeller Help');
 
 function fun_prefix_label_train(hObject, event_data, handles)
     msg = 'Label file prefix to excel file for noise_training dataset and may be either pre_fbirn_sub or pre_aggregate';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');
+    msgH = helpdlg(msg, 'Auto Labeller Help');
 
 function fun_n_corrs(hObject, event_data, handles)
     msg = 'Number of spatial correlation mappings to match your components to';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');
+    msgH = helpdlg(msg, 'Auto Labeller Help');
 
 function fun_callback_detect_artifact(hObject, event_data, handles)
     msg = 'Option to ignore search for artifacts.';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');
+    msgH = helpdlg(msg, 'Auto Labeller Help');
 
 function funCallbackHelpComponents(hObject, event_data, handles)
     msg = 'Skip anatomical labels of your independent components';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');
+    msgH = helpdlg(msg, 'Auto Labeller Help');
 
 function fun_anatomic_atlas(hObject, event_data, handles)
     msg = 'Prefix of anatomic atlas picked from https://github.com/trendscenter/gift/tree/master/GroupICAT/icatb/toolbox/autolabeller/bin/autolabeller/data/Anatomical';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');   
+    msgH = helpdlg(msg, 'Auto Labeller Help');   
 
 function fun_function_atlas(hObject, event_data, handles)
     msg = 'Prefix of functional atlas picked from https://github.com/trendscenter/gift/tree/master/GroupICAT/icatb/toolbox/autolabeller/bin/autolabeller/data/Functional';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');       
+    msgH = helpdlg(msg, 'Auto Labeller Help');       
 
 function fun_help_param_or_sm(hObject, event_data, handles)
     msg = 'Decide if you will use a parameter file (*param_info.mat) after a group ICA or a spatial map (4D *.nii). For [Parameter File], popup window will let you select a *param_info.mat file resulting from a previous GIFT Group ICA run. For [Spatial Map] there are 2 steps, you first get a popup window that will let you select a spatial map (nii-file) and then another popup window will appear where you select a spatial mask file (img- or nii-file)';
     disp(msg);
-    msgH = helpdlg(msg, 'Auto Labeler Help');     
+    msgH = helpdlg(msg, 'Auto Labeller Help');     
+
+function fun_help_output_folder(hObject, event_data, handles)
+    msg = 'Folder your auolabeller output will be saved to.';
+    disp(msg);
+    msgH = helpdlg(msg, 'Auto Labeller Help');  
+
+function fun_help_param_or_smap(hObject, event_data, handles)
+    msg = 'If parameter file is used the parameter file will find the spatial map file used to find components you want to label. If you select a spatial map file directly that spatial map will be autolabelled.';
+    disp(msg);
+    msgH = helpdlg(msg, 'Auto Labeller Help');  
+
+function fun_help_mask(hObject, event_data, handles)
+    msg = 'Mask file used for the labelling process (not needed if parameter file is used).';
+    disp(msg);
+    msgH = helpdlg(msg, 'Auto Labeller Help');  
 
 function fun_param_vs_smap(hObject, event_data, handles)
     icatb_defaults;
