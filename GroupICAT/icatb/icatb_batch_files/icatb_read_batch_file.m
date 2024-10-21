@@ -52,6 +52,11 @@ end
 % Set application data
 setappdata(0, 'group_ica_modality', lower(modalityType));
 
+if (strcmpi(modalityType, 'fnc'))
+    param_file = read_fnc(inputData);
+    return;
+end
+
 
 %% Check for bids
 if (strcmpi(modalityType, 'fmri'))
@@ -285,7 +290,7 @@ if (~isempty(maskFile) && (strcmpi(modalityType, 'fmri') || strcmpi(modalityType
         if (~exist(icatb_parseExtn(maskFile), 'file'))
             error([maskFile, ' doesn''t exist']);
         end
-      
+        
         % If mask resolution do not match the mask will be resliced
         [dT, extns, maskDim] = icatb_get_countTimePoints(icatb_parseExtn(maskFile));
         [dT, extns, dims] = icatb_get_countTimePoints(icatb_parseExtn(deblank(sesInfo.userInput.files(1).name(1, :))));
@@ -304,7 +309,7 @@ if (~isempty(maskFile) && (strcmpi(modalityType, 'fmri') || strcmpi(modalityType
                 firstFile = deblank(firstFile(1, :));
             end
             
-            sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd); 
+            sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd);
             [sFPath,sFName,sFExt] = fileparts(sTemp);
             % Rename tmp output to the mask name
             maskFile = [sesInfo.userInput.pwd filesep sesInfo.userInput.prefix 'Mask' sFExt];
@@ -793,4 +798,288 @@ if (~isempty(ICA_Options))
             ICA_Options(2*ia) = tmp(2*ib);
         end
     end
+end
+
+
+function param_file = read_fnc(inputData)
+%% Read FNC file
+%
+
+contrast_vector = [];
+try
+    contrast_vector = inputData.contrast_vector;
+catch
+end
+
+if (~isnumeric(contrast_vector))
+    contrast_vector = str2num(contrast_vector);
+end
+
+dataInfo = [];
+
+if ~iscell(inputData.input_data_file_patterns)
+    inputData.input_data_file_patterns = cellstr(inputData.input_data_file_patterns);
+end
+
+count = 0;
+for nSess = 1:size(inputData.input_data_file_patterns, 2)
+    count = count + 1;
+    dataInfo(count).name = ['Session ', num2str(nSess)];
+    dataInfo(count).files = inputData.input_data_file_patterns(:, nSess);
+end
+
+fnc_matrix = icatb_fnc_input(inputData);
+
+sesInfo.isInitialized = 0;
+
+sesInfo.userInput.prefix = inputData.prefix;
+sesInfo.userInput.modality = inputData.modalityType;
+sesInfo.userInput.outputDir = inputData.outputDir;
+sesInfo.userInput.pwd = inputData.outputDir;
+sesInfo.userInput.dataInfo = dataInfo;
+
+scaleType = 'no';
+try
+    scaleType  = inputData.scaleType;
+catch
+end
+
+sesInfo.userInput.scaleType = scaleType;
+
+cd(sesInfo.userInput.outputDir);
+
+doEstimation = 0;
+try
+    doEstimation = inputData.doEstimation;
+catch
+end
+
+sesInfo.userInput.doEstimation = doEstimation;
+
+ICA_Options = {};
+try
+    ICA_Options = sesInfo.userInput.ICA_Options;
+catch
+end
+
+sesInfo.userInput.ICA_Options = ICA_Options;
+
+fnc_file_name = fullfile(sesInfo.userInput.outputDir, [sesInfo.userInput.prefix, '_fnc_data.mat']);
+
+save(fnc_file_name, 'fnc_matrix');
+
+fnc_matrix = icatb_mat2vec(fnc_matrix);
+
+if (doEstimation == 1)
+    [numOfPC1, mdl] = order_selection(fnc_matrix);
+    sesInfo.userInput.est_opts.mdl = mdl;
+    sesInfo.userInput.est_opts.numOfPC1 = numOfPC1;
+else
+    numOfPC1 = inputData.numOfPC1;
+end
+
+
+which_analysis = 1;
+try
+    which_analysis = inputData.which_analysis;
+catch
+end
+
+sesInfo.userInput.which_analysis = which_analysis;
+
+% ICASSO Options
+if (which_analysis == 2)
+    
+    icasso_opts = inputData.icasso_opts;
+    sel_mode = lower(icasso_opts.sel_mode);
+    num_ica_runs = icasso_opts.num_ica_runs;
+    
+    if (~strcmpi(sel_mode, 'randinit') && ~strcmpi(sel_mode, 'bootstrap') && ~strcmpi(sel_mode, 'both'))
+        error('Please provide a valid option for icasso_opts.sel_mode. Valid option must be in {randinit, bootstrap, both}');
+    end
+    
+    if (num_ica_runs < 2)
+        error('Error:ICASSO', ['You need to run ICA algorithm atleast two times inorder to use ICASSO.', ...
+            '\nPlease check variable icasso_opts.num_ica_runs.']);
+    end
+    
+    sesInfo.userInput.icasso_opts = inputData.icasso_opts;
+    
+end
+
+% MST options
+if (which_analysis == 3)
+    sesInfo.userInput.mst_opts = inputData.mst_opts;
+end
+
+% Cross ISI options
+if (which_analysis == 4)
+    sesInfo.userInput.cross_isi_opts = inputData.cross_isi_opts;
+end
+
+sesInfo.userInput.doEstimation = doEstimation;
+sesInfo.userInput.numComp = numOfPC1;
+sesInfo.userInput.numOfPC1 = numOfPC1;
+sesInfo.userInput.contrast_vector = contrast_vector;
+
+
+%% Algorithm
+algoType = 1;
+
+if (isfield(inputData, 'algoType'))
+    algoType = inputData.algoType;
+end
+
+ica_algo = lower(cellstr(icatb_icaAlgorithm));
+
+algoType = getIndex(algoType, ica_algo, 'ICA Algorithm');
+sesInfo.userInput.algorithm = algoType;
+
+if isfield(inputData, 'reference_file')
+    reference_file = inputData.reference_file;
+    if ~ischar(reference_file)
+        labels_file_name = reference_file{2};
+        reference_file_name = reference_file{1};
+    else
+        reference_file_name = reference_file;
+        if ~(exist(reference_file_name, 'file'))
+            error([reference_file_name, ' doesn''t exist']);
+        end
+        [pathstr, fn, extn] = fileparts(reference_file_name);
+        labels_file_name = fullfile(pathstr, [fn, '.txt']);
+        if ~(exist(labels_file_name, 'file'))
+            error([labels_file_name, ' doesn''t exist']);
+        end
+    end
+    
+    sesInfo.userInput.reference_file = reference_file_name;
+    compLabels = getCompLabels(labels_file_name);
+    networkOpts = cell(length(compLabels), 2);
+    for n = 1:length(compLabels)
+        networkOpts{n, 1} = compLabels(n).name;
+        networkOpts{n, 2} = compLabels(n).value;
+    end
+    sesInfo.userInput.network_summary_opts = networkOpts;
+end
+
+display_results = 0;
+try
+    display_results = inputData.display_results;
+catch
+end
+sesInfo.userInput.display_results = display_results;
+
+param_file = fullfile(sesInfo.userInput.outputDir, [sesInfo.userInput.prefix, '_ica_parameter_info.mat']);
+save(param_file, 'sesInfo');
+
+disp('');
+displayString = [' Parameters are saved in ', param_file];
+% display the parameters
+disp(displayString);
+fprintf('\n');
+
+
+function [comp_est, mdl, aic, kic] = order_selection(data, fwhm)
+
+disp('Estimating dimension ...');
+
+%% Remove mean
+data = detrend(data, 0);
+
+%% Arrange data based on correlation threshold
+[V1, D1] = icatb_svd(data);
+
+lam = diag(D1);
+
+lam = sort(lam);
+
+lam = lam(end:-1:1);
+
+lam = lam(:)';
+
+N = (size(data, 2));
+
+if (exist('fwhm', 'var') && ~isempty(fwhm))
+    N = N  / prod(fwhm);
+    N = ceil(N);
+end
+
+%% Make eigen spectrum adjustment
+tol = max(size(lam)) * eps(max(lam));
+
+if (lam(end) < tol)
+    lam(end) = [];
+end
+
+%% Correction on the ill-conditioned results (when tdim is large, some
+% least significant eigenvalues become small negative numbers)
+lam(real(lam) <= tol) = tol;
+
+p = length(lam);
+aic = zeros(1, p - 1);
+kic = zeros(1, p - 1);
+mdl = zeros(1, p - 1);
+for k = 1:p-1
+    LH = log(prod(lam(k+1:end).^(1/(p-k)) )/mean(lam(k+1:end)));
+    mlh = 0.5*N*(p-k)*LH;
+    df = 1 + 0.5*k*(2*p-k+1);
+    aic(k) =  -2*mlh + 2*df;
+    kic(k) =  -2*mlh + 3*df;
+    mdl(k) =  -mlh + 0.5*df*log(N);
+end
+
+% Find the first local minimum of each ITC
+itc = zeros(3, length(mdl));
+itc(1,:) = aic;
+itc(2,:) = kic;
+itc(3,:) = mdl;
+
+%% Use only mdl
+dlap = squeeze(itc(end, 2:end)-itc(end, 1:end-1));
+a = find(dlap > 0);
+if isempty(a)
+    comp_est = length(squeeze(itc(end, :)));
+else
+    comp_est = a(1);
+end
+
+disp(['Estimated components is found to be ', num2str(comp_est)]);
+
+
+if ((comp_est < 2) || all(diff(mdl) < 0))
+    comp_est = min([6, min(size(data))]);
+    warning('FNC:DimensionalityEstimation', 'Estimated components is 1 or MDL function is monotonically decreasing. Using %d instead', comp_est);
+end
+
+disp('Done');
+
+
+function compLabels = getCompLabels(txtFile)
+
+fid = fopen(txtFile, 'r');
+if (fid == -1)
+    error(['File ', txtFile, ' cannot be opened for reading']);
+end
+try
+    dd = textscan(fid, '%s', 'delimiter', '\t\n,', 'multipleDelimsAsOne', 1, 'whitespace', ' ');
+    val = dd{1};
+catch
+    val = [];
+end
+fclose(fid);
+val = val(icatb_good_cells(val));
+chk = cellfun('isempty', regexp(val, '^\d+$'));
+
+inds = find(chk == 1);
+
+compLabels = repmat(struct('name', '', 'value', []), 1, length(inds));
+for nI = 1:length(inds)
+    compLabels(nI).name = val{inds(nI)};
+    if (nI == length(inds))
+        endT = length(val);
+    else
+        endT = inds(nI + 1) - 1;
+    end
+    dd = str2num(char(val{inds(nI) + 1:endT}));
+    compLabels(nI).value = dd(:)';
 end
