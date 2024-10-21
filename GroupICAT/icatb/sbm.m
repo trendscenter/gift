@@ -30,7 +30,7 @@ try
 catch
 end
 
-icatb_delete_gui({'groupica', 'gift', 'eegift'});
+icatb_delete_gui({'groupica', 'gift', 'eegift', 'fnc_ica_toolbox'});
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;

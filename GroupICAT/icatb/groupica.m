@@ -22,12 +22,12 @@ function varargout = groupica(varargin)
 
 % Edit the above text to modify the response to help groupica
 
-% Last Modified by GUIDE v2.5 29-Jul-2011 15:26:52
+% Last Modified by GUIDE v2.5 19-Oct-2024 23:21:38
 
 icatb_defaults;
 global EXIT_GICA_APP;
 
-icatb_delete_gui({'gift', 'eegift', 'sbm'});
+icatb_delete_gui({'gift', 'eegift', 'sbm', 'fnc_ica_toolbox'});
 
 try
     % add this statement to fix the button color
@@ -59,12 +59,13 @@ if (length(varargin) >= 1)
             disp('GIFT Toolbox: GIFT v3.0c');
             disp('EEGIFT Toolbox: EEGIFT v1.0e');
             disp('SBM Toolbox: SBM v1.0b');
+            disp('FNC ICA Toolbox: FNC v1.0a');
             fprintf('\n\n');
             varargout = {};
             return;
-        elseif (~strcmpi(tmpChar, 'fmri') && ~strcmpi(tmpChar, 'smri') && ~strcmpi(tmpChar, 'eeg') && ~strcmpi(tmpChar, 'defaults') ...
+        elseif (~strcmpi(tmpChar, 'fmri') && ~strcmpi(tmpChar, 'smri') && ~strcmpi(tmpChar, 'eeg') && ~strcmpi(tmpChar, 'fnc') && ~strcmpi(tmpChar, 'defaults') ...
                 && ~strcmpi(tmpChar, 'about') && ~strcmpi(tmpChar, 'gica_defaults') && ~strcmpi(tmpChar, 'help') && ~strcmpi(tmpChar, 'exit') ...
-                && ~strcmpi(tmpChar, 'gica_defaults_Callback'))
+                && ~strcmpi(tmpChar, 'gica_defaults_Callback')) 
             % batch callback
             if (length(varargin) >= 2)
                 assignin('base', 'gica_inputs', varargin(2:end));
@@ -151,6 +152,10 @@ if (length(varargin) >= 1)
             % sMRI Callback
             disp('Opening SBM ...');
             smri_button_Callback(hObject, eventdata, handles);
+        elseif strcmpi(varargin{1}, 'fnc')
+            % fnc_ica_button Callback
+            disp('Opening FNC ICA ...');
+            fnc_button_Callback(hObject, eventdata, handles);
         elseif strcmpi(varargin{1}, 'defaults')
             % Defaults Callback
             disp('Opening Defaults ...');
@@ -261,3 +266,12 @@ function gica_defaults_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 icatb_defaults_gui;
+
+
+% --- Executes on button press in fnc_ica_button.
+function fnc_button_Callback(hObject, eventdata, handles)
+% hObject    handle to fnc_ica_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+fnc_ica_toolbox;

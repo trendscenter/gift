@@ -787,6 +787,7 @@ GICA_RESULTS_SUMMARY.compute.fnc = 1;
 
 % Default window size, in TRs, for multiple dFNC algos
 DFNC_DEFAULTS.WINDOW_SIZE = 29;
+DFNC_DEFAULTS.WINDOW_SIZE_STRAJECT = 0; % special for shared trajectory
 
 % dFNC step size (dfnc is computed in discrete window intervals).
 DFNC_DEFAULTS.step_size = 1;
@@ -817,7 +818,7 @@ DFNC_DEFAULTS.GAUSS_WIN_ALPHA = 3; % read to SSB as well
 
 % Interpolation (spm sample vol)
 % Default: 0 - Nearest neighbor interpolation
-INTERP_VAL = 1;
+INTERP_VAL = 0;
 
 
 % for docker apps set this variable to 0 for copying the data from the container. 
