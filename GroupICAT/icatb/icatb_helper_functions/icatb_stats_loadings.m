@@ -9,7 +9,7 @@ global UI_FS;
 
 if (~exist('fileName', 'var'))
     fileName = icatb_selectEntry('title', 'Select ICA loading coefficents ...', 'typeEntity', 'file', 'typeSelection', 'single', 'filter', ...
-        '*group*load*coeff*img;*group*load*coeff*nii');
+        '*group*load*coeff*img;*group*load*coeff*nii;*group*load*coeff*txt');
 end
 
 if (isempty(fileName))

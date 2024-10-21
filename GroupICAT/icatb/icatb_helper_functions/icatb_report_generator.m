@@ -61,10 +61,14 @@ if (strcmpi(modalityType, 'fmri'))
     resultsFile = 'icatb_gica_html_report';
     outDir = fullfile(sesDir, [sesInfo.userInput.prefix, '_gica_results']);
     opts.codeToEvaluate = 'icatb_gica_html_report(param_file, results);';
-else
+elseif (strcmpi(modalityType, 'smri'))
     resultsFile = 'icatb_sbm_html_report';
     outDir = fullfile(sesDir, [sesInfo.userInput.prefix, '_sbm_results']);
     opts.codeToEvaluate = 'icatb_sbm_html_report(param_file, results);';
+else
+    resultsFile = 'icatb_display_fnc_ica';
+    outDir = fullfile(sesDir, [sesInfo.userInput.prefix, '_fnc_results']);
+    opts.codeToEvaluate = 'icatb_display_fnc_ica(param_file);';
 end
 
 if (isfield(results, 'outputDir'))
@@ -123,6 +127,8 @@ else
         icatb_gica_html_report(param_file, results);
     elseif (strcmpi(modalityType, 'smri'))
         icatb_sbm_html_report(param_file, results);
+    elseif (strcmpi(modalityType, 'fnc'))
+        icatb_display_fnc_ica(param_file, results);
     end
     
 end
@@ -172,6 +178,7 @@ if (strcmpi(modalityType, 'fmri'))
         end
     catch
     end
+else
     
 end
 
