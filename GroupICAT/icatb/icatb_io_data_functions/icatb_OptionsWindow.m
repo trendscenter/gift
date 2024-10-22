@@ -155,6 +155,8 @@ for numParameters = 1:length(inputParameters)
         %             uiVisible = 'off';
         %             plot_vertical_slider = 'on';
         %         end
+        
+        uiVisibleTmp = uiVisible;   % needs to be initiated here for line 223
         % check the prompt string
         if ~isempty(inputParameters(numParameters).options(numUIControls).promptString)
             count = count + 1;
@@ -163,9 +165,8 @@ for numParameters = 1:length(inputParameters)
             tag{count} = [tagPrefix(count).text, inputParameters(numParameters).options(numUIControls).tag];
             % Draw prompt string
             
-            uiVisibleTmp = uiVisible;
             try
-                uiVisibleTmp = nputParameters(numParameters).options(numUIControls).visible;
+                uiVisibleTmp = inputParameters(numParameters).options(numUIControls).visible;
             catch
             end
             
