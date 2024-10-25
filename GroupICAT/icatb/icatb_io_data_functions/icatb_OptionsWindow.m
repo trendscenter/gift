@@ -165,11 +165,6 @@ for numParameters = 1:length(inputParameters)
             tag{count} = [tagPrefix(count).text, inputParameters(numParameters).options(numUIControls).tag];
             % Draw prompt string
             
-            try
-                uiVisibleTmp = inputParameters(numParameters).options(numUIControls).visible;
-            catch
-            end
-            
             
             promptH = uicontrol('parent', InputHandle, 'units', 'normalized', 'style', ...
                 'text', 'position', controlPosition, 'BackgroundColor', BG2_COLOR, ...
