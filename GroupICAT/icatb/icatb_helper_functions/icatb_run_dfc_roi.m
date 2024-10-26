@@ -131,7 +131,7 @@ if (~strcmpi(covariates, 'none'))
     try
         covariate_files = dfcRoiInfo.userInput.feature_params.final.tc_covariates_userdata.filesList;
         scansToInclude = dfcRoiInfo.userInput.feature_params.final.tc_covariates_userdata.file_numbers;
-        disp('Variance associated with the covariates will be removed from the timecourses ... ');
+        disp('Status check determined that variance associated with the covariates will be removed from the timecourses ... ');
     catch
     end
 end
@@ -142,11 +142,11 @@ outFiles = cell(1, numOfDataSets);
 
 
 if (strcmpi(doDespike, 'yes') && (tc_filter > 0))
-    disp('Despiking and filtering timecourses ...');
+    disp('Status check finding despiking and filtering timecourses will be done...');
 elseif (strcmpi(doDespike, 'yes') && (tc_filter == 0))
-    disp('Despiking timecourses ...');
+    disp('Status check finding despiking timecourses will be done...');
 elseif (strcmpi(doDespike, 'no') && (tc_filter > 0))
-    disp('Filtering timecourses ...');
+    disp('Status check finding filtering timecourses will be done...');
 end
 
 minTR =  min(TR);

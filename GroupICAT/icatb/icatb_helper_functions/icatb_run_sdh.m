@@ -77,8 +77,8 @@ parfor countD = 1:numOfSub*numOfSess
     
     
     if (~isempty(covariate_files))
-        disp('Variance associated with the covariates will be removed from the timecourses ... ');
         tc = regress_cov(tc, covariate_files{countD}, scansToInclude);
+        disp('Variance associated with the covariates was removed from the timecourses ... ');
     end
     
     % Despiking timecourses

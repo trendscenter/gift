@@ -163,7 +163,7 @@ if (~strcmpi(covariates, 'none'))
     try
         covariate_files = mancovanInfo.userInput.feature_params.final.fnc_tc_covariates_userdata.filesList;
         scansToInclude = mancovanInfo.userInput.feature_params.final.fnc_tc_covariates_userdata.file_numbers;
-        disp('Variance associated with the covariates will be removed from the timecourses ... ');
+        disp('Status check determined that variance associated with the covariates will be removed from the timecourses ... ');
     catch
     end
 end
@@ -280,15 +280,15 @@ if ((step == 1) || (step == 2))
     chkFNC = strcmpi(features, 'fnc correlations') | strcmpi(features, 'fnc correlations (lag)');
     if (~isempty(find(chkFNC == 1)))
         disp('Computing FNC ...');
-        disp('Loading subject timecourses of components ...');
+        disp('Loading subject timecourses of components will be done...');
         
         if (strcmpi(feature_params.final.fnc_tc_despike, 'yes') && (min(filter_cutoff) > 0))
-            disp('Despiking and filtering timecourses ...');
+            disp('Checking status finding despiking and filtering timecourses ...');
         else
             if (strcmpi(feature_params.final.fnc_tc_despike, 'yes'))
-                disp('Despiking timecourses ...');
+                disp('Checking status finding despiking timecourses will be done...');
             elseif (min(filter_cutoff) > 0)
-                disp('Filtering timecourses ...');
+                disp('Checking status finding filtering timecourses will be done...');
             end
         end
         %         fncVals = icatb_compute_fnc_corr(sesInfo, tmpTR(good_sub_inds), 'filter_params', filter_cutoff, 'comps', comp_inds, 'vars_to_load', 'tc', 'subjects', good_sub_inds, ...

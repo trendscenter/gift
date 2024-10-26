@@ -160,7 +160,7 @@ if (~isempty(covariateInfo))
     scansToInclude = [];
     try
         covariate_file = covariateInfo.file;
-        disp('Variance associated with the covariates will be removed from the timecourses ... ');
+        disp('Status check determined that variance associated with the covariates will be removed from the timecourses ... ');
         scansToInclude = covariateInfo.file_numbers;
     catch
     end

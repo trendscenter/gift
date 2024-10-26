@@ -85,7 +85,7 @@ if (~strcmpi(covariates, 'none'))
     try
         covariate_files = cohInfo.userInput.feature_params.final.tc_covariates_userdata.filesList;
         scansToInclude = cohInfo.userInput.feature_params.final.tc_covariates_userdata.file_numbers;
-        disp('Variance associated with the covariates will be removed from the timecourses ... ');
+        disp('Status check determined that variance associated with the covariates will be removed from the timecourses ... ');
     catch
     end
 end
