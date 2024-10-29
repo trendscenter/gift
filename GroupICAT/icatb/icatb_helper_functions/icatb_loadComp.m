@@ -213,6 +213,7 @@ for i = subjects
         
         if (~isempty(covariates))
             tc = regress_cov(tc, covariates{j + (i - 1)*sesInfo.numOfSess}, scansToInclude);
+            disp('Variance associated with the covariates has been removed from the timecourses ... ');
         end
         
         if (truncateTp)
