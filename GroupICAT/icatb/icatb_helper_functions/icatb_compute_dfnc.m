@@ -148,10 +148,19 @@ end
 
 
 %% PRE-PROCESS
+if (~isempty(detrend_no))
+    X = icatb_detrend(X, 1, [], detrend_no);
+    if (~isempty(Y))
+        Y = icatb_detrend(Y, 1, [], detrend_no);
+    end
+    disp(['Just detrended time series with value ', num2str(detrend_no), ' ...']);
+end
+
 if (~isempty(covariateInfo))
     scansToInclude = [];
     try
         covariate_file = covariateInfo.file;
+        scansToInclude = covariateInfo.file_numbers;
     catch
     end      
     
@@ -159,19 +168,7 @@ if (~isempty(covariateInfo))
     if (~isempty(Y))
         Y = regress_cov(Y, covariate_file, scansToInclude);
     end
-    try
-        disp('Variance associated with the covariates has been removed from the timecourses ... ');
-        scansToInclude = covariateInfo.file_numbers;
-    catch
-    end    
-end
-
-if (~isempty(detrend_no))
-    X = icatb_detrend(X, 1, [], detrend_no);
-    disp(['Just detrended time series with value ', num2str(detrend_no), ' ...']);
-    if (~isempty(Y))
-        Y = icatb_detrend(Y, 1, [], detrend_no);
-    end
+    disp('Variance associated with the covariates has been removed from the timecourses ... ');        
 end
 
 % resample timeseries if needed

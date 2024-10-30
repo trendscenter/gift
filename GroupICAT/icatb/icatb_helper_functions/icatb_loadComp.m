@@ -312,6 +312,7 @@ if (loadTC)
     tc = tc(:, compNumber);
     if (~isempty(detrendNumber))
         tc = icatb_detrend(tc, 1, [], detrendNumber);
+        disp(['Just detrended time series with value ', num2str(detrendNumber), ' ...']);
     end
 end
 
