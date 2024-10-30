@@ -218,6 +218,7 @@ for i = subjects
         
         if (truncateTp)
             tc =  tc(1:tp, :);
+            disp('Truncating timepoints from the timecourses ... ');
         end
         
         if (useCell)
@@ -361,6 +362,7 @@ if (isfield(info, compSetFields{2}))
     
     if (~isempty(detrendNumber))
         tc = icatb_detrend(tc, 1, [], detrendNumber);
+        disp(['Just detrended time series with value ', num2str(detrendNumber), ' ...']);
     end
     if (doZscore)
         tc = icatb_zscore(tc);

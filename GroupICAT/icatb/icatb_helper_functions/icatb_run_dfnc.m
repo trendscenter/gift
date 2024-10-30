@@ -292,10 +292,10 @@ parfor dataSetCount = 1:numOfSub*numOfSess
     
     disp(['Computing dynamic FNC on subject ', num2str(nSub), ' session ', num2str(nSess)]);
     
-    tc = icatb_loadComp(sesInfo, comps, 'subjects', nSub, 'sessions', nSess, 'vars_to_load', 'tc', 'detrend_no', detrend_no, 'covariates', ...
-        covariate_files, 'scansToInclude', scansToInclude);
+    tc = icatb_loadComp(sesInfo, comps, 'subjects', nSub, 'sessions', nSess, 'vars_to_load', 'tc', 'covariates', ...
+        covariate_files, 'scansToInclude', scansToInclude); %No detrending here as detrend occurs in icatb_compute_dfnc below
     
-    %preprocess_params.detrend_no = [];
+    % May 1) regress out motion, 2) detrend, 3) despike, 4) filter
     corrInfo = icatb_compute_dfnc(tc, TR(nSub), 'mintr', minTR, 'minTP', minTP, 'preprocess_params', preprocess_params, ...
         'windowing_params', windowing_params, 'modelTC', modelX, 'covariateInfo', covariateInfo);
     

@@ -167,8 +167,8 @@ if (~isempty(covariateInfo))
 end
 
 if (~isempty(detrend_no))
-    disp(['Detrending time series with value ', num2str(detrend_no), ' ...']);
     X = icatb_detrend(X, 1, [], detrend_no);
+    disp(['Just detrended time series with value ', num2str(detrend_no), ' ...']);
     if (~isempty(Y))
         Y = icatb_detrend(Y, 1, [], detrend_no);
     end
