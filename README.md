@@ -3,6 +3,8 @@
 ### Group ICA/IVA software (MATLAB) v4.0.5.14
 <!-- PLEASE DO NOT EDIT ABOVE THIS LINE -->
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
+### Highlights
+#### 10/30/2024 GIFT changed the dFNC processing order, having the following steps: 1) regressing out confounds, 2) detrending, 3) despiking, 4) filtering.
 ### Table of Contents
 1. [Introduction](#secIntro)
 2. [Download](#secDownload)
