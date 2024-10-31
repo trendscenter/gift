@@ -74,6 +74,8 @@ end
 %% Get params
 if (ischar(despikeTC) && strcmpi(despikeTC, 'yes'))
     despikeTC = 1;
+else
+    despikeTC = 0;
 end
 
 if (ischar(param_file))
@@ -138,14 +140,17 @@ for nSub = subjects
         if (currentTR ~= minTR)
             interpFactor = currentTR/minTR;
             tc = icatb_interp_data(tc, interpFactor);
-        end
-        
-        if (min(filter_params) > 0)
-            tc = icatb_filt_data(tc, minTR, filter_params);
+            disp('Timeseries were just interpolated ... ');
         end
         
         if (despikeTC)
             tc = icatb_despike_tc(tc, minTR);
+            disp('Timeseries were just despiked ... ');
+        end
+
+        if (min(filter_params) > 0)
+            tc = icatb_filt_data(tc, minTR, filter_params);
+            disp('Timeseries were just filtered ... ');
         end
         
         %if (dMaxLag == 0)

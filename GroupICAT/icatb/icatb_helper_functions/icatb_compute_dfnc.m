@@ -184,20 +184,20 @@ if (interpFactor > 1)
 end
 
 if (strcmpi(doDespike, 'yes'))
-    disp('Despiking timeseries ... ');
     X = icatb_despike_tc(X, minTR);
     if (~isempty(Y))
         Y = icatb_despike_tc(Y, minTR);
     end
+    disp('Timeseries were just despiked ... ');
 end
 
 % Filter timecourses
 if (tc_filter > 0)
-    disp('Filtering timeseries ... ');
     X = icatb_filt_data(X, minTR, tc_filter);
     if (~isempty(Y))
         Y = icatb_filt_data(Y, minTR, tc_filter);
     end
+    disp('Timeseries were just filtered ... ');
 end
 
 
