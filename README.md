@@ -4,7 +4,7 @@
 <!-- PLEASE DO NOT EDIT ABOVE THIS LINE -->
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Announcements
-- GIFT v4.0.5.14 changed 10/30/2024 the dFNC processing order, now having the following steps: 1) detrending, 2) regressing out confounds, 3) despiking, 4) filtering.
+- GIFT v4.0.5.14 changed 10/31/2024 the dFNC processing and MANCOVAN processing order slightly modified, now having the following steps: 1) detrending, 2) regressing out confounds, 3) despiking, 4) filtering.
 ### Table of Contents
 1. [Introduction](#secIntro)
 2. [Download](#secDownload)
