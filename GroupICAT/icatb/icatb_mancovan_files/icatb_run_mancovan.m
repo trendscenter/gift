@@ -339,17 +339,19 @@ if ((step == 1) || (step == 2))
                 
                 SM = icatb_loadComp(sesInfo, ncomps, 'vars_to_load', 'ic', 'average_runs', 0, 'subject_ica_files', subjectICAFiles);
                 if (iscell(SM))
+                    % This conversion from cell to array aready takes care
+                    % of multi sessions
                     SM = cat(2, SM{:});
                     SM = SM'; % data-sets by voxels
-                end
-                
-                SM(abs(SM) <= eps) = NaN;
-                
-                
-                %meanmap = zeros(1, size(SM, 2));
-                if (sesInfo.numOfSess > 1)
-                    SM = convertDataTo2D(SM, (1:sesInfo.numOfSub*sesInfo.numOfSess), sesInfo);
-                end
+                    SM(abs(SM) <= eps) = NaN;
+                else
+                    % If SM is already converted sessions to subjects
+                    % convertDataTo2D fails (so don't run both)
+                    SM(abs(SM) <= eps) = NaN;
+                    if (sesInfo.numOfSess > 1)
+                        SM = convertDataTo2D(SM, (1:sesInfo.numOfSub*sesInfo.numOfSess), sesInfo);
+                    end
+                end            
                 
                 SM_avg = zeros(length(avg_runs_info), size(SM, 2));
                 
