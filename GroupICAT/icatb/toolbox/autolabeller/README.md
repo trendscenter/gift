@@ -4,14 +4,6 @@
 
 This tool can automatically classify noisy spatial maps of brain activity, and generate anatomical and functional labels of the spatial maps and a reordered functional network connectivity matrix.
 
-## Prerequisites
-
-Autolabeller is written in Matlab™ and requires several Matlab toolboxes to run. Please download the following toolboxes and add to your Matlab path.
-
-- [GIFT](https://github.com/trendscenter/gift)
-
-In case of errors during toolbox loading, double-check that the paths are correctly set using the addpath command and that no typos were made in the folder locations.
-
 ## Using the autolabeller
 
 Example code can be found in `src/example_label_ic.m`. To run autolabeller, you need to add the requirements to your path:
