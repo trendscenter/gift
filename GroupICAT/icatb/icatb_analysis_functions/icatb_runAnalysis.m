@@ -80,10 +80,12 @@ try
         if ~strcmpi(modalityType, sesInfo.userInput.modality)
             if strcmpi(sesInfo.userInput.modality, 'fmri')
                 error('Use GIFT toolbox to run the analysis on MRI data.');
-            elseif strcmpi(sesInfo.userInput.modality, 'fmri')
+            elseif strcmpi(sesInfo.userInput.modality, 'eeg')
                 error('Use EEGIFT toolbox to run the analysis on EEG data.');
-            else
+            elseif strcmpi(sesInfo.userInput.modality, 'smri')
                 error('Use SBM toolbox to run the analysis on sMRI data.');
+            else
+                error('Use FNC button to run the analysis on FNC data.');
             end
         end
     else

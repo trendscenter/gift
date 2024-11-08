@@ -116,8 +116,13 @@ inputText(numParameters).enable = 'on';
 inputText(numParameters).value = 1;
 inputText(numParameters).flag = 'scalar';
 if (~strcmpi(modalityType, 'smri'))
-    inputText(numParameters).help = struct('title', 'Data', 'string', ['There are two ways to select the data. Option one requires a separate directory for each subject and all subject directories are', ...
-        ' stored in one root directory and subjects have the same file pattern. Otherwise use option 2. After the data is selected, *Subject.mat file is created and the component numbers are by default set to 20.']);
+    if (~strcmpi(modalityType, 'fnc'))
+        inputText(numParameters).help = struct('title', 'Data', 'string', ['There are two ways to select the data. Option one requires a separate directory for each subject and all subject directories are', ...
+            ' stored in one root directory and subjects have the same file pattern. Otherwise use option 2. After the data is selected, *Subject.mat file is created and the component numbers are by default set to 20.']);
+    else
+        inputText(numParameters).help = struct('title', 'Data', 'string', ...
+            'Enter input parameter file containing GIFT analysis. If FNC matrices are selected instead of parameter file, enter matrices for each session. Contrast vector can be specified to subtract sessions or leave empty if you want to average.');
+    end
 else
     inputText(numParameters).help = struct('title', 'Data', 'string', 'Select all subject images. After the data is selected, *Subject.mat file is created and the component numbers are by default set to 20.');
 end
@@ -138,40 +143,44 @@ if (strcmpi(modalityType, 'fmri'))
 end
 
 
-if (~strcmpi(modalityType, 'smri'))
+if (~strcmpi(modalityType, 'fnc'))
     
-    numParameters = numParameters + 1;
-    
-    inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
-    inputText(numParameters).answerString = char(icatb_preproc_data);
-    inputText(numParameters).uiType = 'popup';
-    inputText(numParameters).dataType = 'string';
-    inputText(numParameters).tag = 'preproc_type';
-    inputText(numParameters).enable = 'on';
-    inputText(numParameters).value = preproc_default;
-    inputText(numParameters).flag = 'scalar';
-    inputText(numParameters).help = struct('title', 'Pre-processing', 'string', char('Data is pre-processed prior to the first data reduction. Options are discussed below:', '1) Remove Mean Per Timepoint - At each time point, image mean is removed.', ...
-        '2) Remove Mean Per Voxel - Time-series mean is removed at each voxel', '3) Intensity Normalization - At each voxel, time-series is scaled to have a mean of 100. Since the data is already scaled to percent signal change, there is no need to scale the components.', ...
-        '4) Variance Normalization - At each voxel, time-series is linearly detrended and converted to Z-scores.'));
-    
-    
-else
-    
-    numParameters = numParameters + 1;
-    
-    inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
-    inputText(numParameters).answerString = char('Remove Mean Per Subject', 'None');
-    inputText(numParameters).uiType = 'popup';
-    inputText(numParameters).dataType = 'string';
-    inputText(numParameters).tag = 'preproc_type';
-    inputText(numParameters).enable = 'on';
-    inputText(numParameters).value = 1;
-    inputText(numParameters).flag = 'scalar';
-    inputText(numParameters).help = struct('title', 'Pre-processing', 'string', 'Option is provided to remove voxel mean for each subject or skip the mean removal prior to PCA step.');
+    if (~strcmpi(modalityType, 'smri'))
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
+        inputText(numParameters).answerString = char(icatb_preproc_data);
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'preproc_type';
+        inputText(numParameters).enable = 'on';
+        inputText(numParameters).value = preproc_default;
+        inputText(numParameters).flag = 'scalar';
+        inputText(numParameters).help = struct('title', 'Pre-processing', 'string', char('Data is pre-processed prior to the first data reduction. Options are discussed below:', '1) Remove Mean Per Timepoint - At each time point, image mean is removed.', ...
+            '2) Remove Mean Per Voxel - Time-series mean is removed at each voxel', '3) Intensity Normalization - At each voxel, time-series is scaled to have a mean of 100. Since the data is already scaled to percent signal change, there is no need to scale the components.', ...
+            '4) Variance Normalization - At each voxel, time-series is linearly detrended and converted to Z-scores.'));
+        
+        
+    else
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
+        inputText(numParameters).answerString = char('Remove Mean Per Subject', 'None');
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'preproc_type';
+        inputText(numParameters).enable = 'on';
+        inputText(numParameters).value = 1;
+        inputText(numParameters).flag = 'scalar';
+        inputText(numParameters).help = struct('title', 'Pre-processing', 'string', 'Option is provided to remove voxel mean for each subject or skip the mean removal prior to PCA step.');
+        
+    end
     
 end
 
-if (~strcmpi(modalityType, 'eeg'))
+if (~(strcmpi(modalityType, 'eeg') || strcmpi(modalityType, 'fnc')))
     
     numParameters = numParameters + 1;
     
@@ -199,26 +208,28 @@ if (~strcmpi(modalityType, 'eeg'))
     
 end
 
+if ~(strcmpi(modalityType, 'fnc'))
+    numParameters = numParameters + 1;
+    
+    inputText(numParameters).promptString =  'Select Type Of PCA';
+    inputText(numParameters).answerString = char(icatb_pca_options);
+    inputText(numParameters).uiType = 'popup';
+    inputText(numParameters).dataType = 'string';
+    inputText(numParameters).tag = 'pcaType';
+    inputText(numParameters).enable = 'on';
+    inputText(numParameters).value = pca_default;
+    inputText(numParameters).flag = 'scalar';
+    inputText(numParameters).userdata = [];
+    inputText(numParameters).help = struct('title', 'PCA', 'string', char('There are five options like Standard, Expectation Maximization, SVD, MPOWIT and STP.', ...
+        '1) Standard - Eigen value decomposition method is used to determine dominant components of interest', ...
+        '2) Expectation Maximization - Expectation maximization method involves expectation and maximization steps to determine PCA components. It has fewer memory requirements but can be very slow if EM PCA is solved by loading data-set at a time. It is preferred to use MPOWIT method for faster convergence.', ...
+        '3) SVD - Singular value decomposition', ...
+        '4) MPOWIT - Multi power iteration method accelerates subspace iteration method to determine dominant components. MPOWIT converges in only a few iterations and is very useful when large data needs to be analyzed', ...
+        '5) STP - Subsampled time pca method is a variation of 3 step pca method which involves grouping subjects into groups and retaining intermediate components which are usually higher than the final number of components estimated'));
+    
+end
 
-numParameters = numParameters + 1;
-
-inputText(numParameters).promptString =  'Select Type Of PCA';
-inputText(numParameters).answerString = char(icatb_pca_options);
-inputText(numParameters).uiType = 'popup';
-inputText(numParameters).dataType = 'string';
-inputText(numParameters).tag = 'pcaType';
-inputText(numParameters).enable = 'on';
-inputText(numParameters).value = pca_default;
-inputText(numParameters).flag = 'scalar';
-inputText(numParameters).userdata = [];
-inputText(numParameters).help = struct('title', 'PCA', 'string', char('There are five options like Standard, Expectation Maximization, SVD, MPOWIT and STP.', ...
-    '1) Standard - Eigen value decomposition method is used to determine dominant components of interest', ...
-    '2) Expectation Maximization - Expectation maximization method involves expectation and maximization steps to determine PCA components. It has fewer memory requirements but can be very slow if EM PCA is solved by loading data-set at a time. It is preferred to use MPOWIT method for faster convergence.', ...
-    '3) SVD - Singular value decomposition', ...
-    '4) MPOWIT - Multi power iteration method accelerates subspace iteration method to determine dominant components. MPOWIT converges in only a few iterations and is very useful when large data needs to be analyzed', ...
-    '5) STP - Subsampled time pca method is a variation of 3 step pca method which involves grouping subjects into groups and retaining intermediate components which are usually higher than the final number of components estimated'));
-
-if (~strcmpi(modalityType, 'smri'))
+if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc')))
     
     
     numParameters = numParameters + 1;
@@ -286,7 +297,7 @@ if strcmpi(modalityType, 'fmri')
         '3) Scaling in Timecourses - Normalize spatial maps using maximum value (not absolute value) and apply it to timecourses.', ...
         '4) Scaling in Maps and Timecourses - Spatial maps are scaled using the standard deviation of timecourses and timecourses are scaled using the maximum spatial intensity value.'));
     
-elseif (strcmpi(modalityType, 'smri'))
+elseif (strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc'))
     
     inputText(numParameters).help = struct('title', 'Scaling', 'string', 'Z-scores - Components are scaled to z-scores.');
     
@@ -318,6 +329,14 @@ inputText(numParameters).help = struct('title', 'ICA Algorithm', 'string', 'ICA 
 
 if ~strcmpi(modalityType, 'eeg')
     
+    estimateMessage = ['Components are estimated from the fMRI data using the MDL criteria.', ...
+        'Mean of the estimated components for all data-sets is taken when you use all subjects to estimate the components and the statistics are performed. After the statistics are calculated, all the information with a Plot button will be shown in a dialog box. The mean of MDL plot for all data-sets will be shown when you click the Plot button.', ...
+        'When a particular subject''s session is selected the independent components are estimated and the plot of MDL is shown when clicked on the Plot button in the dialog box.'];
+    
+    if strcmpi(modalityType, 'fnc')
+        estimateMessage = 'Components are estimated from the FNC data using the MDL criteria.';
+    end
+    
     numParameters = numParameters + 1;
     
     % Define the callback for this popup
@@ -329,9 +348,8 @@ if ~strcmpi(modalityType, 'eeg')
     inputText(numParameters).enable = 'off';
     inputText(numParameters).value = 1;
     inputText(numParameters).flag = 'scalar';
-    inputText(numParameters).help = struct('title', 'Dimensionality Estimation', 'string', ['Components are estimated from the fMRI data using the MDL criteria.', ...
-        'Mean of the estimated components for all data-sets is taken when you use all subjects to estimate the components and the statistics are performed. After the statistics are calculated, all the information with a Plot button will be shown in a dialog box. The mean of MDL plot for all data-sets will be shown when you click the Plot button.', ...
-        'When a particular subject''s session is selected the independent components are estimated and the plot of MDL is shown when clicked on the Plot button in the dialog box.']);
+    
+    inputText(numParameters).help = struct('title', 'Dimensionality Estimation', 'string', estimateMessage);
     
     
 end
@@ -358,47 +376,55 @@ if (strcmpi(modalityType, 'fmri'))
         '2) Temporal ICA - Independent components are determined by maximizing independence in time.'));
 end
 
+if (~strcmpi(modalityType, 'fnc'))
+    numParameters = numParameters + 1;
+    
+    inputText(numParameters).promptString =  'How Many Data Reduction(PCA) Steps Do You Want To Run?';
+    inputText(numParameters).answerString =  char('2', '1');
+    inputText(numParameters).uiType = 'popup';
+    inputText(numParameters).dataType = 'numeric';
+    inputText(numParameters).tag = 'numReductionSteps';
+    inputText(numParameters).enable = 'off';
+    inputText(numParameters).visible = isHandleVisible;
+    inputText(numParameters).value = 1;
+    inputText(numParameters).flag = 'scalar';
+    inputText(numParameters).help = struct('title', 'Data Reduction Steps', 'string', 'The number of times you want to do PCA. The number of data reduction steps depends on the number of data sets. For single subject single session only one PCA is automatically done. Two data reductions is preferred for multiple subjects and sessions.');
+    
+    numParameters = numParameters + 1;
+    
+    inputText(numParameters).promptString =  'Number Of PC (Step 1)';
+    inputText(numParameters).answerString =  '0';
+    inputText(numParameters).uiType = 'edit';
+    inputText(numParameters).dataType = 'numeric';
+    inputText(numParameters).tag = 'numOfPC1';
+    inputText(numParameters).enable = 'inactive';
+    inputText(numParameters).visible = isHandleVisible;
+    inputText(numParameters).value = 1;
+    inputText(numParameters).flag = 'scalar';
+    inputText(numParameters).help = struct('title', 'PC1', 'string', 'No. of components desired in the first PCA step.');
+    
+    numParameters = numParameters + 1;
+    
+    inputText(numParameters).promptString =  'Number Of PC (Step 2)';
+    inputText(numParameters).answerString =  '0';
+    inputText(numParameters).uiType = 'edit';
+    inputText(numParameters).dataType = 'numeric';
+    inputText(numParameters).tag = 'numOfPC2';
+    inputText(numParameters).enable = 'inactive';
+    inputText(numParameters).visible = isHandleVisible;
+    inputText(numParameters).value = 1;
+    inputText(numParameters).flag = 'scalar';
+    inputText(numParameters).help = struct('title', 'PC2', 'string', 'No. of components desired in the second PCA step.');
+    
+end
 
 numParameters = numParameters + 1;
 
-inputText(numParameters).promptString =  'How Many Data Reduction(PCA) Steps Do You Want To Run?';
-inputText(numParameters).answerString =  char('2', '1');
-inputText(numParameters).uiType = 'popup';
-inputText(numParameters).dataType = 'numeric';
-inputText(numParameters).tag = 'numReductionSteps';
-inputText(numParameters).enable = 'off';
-inputText(numParameters).visible = isHandleVisible;
-inputText(numParameters).value = 1;
-inputText(numParameters).flag = 'scalar';
-inputText(numParameters).help = struct('title', 'Data Reduction Steps', 'string', 'The number of times you want to do PCA. The number of data reduction steps depends on the number of data sets. For single subject single session only one PCA is automatically done. Two data reductions is preferred for multiple subjects and sessions.');
-
-numParameters = numParameters + 1;
-
-inputText(numParameters).promptString =  'Number Of PC (Step 1)';
-inputText(numParameters).answerString =  '0';
-inputText(numParameters).uiType = 'edit';
-inputText(numParameters).dataType = 'numeric';
-inputText(numParameters).tag = 'numOfPC1';
-inputText(numParameters).enable = 'inactive';
-inputText(numParameters).visible = isHandleVisible;
-inputText(numParameters).value = 1;
-inputText(numParameters).flag = 'scalar';
-inputText(numParameters).help = struct('title', 'PC1', 'string', 'No. of components desired in the first PCA step.');
-
-numParameters = numParameters + 1;
-
-inputText(numParameters).promptString =  'Number Of PC (Step 2)';
-inputText(numParameters).answerString =  '0';
-inputText(numParameters).uiType = 'edit';
-inputText(numParameters).dataType = 'numeric';
-inputText(numParameters).tag = 'numOfPC2';
-inputText(numParameters).enable = 'inactive';
-inputText(numParameters).visible = isHandleVisible;
-inputText(numParameters).value = 1;
-inputText(numParameters).flag = 'scalar';
-inputText(numParameters).help = struct('title', 'PC2', 'string', 'No. of components desired in the second PCA step.');
-
-numParameters = numParameters + 1;
+if strcmpi(modalityType, 'fnc')
+    compMessage = 'No. of independent components to extract from the data.';
+else
+    compMessage = 'No. of independent components. This is the same as the no. of components selected in the last PCA step.';
+end
 
 inputText(numParameters).promptString =  'Number Of IC';
 inputText(numParameters).answerString =  '';
@@ -408,9 +434,9 @@ inputText(numParameters).tag = 'numComp';
 inputText(numParameters).enable = 'inactive';
 inputText(numParameters).value = 1;
 inputText(numParameters).flag = 'scalar';
-inputText(numParameters).help = struct('title', 'IC', 'string', 'No. of independent components. This is the same as the no. of components selected in the last PCA step.');
+inputText(numParameters).help = struct('title', 'IC', 'string', compMessage);
 
-if (~strcmpi(modalityType, 'smri'))
+if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc')))
     numParameters = numParameters + 1;
     
     inputText(numParameters).promptString =  'Do you want to autofill data reduction values?';
@@ -441,7 +467,7 @@ inputText(numParameters).help = struct('title', 'Stability Analysis Type', 'stri
     '4) Cross ISI - Cross ISI measures the distance between a pair of ICA solutions. The most consistent run is selected as the run with highest average cross ISI.'));
 
 
-if (~strcmpi(modalityType, 'smri'))
+if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc')))
     numParameters = numParameters + 1;
     
     inputText(numParameters).promptString =  'How do you want to run Group ICA?';

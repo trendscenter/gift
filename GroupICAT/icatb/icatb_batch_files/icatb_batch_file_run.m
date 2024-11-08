@@ -61,12 +61,32 @@ for nFile = 1:length(inputFiles)
     
     load(param_file);
     
-    %% Run Analysis (All steps)
-    sesInfo = icatb_runAnalysis(sesInfo, 1);
+    modalityType = 'fmri';
+    try
+        modalityType = sesInfo.userInput.modality;
+    catch
+    end
     
-    if (isfield(sesInfo.userInput, 'display_results') && ~strcmpi(sesInfo.modality, 'eeg'))
-        %results.formatName = display_results;
-        icatb_report_generator(param_file, sesInfo.userInput.display_results);
+    if (~strcmpi(modalityType, 'fnc'))
+        
+        %% Run Analysis (All steps)
+        sesInfo = icatb_runAnalysis(sesInfo, 1);
+        
+        if (isfield(sesInfo.userInput, 'display_results') && ~strcmpi(sesInfo.modality, 'eeg'))
+            %results.formatName = display_results;
+            icatb_report_generator(param_file, sesInfo.userInput.display_results);
+        end
+    else
+        icatb_run_fnc_ica(sesInfo);
+        display_results = 0;
+        try
+            display_results = sesInfo.userInput.display_results;
+        catch
+        end
+        if (display_results == 1)
+            %results.formatName = display_results;
+            icatb_report_generator(param_file);
+        end
     end
     
     clear sesInfo;

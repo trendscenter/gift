@@ -21,6 +21,11 @@ elseif strcmpi(group_ica_modality, 'smri')
     modalityType = 'sMRI';
     dataTitle = 'Structural';
     compSetFields = {'ic', 'tc'};
+    
+elseif strcmpi(group_ica_modality, 'fnc')
+    modalityType = 'FNC';
+    dataTitle = 'FNC';
+    compSetFields = {'ic', 'tc'};
 else
     modalityType = 'EEG';
     dataTitle = 'EEG';
