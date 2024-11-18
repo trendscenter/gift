@@ -33,7 +33,7 @@ This data is partitioned to show results with few subjects and is biased and may
 
 ## Raw Data
 
-Raw fMRI and structural T1 data is available if you have time to run demo from scratch the following link will soon contain the raw data [here (link will soon come)](no link). Please contact the authors.
+Raw fMRI and structural T1 data is available if you have time to run demo from scratch using a different dataset that does not support the MANCOVAN features, but it supports GIFT blind ICA and other non- MANCOVAN ICA. Download the ds005.tar dataset from https://drive.google.com/drive/folders/0B2JWN60ZLkgkMGlUY3B4MXZIZW8?resourcekey=0-EYVSOlRbxeFKO8NpjWWM3w into the demo directory. 
 
 If you want to step to the "Running GIFT" section you may start with preprocessed data found [here](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip).
 
@@ -75,7 +75,7 @@ To run `fslmaths`, I start the fmriprep container in `smooth_fmriprep_results.sh
 This command utilizes fslmaths utility from Freesurfer (available in fmriprep too). Of course, you are welcome to use a different smoothing tool to achieve the same end.
 
 # Running GIFT <a name="secGift"></a>
-If you did not run the previous steps you may start with preprocessed data found [here (link will soon come)](no link).
+If you did not run the previous steps you may download the dataset, containing both input and output files for GIFT. Then you may run GIFT with your own output directory. The input and output files are found [here](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip).
 
 Now, that the data has been preprocessed, we turn to GIFT to actually carry out the Independent component analysis. GIFT is available in several flavors: as a Docker app, Matlab app with a graphical user interface. In following paragraphs, we look closer at different ways to run GIFT.
 
