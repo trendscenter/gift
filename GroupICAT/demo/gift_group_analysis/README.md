@@ -33,7 +33,7 @@ This data is partitioned to show results with few subjects and is biased and may
 
 ## Raw Data
 
-Raw fMRI and structural T1 data is available if you have time to run demo from scratch using a different dataset that does not support the MANCOVAN features, but it supports GIFT blind ICA and other non- MANCOVAN ICA. Download the ds005.tar dataset from https://drive.google.com/drive/folders/0B2JWN60ZLkgkMGlUY3B4MXZIZW8?resourcekey=0-EYVSOlRbxeFKO8NpjWWM3w into the demo directory. 
+Raw fMRI and structural T1 data is available if you have time to run demo from scratch using a different dataset that does not support the MANCOVAN features, but it supports GIFT blind ICA and other non- MANCOVAN ICA for up to 10 subjects. Download the ds005.tar dataset from https://drive.google.com/drive/folders/0B2JWN60ZLkgkMGlUY3B4MXZIZW8?resourcekey=0-EYVSOlRbxeFKO8NpjWWM3w into the demo directory. 
 
 If you want to step to the "Running GIFT" section you may start with preprocessed data found [here](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip).
 
