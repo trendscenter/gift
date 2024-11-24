@@ -41,7 +41,9 @@ function [SSBSWPC,win_idx] = icatb_calculate_SSB_SWPC(Tc,winsize,Tr,mod_fs,varar
     %   calculate_SSB_SWPC(Tc,winsize,Tr,mod_fs,'rect',plot_flag);
     %  
     % References:
-    %   [1] <my own paper> 
+    %   [1] Faghiri, A., Yang, K., Faria, A., Ishizuka, K., Sawa, A., Adali, T., & Calhoun, V. 
+    %      (2024). Frequency modulation increases the specificity of time-resolved connectivity: 
+    %      A resting-state fMRI study. Network Neuroscience, 1-82. 
     %   [2] Pozzi, F., Di Matteo, T., and Aste, T.: 
     %   'Exponential smoothing weighted correlations', The European Physical 
     %   Journal B, 2012, 85, pp. 1-21
