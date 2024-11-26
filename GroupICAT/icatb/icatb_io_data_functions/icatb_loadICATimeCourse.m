@@ -123,7 +123,18 @@ else
     % load real images
 
     % get the volume information
-    allTC = icatb_loadData(fileName);
+    try
+        allTC = icatb_loadData(fileName);
+    catch
+        if strcmpi(modalityType,'smri')
+            fileName = fullfile('', [strrep(component_name, COMPONENT_NAMING, '_timecourses_ica_'), imExtn]);
+            allTC = icatb_loadData(fileName);
+            disp('icatb_warning: backup solution to read time course in icatb_loadICATimeCourse.m')
+        else
+            error(['icatbErr ' char(datetime) ' icatb_loadICATimeCourse.m: Problem reading timecourse.']);
+        end
+    end
+
 
     % get the component indicies
     if isempty(compIndicies)
