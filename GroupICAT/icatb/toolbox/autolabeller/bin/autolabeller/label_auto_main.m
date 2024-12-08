@@ -92,6 +92,18 @@ function label_auto_main( params )
             mask_path = fullfile(sesInfo.outputDir, [sesInfo.userInput.prefix 'Mask.nii']);
         end
         flag_sort_fnc = 1;
+        
+        % for some reason autolabeller demands the serial postprocessing
+        % directory so we create it 12/8/24
+        s_dir_serial_postproc = fullfile(sesInfo.outputDir, [sesInfo.userInput.prefix '_postprocess_results']);
+        if ~exist(s_dir_serial_postproc, 'dir')
+            % create the contents in the dir as well 
+            mkdir(s_dir_serial_postproc);
+            icatb_postprocess_timecourses(sesInfo);
+            % add a note
+            s_dir_serial_postproc_readme = [s_dir_serial_postproc filesep 'readme_trends.txt'];
+            [stat] = system(['echo ' '''serial postproc files created for autolabeller''' ' >  ' s_dir_serial_postproc_readme]);
+        end
     else
         sesInfo = [];
         sm_path = params.sm_path;
