@@ -1,6 +1,7 @@
 % Enter the values for the variables required for the ICA analysis.
 % Variables are on the left and the values are on the right.
 % Characters must be enterd in single quotes
+% run analysis using icatb_batch_file_run('Input_fnc.m');
 
 
 %% Modality
