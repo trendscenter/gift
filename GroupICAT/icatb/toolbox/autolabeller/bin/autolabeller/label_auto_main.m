@@ -71,9 +71,13 @@ function label_auto_main( params )
     bin_dir = fullfile( src_dir, 'bin' );
     addpath( genpath( data_dir ) )
     addpath( genpath( bin_dir ) )
-
+    
     % create output directory
     if ~exist( params.outpath, 'dir' )
+        mkdir( fullfile( params.outpath ) )
+        mkdir( fullfile( params.outpath, 'nc' ) )
+    end
+    if ~exist( [params.outpath filesep 'nc'], 'dir' )
         mkdir( fullfile( params.outpath, 'nc' ) )
     end
 
