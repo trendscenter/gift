@@ -55,11 +55,8 @@ if (length(varargin) >= 1)
             disp('.........................................................................');
             disp('............... Group ICA/IVA Toolbox version Info ............................');
             disp('.........................................................................');
-            disp('Grroup ICA/IVA Toolbox (Main GUI): v2.0c ');
-            disp('GIFT Toolbox: GIFT v3.0c');
-            disp('EEGIFT Toolbox: EEGIFT v1.0e');
-            disp('SBM Toolbox: SBM v1.0b');
-            disp('FNC ICA Toolbox: FNC v1.0a');
+            disp(['Group ICA/IVA Toolbox (Main GUI): ' icatb_version]);
+            disp('Including GIFT, EEGIFT, SBM, FNC');
             fprintf('\n\n');
             varargout = {};
             return;
