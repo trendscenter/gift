@@ -19,7 +19,6 @@ if (~exist('data', 'var'))
     useGUI = 1;
 end
 
-
 %% Parse inputs
 Nt = 10;
 method = 'gap';
@@ -125,7 +124,12 @@ for numMethod = 1:length(methodStr)
             SSE(k2) = sum(tmpSumD(:));
         end
         
+        % Total sum of squares (d_TSS)
+        cod_mean_global = mean(data, 1);
+        d_TSS = sum(sum((data - cod_mean_global).^2));
+
         % exclude values with only one cluster
+        SSE(klist == 1) = [];        
         R(klist == 1) = [];
         klist(klist == 1) = [];
         
@@ -135,7 +139,40 @@ for numMethod = 1:length(methodStr)
         results.values = R;
         results.fit = yfit;
         results.K = bestx;
-        
+        results.cod_explained_var = 1 - (SSE / d_TSS); %exp var accumulates over clusters
+
+        % Write specific Elbow estimation results, including explained variance
+        try
+            s_tstamp = datestr(now, 'yymmddHHMMSS');
+            col1 = klist';      
+            col2 = R';
+            col3 = yfit; 
+            col4 = results.cod_explained_var';
+            col5 = ones(length(klist),1)*bestx;
+            % Create a table from the vectors
+            T = table(col1, col2, col3, col4, col5, 'VariableNames', {'elbow_clust', 'elbow_within_div_bwn_dispursion', 'elbow_fit', 'elbow_explained_var','elbow_best'});
+            writetable(T, ['model-icatb_desc-optimclusters_time-' s_tstamp '_stats.tsv'], 'FileType', 'text', 'Delimiter', '\t');
+
+            fid = fopen("model_icatb_desc_optimclusters_script.m","w");
+            fprintf(fid, "%% TReNDS 3/19/2025. The following code plots a graph of the model-ica_desc-optimclusters_time-yymmddhhss_stats.tsv files \n\n");
+            fprintf(fid, "%s",["tbl = readtable(['model-icatb_desc-optimclusters_time-" s_tstamp "_stats.tsv'], 'FileType', 'text', 'Delimiter', '\t');"]);
+            fprintf(fid, "plot(tbl.elbow_clust, tbl.elbow_within_div_bwn_dispursion);\n");
+            fprintf(fid, "hold on;\n");
+            fprintf(fid, "for iii = 1:length(tbl.elbow_explained_var)\n");
+            fprintf(fid, "    text(tbl.elbow_clust(iii)+0.03, tbl.elbow_within_div_bwn_dispursion(iii), num2str(tbl.elbow_explained_var(iii)),'FontSize', 12, 'Color', 'r');\n");
+            fprintf(fid, "end\n");
+            fprintf(fid, "plot(tbl.elbow_clust, tbl.elbow_within_div_bwn_dispursion, '.r');\n");
+            fprintf(fid, "plot(tbl.elbow_clust, tbl.elbow_fit, 'k');\n");
+            fprintf(fid, "legend('Ratio of dispersion (Wthn/Bwn Groups)', 'Explained Variance', 'Fit'); \n");
+            fprintf(fid, "axis('tight');\n");
+            fprintf(fid, "xlabel('Clusters');\n");
+            fprintf(fid, "ylabel('Elbow');\n");
+            fprintf(fid, "title(['Optimal clusters  = ', num2str(tbl.elbow_best(1))]);\n");
+            fclose(fid);
+            disp('Script with estimation details created as: model_icatb_desc_optimclusters_script.m')
+        catch
+        end
+
     elseif (strcmpi(method, 'gap'))
         % Gap stat
         [K, values, sem] = computeGap(data, KList, Nt, run_parallel, opts, sumD);
@@ -591,8 +628,8 @@ Din = zeros(1, k);
 Dout = zeros(1, k);
 
 for ii = 1:k
-    Din(ii) = sum(D(IDX == ii,ii).^2); % dispersion in cluster
-    Dout(ii) = sum(D(IDX ~= ii,ii).^2); % sum of squared distances
+    Din(ii) = sum(D(IDX == ii,ii)); % dispersion in cluster
+    Dout(ii) = sum(D(IDX ~= ii,ii)); % NO SS here as already SS from kmeans 
 end
 SSE = sum(Din);
 R = mean(Din./Dout);
