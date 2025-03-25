@@ -25,7 +25,7 @@ end
 
 
 
-%% Pre-processing
+% Pre-processing
 
 numParameters = 1;
 inputParameters(numParameters).listString = 'Pre-processing';
@@ -69,6 +69,16 @@ options(optionNumber).uiPos = [];
 options(optionNumber).enable = [];
 options(optionNumber).callback = {@selectParams, covInfo};
 
+
+
+optionNumber = optionNumber + 1;
+% Option 5 of parameter 1
+options(optionNumber).promptString = 'dFNC means option';
+options(optionNumber).answerString =  char('Keep Means', 'Remove Means');
+options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
+options(optionNumber).tag = 'dfnc_mn_options'; options(optionNumber).answerType = 'string';
+options(optionNumber).flag = 'delete';
+options(optionNumber).uiPos = [0.12 0.045];
 
 inputParameters(numParameters).options = options; % will be used in plotting the controls in a frame
 clear options;

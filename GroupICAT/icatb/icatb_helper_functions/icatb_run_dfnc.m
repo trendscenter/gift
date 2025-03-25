@@ -83,10 +83,12 @@ modulation_frequency = 0.1;
 try
     winType = DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE;
     modulation_frequency = DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY;
+    dfnc_means_option = DFNC_DEFAULTS.dfnc_means_option;
 catch
 end
 
 try
+    dfnc_means_option = dfncInfo.userInput.feature_params.final.dfnc_mn_options;
     detrend_no = dfncInfo.userInput.feature_params.final.tc_detrend;
     doDespike = dfncInfo.userInput.feature_params.final.tc_despike;
     tc_filter = dfncInfo.userInput.feature_params.final.tc_filter;
@@ -300,7 +302,16 @@ parfor dataSetCount = 1:numOfSub*numOfSess
         'windowing_params', windowing_params, 'modelTC', modelX, 'covariateInfo', covariateInfo);
     
     tc = corrInfo.X;
-    FNCdyn = corrInfo.FNCdyn;
+
+    if (strcmpi(dfnc_means_option, 'keep means'))
+        FNCdyn = corrInfo.FNCdyn;
+        disp('icatb_run_dfnc: dfnc_means_option keeping means (as default)');
+    else
+        % dfnc_means_option='remove means'
+        FNCdyn = corrInfo.FNCdyn - mean(corrInfo.FNCdyn,1);
+        disp('icatb_run_dfnc: dfnc_means_option removing means');
+    end
+
     
     if (averageLengthTR ~= 0)
         disp('Computing average sliding window correlation ...');
