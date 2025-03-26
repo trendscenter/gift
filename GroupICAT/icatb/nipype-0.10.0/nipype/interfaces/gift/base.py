@@ -25,9 +25,9 @@ class GIFTCommandInputSpec(BaseInterfaceInputSpec):
     paths = InputMultiPath(Directory(), desc='Paths to add to matlabpath')
     mfile = traits.Bool(True, desc='Run m-code using m-file', usedefault=True)
     use_mcr = traits.Bool(desc='Run m-code using GIFT MCR')     
-	
+    
 class GIFTCommandOutputSpec( BaseInterfaceInputSpec):
-    matlab_output = traits.Str( )	
+    matlab_output = traits.Str( )    
 
 class GIFTCommand(BaseInterface):
     """Extends `BaseInterface` class to implement GIFT specific interfaces.
@@ -64,8 +64,8 @@ class GIFTCommand(BaseInterface):
     def _matlab_cmd_update(self):
         # MatlabCommand has to be created here,
         # because matlab_cmb is not a proper input
-        # and can be set only during init	
-        matlab_cmd_str = self.inputs.matlab_cmd	
+        # and can be set only during init    
+        matlab_cmd_str = self.inputs.matlab_cmd    
         if isdefined(self.inputs.use_mcr) and self.inputs.use_mcr:
             if not matlab_cmd_str[-1] == " ":
                 matlab_cmd_str = matlab_cmd_str + " "
@@ -90,10 +90,10 @@ class GIFTCommand(BaseInterface):
 
     def _run_interface(self, runtime):
         """Executes the GIFT function using MATLAB."""
-        self.mlab.inputs.script = self._make_matlab_command()   	
+        self.mlab.inputs.script = self._make_matlab_command()       
         results = self.mlab.run()
         runtime.returncode = results.runtime.returncode
-        if self.mlab.inputs.uses_mcr:		
+        if self.mlab.inputs.uses_mcr:        
             if 'Skipped' in results.runtime.stdout:
                 self.raise_exception(runtime)
         runtime.stdout = results.runtime.stdout

@@ -12,9 +12,9 @@ class GICACommandInputSpec(GIFTCommandInputSpec):
     out_dir = traits.Str( mandatory = False, desc = 'Enter fullfile path of the results directory')
     mask = traits.Str( mandatory = False, desc = 'Options are default, average or enter fullfile name of the mask.')
     TR =  traits.List(mandatory=False, desc = "Enter experimental TR in seconds");
-    dim = traits.Int(mandatory = False, desc="dimensionality reduction into #num dimensions" "(default: automatic estimation)")	
-    df = traits.Int(mandatory = False, desc="number of reduction steps used in the first pca step")	
-    which_analysis = traits.Int(mandatory = False, desc="Options are 1, 2, and 3. 1 - standard group ica, 2 - ICASSO and 3 - MST. ")	
+    dim = traits.Int(mandatory = False, desc="dimensionality reduction into #num dimensions" "(default: automatic estimation)")    
+    df = traits.Int(mandatory = False, desc="number of reduction steps used in the first pca step")    
+    which_analysis = traits.Int(mandatory = False, desc="Options are 1, 2, and 3. 1 - standard group ica, 2 - ICASSO and 3 - MST. ")    
     group_ica_type = traits.Str(mandatory = False, desc="1 - Spatial ica, 2 - Temporal ica.")
     perfType = traits.Int(mandatory = False, desc="Options are 1, 2, and 3. 1 - maximize performance, 2 - less memory usage  and 3 - user specified settings. ")
     dummy_scans = traits.List(mandatory = False, desc="enter dummy scans")
@@ -26,9 +26,9 @@ class GICACommandInputSpec(GIFTCommandInputSpec):
     numReductionSteps = traits.Int( mandatory = False, desc = 'options are 1  and 2')
     doEstimation = traits.Int( mandatory = False, desc = 'options are 0 and 1')
     scaleType = traits.Int( mandatory = False, desc = 'options are 0 - No scaling, 1 - percent signal change, 2 - Z-scores')
-    algoType = traits.Int( mandatory = False, desc = 'options are 1 - Infomax, 2 - Fast ica , ...')	
+    algoType = traits.Int( mandatory = False, desc = 'options are 1 - Infomax, 2 - Fast ica , ...')    
     refFiles = InputMultiPath(File(exists=True), argstr="-i %s", mandatory=False, position=0, desc="input file names (either single file name or a list)", sep=",")
-    numWorkers = traits.Int( mandatory = False, desc = 'Number of parallel workers')	
+    numWorkers = traits.Int( mandatory = False, desc = 'Number of parallel workers')    
     #display_results = traits.Int( mandatory = False, desc = '0 - No display, 1 - HTML report, 2 - PDF')
     display_results = traits.Dict(mandatory=False, desc='dictionary containing results summary options')
     #network_summary_opts = {'comp_network_names':{'BG':17,'AUD':21,'SM':[23,24,29]}, 
@@ -41,7 +41,7 @@ class GICACommandInputSpec(GIFTCommandInputSpec):
     designMatrix = traits.List(mandatory = False, desc="enter SPM.mat file names in a list. You can enter one design for task based or equal to number of subjects for randomized designs")
     # example: ['right*bf(1)', 'left*bf(1)']
     regressors = traits.List(mandatory = False, desc="enter regressors from SPM.mat files")
-	
+    
 
 class GICACommandOutputSpec(MatlabInputSpec):
     matlab_output = traits.Str( )
@@ -74,20 +74,20 @@ class GICACommand(GIFTCommand):
             
         prefix = 'gica_cmd';
         if isdefined(self.inputs.prefix):
-        		prefix = self.inputs.prefix;
+                prefix = self.inputs.prefix;
                 
         mask = '';
         if isdefined(self.inputs.mask):
-        		mask = self.inputs.mask;    
+                mask = self.inputs.mask;    
         
         perfType = 1;
         if isdefined(self.inputs.perfType):
-        		perfType = self.inputs.perfType;
+                perfType = self.inputs.perfType;
                 
         which_analysis = 1;
         if isdefined(self.inputs.which_analysis):
-        		which_analysis = self.inputs.which_analysis;
-        	
+                which_analysis = self.inputs.which_analysis;
+            
         icasso_opts = {'sel_mode':'randinit', 'num_ica_runs':10, 'min_cluster_size':8, 'max_cluster_size':10};
         
         mst_opts = {'num_ica_runs':10};
@@ -112,7 +112,7 @@ class GICACommand(GIFTCommand):
         # Design info
         designMatrix = [];
         if isdefined(self.inputs.designMatrix):
-        		designMatrix = self.inputs.designMatrix;
+                designMatrix = self.inputs.designMatrix;
         
         keyword_design = 'no'
         if (len(designMatrix) > 0):
@@ -142,10 +142,10 @@ class GICACommand(GIFTCommand):
         
         dummy_scans = 0;
         if isdefined(self.inputs.dummy_scans):
-        		dummy_scans = self.inputs.dummy_scans;
-        			
+                dummy_scans = self.inputs.dummy_scans;
+                    
         batch_file_name = os.path.join(os.getcwd(), '%s_gica_batch.m' % (prefix));
- 		
+         
         commandstr.append("\n");
         commandstr.append("%% Performance type\n");
         commandstr.append("perfType = %d;\n" % (perfType));
@@ -163,8 +163,8 @@ class GICACommand(GIFTCommand):
         commandstr.append("input_data_file_patterns = {");
         
         for n in range(len(self.inputs.in_files)):
-        		commandstr.append("'%s';\n" % (self.inputs.in_files[n]));
-        		  
+                commandstr.append("'%s';\n" % (self.inputs.in_files[n]));
+                  
         commandstr.append("};\n\n");
         commandstr.append("%% Dummy scans\n");
         commandstr.append("dummy_scans = %s;\n" % str(dummy_scans));
@@ -182,98 +182,98 @@ class GICACommand(GIFTCommand):
         
         if isdefined(self.inputs.TR):
             commandstr.append("%% TR in seconds \n");
-            commandstr.append("TR = %s;\n" % str(self.inputs.TR));	
+            commandstr.append("TR = %s;\n" % str(self.inputs.TR));    
         
         if isdefined(self.inputs.group_pca_type):
-        		commandstr.append("%% Group PCA type \n");
-        		commandstr.append("group_pca_type = '%s';\n" % (self.inputs.group_pca_type));
+                commandstr.append("%% Group PCA type \n");
+                commandstr.append("group_pca_type = '%s';\n" % (self.inputs.group_pca_type));
                 
                 
         commandstr.append("%% PCA Algorithm\n");
         pcaType = 'Standard';
         if isdefined(self.inputs.pcaType):
-        		pcaType = self.inputs.pcaType;       
+                pcaType = self.inputs.pcaType;       
         
         commandstr.append("pcaType = '%s';\n" % (pcaType));
-        		
+                
         backReconType = 4;
         if isdefined(self.inputs.backReconType):
-        		backReconType = self.inputs.backReconType;
+                backReconType = self.inputs.backReconType;
           
         commandstr.append("%% ICA Algorithm\n");
         algoType = 1;
         if isdefined(self.inputs.algoType):
-        		algoType = self.inputs.algoType;   
+                algoType = self.inputs.algoType;   
           
         commandstr.append("algoType = %d;\n" % (algoType));          
-        			
+                    
         commandstr.append("%% Back-reconstruction type\n");
         commandstr.append("backReconType = %d;\n" % (backReconType));
-        		
+                
         preproc_type = 4;
-        	
+            
         if isdefined(self.inputs.preproc_type):
-        		preproc_type = self.inputs.preproc_type;
+                preproc_type = self.inputs.preproc_type;
         
         commandstr.append("%% Pre-processing type\n");
         commandstr.append("preproc_type = %d;\n" % (preproc_type));
-        			
+                    
         numReductionSteps = 2;
         
         if (len(self.inputs.in_files) > 2):
-        		if isdefined(self.inputs.numReductionSteps):
-        			numReductionSteps = self.inputs.numReductionSteps;
-        		
-        		
+                if isdefined(self.inputs.numReductionSteps):
+                    numReductionSteps = self.inputs.numReductionSteps;
+                
+                
         if (numReductionSteps > 2):
-        		numReductionSteps == 2;
-        		
+                numReductionSteps == 2;
+                
         commandstr.append("%% Number of data reduction steps\n");
         commandstr.append("numReductionSteps = %d;\n" % (numReductionSteps)); 
-        	
-        doEstimation = 0;			
-        	
-        if isdefined(self.inputs.doEstimation):	
-        		doEstimation = self.inputs.doEstimation;
-        	
+            
+        doEstimation = 0;            
+            
+        if isdefined(self.inputs.doEstimation):    
+                doEstimation = self.inputs.doEstimation;
+            
         if not isdefined(self.inputs.dim):
-        		doEstimation = 1;
-        	
+                doEstimation = 1;
+            
         commandstr.append("%% MDL Estimation \n");
         commandstr.append("doEstimation = %d;\n" % (doEstimation)); 
-        	
+            
         if (doEstimation == 0):
-        		if (numReductionSteps == 1):
-        			commandstr.append("%% Number of PC in the first PCA step\n");
-        			commandstr.append("numOfPC1 = %d;\n" % (self.inputs.dim));
-        				
-        		if (numReductionSteps == 2):
-        			dfValue = self.inputs.dim;
-        			if isdefined(self.inputs.df):
-        				dfValue = self.inputs.df;
-        			commandstr.append("%% Number of PC in the first PCA step\n");
-        			commandstr.append("numOfPC1 = %d;\n" % (dfValue));
-        			commandstr.append("%% Number of PC in the second PCA step\n");
-        			commandstr.append("numOfPC2 = %d;\n" % (self.inputs.dim));
+                if (numReductionSteps == 1):
+                    commandstr.append("%% Number of PC in the first PCA step\n");
+                    commandstr.append("numOfPC1 = %d;\n" % (self.inputs.dim));
+                        
+                if (numReductionSteps == 2):
+                    dfValue = self.inputs.dim;
+                    if isdefined(self.inputs.df):
+                        dfValue = self.inputs.df;
+                    commandstr.append("%% Number of PC in the first PCA step\n");
+                    commandstr.append("numOfPC1 = %d;\n" % (dfValue));
+                    commandstr.append("%% Number of PC in the second PCA step\n");
+                    commandstr.append("numOfPC2 = %d;\n" % (self.inputs.dim));
         
         scaleType = 2;
         if isdefined(self.inputs.scaleType):
-        		scaleType = self.inputs.scaleType;		
+                scaleType = self.inputs.scaleType;        
         commandstr.append("%% Scaling type \n");
-        commandstr.append("scaleType = %d;\n" % (scaleType));		
-        	
-        	
-        if isdefined(self.inputs.refFiles):	
-        		commandstr.append("%% Spatial references \n");
-        		commandstr.append("refFiles = {");
-        		for n in range(len(self.inputs.refFiles)):			
-        			commandstr.append("'%s';\n" % (self.inputs.refFiles[n]));
-        		commandstr.append("};\n\n");
-        		
+        commandstr.append("scaleType = %d;\n" % (scaleType));        
+            
+            
+        if isdefined(self.inputs.refFiles):    
+                commandstr.append("%% Spatial references \n");
+                commandstr.append("refFiles = {");
+                for n in range(len(self.inputs.refFiles)):            
+                    commandstr.append("'%s';\n" % (self.inputs.refFiles[n]));
+                commandstr.append("};\n\n");
+                
         if isdefined(self.inputs.numWorkers):
-        		commandstr.append("%% Parallel info \n");
-        		commandstr.append("parallel_info.mode='parallel';");
-        		commandstr.append("parallel_info.num_workers = %d;" % (self.inputs.numWorkers));
+                commandstr.append("%% Parallel info \n");
+                commandstr.append("parallel_info.mode='parallel';");
+                commandstr.append("parallel_info.num_workers = %d;" % (self.inputs.numWorkers));
 
         commandstr.append("%% Report generator \n");                
         if isdefined(self.inputs.display_results):            
@@ -297,56 +297,56 @@ class GICACommand(GIFTCommand):
         
         # network summary options
         if isdefined(self.inputs.network_summary_opts):
-			network_summary_opts = self.inputs.network_summary_opts;
-            		commandstr.append("%% Network summary options \n");
-            		comp_network_names = network_summary_opts['comp_network_names'];
-            		commandstr.append("network_summary_opts.comp_network_names = {");
-            		for keyN in comp_network_names.keys():
-                		commandstr.append("'%s', " % (keyN));
-                		if type(comp_network_names[keyN]) == int:
-                    			vals = [comp_network_names[keyN]];
-                		else:
-                    			vals = comp_network_names[keyN];
-                		commandstr.append("%s;\n" % str(vals));
-                	commandstr.append("};\n\n");
+            network_summary_opts = self.inputs.network_summary_opts;
+                    commandstr.append("%% Network summary options \n");
+                    comp_network_names = network_summary_opts['comp_network_names'];
+                    commandstr.append("network_summary_opts.comp_network_names = {");
+                    for keyN in comp_network_names.keys():
+                        commandstr.append("'%s', " % (keyN));
+                        if type(comp_network_names[keyN]) == int:
+                                vals = [comp_network_names[keyN]];
+                        else:
+                                vals = comp_network_names[keyN];
+                        commandstr.append("%s;\n" % str(vals));
+                    commandstr.append("};\n\n");
 
-                	# Network summary threshold
-                	try:
-                    		network_threshold = self.inputs.network_summary_opts['threshold'];
-                	except:
-                    		network_threshold = 1;
-                	commandstr.append("network_summary_opts.threshold = %s;\n" % str(network_threshold));
+                    # Network summary threshold
+                    try:
+                            network_threshold = self.inputs.network_summary_opts['threshold'];
+                    except:
+                            network_threshold = 1;
+                    commandstr.append("network_summary_opts.threshold = %s;\n" % str(network_threshold));
 
                     # Connectivity threshold
-                	try:
+                    try:
                             conn_threshold = self.inputs.network_summary_opts['conn_threshold'];
                             commandstr.append("network_summary_opts.conn_threshold = %s;\n" % str(conn_threshold));
-			except: 
-			    pass;
+            except: 
+                pass;
                     # Anatomical file
-                	try:
-                    		structFile = self.inputs.network_summary_opts['structFile'];
-                    		commandstr.append("network_summary_opts.structFile = '%s';\n" % (structFile));
-                	except:
+                    try:
+                            structFile = self.inputs.network_summary_opts['structFile'];
+                            commandstr.append("network_summary_opts.structFile = '%s';\n" % (structFile));
+                    except:
                             pass;
                     
-                	commandstr.append("network_summary_opts.save_info = 1;\n");
+                    commandstr.append("network_summary_opts.save_info = 1;\n");
 
-                	# network summary format
-                	try:
-                    		file_format = self.inputs.network_summary_opts['format'];
-                	except:
-                    		file_format = "html";
+                    # network summary format
+                    try:
+                            file_format = self.inputs.network_summary_opts['format'];
+                    except:
+                            file_format = "html";
 
-                	commandstr.append("network_summary_opts.format = '%s';\n" % (file_format));
+                    commandstr.append("network_summary_opts.format = '%s';\n" % (file_format));
 
-                	# Convert to z-scores
-                	try:
-                    		convert_to_z = self.inputs.network_summary_opts['convert_to_z'];
-                	except:
-                    		convert_to_z = "yes";
+                    # Convert to z-scores
+                    try:
+                            convert_to_z = self.inputs.network_summary_opts['convert_to_z'];
+                    except:
+                            convert_to_z = "yes";
 
-	                commandstr.append("network_summary_opts.convert_to_z = '%s';\n" % (convert_to_z));
+                    commandstr.append("network_summary_opts.convert_to_z = '%s';\n" % (convert_to_z));
         
         fid = open(batch_file_name, "w+");
         fid.writelines(commandstr);
@@ -379,7 +379,7 @@ class evalGIFTCommand(GIFTCommand):
         return script;
     
     
-		
+        
 class DFNCCommandInputSpec(GIFTCommandInputSpec):
     """ DFNC Inputs """
     
@@ -389,12 +389,12 @@ class DFNCCommandInputSpec(GIFTCommandInputSpec):
     TR =  traits.Float(mandatory=True, desc = "Enter experimental TR in seconds");
     dfnc_params =  traits.Dict(mandatory=False, desc='dictionary containing dfnc parameters')
     postprocess = traits.Dict(mandatory=False, desc='dictionary containing post-processing parameters')
-	
-	
+    
+    
 class DFNCCommandOutputSpec( MatlabInputSpec):
-	matlab_output = traits.Str( )	
-	
-	
+    matlab_output = traits.Str( )    
+    
+    
 class DFNCCommand(GIFTCommand):
     """ Run dFNC using GIFT
 
@@ -421,14 +421,14 @@ class DFNCCommand(GIFTCommand):
         """Implementation of dFNC """
         
         if isdefined(self.inputs.out_dir):
-            os.chdir(self.inputs.out_dir);			
+            os.chdir(self.inputs.out_dir);            
             
         batch_file_name = os.path.join(os.getcwd(), 'nipype_dfnc_batch.m'); 
-	
+    
         commandstr = ["%% Batch script for running dFNC\n"];
         commandstr.append("\n");
         commandstr.append("outputDir = '%s';\n" % (os.getcwd()));
-	
+    
         commandstr.append("%% ICA parameter file name \n");
         commandstr.append("ica_param_file = {");
         for nlist in self.inputs.ica_param_file:
@@ -437,60 +437,60 @@ class DFNCCommand(GIFTCommand):
         
         commandstr.append("%% TR in seconds \n");
         commandstr.append("TR = %s;\n" % str(self.inputs.TR));
-	
-        commandstr.append("%% Network names and values \n");	
+    
+        commandstr.append("%% Network names and values \n");    
         commandstr.append("comp_network_names = {");
-	
-        for keyN in self.inputs.comp_network_names.keys():			
-            commandstr.append("'%s', [" % (keyN));			
+    
+        for keyN in self.inputs.comp_network_names.keys():            
+            commandstr.append("'%s', [" % (keyN));            
             if type(self.inputs.comp_network_names[keyN]) == int:
                 vals = [self.inputs.comp_network_names[keyN]];
             else:
-                vals = self.inputs.comp_network_names[keyN];			
+                vals = self.inputs.comp_network_names[keyN];            
                 
             for n in range(len(vals)):
                 commandstr.append("%d " % (vals[n]));
             commandstr.append("];\n");
         commandstr.append("};\n\n");
-			
+            
         try:
-            tc_detrend = self.inputs.dfnc_params['tc_detrend'];		
+            tc_detrend = self.inputs.dfnc_params['tc_detrend'];        
         except:
             tc_detrend = 3;
-	
+    
         try:
             tc_despike = self.inputs.dfnc_params['tc_despike'];
         except:
             tc_despike = 'yes';
-		
+        
         try:
             tc_filter = self.inputs.dfnc_params['tc_filter'];
         except:
             tc_filter = 0.15;
-			
+            
         try:
             method = self.inputs.dfnc_params['method'];
         except:
             method = 'none';
-		
-	
+        
+    
         try:
             wsize = self.inputs.dfnc_params['wsize'];
         except:
             wsize = 30;
-	
+    
         try:
             window_alpha = self.inputs.dfnc_params['window_alpha'];
         except:
            window_alpha = 3;
-		
-	
+        
+    
         try:
-            num_repetitions = self.inputs.dfnc_params['num_repetitions'];	
+            num_repetitions = self.inputs.dfnc_params['num_repetitions'];    
         except:
             num_repetitions = 10;
-		
-		
+        
+        
         commandstr.append("%% dfnc parameters \n");
         commandstr.append("dfnc_params.tc_detrend = %d; \n" % (tc_detrend));
         commandstr.append("dfnc_params.tc_despike = '%s'; \n" % (tc_despike));
@@ -499,54 +499,54 @@ class DFNCCommand(GIFTCommand):
         commandstr.append("dfnc_params.wsize = %d; \n" % (wsize));
         commandstr.append("dfnc_params.window_alpha = %d; \n" % (window_alpha));
         commandstr.append("dfnc_params.num_repetitions = %d; \n" % (num_repetitions));
-	
+    
         try:
             self.inputs.dfnc_params['filesList']
             commandstr.append("dfnc_params.tc_covariates.filesList = {");
-            for n in range(len(self.inputs.dfnc_params['filesList'])):			
+            for n in range(len(self.inputs.dfnc_params['filesList'])):            
                 commandstr.append("'%s';\n" % (self.inputs.dfnc_params['filesList'][n]));
             commandstr.append("};\n\n");
         except:
             commandstr.append("\n");
-	
+    
         try:
             num_clusters = self.inputs.postprocess['num_clusters']
         except:
             num_clusters = 3
-		
+        
         try:
             ica_comps = self.inputs.postprocess['ica_comps']
         except:
             ica_comps = 3
-			
+            
         try:
             ica_algorithm = self.inputs.postprocess['ica_algorithm']
         except:
             ica_algorithm = 1
-		
+        
         try:
             num_ica_runs = self.inputs.postprocess['num_ica_runs']
         except:
             num_ica_runs = 5
-			
+            
         try:
             dmethod = self.inputs.postprocess['dmethod']
         except:
             dmethod = 'city'
-			
+            
         try:
             kmeans_max_iter = self.inputs.postprocess['kmeans_max_iter']
         except:
             kmeans_max_iter = 150
-			
+            
         try:
             display_results = self.inputs.postprocess['display_results']
         except:
             display_results = 1
-		
+        
         #if isdefined(self.inputs.use_mcr) and self.inputs.use_mcr:
         #    display_results = 0
-	
+    
         try:
             regressCovFile = self.inputs.postprocess['regressCovFile'];
         except:
@@ -560,7 +560,7 @@ class DFNCCommand(GIFTCommand):
         commandstr.append("postprocess.ica.num_ica_runs = '%s'; \n" % (num_ica_runs));
         commandstr.append("postprocess.dmethod = '%s'; \n" % (dmethod));
         commandstr.append("postprocess.kmeans_max_iter = %d; \n" % (kmeans_max_iter));
-        commandstr.append("postprocess.display_results = %d; \n" % (display_results));	
+        commandstr.append("postprocess.display_results = %d; \n" % (display_results));    
         
         fid = open(batch_file_name, "w+");
         fid.writelines(commandstr);
@@ -586,12 +586,12 @@ class MancovanCommandInputSpec(GIFTCommandInputSpec):
     univariate_tests = traits.Dict(mandatory=False, desc='Univariate tests to specify');
     display = traits.Dict(mandatory=False, desc='Display');        
     
-	
-	
+    
+    
 class MancovanCommandOutputSpec( MatlabInputSpec):
-	matlab_output = traits.Str( )	
-	
-	
+    matlab_output = traits.Str( )    
+    
+    
 class MancovanCommand(GIFTCommand):
     """ Run Mancovan using GIFT
 
@@ -634,14 +634,14 @@ class MancovanCommand(GIFTCommand):
         """Implementation of Mancovan """
         
         if isdefined(self.inputs.out_dir):
-            os.chdir(self.inputs.out_dir);			
+            os.chdir(self.inputs.out_dir);            
             
         batch_file_name = os.path.join(os.getcwd(), 'nipype_mancovan_batch.m'); 
         
         commandstr = ["%% Batch script for running Mancovan\n"];
         commandstr.append("\n");
         commandstr.append("outputDir = '%s';\n" % (os.getcwd()));
-	
+    
         commandstr.append("%% ICA parameter file name \n");
         commandstr.append("ica_param_file = {");
         for nlist in self.inputs.ica_param_file:
@@ -705,16 +705,16 @@ class MancovanCommand(GIFTCommand):
         
         commandstr.append("%% TR in seconds \n");
         commandstr.append("TR = %s;\n" % str(self.inputs.TR));
-	
-        commandstr.append("%% Network names and values \n");	
+    
+        commandstr.append("%% Network names and values \n");    
         commandstr.append("comp_network_names = {");
-	
-        for keyN in self.inputs.comp_network_names.keys():			
-            commandstr.append("'%s', [" % (keyN));			
+    
+        for keyN in self.inputs.comp_network_names.keys():            
+            commandstr.append("'%s', [" % (keyN));            
             if type(self.inputs.comp_network_names[keyN]) == int:
                 vals = [self.inputs.comp_network_names[keyN]];
             else:
-                vals = self.inputs.comp_network_names[keyN];			
+                vals = self.inputs.comp_network_names[keyN];            
                 
             for n in range(len(vals)):
                 commandstr.append("%d " % (vals[n]));
@@ -727,7 +727,7 @@ class MancovanCommand(GIFTCommand):
             features = self.inputs.features;
         else:
             features = ['spatial maps', 'timecourses spectra', 'fnc correlations'];
-			
+            
         commandstr.append("features = {");
         for n in range(len(features)):
             commandstr.append("'%s';" % (features[n]));     
@@ -810,10 +810,10 @@ class MancovanCommand(GIFTCommand):
             covariates = self.inputs.covariates;
         commandstr.append("%% Covariates \n");  
         commandstr.append("covariates = {");
-        for keyN in covariates.keys():			
-            commandstr.append("'%s', " % (keyN));			
-            tmp_cov = covariates[keyN];		
-            commandstr.append("'%s', " % (tmp_cov[0]));	
+        for keyN in covariates.keys():            
+            commandstr.append("'%s', " % (keyN));            
+            tmp_cov = covariates[keyN];        
+            commandstr.append("'%s', " % (tmp_cov[0]));    
             commandstr.append("'%s', " % (tmp_cov[1]));  
             try:
                 tmp_transform = tmp_cov[2];
