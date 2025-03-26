@@ -297,7 +297,7 @@ class GICACommand(GIFTCommand):
         
         # network summary options
         if isdefined(self.inputs.network_summary_opts):
-            network_summary_opts = self.inputs.network_summary_opts;
+                    network_summary_opts = self.inputs.network_summary_opts;
                     commandstr.append("%% Network summary options \n");
                     comp_network_names = network_summary_opts['comp_network_names'];
                     commandstr.append("network_summary_opts.comp_network_names = {");
@@ -321,8 +321,8 @@ class GICACommand(GIFTCommand):
                     try:
                             conn_threshold = self.inputs.network_summary_opts['conn_threshold'];
                             commandstr.append("network_summary_opts.conn_threshold = %s;\n" % str(conn_threshold));
-            except: 
-                pass;
+                    except: 
+                        pass;
                     # Anatomical file
                     try:
                             structFile = self.inputs.network_summary_opts['structFile'];
