@@ -83,12 +83,12 @@ modulation_frequency = 0.1;
 try
     winType = DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE;
     modulation_frequency = DFNC_DEFAULTS.SSB_SWPC.MODULATION_FREQUENCY;
-    dfnc_means_option = DFNC_DEFAULTS.dfnc_means_option;
+    dfnc_mn_remov_yn = DFNC_DEFAULTS.dfnc_mn_remov_yn;
 catch
 end
 
 try
-    dfnc_means_option = dfncInfo.userInput.feature_params.final.dfnc_mn_options;
+    dfnc_mn_remov_yn = dfncInfo.userInput.feature_params.final.dfnc_mn_remov_yn;
     detrend_no = dfncInfo.userInput.feature_params.final.tc_detrend;
     doDespike = dfncInfo.userInput.feature_params.final.tc_despike;
     tc_filter = dfncInfo.userInput.feature_params.final.tc_filter;
@@ -303,13 +303,13 @@ parfor dataSetCount = 1:numOfSub*numOfSess
     
     tc = corrInfo.X;
 
-    if (strcmpi(dfnc_means_option, 'keep means'))
+    if (strcmpi(dfnc_mn_remov_yn, 'no'))
         FNCdyn = corrInfo.FNCdyn;
-        disp('icatb_run_dfnc: dfnc_means_option keeping means (as default)');
+        disp('Not removing subject FNC means (keep means - default)');
     else
-        % dfnc_means_option='remove means'
+        % dfnc_mn_remov_yn='yes'
         FNCdyn = corrInfo.FNCdyn - mean(corrInfo.FNCdyn,1);
-        disp('icatb_run_dfnc: dfnc_means_option removing means');
+        disp('Removing subject FNC means (yes)');
     end
 
     

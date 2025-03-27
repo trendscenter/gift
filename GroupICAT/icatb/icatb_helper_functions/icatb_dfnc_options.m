@@ -73,10 +73,10 @@ options(optionNumber).callback = {@selectParams, covInfo};
 
 optionNumber = optionNumber + 1;
 % Option 5 of parameter 1
-options(optionNumber).promptString = 'dFNC means option';
-options(optionNumber).answerString =  char('Keep Means', 'Remove Means');
+options(optionNumber).promptString = 'Remove subject FNC mean over time?';
+options(optionNumber).answerString =  char('No', 'Yes');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
-options(optionNumber).tag = 'dfnc_mn_options'; options(optionNumber).answerType = 'string';
+options(optionNumber).tag = 'dfnc_mn_remov_yn'; options(optionNumber).answerType = 'string';
 options(optionNumber).flag = 'delete';
 options(optionNumber).uiPos = [0.12 0.045];
 

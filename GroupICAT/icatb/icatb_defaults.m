@@ -820,8 +820,7 @@ DFNC_DEFAULTS.SSB_SWPC.WINDOW_TYPE = 'gauss'; %rect, gauss or tukey
 DFNC_DEFAULTS.GAUSS_WIN_ALPHA = 3; % read to SSB as well
 
 % possibility to remove means before dfnc postprocessing
-% options are: 'keep means' (default) or 'remove means' 
-DFNC_DEFAULTS.dfnc_means_option = 'keep means';
+DFNC_DEFAULTS.dfnc_mn_remov_yn = 'no';
 
 % Interpolation (spm sample vol)
 % Default: 0 - Nearest neighbor interpolation

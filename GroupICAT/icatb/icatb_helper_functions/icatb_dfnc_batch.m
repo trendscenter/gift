@@ -136,7 +136,7 @@ if (~isempty(fparams))
     
     %% Preprocessing
     tags = cellstr( char(feature_params.inputParameters(1).options.tag));
-    fieldsToCheck = {'tc_detrend', 'tc_despike', 'tc_filter'};
+    fieldsToCheck = {'tc_detrend', 'tc_despike', 'tc_filter', 'dfnc_mn_remov_yn'};
     feature_params.inputParameters(1) = fillValuesControls(feature_params.inputParameters(1), fieldsToCheck, fparams, tags);
     
     chk = strmatch('tc_covariates', tags, 'exact');

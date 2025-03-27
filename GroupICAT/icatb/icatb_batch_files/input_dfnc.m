@@ -64,6 +64,9 @@ dfnc_params.tc_detrend = 3;
 dfnc_params.tc_despike = 'yes';
 dfnc_params.tc_filter = 0.15;
 
+% Remove subject FNC mean over time?
+dfnc_params.dfnc_mn_remov_yn = 'no'; 
+
 dfnc_params.tc_covariates.filesList = [];
 dfnc_params.tc_covariates.file_numbers = [];
 
