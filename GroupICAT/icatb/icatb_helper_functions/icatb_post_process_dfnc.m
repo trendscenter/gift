@@ -62,16 +62,24 @@ ica_algorithms_list = {'Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Op
 distance_opts =  {'City', 'sqEuclidean', 'Hamming', 'Correlation', 'Cosine'};
 kmeans_num_replicates = 5;
 num_tests_est_clusters = 10;
+ref_spat_dfnc_tf = 1; % May be used in case batch is run without var
+ref_spat_dfnc_calib_tf = 1; % May be used in case batch is run without var
+tag_edt_stateguided_numcomps = 10; % May be used in case batch is run without var
+b_chk_ena_stateguided = 1; % May be used in case batch is run without var
+b_chk_ena_statebased = 1;% May be used in case batch is run without var
+b_chk_ena_metastate = 1;% May be used in case batch is run without var
+
 
 try
     num_clusters = dfncInfo.postprocess.num_clusters;
     kmeans_max_iter = dfncInfo.postprocess.kmeans_max_iter;
     dmethod = dfncInfo.postprocess.dmethod;
     kmeans_num_replicates = dfncInfo.postprocess.kmeans_num_replicates;
+    ref_spat_dfnc_tf = dfncInfo.postprocess.ref_spat_dfnc_tf;
+    ref_spat_dfnc_calib_tf = dfncInfo.postprocess.ref_spat_dfnc_calib_tf;
     
 catch
 end
-
 
 try
     num_tests_est_clusters = dfncInfo.postprocess.num_tests_est_clusters;
@@ -148,11 +156,19 @@ end
 
 if (showGUI)
     
-    guiInputs = struct('estimate_clusters', estimate_clusters, 'num_clusters', num_clusters, 'kmeans_max_iter', kmeans_max_iter, 'dmethod', dmethod, ...
-        'ica_algorithm', ica_algorithm, 'num_ica_runs', num_ica_runs, 'num_comps_ica', num_comps_ica, 'regressCovFile', regressCovFile, ...
-        'meta_method', meta_method, 'kmeans_num_replicates', kmeans_num_replicates, 'num_tests_est_clusters', num_tests_est_clusters, 'kmeans_start', ...
-        kmeans_start, 'use_tall_array', use_tall_array);
-    
+    guiInputs = struct('estimate_clusters', estimate_clusters, 'num_clusters', num_clusters, ...
+        'kmeans_max_iter', kmeans_max_iter, 'dmethod', dmethod, 'ica_algorithm', ica_algorithm, ...
+        'num_ica_runs', num_ica_runs, 'num_comps_ica', num_comps_ica, ...
+        'regressCovFile', regressCovFile, 'meta_method', meta_method, ...
+        'kmeans_num_replicates', kmeans_num_replicates, ...
+        'num_tests_est_clusters', num_tests_est_clusters, 'kmeans_start', kmeans_start, ...
+        'use_tall_array', use_tall_array,'ref_spat_dfnc_tf', ref_spat_dfnc_tf, ...
+        'ref_spat_dfnc_calib_tf', ref_spat_dfnc_calib_tf, ...
+        'tag_edt_stateguided_numcomps', tag_edt_stateguided_numcomps, ...
+        'tag_chk_ena_stateguided', b_chk_ena_stateguided, ...
+        'tag_chk_ena_statebased', b_chk_ena_statebased, ...
+        'tag_chk_ena_metastate', b_chk_ena_metastate);
+
     results = post_process_dfnc(guiInputs);
     
     if (isempty(results))
@@ -174,7 +190,7 @@ if (showGUI)
         str = [field_Names{n}, ' = tmp;'];
         eval(str);
     end
-    
+
     %     numParameters = 1;
     %
     %     inputText(numParameters).promptString = 'Select number of clusters/components to compute k-means/ICA on dynamic FNC correlations';
@@ -250,21 +266,45 @@ if (showGUI)
     %         str = [inputText(n).tag, '=', tmp, ';'];
     %         eval(str);
     %     end
-    
 end
 
-dfncInfo.postprocess.estimate_clusters = estimate_clusters;
-dfncInfo.postprocess.num_clusters = num_clusters;
-dfncInfo.postprocess.kmeans_max_iter = kmeans_max_iter ;
-dfncInfo.postprocess.dmethod = dmethod;
-dfncInfo.postprocess.kmeans_num_replicates = kmeans_num_replicates;
-dfncInfo.postprocess.num_tests_est_clusters = num_tests_est_clusters;
-dfncInfo.postprocess.meta_method = meta_method;
-dfncInfo.postprocess.ica.algorithm = lower(ica_algorithm);
-dfncInfo.postprocess.ica.num_ica_runs = num_ica_runs;
-dfncInfo.postprocess.ica.num_comps = num_comps_ica;
+% State Guided
+dfncInfo.postprocess.b_chk_ena_stateguided = b_chk_ena_stateguided;
+if b_chk_ena_stateguided
+    if showGUI
+        dfncInfo.postprocess.ref_spat_dfnc_tf = ref_spat_dfnc_tf;
+        dfncInfo.postprocess.ref_spat_dfnc_calib_tf = ref_spat_dfnc_calib_tf;          
+        dfncInfo.postprocess.tag_edt_stateguided_numcomps = str2num(tag_edt_stateguided_numcomps);
+    %else if batch script was run these variables are already set
+    end
+end
+
+% State Based
+dfncInfo.postprocess.b_chk_ena_statebased = b_chk_ena_statebased;
+if b_chk_ena_statebased
+    dfncInfo.postprocess.estimate_clusters = estimate_clusters;
+    dfncInfo.postprocess.num_clusters = num_clusters;
+end
+
+% MEta state
+dfncInfo.postprocess.b_chk_ena_metastate = b_chk_ena_metastate;
+if b_chk_ena_metastate
+    dfncInfo.postprocess.meta_method = meta_method;
+    dfncInfo.postprocess.dmethod = dmethod; %
+    dfncInfo.postprocess.ica.num_comps = num_comps_ica;
+    dfncInfo.postprocess.ica.algorithm = lower(ica_algorithm);
+    dfncInfo.postprocess.ica.num_ica_runs = num_ica_runs;
+end
+
+% Regress
 dfncInfo.postprocess.regressCovFile = regressCovFile;
+
+%
+dfncInfo.postprocess.num_tests_est_clusters = num_tests_est_clusters;
+dfncInfo.postprocess.kmeans_max_iter = kmeans_max_iter ;
+dfncInfo.postprocess.kmeans_num_replicates = kmeans_num_replicates;
 dfncInfo.postprocess.kmeans_start = kmeans_start;
+
 
 
 if (strcmpi(kmeans_start, 'user Input'))
@@ -431,6 +471,79 @@ for nR = 1:length(dfncInfo.outputFiles)
     
 end
 
+
+if ( dfncInfo.postprocess.ref_spat_dfnc_tf && b_chk_ena_stateguided )
+    ncomps = dfncInfo.postprocess.tag_edt_stateguided_numcomps; % ica components
+    % ICA reference guided spatial dfnc
+    data = [FNCdynflat{1}; FNCdynflat{2}];
+  
+    [whitesig, dewhiteM] = icatb_calculate_pca(data', ncomps);
+    [~, W_blindICA, A_blindICA, sources] = icatb_icaAlgorithm(1, whitesig'); %gettig template (blindly)
+    A_blindICA = dewhiteM*A_blindICA;
+    W_blindICA = pinv(A_blindICA);
+    
+    priors = sources';
+    
+    % Back Reconstruction constrained_source
+    for subject = 1:dfncInfo.userInput.numOfSub
+        for nSess = 1:dfncInfo.userInput.numOfSess
+            % Get the matrix from the current cell
+            dfnc = FNCdynflat{(subject-1)*dfncInfo.userInput.numOfSess+nSess}; 
+        
+            % MOO-ICAR (constrained ICA), A = loadings and sources = components
+            [~, W, sica_br.fnc_A, sica_br.fnc_S] = icatb_icaAlgorithm('MOO-ICAR', dfnc, {'ref_data', priors'});
+        
+            s_sub_sess_save = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
+            save(s_sub_sess_save, '-nocompression', '-append', 'sica_br');
+        end
+    end
+end
+
+
+if ( dfncInfo.postprocess.ref_spat_dfnc_calib_tf  && b_chk_ena_stateguided )
+    % Calibration
+
+    num_individuals = (dfncInfo.userInput.numOfSub-1)*dfncInfo.userInput.numOfSess+dfncInfo.userInput.numOfSess;
+    % Process each individual within the group
+    for subject = 1:dfncInfo.userInput.numOfSub
+        for nSess = 1:dfncInfo.userInput.numOfSess    
+            ix_scan = (subject-1)*dfncInfo.userInput.numOfSess+nSess;
+            % Load dFNC data for the current individual
+            dFNC_ind = FNCdynflat{(subject-1)*dfncInfo.userInput.numOfSess+nSess}; % 
+            % Load constrained sourcesfor the current scan
+            s_sub_sess_file = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
+            load(s_sub_sess_file, 'sica_br');
+            sources_ind = sica_br.fnc_S; % %something wrong here = wrong matrix dimensions
+            predictors = zeros(numel(dFNC_ind), dfncInfo.postprocess.tag_edt_stateguided_numcomps);
+            % Prepare the predictors by computing a_i * s_i for each component i
+            for i1 = 1:dfncInfo.postprocess.tag_edt_stateguided_numcomps
+                % Extract component a_i (windows-by-1 vector)
+                a_i = sica_br.fnc_A(:, i1); % 
+                s_i = sources_ind(i1, :); % 
+                % Compute the product a_i * s_i to create the predictor for component i
+                component_vector = a_i * s_i; % 115 x 1378
+                predictors(:, i1) = component_vector(:); %flatten & matrix
+            end
+            response = dFNC_ind(:); % Flatten dFNC data
+            % Perform multiple regression to get beta weights for each component
+            beta = regress(response, predictors); %ce041525 should we not have a unity intercept before reg?
+            sica_calib.fnc_A = zeros(size(sica_br.fnc_A));
+            % Apply beta weights and scale each component by std
+            for i2 = 1:dfncInfo.postprocess.tag_edt_stateguided_numcomps
+                % Scale the component by its beta weight
+                sica_calib.fnc_S = beta(i2) * (sica_br.fnc_A(:, i2) * sources_ind(i2, :));
+                std_i = std(sources_ind(i2, :)); % Compute standard deviation of the scaled component
+                % sica_calib.fnc_A = final_timecourse + (sica_calib.fnc_S / std_i) * std(A_ind(:, i));
+                TC = beta(i2) * sica_br.fnc_A(:, i2) * std_i;
+                sica_calib.fnc_A(:,i2) = TC;                
+            end
+            s_sub_sess_save = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
+            save(s_sub_sess_save, '-nocompression', '-append', 'sica_calib');
+        end
+    end
+end
+
+
 FNCamp = FNCamp / M;
 FNCcm = FNCcm / M;
 
@@ -442,129 +555,132 @@ clear FNCamp FNCcm;
 
 fprintf('\n');
 
-disp('Computing k-means on FNC correlations ...');
 
-%% Cluster
-if (strcmpi(estimate_clusters, 'yes') || strcmpi(kmeans_start, 'subject exemplars'))
-    SPflat = cell2mat(SP);
-end
-
-clear SP;
-
-%num_component_pairs = size(FNCdynflat, 2);
-
-% Determine optmial number of clusters
-if (strcmpi(estimate_clusters, 'yes'))
-    
-    cluster_estimate_results = icatb_optimal_clusters(SPflat, min([max(size(SPflat)), 10]), 'method', 'all', 'cluster_opts', {'Replicates', kmeans_num_replicates, 'Distance', dmethod, ...
-        'MaxIter', kmeans_max_iter}, 'num_tests', num_tests_est_clusters, 'display', 1);
-    
-    
-    num_clusters = 0;
-    for Ntests = 1:length(cluster_estimate_results)
-        num_clusters = num_clusters + (cluster_estimate_results{Ntests}.K(1));
+if b_chk_ena_statebased
+    %% Cluster
+    disp('Computing k-means on FNC correlations ...');
+    if (strcmpi(estimate_clusters, 'yes') || strcmpi(kmeans_start, 'subject exemplars'))
+        SPflat = cell2mat(SP);
     end
-    num_clusters = ceil(num_clusters/length(cluster_estimate_results));
     
-    disp(['Number of estimated clusters used in dFNC standard analysis is mean of all tests: ', num2str(num_clusters)]);
-    fprintf('\n');
+    clear SP;
     
-    dfncInfo.postprocess.num_clusters = num_clusters;
+    %num_component_pairs = size(FNCdynflat, 2);
     
-end
-
-
-
-if (strcmpi(kmeans_start, 'subject exemplars'))
-    try
-        [IDXp, Cp, SUMDp, Dp] = kmeans(SPflat, num_clusters, 'distance', dmethod, 'Replicates', kmeans_num_replicates, 'MaxIter', kmeans_max_iter, 'Display', 'iter', 'empty', 'drop');
-    catch
-        [IDXp, Cp, SUMDp, Dp] = icatb_kmeans(SPflat, num_clusters, 'distance', dmethod, 'Replicates', kmeans_num_replicates, 'MaxIter', kmeans_max_iter, 'Display', 'iter', 'empty', 'drop');
+    % Determine optmial number of clusters
+    if (strcmpi(estimate_clusters, 'yes'))
+        
+        cluster_estimate_results = icatb_optimal_clusters(SPflat, min([max(size(SPflat)), 10]), 'method', 'all', 'cluster_opts', {'Replicates', kmeans_num_replicates, 'Distance', dmethod, ...
+            'MaxIter', kmeans_max_iter}, 'num_tests', num_tests_est_clusters, 'display', 1);
+        
+        
+        num_clusters = 0;
+        for Ntests = 1:length(cluster_estimate_results)
+            num_clusters = num_clusters + (cluster_estimate_results{Ntests}.K(1));
+        end
+        num_clusters = ceil(num_clusters/length(cluster_estimate_results));
+        
+        disp(['Number of estimated clusters used in dFNC standard analysis is mean of all tests: ', num2str(num_clusters)]);
+        fprintf('\n');
+        
+        dfncInfo.postprocess.num_clusters = num_clusters;
+        
+    end
+    
+    
+    
+    if (strcmpi(kmeans_start, 'subject exemplars'))
+        try
+            [IDXp, Cp, SUMDp, Dp] = kmeans(SPflat, num_clusters, 'distance', dmethod, 'Replicates', kmeans_num_replicates, 'MaxIter', kmeans_max_iter, 'Display', 'iter', 'empty', 'drop');
+        catch
+            [IDXp, Cp, SUMDp, Dp] = icatb_kmeans(SPflat, num_clusters, 'distance', dmethod, 'Replicates', kmeans_num_replicates, 'MaxIter', kmeans_max_iter, 'Display', 'iter', 'empty', 'drop');
+        end
+    end
+    
+    % Save subsampled data
+    if (exist('SPflat', 'var'))
+        clusterInfo.SP = SPflat;
+    end
+    clear SPflat IDXp SUMDp;
+    
+    post_process_opts = struct('max_iter', dfncInfo.postprocess.kmeans_max_iter, 'kmeans_num_replicates', 1, ...
+        'kmeans_distance_method', dfncInfo.postprocess.dmethod);
+    
+    if (strcmpi(kmeans_start, 'default'))
+        post_process_opts.kmeans_num_replicates = dfncInfo.postprocess.kmeans_num_replicates;
+        Cp = [];
+    end
+    
+    post_process_opts.Cp = Cp;
+    
+    
+    
+    if (strcmpi(use_tall_array, 'no'))
+        FNCdynflat = cat(3, FNCdynflat{:});
+        FNCdynflat = permute(FNCdynflat, [3, 1, 2]);
+        FNCdynflat = reshape(FNCdynflat, M*Nwin, size(FNCdynflat, 3));
+        if (tvdfnc)
+            tvFNCdynflat = cat(3, tvFNCdynflat{:});
+            tvFNCdynflat = permute(tvFNCdynflat, [3, 1, 2]);
+            tvFNCdynflat = reshape(tvFNCdynflat, M*Nwin, size(tvFNCdynflat, 3));
+        end
+    end
+    
+    if (~backProject)
+        [IDXall, Call, SUMDall, Dall] = icatb_kmeans_clustering(FNCdynflat, num_clusters, post_process_opts);
+    else
+        [Call, IDXall, Dall, SUMDall] = getCenters(FNCdynflat, Cp);
+    end
+    
+    clusterInfo.Call = Call;
+    clusterInfo.Cp = Cp;
+    clusterInfo.IDXall = IDXall;
+    clusterInfo.SUMDall = SUMDall;
+    clusterInfo.Dall = Dall;
+    
+    [clusterInfo.corrs_states, clusterInfo.states] = getStateCorr(dfncInfo, clusterInfo);
+    
+    icatb_save(post_process_file, 'clusterInfo', '-append');
+    
+    if (exist('cluster_estimate_results', 'var'))
+        icatb_save(post_process_file, 'cluster_estimate_results', '-append');
     end
 end
 
-% Save subsampled data
-if (exist('SPflat', 'var'))
-    clusterInfo.SP = SPflat;
-end
-clear SPflat IDXp SUMDp;
-
-post_process_opts = struct('max_iter', dfncInfo.postprocess.kmeans_max_iter, 'kmeans_num_replicates', 1, ...
-    'kmeans_distance_method', dfncInfo.postprocess.dmethod);
-
-if (strcmpi(kmeans_start, 'default'))
-    post_process_opts.kmeans_num_replicates = dfncInfo.postprocess.kmeans_num_replicates;
-    Cp = [];
-end
-
-post_process_opts.Cp = Cp;
-
-
-
-if (strcmpi(use_tall_array, 'no'))
-    FNCdynflat = cat(3, FNCdynflat{:});
-    FNCdynflat = permute(FNCdynflat, [3, 1, 2]);
-    FNCdynflat = reshape(FNCdynflat, M*Nwin, size(FNCdynflat, 3));
+if b_chk_ena_metastate
+    %% Meta state analysis
+    if (~isnumeric(FNCdynflat))
+        use_meta_state = 0;
+        disp('Currently meta state analysis is not performed when using tall array as the distance metric type is unknown in the distributed k-means');
+    end
+    
+    if (use_meta_state)
+        %if (isnumeric(FNCdynflat))
+        FNCdynflat = reshape(FNCdynflat, M, Nwin, size(FNCdynflat, 2));
+        %end
+        meta_states_info = icatb_dfnc_meta_state_analysis(FNCdynflat, num_comps_ica, 'dmethod', dmethod, 'kmeans_max_iter', kmeans_max_iter, 'num_ica_runs', num_ica_runs, ...
+            'ica_algorithm', lower(ica_algorithm), 'method', meta_method, 'replicates', kmeans_num_replicates);
+        
+        icatb_save(post_process_file, 'meta_states_info', '-append');
+        
+    end
+    
+    %% TVdfnc analysis
+    
     if (tvdfnc)
-        tvFNCdynflat = cat(3, tvFNCdynflat{:});
-        tvFNCdynflat = permute(tvFNCdynflat, [3, 1, 2]);
-        tvFNCdynflat = reshape(tvFNCdynflat, M*Nwin, size(tvFNCdynflat, 3));
+        
+        post_process_opts.kmeans_num_replicates = kmeans_num_replicates;
+        post_process_opts.Cp = [];
+        
+        [idx, ctv, sumtv, dtv] = icatb_kmeans_clustering(tvFNCdynflat, num_clusters, post_process_opts);
+        
+        Call = {ctv(:, 1:num_component_pairs), ctv(:, num_component_pairs + 1:end)};
+        tvdfncInfo.IDXall = idx;
+        tvdfncInfo.Call = Call;
+        tvdfncInfo.SUMDall = sumtv;
+        tvdfncInfo.Dall = dtv;
+        icatb_save(post_process_file, 'tvdfncInfo', '-append');
     end
-end
-
-if (~backProject)
-    [IDXall, Call, SUMDall, Dall] = icatb_kmeans_clustering(FNCdynflat, num_clusters, post_process_opts);
-else
-    [Call, IDXall, Dall, SUMDall] = getCenters(FNCdynflat, Cp);
-end
-
-clusterInfo.Call = Call;
-clusterInfo.Cp = Cp;
-clusterInfo.IDXall = IDXall;
-clusterInfo.SUMDall = SUMDall;
-clusterInfo.Dall = Dall;
-
-[clusterInfo.corrs_states, clusterInfo.states] = getStateCorr(dfncInfo, clusterInfo);
-
-icatb_save(post_process_file, 'clusterInfo', '-append');
-
-if (exist('cluster_estimate_results', 'var'))
-    icatb_save(post_process_file, 'cluster_estimate_results', '-append');
-end
-
-
-%% Meta state analysis
-if (~isnumeric(FNCdynflat))
-    use_meta_state = 0;
-    disp('Currently meta state analysis is not performed when using tall array as the distance metric type is unknown in the distributed k-means');
-end
-
-if (use_meta_state)
-    %if (isnumeric(FNCdynflat))
-    FNCdynflat = reshape(FNCdynflat, M, Nwin, size(FNCdynflat, 2));
-    %end
-    meta_states_info = icatb_dfnc_meta_state_analysis(FNCdynflat, num_comps_ica, 'dmethod', dmethod, 'kmeans_max_iter', kmeans_max_iter, 'num_ica_runs', num_ica_runs, ...
-        'ica_algorithm', lower(ica_algorithm), 'method', meta_method, 'replicates', kmeans_num_replicates);
-    
-    icatb_save(post_process_file, 'meta_states_info', '-append');
-    
-end
-
-%% TVdfnc analysis
-
-if (tvdfnc)
-    
-    post_process_opts.kmeans_num_replicates = kmeans_num_replicates;
-    post_process_opts.Cp = [];
-    
-    [idx, ctv, sumtv, dtv] = icatb_kmeans_clustering(tvFNCdynflat, num_clusters, post_process_opts);
-    
-    Call = {ctv(:, 1:num_component_pairs), ctv(:, num_component_pairs + 1:end)};
-    tvdfncInfo.IDXall = idx;
-    tvdfncInfo.Call = Call;
-    tvdfncInfo.SUMDall = sumtv;
-    tvdfncInfo.Dall = dtv;
-    icatb_save(post_process_file, 'tvdfncInfo', '-append');
 end
 
 param_file = fullfile(outputDir, [dfncInfo.prefix, '.mat']);

@@ -179,6 +179,19 @@ try
 catch
 end
 
+% read ref_spatial_dfnc
+try
+    dfncInfo.postprocess.ref_spat_dfnc_tf = inputData.dfnc_params.ref_spat_dfnc_tf;
+catch
+end
+try
+    dfncInfo.postprocess.ref_spat_dfnc_calib_tf = inputData.dfnc_params.ref_spat_dfnc_calib_tf;
+catch
+end
+try
+    dfncInfo.postprocess.tag_edt_stateguided_numcomps = inputData.dfnc_params.tag_edt_stateguided_numcomps;
+catch
+end
 
 fprintf('Done\n\n');
 
