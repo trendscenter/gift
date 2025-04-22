@@ -513,29 +513,28 @@ if ( dfncInfo.postprocess.ref_spat_dfnc_calib_tf  && b_chk_ena_stateguided )
             % Load constrained sourcesfor the current scan
             s_sub_sess_file = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
             load(s_sub_sess_file, 'sica_br');
-            sources_ind = sica_br.fnc_S; % %something wrong here = wrong matrix dimensions
             predictors = zeros(numel(dFNC_ind), dfncInfo.postprocess.tag_edt_stateguided_numcomps);
             % Prepare the predictors by computing a_i * s_i for each component i
             for i1 = 1:dfncInfo.postprocess.tag_edt_stateguided_numcomps
                 % Extract component a_i (windows-by-1 vector)
                 a_i = sica_br.fnc_A(:, i1); % 
-                s_i = sources_ind(i1, :); % 
+                s_i = sica_br.fnc_S(i1, :); % 
                 % Compute the product a_i * s_i to create the predictor for component i
                 component_vector = a_i * s_i; % 115 x 1378
                 predictors(:, i1) = component_vector(:); %flatten & matrix
             end
             response = dFNC_ind(:); % Flatten dFNC data
             % Perform multiple regression to get beta weights for each component
-            beta = regress(response, predictors); %ce041525 should we not have a unity intercept before reg?
+            beta = regress(response, predictors);
             sica_calib.fnc_A = zeros(size(sica_br.fnc_A));
+            sica_calib.fnc_S = zeros(size(sica_br.fnc_S));
             % Apply beta weights and scale each component by std
             for i2 = 1:dfncInfo.postprocess.tag_edt_stateguided_numcomps
-                % Scale the component by its beta weight
-                sica_calib.fnc_S = beta(i2) * (sica_br.fnc_A(:, i2) * sources_ind(i2, :));
-                std_i = std(sources_ind(i2, :)); % Compute standard deviation of the scaled component
+                % Scale the component (sica_calib.fnc_S)
+                std_i = std(sica_br.fnc_S(i2, :)); % Compute standard deviation of the scaled component
+                sica_calib.fnc_S(i2, :) = sica_br.fnc_S(i2, :)/std_i;
                 % sica_calib.fnc_A = final_timecourse + (sica_calib.fnc_S / std_i) * std(A_ind(:, i));
-                TC = beta(i2) * sica_br.fnc_A(:, i2) * std_i;
-                sica_calib.fnc_A(:,i2) = TC;                
+                sica_calib.fnc_A(:,i2) = beta(i2) * sica_br.fnc_A(:, i2) * std_i;               
             end
             s_sub_sess_save = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
             save(s_sub_sess_save, '-nocompression', '-append', 'sica_calib');

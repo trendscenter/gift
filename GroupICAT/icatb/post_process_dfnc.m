@@ -126,7 +126,7 @@ else
     % val = get(handles.dmethod, 'value');
     results.dmethod = handles.dmethod; %opts{val};
     results.kmeans_num_replicates = handles.kmeans_num_replicates;
-    results.num_tests_est_clusters = handles.num_tests_est_clusters; %ce041425 visible false error
+    results.num_tests_est_clusters = handles.num_tests_est_clusters;
     results.kmeans_start = handles.kmeans_start;
     
     results.ref_spat_dfnc_tf = get(handles.tag_ref_spat_dfnc_tf,'Value');
