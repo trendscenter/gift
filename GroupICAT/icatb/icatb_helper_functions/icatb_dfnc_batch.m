@@ -181,7 +181,7 @@ end
 
 % read ref_spatial_dfnc
 try
-    dfncInfo.postprocess.ref_spat_dfnc_tf = inputData.dfnc_params.ref_spat_dfnc_tf;
+    dfncInfo.postprocess.ref_chk_ena_stateguided = inputData.dfnc_params.ref_chk_ena_stateguided;
 catch
 end
 try

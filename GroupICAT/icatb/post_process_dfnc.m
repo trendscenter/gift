@@ -129,7 +129,7 @@ else
     results.num_tests_est_clusters = handles.num_tests_est_clusters;
     results.kmeans_start = handles.kmeans_start;
     
-    results.ref_spat_dfnc_tf = get(handles.tag_ref_spat_dfnc_tf,'Value');
+    results.ref_chk_ena_stateguided = get(handles.tag_chk_ena_stateguided,'Value');
     results.ref_spat_dfnc_calib_tf = get(handles.tag_ref_spat_dfnc_calib_tf,'Value');
     results.tag_edt_stateguided_numcomps = num2str(get(handles.tag_edt_stateguided_numcomps,'String'));
     
@@ -691,23 +691,6 @@ function tag_ref_spat_dfnc_calib_tf_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-tag_ref_spat_dfnc_tf = findobj(gcbf, 'tag', 'tag_ref_spat_dfnc_tf');
-
-if ~tag_ref_spat_dfnc_tf.Value
-    hObject.Value = 0;
-end
-
-function tag_ref_spat_dfnc_tf_Callback(hObject, eventdata, handles)
-% hObject    handle to help_meta_method (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-tag_ref_spat_dfnc_calib_tf = findobj(gcbf, 'tag', 'tag_ref_spat_dfnc_calib_tf');
-
-if ~hObject.Value
-    tag_ref_spat_dfnc_calib_tf.Value = 0;
-end
-
 % --- Executes on button press in tag_chk_ena_stateguided.
 function tag_chk_ena_stateguided_Callback(hObject, eventdata, handles)
 % hObject    handle to tag_chk_ena_stateguided (see GCBO)
@@ -722,7 +705,6 @@ else
     b_enable_stateguided = 0;
 end
 
-fun_visible('tag_ref_spat_dfnc_tf', b_enable_stateguided);
 fun_visible('tag_ref_spat_dfnc_calib_tf', b_enable_stateguided);
 fun_visible('text22', b_enable_stateguided);
 fun_visible('tag_edt_stateguided_numcomps', b_enable_stateguided);

@@ -74,7 +74,7 @@ dfnc_params.method = 'none';
 dfnc_params.wsize = 30;
 dfnc_params.window_alpha = 3;
 dfnc_params.num_repetitions = 10;
-dfnc_params.ref_spat_dfnc_tf = 1;
+dfnc_params.ref_chk_ena_stateguided = 1;
 dfnc_params.ref_spat_dfnc_calib_tf = 1;
 dfnc_params.tag_edt_stateguided_numcomps = 9;
 
