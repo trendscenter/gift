@@ -165,7 +165,7 @@ class GICACommand(GIFTCommand):
              commandstr.append("modalityType = '%s';\n" % (self.inputs.modalityType));
         commandstr.append("%% Input file patterns\n");
         commandstr.append("input_data_file_patterns = {");
-             commandstr.append("\n")
+        commandstr.append("\n")
         for n in range(len(self.inputs.in_files)):
                 commandstr.append("'%s';\n" % (self.inputs.in_files[n]));
                   
