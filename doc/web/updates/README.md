@@ -1,5 +1,47 @@
 # **GIFT Updates**
 
+## GIFT 4.0.6.0 (May 15, 2025):
+- Added missing modalityType option
+- Added Domains to Neuromark_sMRI_3.0_modelorder-100_3x3x3.txt (v4.0.5.32)
+- First version of State Guided ICA of dFNC, including calibration 
+- For dFNC, the option to remove the mean over time is included
+- Showing proper GIFT version in about box
+- Showing proper GIFT version for command groupica --ver
+- Added tsv table with estimate cluster statistics and script to display the explained variance per cluster configuration
+- Added white matter NeuroMark (NeuroMark_fMRI_WM_2.2_modelorder-multi.*)
+- Modified GIFT so it consistently performes time series operations in the following order: 1) detrend 2) regress out motion (or other variables) 3) despike 4)filter
+  - Same adjustment but for MANCOVAN 
+  - Added logs so that dFNC processing to see the order of time series operations
+- Fixed bug with two regressing out of motion with a detrend in between
+- Added FNC ICA Toolbox
+  - Rekha Saha's FNC read of text files
+  - Publication: LONGITUDINAL WHOLE-BRAIN FUNCTIONAL NETWORK CHANGE PATTERNS OVER TWO-YEAR PERIOD IN THE ABCD DATA (2022) https://doi.org/10.1109/ISBI52829.2022.9761647
+- Autolabeller implemented
+  - Prerequisites (BCT) not needed any more
+  - Small changes to noisecloud
+- Added support for SBM preprocessing option: preproc=none
+- NeuroMark fMRI 2.2 released
+- Updated Input_sbm.m with new parameters
+- Implemented Ashkan's new dFNC GUI to GIFT
+  - Fix so DFNC shared trajectory has a default win size of 0
+  - Options window is updated to turn off and on selected UI controls
+  - Modified options in temporal dfnc gui
+- Added mexmaca64 for Apple silicon (Mac M1) support
+- Implemented adaptive reverse constrained ICA EBM (arcEBM) with sign flipping depending on reference component correlation
+- Place holder for GIFT-BIDS (gica_bids_app.m)
+- Sbm update, added feature to keep subjects means when processing SBM
+- Fixed gift-bids-app bug that results are not saved as proper sessions
+- Disable num comp in gui for spatially constrained ica
+- NeuroMark version 3 models added
+- Noisecloud info added that max TR is 2 seconds
+- Fixed additional bugs related with:
+  - Sessions and character array values
+  - Changed INTERP_VAL=0 for MANCOVAN output
+- Updated icatb_defaults.m for ssb-swpc
+- Updated icatb_groupNetworks.m
+
+***
+
 ## GIFT 4.0.5.0 (Feb 20, 2024):
 - Changed name of Neuromark template to Neuromark_fMRI_1.0.nii
 - Added Neuromark fMRI 2.0
