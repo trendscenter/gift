@@ -4,7 +4,7 @@
 - Added missing modalityType option
 - Added Domains to Neuromark_sMRI_3.0_modelorder-100_3x3x3.txt (v4.0.5.32)
 - First version of State Guided ICA of dFNC, including calibration 
-- For dFNC, the option to remove the mean over time is included
+- Implemented a new dFNC means option, having a choice between keeping the mean or removing the mean over time
 - Showing proper GIFT version in about box
 - Showing proper GIFT version for command groupica --ver
 - Added tsv table with estimate cluster statistics and script to display the explained variance per cluster configuration
