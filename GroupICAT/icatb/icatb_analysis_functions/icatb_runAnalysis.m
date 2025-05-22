@@ -84,6 +84,8 @@ try
                 error('Use EEGIFT toolbox to run the analysis on EEG data.');
             elseif strcmpi(sesInfo.userInput.modality, 'smri')
                 error('Use SBM toolbox to run the analysis on sMRI data.');
+            elseif strcmpi(sesInfo.userInput.modality, 'conn')
+                error('Use CONN button to run the analysis on connectivity data.');
             else
                 error('Use FNC button to run the analysis on FNC data.');
             end
@@ -356,7 +358,11 @@ try
         files = sesInfo.userInput.files;
         numOfSub = sesInfo.userInput.numOfSub;
         numOfSess = sesInfo.userInput.numOfSess;
-        SPMFiles = sesInfo.userInput.designMatrix;
+        SPMFiles = [];
+        try
+            SPMFiles = sesInfo.userInput.designMatrix;
+        catch
+        end
         icatb_save(subjectFile, 'files', 'numOfSub', 'numOfSess', 'SPMFiles', 'modalityType');
         clear files SPMFiles numOfSub numOfSess;
     end
@@ -534,7 +540,7 @@ try
             if (strcmpi(modalityType, 'fmri') || strcmpi(modalityType, 'smri'))
                 % Open fMRI GUI
                 icatb_displayGUI(parameter_file);
-            else
+            elseif(strcmpi(modalityType, 'eeg'))
                 % Open EEG display GUI
                 icatb_eeg_displayGUI(parameter_file);
             end

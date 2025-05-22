@@ -585,7 +585,7 @@ if (strcmpi(modalityType, 'fmri'))
         icatb_save(icaout, 'temporal_icasig');
         [A, W, icasig, temporal_icasig, skew] = backReconTemporalICAComps(sesInfo, A, temporal_icasig, compSetFields);
     end
-elseif (strcmpi(modalityType, 'smri'))
+elseif (strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'conn'))
     
     [A, W, icasig, skew] = changeSignOfComponents(A, icasig);
     
