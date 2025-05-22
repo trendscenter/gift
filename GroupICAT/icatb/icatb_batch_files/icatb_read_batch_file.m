@@ -234,18 +234,66 @@ end
 
 [sesInfo] = icatb_name_complex_images(sesInfo, 'read');
 
-[files, designMatrix, numOfSub, numOfSess, dataSelMethod, diffTimePoints, spmMatFlag] = icatb_dataSelection(...
-    inputData, sesInfo.userInput.pwd, sesInfo.userInput.prefix, ...
-    sesInfo.userInput.read_complex_file_naming, sesInfo.userInput.read_complex_images);
-sesInfo.userInput.files = files;
-sesInfo.userInput.hd    = inputData.input_data_hd_patterns; %support for motion reg
-SPMFiles = designMatrix;
-sesInfo.userInput.dataSelMethod = dataSelMethod;
-sesInfo.userInput.designMatrix = designMatrix;
-sesInfo.userInput.spmMatFlag = spmMatFlag;
-sesInfo.userInput.diffTimePoints = diffTimePoints;
-sesInfo.userInput.numOfSub = numOfSub;
-sesInfo.userInput.numOfSess = numOfSess;
+if (strcmpi(modalityType, 'conn'))
+    inputData.input_data_file_patterns = cellstr(inputData.input_data_file_patterns);
+    sessionsInvolved = size(inputData.input_data_file_patterns, 2);
+    filePatterns = inputData.input_data_file_patterns;
+    filePatterns = filePatterns';
+    filePatterns = filePatterns(:);
+    sesInfo.userInput.dataInfo.filesInfo.filesList = filePatterns;
+    sesInfo.userInput.dataInfo.filesInfo.numOfSess = sessionsInvolved;
+    
+    dummy_scans = 0;
+    try
+        dummy_scans = inputData.dummy_scans;
+    catch
+    end
+    sesInfo.userInput.dataInfo.filesInfo.file_numbers = dummy_scans;
+    
+    subsampling_depth = 1;
+    try
+        subsampling_depth = inputData.subsampling_depth;
+    catch
+    end
+    sesInfo.userInput.dataInfo.subsampling_depth = subsampling_depth;
+    maskFile = [];
+    try
+        maskFile = inputData.maskFile;
+    catch
+    end
+    sesInfo.userInput.dataInfo.maskFile = maskFile;
+    conn_type = 'ENLwFC';
+    try
+        conn_type = inputData.conn_type;
+    catch
+    end
+    
+    sesInfo.userInput.dataInfo.conn_type = conn_type;
+    sesInfo = icatb_gen_data_conn_ica(sesInfo);
+    inputData.maskFile = sesInfo.userInput.maskFile;
+    files = sesInfo.userInput.files;
+    numOfSub = sesInfo.userInput.numOfSub;
+    numOfSess = sesInfo.userInput.numOfSess;
+    numofDatasets = numOfSub*numOfSess;
+    SPMFiles = [];
+    diffTimePoints =  repmat(length(sesInfo.userInput.mask_ind), 1, numofDatasets);
+    sesInfo.userInput.diffTimePoints = diffTimePoints;
+else
+    
+    [files, designMatrix, numOfSub, numOfSess, dataSelMethod, diffTimePoints, spmMatFlag] = icatb_dataSelection(...
+        inputData, sesInfo.userInput.pwd, sesInfo.userInput.prefix, ...
+        sesInfo.userInput.read_complex_file_naming, sesInfo.userInput.read_complex_images);
+    sesInfo.userInput.files = files;
+    sesInfo.userInput.hd    = inputData.input_data_hd_patterns; %support for motion reg
+    SPMFiles = designMatrix;
+    sesInfo.userInput.dataSelMethod = dataSelMethod;
+    sesInfo.userInput.designMatrix = designMatrix;
+    sesInfo.userInput.spmMatFlag = spmMatFlag;
+    sesInfo.userInput.diffTimePoints = diffTimePoints;
+    sesInfo.userInput.numOfSub = numOfSub;
+    sesInfo.userInput.numOfSess = numOfSess;
+    
+end
 
 drawnow;
 
@@ -262,71 +310,74 @@ if (isfield(inputData, 'maskFile'))
     maskFile = inputData.maskFile;
 end
 
-if (~isempty(maskFile) && (strcmpi(modalityType, 'fmri') || strcmpi(modalityType, 'smri')))
+if (~strcmpi(modalityType, 'conn'))
     
-    if (strcmpi(maskFile, 'default') || strcmpi(maskFile, 'default mask'))
-        maskFile = [];
-    elseif (strcmpi(lower(maskFile), 'default&icv'))
-        maskFile = ['default&icv'];
+    if (~isempty(maskFile) && (strcmpi(modalityType, 'fmri') || strcmpi(modalityType, 'smri')))
+        
+        if (strcmpi(maskFile, 'default') || strcmpi(maskFile, 'default mask'))
+            maskFile = [];
+        elseif (strcmpi(lower(maskFile), 'default&icv'))
+            maskFile = ['default&icv'];
+        else
+            if (strcmpi(maskFile, 'average') || strcmpi(maskFile, 'average mask'))
+                
+                inpFiles = cell(1, length(files));
+                for nF = 1:length(files)
+                    inpFiles{nF} = files(nF).name;
+                end
+                
+                icatb_generateMask(inpFiles, 'outputDir', outputDir, 'corr_threshold', 0.8, 'prefix', sesInfo.userInput.prefix);
+                
+                maskFile = fullfile(outputDir, [sesInfo.userInput.prefix, 'Mask.nii']);
+                
+            end
+            
+            [maskPath, maskF, extn] = fileparts(maskFile);
+            if (isempty(maskPath))
+                maskPath = pwd;
+            end
+            maskFile = fullfile(maskPath, [maskF, extn]);
+            if (~exist(icatb_parseExtn(maskFile), 'file'))
+                error([maskFile, ' doesn''t exist']);
+            end
+            
+            % If mask resolution do not match the mask will be resliced
+            [dT, extns, maskDim] = icatb_get_countTimePoints(icatb_parseExtn(maskFile));
+            [dT, extns, dims] = icatb_get_countTimePoints(icatb_parseExtn(deblank(sesInfo.userInput.files(1).name(1, :))));
+            if length(find(maskDim == dims)) ~= length(maskDim)
+                fprintf('Mask dimensions ([%s]) are not equal to image dimensions ([%s]). Resizing mask image/images to match functional image\n\n', ...
+                    num2str(maskDim), num2str(dims));
+                
+                firstFile = deblank(sesInfo.userInput.files(1).name(1, :));
+                
+                % Handle gz files
+                firstFileTmp = deblank(icatb_parseExtn(firstFile));
+                if (strcmpi(firstFileTmp(end-2:end), '.gz'))
+                    gzfn = gunzip (firstFileTmp, tempdir);
+                    gzfn = char(gzfn);
+                    firstFile = icatb_rename_4d_file(gzfn);
+                    firstFile = deblank(firstFile(1, :));
+                end
+                
+                sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd);
+                [sFPath,sFName,sFExt] = fileparts(sTemp);
+                % Rename tmp output to the mask name
+                maskFile = [sesInfo.userInput.pwd filesep sesInfo.userInput.prefix 'Mask' sFExt];
+                movefile(sTemp, maskFile, 'f')
+            end
+            
+        end
+        
     else
-        if (strcmpi(maskFile, 'average') || strcmpi(maskFile, 'average mask'))
-            
-            inpFiles = cell(1, length(files));
-            for nF = 1:length(files)
-                inpFiles{nF} = files(nF).name;
-            end
-            
-            icatb_generateMask(inpFiles, 'outputDir', outputDir, 'corr_threshold', 0.8, 'prefix', sesInfo.userInput.prefix);
-            
-            maskFile = fullfile(outputDir, [sesInfo.userInput.prefix, 'Mask.nii']);
-            
-        end
-        
-        [maskPath, maskF, extn] = fileparts(maskFile);
-        if (isempty(maskPath))
-            maskPath = pwd;
-        end
-        maskFile = fullfile(maskPath, [maskF, extn]);
-        if (~exist(icatb_parseExtn(maskFile), 'file'))
-            error([maskFile, ' doesn''t exist']);
-        end
-        
-        % If mask resolution do not match the mask will be resliced
-        [dT, extns, maskDim] = icatb_get_countTimePoints(icatb_parseExtn(maskFile));
-        [dT, extns, dims] = icatb_get_countTimePoints(icatb_parseExtn(deblank(sesInfo.userInput.files(1).name(1, :))));
-        if length(find(maskDim == dims)) ~= length(maskDim)
-            fprintf('Mask dimensions ([%s]) are not equal to image dimensions ([%s]). Resizing mask image/images to match functional image\n\n', ...
-                num2str(maskDim), num2str(dims));
-            
-            firstFile = deblank(sesInfo.userInput.files(1).name(1, :));
-            
-            % Handle gz files
-            firstFileTmp = deblank(icatb_parseExtn(firstFile));
-            if (strcmpi(firstFileTmp(end-2:end), '.gz'))
-                gzfn = gunzip (firstFileTmp, tempdir);
-                gzfn = char(gzfn);
-                firstFile = icatb_rename_4d_file(gzfn);
-                firstFile = deblank(firstFile(1, :));
-            end
-            
-            sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd);
-            [sFPath,sFName,sFExt] = fileparts(sTemp);
-            % Rename tmp output to the mask name
-            maskFile = [sesInfo.userInput.pwd filesep sesInfo.userInput.prefix 'Mask' sFExt];
-            movefile(sTemp, maskFile, 'f')
-        end
-        
+        maskFile = [];
     end
     
-else
-    maskFile = [];
+    sesInfo.userInput.maskFile = maskFile;
+    %% Create mask
+    sesInfo = icatb_update_mask(sesInfo);
 end
 
-sesInfo.userInput.maskFile = maskFile;
 
-
-%% Create mask
-sesInfo = icatb_update_mask(sesInfo);
 
 %% Algorithm
 algoType = 1;
