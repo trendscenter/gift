@@ -22,12 +22,12 @@ function varargout = groupica(varargin)
 
 % Edit the above text to modify the response to help groupica
 
-% Last Modified by GUIDE v2.5 19-Oct-2024 23:21:38
+% Last Modified by GUIDE v2.5 19-May-2025 23:27:43
 
 icatb_defaults;
 global EXIT_GICA_APP;
 
-icatb_delete_gui({'gift', 'eegift', 'sbm', 'fnc_ica_toolbox'});
+icatb_delete_gui({'gift', 'eegift', 'sbm', 'fnc_ica_toolbox', 'conn_ica_toolbox'});
 
 try
     % add this statement to fix the button color
@@ -56,13 +56,13 @@ if (length(varargin) >= 1)
             disp('............... Group ICA/IVA Toolbox version Info ............................');
             disp('.........................................................................');
             disp(['Group ICA/IVA Toolbox (Main GUI): ' icatb_version]);
-            disp('Including GIFT, EEGIFT, SBM, FNC');
+            disp('Including GIFT, EEGIFT, SBM, FNC, CONN');
             fprintf('\n\n');
             varargout = {};
             return;
-        elseif (~strcmpi(tmpChar, 'fmri') && ~strcmpi(tmpChar, 'smri') && ~strcmpi(tmpChar, 'eeg') && ~strcmpi(tmpChar, 'fnc') && ~strcmpi(tmpChar, 'defaults') ...
-                && ~strcmpi(tmpChar, 'about') && ~strcmpi(tmpChar, 'gica_defaults') && ~strcmpi(tmpChar, 'help') && ~strcmpi(tmpChar, 'exit') ...
-                && ~strcmpi(tmpChar, 'gica_defaults_Callback')) 
+        elseif (~strcmpi(tmpChar, 'fmri') && ~strcmpi(tmpChar, 'smri') && ~strcmpi(tmpChar, 'eeg') && ~strcmpi(tmpChar, 'fnc') && ~strcmpi(tmpChar, 'conn') && ~strcmpi(tmpChar, 'defaults') ...
+                &&  ~strcmpi(tmpChar, 'about') && ~strcmpi(tmpChar, 'gica_defaults') && ~strcmpi(tmpChar, 'help') && ~strcmpi(tmpChar, 'exit') ...
+                && ~strcmpi(tmpChar, 'gica_defaults_Callback'))
             % batch callback
             if (length(varargin) >= 2)
                 assignin('base', 'gica_inputs', varargin(2:end));
@@ -153,6 +153,10 @@ if (length(varargin) >= 1)
             % fnc_ica_button Callback
             disp('Opening FNC ICA ...');
             fnc_button_Callback(hObject, eventdata, handles);
+        elseif strcmpi(varargin{1}, 'conn')
+            % conn_ica_button Callback
+            disp('Opening CONN ICA ...');
+            conn_button_Callback(hObject, eventdata, handles);
         elseif strcmpi(varargin{1}, 'defaults')
             % Defaults Callback
             disp('Opening Defaults ...');
@@ -272,3 +276,12 @@ function fnc_button_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 fnc_ica_toolbox;
+
+
+% --- Executes on button press in conn_button.
+function conn_button_Callback(hObject, eventdata, handles)
+% hObject    handle to conn_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+conn_ica_toolbox;
