@@ -87,7 +87,7 @@ subsampling_depth = sesInfo.userInput.dataInfo.subsampling_depth;
 if (subsampling_depth > 1)
     
     new_mask = zeros(size(mask));
-    new_mask(2:subsampling_depth:end, 2:subsampling_depth:end, 2:subsampling_depth:end) = 1;
+    new_mask(1:subsampling_depth:end, 1:subsampling_depth:end, 1:subsampling_depth:end) = 1;
     
     mask2 = new_mask.*mask;
     mask2 = double(mask2 ~= 0);
