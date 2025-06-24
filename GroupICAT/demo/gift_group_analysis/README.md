@@ -75,7 +75,8 @@ To run `fslmaths`, I start the fmriprep container in `smooth_fmriprep_results.sh
 This command utilizes fslmaths utility from Freesurfer (available in fmriprep too). Of course, you are welcome to use a different smoothing tool to achieve the same end.
 
 # Running GIFT <a name="secGift"></a>
-If you did not run the previous steps you may download the dataset, containing both input and output files for GIFT. Then you may run GIFT with your own output directory. The input and output files are found [here](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip).
+If you did not run the previous steps you may download the dataset, containing both input and output files for GIFT. Then you may run GIFT with your own output directory. The input and output files are found [here](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip).<br>
+Only the preprocessed fMRI is found [here](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark_onlysubj.zip).
 
 Now, that the data has been preprocessed, we turn to GIFT to actually carry out the Independent component analysis. GIFT is available in several flavors: as a Docker app, Matlab app with a graphical user interface. In following paragraphs, we look closer at different ways to run GIFT.
 
