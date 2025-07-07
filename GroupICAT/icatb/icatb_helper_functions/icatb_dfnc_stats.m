@@ -1084,7 +1084,7 @@ figData = get(handles, 'userdata');
 threshdesc = figData.threshdesc;
 p_thresh = figData.p_thresh;
 
-opts = char('none', 'fdr', 'mafdr');
+opts = char('none', 'BHFDR', 'MAFDR');
 val = strmatch(threshdesc, opts, 'exact');
 
 numParameters = 1;

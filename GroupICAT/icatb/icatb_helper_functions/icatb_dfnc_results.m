@@ -466,7 +466,6 @@ elseif (strcmpi(display_criteria, 'group comparisons'))
             clear tag;
             close(H);
             
-            
             clear files;
             if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
                 % Regress covariates
@@ -537,9 +536,114 @@ elseif (strcmpi(display_criteria, 'group comparisons'))
             end
             
             
+
+            
+            
+            
+            
+
+            if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat'])
+    
+    
+                tmp_mean_dwell_time = mean_dwell_time;
+                if (exist('tmp_nuisance', 'var'))
+                    for nMDT = 1:size(tmp_mean_dwell_time, 2)
+                        ttt_mdt = tmp_mean_dwell_time(:, nMDT);
+                        ttt_mdt_inds = find(ttt_mdt ~= 0);
+                        tmp_mean_dwell_time(ttt_mdt_inds, nMDT) = regress_cov(ttt_mdt(ttt_mdt_inds), tmp_nuisance(ttt_mdt_inds, :));
+                    end
+                end
+               
+                allCombs = nchoosek(1:length(groupVals), 2);
+                for nComb = 1:size(allCombs, 1)
+                   
+                    g1Name = groupNames{allCombs(nComb, 1)};
+                    g2Name = groupNames{allCombs(nComb, 2)};
+                    mG1 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 1)}, :);
+                    mG2 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 2)}, :);
+                   
+                    pvals_mdt = NaN(1, size(mean_dwell_time, 2));
+                    tvals_mdt = NaN(1, size(mean_dwell_time, 2));
+                   
+                    for nState = 1:length(pvals_mdt)
+                       
+                        tmp_mG1subtG2 = mG1(:, nState) - mG2(:, nState);
+                        try
+                            if (DFNC_DEFAULTS.mdt_exclude_zeros)
+                                tmp_mG1subtG2 = tmp_mG1subtG2(tmp_mG1subtG2 ~= 0);
+                            end
+                        catch
+                        end
+                        if ~isempty(tmp_mG1subtG2)
+                            [pvals_mdt(nState), tvals_mdt(nState)] = icatb_ttest(tmp_mG1subtG2);
+                        end
+                    end
+                   
+                    titleStr = ['Paired t-test on MDT between ', g1Name, ' & ', g2Name];
+                   
+                    g1Name(isspace(g1Name)) = '';
+                    g2Name(isspace(g2Name)) = '';
+                   
+                    s_ttst_pair_filename = [dfncInfo.prefix, '_paired_ttest_', g1Name, '_', g2Name, '.txt'];
+                    numPara = 1;
+                    varStruct(numPara).tag = 'State#';
+                    varStruct(numPara).value = (1:length(pvals_mdt))';
+                   
+                    numPara = numPara + 1;
+                    varStruct(numPara).tag = 'p-value';
+                    varStruct(numPara).value = num2str(pvals_mdt(:), '%0.4f');
+                   
+                    numPara = numPara + 1;
+                    varStruct(numPara).tag = 'T-value';
+                    varStruct(numPara).value = num2str(tvals_mdt(:), '%0.4f');
+                   
+                    icatb_printToFile(fullfile(html_dir,  s_ttst_pair_filename), varStruct, '', 'column_wise');
+                    clear varStruct;
+                    
+                    tag = ['Paired t-test of mean dwell time between ', g1Name, ' vs ', g2Name];
+                    countR = countR + 1;
+                    results(countR).file = {s_ttst_pair_filename};
+                    results(countR).text = titleStr;
+                    results(countR).tag = tag;
+                    clear tag;                    
+                end
+            end
+    
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
         end
         
     end
+
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+    
     
     if (~exist('results', 'var'))
         error('No results to display');
@@ -1103,8 +1207,6 @@ end
 saveas(H, strrep(file_name, '.jpg', '.fig'));
 saveas(H, file_name);
 
-
-
 function tc = regress_cov(tc, X)
 %% Regress covariates from corrs
 %
@@ -1113,8 +1215,6 @@ betas = pinv(X)*tc;
 
 % Remove variance associated with the covariates
 tc = tc - X*betas;
-
-
 
 function [p_masked, p]  = get_sig_pvalues(p, thresh, criteria)
 % apply fdr correction

@@ -65,7 +65,7 @@ end
 try
     threshdesc = mancovanInfo.display.threshdesc;
 catch
-    threshdesc = 'fdr';
+    threshdesc = 'bhfdr';
 end
 
 mancovanInfo.display.threshdesc = threshdesc;
