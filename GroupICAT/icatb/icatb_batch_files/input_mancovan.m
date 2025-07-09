@@ -118,6 +118,6 @@ display.t_threshold = 1;
 % image values
 display.image_values = 'Positive';
 % options are fdr and none used in univariate results
-display.threshdesc = 'fdr';
+display.threshdesc = 'bhfdr';
 
 

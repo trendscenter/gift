@@ -108,10 +108,10 @@ for nF = 1:size(compFiles, 1)
     dat = icatb_loadData(cn);
     good_inds = find(abs(dat) > eps);
     pvals = icatb_get_pvalue(dat(good_inds), df, 0);
-    if (strcmpi(threshold_type, 'fdr'))
+    if (strcmpi(threshold_type, 'bhfdr'))
         [p_masked, p_fdr] = icatb_fdr(pvals, threshold);
         p_masked = pvals < p_masked;
-        str = ['p < ', num2str(threshold), ' FDR corrected '];
+        str = ['p < ', num2str(threshold), ' BHFDR corrected '];
     else
         p_masked = pvals < threshold;
         str = ['p < ', num2str(threshold), ' uncorrected'];
@@ -275,8 +275,8 @@ for nC = 1:length(groupCombNames)
     
 end
 
-if (strcmpi(post_process_params.threshold_type, 'fdr'))
-    str = ['p < ', num2str(post_process_params.threshold), ' FDR corrected '];
+if (strcmpi(post_process_params.threshold_type, 'bhfdr'))
+    str = ['p < ', num2str(post_process_params.threshold), ' BHFDR corrected '];
 else
     str = ['p < ', num2str(post_process_params.threshold), ' uncorrected'];
 end

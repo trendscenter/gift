@@ -165,7 +165,7 @@ promptPos = get(textH, 'position');
 popupPos = promptPos;
 popupPos(1) = popupPos(1) + popupPos(3) + xOffset;
 popupPos(3) = 0.15;
-popupH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'popup', 'position', popupPos, 'string', char('fdr', 'MAFDR', 'none'), 'tag', 'threshdesc', 'enable', 'on');
+popupH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'popup', 'position', popupPos, 'string', char('BHFDR', 'MAFDR', 'none'), 'tag', 'threshdesc', 'enable', 'on');
 
 
 

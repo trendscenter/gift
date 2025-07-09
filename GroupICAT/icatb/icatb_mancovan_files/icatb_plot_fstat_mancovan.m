@@ -370,7 +370,7 @@ pv = T.p(find(isnan(T.p) == 0));
 
 [p_masked, pv]  = get_sig_pvalues(pv, thresh, threshdesc);
 
-if (strcmpi(threshdesc, 'fdr'))
+if (strcmpi(threshdesc, 'bhfdr'))
     %disp(p_masked)
     fdrlim = -log10(p_masked);
 end
@@ -395,7 +395,7 @@ set(axesH,'YTick',1:length(comps),'YTickLabel',T.y, 'TickDir', 'out')
 colormap(cmap);
 C = colorbar;
 yt = get(C, 'YTick');
-if (strcmpi(threshdesc, 'fdr'))
+if (strcmpi(threshdesc, 'bhfdr'))
     set(C, 'YTick', sort([yt, -fdrlim fdrlim]));
 end
 ylabel(C, '-log_1_0(p-value)', 'Interpreter', 'tex');
@@ -419,7 +419,7 @@ function [p_masked, p]  = get_sig_pvalues(p, thresh, criteria)
 p_masked = thresh;
 if (strcmpi(criteria, 'mafdr'))
     p = mafdr(p);
-elseif(strcmpi(criteria, 'fdr'))
+elseif(strcmpi(criteria, 'bhfdr'))
     p_masked = icatb_fdr(p, thresh);
 end
 

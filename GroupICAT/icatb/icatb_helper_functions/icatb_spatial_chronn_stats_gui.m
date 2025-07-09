@@ -99,7 +99,7 @@ promptPos = get(textH, 'position');
 
 promptPos(1) = promptPos(1) + listboxPos(3) + xOffset;
 promptPos(3) = 0.3;
-icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'popup', 'position', promptPos, 'string', {'fdr', 'MAFDR', 'none'}, ...
+icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'popup', 'position', promptPos, 'string', {'BHFDR', 'MAFDR', 'none'}, ...
     'tag', 'threshdesc', 'fontsize', UI_FS - 1);
 
 %% Add cancel, save and run buttons

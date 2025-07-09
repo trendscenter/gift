@@ -531,7 +531,7 @@ function good_inds = getSignificantVals(ps, thresh, threshdesc)
 
 ps = ps(:);
 
-if (strcmpi(threshdesc, 'fdr'))
+if (strcmpi(threshdesc, 'bhfdr'))
     p_masked = icatb_fdr(ps, thresh);
 else
     p_masked = thresh;

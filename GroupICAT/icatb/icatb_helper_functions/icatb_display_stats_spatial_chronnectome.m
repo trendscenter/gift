@@ -141,7 +141,7 @@ function [p_masked, p]  = get_sig_pvalues(p, thresh, criteria)
 p_masked = thresh;
 if (strcmpi(criteria, 'mafdr'))
     p = mafdr(p);
-elseif(strcmpi(criteria, 'fdr'))
+elseif(strcmpi(criteria, 'bhfdr'))
     p_masked = icatb_fdr(p, thresh);
 end
 
