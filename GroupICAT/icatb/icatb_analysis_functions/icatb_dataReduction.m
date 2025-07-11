@@ -505,7 +505,11 @@ function data = preprocData(fileN, mask_ind, preProcType, precisionType)
 data = icatb_read_data(fileN, [], mask_ind, precisionType);
 
 % Call pre-processing function
-data = icatb_preproc_data(data, preProcType);
+modalityType = icatb_get_modality;
+if ~strcmpi(modalityType, 'conn')
+    % Do not do this if connectivity matrix
+    data = icatb_preproc_data(data, preProcType);
+end
 
 if (~strcmpi(preProcType, 'remove mean per timepoint'))
     % Remove mean per timepoint

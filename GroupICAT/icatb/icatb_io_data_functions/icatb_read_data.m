@@ -72,7 +72,7 @@ if (strcmpi(modalityType, 'conn') && strcmpi(extn, '.mat'))
     end
     
     if (~isempty(mask_ind))
-        data = data(1:length(mask_ind), 1:length(mask_ind));
+        data = data(1:length(mask_ind), 1:size(data,2));
     end
     
     

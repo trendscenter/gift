@@ -399,6 +399,28 @@ function doneCallback(hObject, event_data, handles)
 %% Done callback
 %
 
+%ce 071125 temp code
+  b_vals_ok=0;
+  while b_vals_ok == 0
+    n_pca = input('Number of PCA components?');
+    s_whitening = input('Whitening (Y/N)?', 's');
+    % Check that the entered values are within the range
+    b_vals_ok = 1;
+    if ~strcmpi(s_whitening,'y') & ~strcmpi(s_whitening,'n')
+      fprintf('Whitening has to be (Y)es or (N)o \n');
+      b_vals_ok = 0;
+    end
+    if n_pca < 1 
+      fprintf('Illegal number for the first eigenvalue.\n');
+      b_vals_ok = 0;
+    end
+  end
+  if strcmpi(s_whitening,'y')
+    b_whitening = 1;
+  else
+    b_whitening = 0;
+  end
+
 handles_info = get(handles, 'userdata');
 
 outputDir = handles_info.sesInfo.userInput.pwd;
@@ -437,6 +459,9 @@ conn_type = deblank(connOptions{connVal});
 handles_info.sesInfo.userInput.dataInfo.conn_type = conn_type;
 
 sesInfo = handles_info.sesInfo;
+
+sesInfo.userInput.numComp = n_pca;
+sesInfo.userInput.b_whitening_tmp = b_whitening;
 
 disp('Saving parameters ...');
 param_file = sesInfo.userInput.param_file;

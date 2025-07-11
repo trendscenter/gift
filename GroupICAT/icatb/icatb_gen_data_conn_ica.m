@@ -158,6 +158,8 @@ for nDataset = 1:numOfDataSets
     tmpDat = icatb_read_data(tmpFiles, [], mask_ind);
     tmpDat = tmpDat';
     conn_matrix = icatb_calc_ENLwFC(tmpDat);
+
+    [conn_matrix, dewhiteM] = icatb_calculate_pca(conn_matrix, sesInfo.userInput.numComp, 'type', 'mpowit', 'whiten', sesInfo.userInput.b_whitening_tmp);
     
     outFile = fullfile(outputDir, conn_dir, [prefix, '_sub', icatb_returnFileIndex(subNum), '_s', num2str(sesNum), '_conn_data.mat']);
     disp(['Saving file ', outFile, ' ...']);
