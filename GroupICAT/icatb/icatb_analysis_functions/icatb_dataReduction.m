@@ -141,7 +141,7 @@ end
 intermediatePCA = 1;
 
 %if (~strcmpi(algoName, 'iva-gl') && ~strcmpi(algoName, 'iva-l') && ~strcmpi(algoName, 'iva-l-sos'))
-if (isempty(icatb_findstr(lower(algoName),'iva')))
+if (isempty(icatb_findstr(lower(algoName),'iva')) || strcmpi(modalityType, 'conn'))
     if ((numReductionSteps == 1) && (sesInfo.numOfSub*sesInfo.numOfSess > 1))
         intermediatePCA = 0;
     end

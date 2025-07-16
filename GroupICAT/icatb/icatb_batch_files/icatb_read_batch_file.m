@@ -267,7 +267,8 @@ if (strcmpi(modalityType, 'conn'))
         conn_type = inputData.conn_type;
     catch
     end
-    
+    sesInfo.userInput.numComp = inputData.numComp;
+    sesInfo.userInput.b_whitening_tmp = inputData.b_whitening;
     sesInfo.userInput.dataInfo.conn_type = conn_type;
     sesInfo = icatb_gen_data_conn_ica(sesInfo);
     inputData.maskFile = sesInfo.userInput.maskFile;
@@ -278,6 +279,8 @@ if (strcmpi(modalityType, 'conn'))
     SPMFiles = [];
     diffTimePoints =  repmat(length(sesInfo.userInput.mask_ind), 1, numofDatasets);
     sesInfo.userInput.diffTimePoints = diffTimePoints;
+    %sesInfo.userInput.numComp = numComp;
+    %sesInfo.userInput.b_whitening = b_whitening;
 else
     
     [files, designMatrix, numOfSub, numOfSess, dataSelMethod, diffTimePoints, spmMatFlag] = icatb_dataSelection(...
