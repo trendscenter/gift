@@ -135,7 +135,12 @@ function postprocess_dfnc_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+
+warning off all;
+
 icatb_post_process_dfnc;
+
+warning on;
 
 
 % --- Executes on button press in display.
@@ -182,3 +187,4 @@ function close_menu_Callback(hObject, eventdata, handles)
 
 
 delete(get(0, 'children'));
+
