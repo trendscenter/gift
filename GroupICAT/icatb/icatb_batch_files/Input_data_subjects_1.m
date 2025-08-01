@@ -319,8 +319,11 @@ scaleType = 1;
 % see icatb_icaAlgorithm for details or type icatb_icaAlgorithm at the
 % command prompt.
 % Note: Use only one subject and one session for Semi-blind ICA. Also specify atmost two reference function names
-
-% 1 means infomax, 2 means fastICA, etc.
+% Please note following values only for modalityType = 'fMRI'
+% 1=infomax, 2=fastICA, 3=Erica, 4=Simbec, 5=Evd, 6=Jade Opac, 7=Amuse, ...
+   % 8=SDD ICA, 9=Semi-blind Infomax, 10=Constrained ICA (Spatial), 11=Radical ICA, 12=Combi, 13=ICA-EBM, ...
+   % 14=ERBM, 15=IVA-GL, 16=MOO-ICAR, 17=IVA-L, 18=Sparse ICA-EBM, ...
+   % 19=IVA-L-SOS, 20=IVA-L-SOS-Adaptive, 21=Adaptive Reverse Constrained ICA EBM
 algoType = 1;
 
 
