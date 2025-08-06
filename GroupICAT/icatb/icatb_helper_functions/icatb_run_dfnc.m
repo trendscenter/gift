@@ -220,11 +220,11 @@ numOfSess = sesInfo.numOfSess;
 dfncPrefix = dfncInfo.userInput.prefix;
 
 
-if (strcmpi(doDespike, 'yes') && (tc_filter > 0))
+if (strcmpi(doDespike, 'yes') && min(tc_filter > 0))
     disp('Status check finding despiking and filtering timecourses will be done...');
-elseif (strcmpi(doDespike, 'yes') && (tc_filter == 0))
+elseif (strcmpi(doDespike, 'yes') && min(tc_filter == 0))
     disp('Status check finding despiking timecourses will be done...');
-elseif (strcmpi(doDespike, 'no') && (tc_filter > 0))
+elseif (strcmpi(doDespike, 'no') && min(tc_filter > 0))
     disp('Status check finding filtering timecourses will be done...');
 end
 
