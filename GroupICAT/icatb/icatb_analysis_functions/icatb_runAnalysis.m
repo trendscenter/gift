@@ -103,6 +103,15 @@ try
     end
     
     doSPMStats = 0;
+
+    sar_algolist = (icatb_icaAlgorithm);
+    if strcmpi('iva',sar_algolist(sesInfo.userInput.algorithm,1:3))
+        if (sesInfo.userInput.numOfSub == 1) && (sesInfo.userInput.numOfSess == 1)
+            %If IVA is run with single subject it will run ICA instead
+            disp(['icatb_warn [' char(datetime) '] runAnalysis: IVA cannot be run on single subject so ICA will be performed.']);
+        end
+    end
+
     
     if (strcmpi(modalityType, 'fmri'))
         if (sesInfo.userInput.numOfSub > 1)
