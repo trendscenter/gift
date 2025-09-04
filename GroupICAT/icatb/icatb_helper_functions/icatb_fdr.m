@@ -40,7 +40,7 @@
 % Initial revision
 %
 
-function [pID, pN, p_masked] = fdr(pvals, q);
+function [pID, pN, p_masked] = icatb_fdr(pvals, q)
 
 p = sort(pvals(:));
 V = length(p);
