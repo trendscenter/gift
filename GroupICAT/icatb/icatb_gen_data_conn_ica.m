@@ -121,7 +121,9 @@ sesInfo.userInput.maskFile = tmp_mask_name;
 %% Cleanup temporary batch file
 tmp_batch = fullfile(outputDir, [prefix,  '_gift_batch_file.m']);
 try
-    delete(tmp_batch);
+    if exist(tmp_batch, 'file')
+        delete(tmp_batch);
+    end
 catch
 end
 
@@ -146,7 +148,7 @@ clear files
 mask_ind = find(mask2 ~= 0);
 
 files = repmat(struct('name', []), 1, numOfSub*numOfSess);
-for nDataset = 1:numOfDataSets
+parfor nDataset = 1:numOfDataSets
     
     subNum = ceil(nDataset/numOfSess);
     sesNum = mod(nDataset-1, numOfSess) + 1;
@@ -157,13 +159,19 @@ for nDataset = 1:numOfDataSets
     tmpFiles = sesInfo.userInput.inputFiles(nDataset).name;
     tmpDat = icatb_read_data(tmpFiles, [], mask_ind);
     tmpDat = tmpDat';
-    conn_matrix = icatb_calc_ENLwFC(tmpDat);
+    conn_matrix = icatb_calc_ENLwFC(single(tmpDat));
+
+    outFile = fullfile(outputDir, conn_dir, [prefix, '_sub', icatb_returnFileIndex(subNum), '_s', num2str(sesNum), '_FULL_conn_data.mat']);
+    disp(['Saving file ', outFile, ' ...']);
+    %save(outFile, 'conn_matrix', '-v7.3');
+
 
     [conn_matrix, dewhiteM] = icatb_calculate_pca(conn_matrix, sesInfo.userInput.numComp, 'type', 'mpowit', 'whiten', sesInfo.userInput.b_whitening_tmp);
     
     outFile = fullfile(outputDir, conn_dir, [prefix, '_sub', icatb_returnFileIndex(subNum), '_s', num2str(sesNum), '_conn_data.mat']);
     disp(['Saving file ', outFile, ' ...']);
-    save(outFile, 'conn_matrix');
+    conn_matrix_ = struct('conn_matrix', conn_matrix);
+    save(outFile, '-fromstruct', conn_matrix_);
     disp('Done');
     fprintf('\n');
     
