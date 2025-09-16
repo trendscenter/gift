@@ -141,7 +141,7 @@ end
 intermediatePCA = 1;
 
 %if (~strcmpi(algoName, 'iva-gl') && ~strcmpi(algoName, 'iva-l') && ~strcmpi(algoName, 'iva-l-sos'))
-if (isempty(icatb_findstr(lower(algoName),'iva')))
+if (isempty(icatb_findstr(lower(algoName),'iva')) || strcmpi(modalityType, 'conn'))
     if ((numReductionSteps == 1) && (sesInfo.numOfSub*sesInfo.numOfSess > 1))
         intermediatePCA = 0;
     end
@@ -505,7 +505,11 @@ function data = preprocData(fileN, mask_ind, preProcType, precisionType)
 data = icatb_read_data(fileN, [], mask_ind, precisionType);
 
 % Call pre-processing function
-data = icatb_preproc_data(data, preProcType);
+modalityType = icatb_get_modality;
+if ~strcmpi(modalityType, 'conn')
+    % Do not do this if connectivity matrix
+    data = icatb_preproc_data(data, preProcType);
+end
 
 if (~strcmpi(preProcType, 'remove mean per timepoint'))
     % Remove mean per timepoint

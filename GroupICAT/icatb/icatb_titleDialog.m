@@ -81,10 +81,14 @@ text('units', 'normalized', 'string', 'Group ICA/IVA Toolbox', 'position', title
 % change the position of the text
 titlePos(2) = titlePos(2) - 0.1;
 
+% Caption of the toolbox
+text('units', 'normalized', 'string', 'GroupICAT v4.0c', 'position', titlePos, 'fontsize', subtitleFont, 'HorizontalAlignment', 'center', ...
+    'fontweight', 'normal', 'FontName', UI_FONTNAME, 'parent', axisHandle);
+
 % Display the remaining things like the version number, organization,
 % authors
-giftInfo = {'', '', ['\bfGIFT version: \rm', icatb_version], '', char('\bfAuthors: \rm\bfThe GIFT Team'), ...
-    '', '\bfOrganization: \rmTReNDS Center', '', '\bfWebsite: \rmhttps://trendscenter.org/software'};
+giftInfo = {'', '', ['\bfRelease Date: \rm', num2str('09-Oct-2020')], '', char('\bfAuthors: \rm\bfThe GIFT Team'), ...
+    '', '\bfOrganization: \rmTReNDS Center', '', '\bfWebsite: \rmhttps://trendscenter.org'};
 
 % change the position of the text
 normalPos(2) = titlePos(2) - 0.25;
