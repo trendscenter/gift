@@ -11,7 +11,8 @@ function [ENLwFC] = icatb_calc_ENLwFC(data)
 [nT,nF] = size(data);
 data = zscore(data);
 
-LINwFC = single(corr(data));
+LINwFC = corr(data);
+LINwFC(isnan(LINwFC))=0;
 NLwFC = calc_dcorr(data);
 
 NLwFC = reshape(NLwFC,[nF*nF 1]);
@@ -40,7 +41,6 @@ for ii = 1:nF
 end
 clear X A
 
-Y = single(Y);
 Y = Y'*Y;
 u = sqrt(diag(Y));
 u = u*u';
