@@ -95,163 +95,175 @@ end
 % Parameter 1
 numParameters = 1;
 
-inputText(numParameters).promptString = 'Enter Name(Prefix) Of Output Files';
-inputText(numParameters).answerString = '';
-inputText(numParameters).uiType = 'edit';
-inputText(numParameters).dataType = 'string';
-inputText(numParameters).tag = 'prefix';
-inputText(numParameters).enable = 'on';
-inputText(numParameters).value = 1;
-inputText(numParameters).flag = 'scalar';
-inputText(numParameters).help = struct('title', 'Output Files', 'string', 'All the output files will be preprended with this prefix.');
 
-numParameters = numParameters + 1;
-
-inputText(numParameters).promptString = ['Have You Selected The ', modalityType, ' Data Files?'];
-inputText(numParameters).answerString = 'Select';
-inputText(numParameters).uiType = 'pushbutton';
-inputText(numParameters).dataType = 'string';
-inputText(numParameters).tag = 'files';
-inputText(numParameters).enable = 'on';
-inputText(numParameters).value = 1;
-inputText(numParameters).flag = 'scalar';
-if (~strcmpi(modalityType, 'smri'))
-    if (~strcmpi(modalityType, 'fnc'))
-        inputText(numParameters).help = struct('title', 'Data', 'string', ['There are two ways to select the data. Option one requires a separate directory for each subject and all subject directories are', ...
-            ' stored in one root directory and subjects have the same file pattern. Otherwise use option 2. After the data is selected, *Subject.mat file is created and the component numbers are by default set to 20.']);
-    else
-        inputText(numParameters).help = struct('title', 'Data', 'string', ...
-            'Enter input parameter file containing GIFT analysis. If FNC matrices are selected instead of parameter file, enter matrices for each session. Contrast vector can be specified to subtract sessions or leave empty if you want to average.');
-    end
-else
-    inputText(numParameters).help = struct('title', 'Data', 'string', 'Select all subject images. After the data is selected, *Subject.mat file is created and the component numbers are by default set to 20.');
-end
-
-if (strcmpi(modalityType, 'fmri'))
-    numParameters = numParameters + 1;
+if (~strcmpi(modalityType, 'conn'))
     
-    inputText(numParameters).promptString = 'Enter TR in seconds';
-    inputText(numParameters).answerString = num2str(EXPERIMENTAL_TR);
+    inputText(numParameters).promptString = 'Enter Name(Prefix) Of Output Files';
+    inputText(numParameters).answerString = '';
     inputText(numParameters).uiType = 'edit';
-    inputText(numParameters).dataType = 'numeric';
-    inputText(numParameters).tag = 'TR';
+    inputText(numParameters).dataType = 'string';
+    inputText(numParameters).tag = 'prefix';
     inputText(numParameters).enable = 'on';
     inputText(numParameters).value = 1;
     inputText(numParameters).flag = 'scalar';
-    inputText(numParameters).help = struct('title', 'Experimental TR', 'string', ...
-        'Enter TR in seconds. If you have different TRs per subject, enter in a row vector like 2, 1.5, etc.');
-end
-
-
-if (~strcmpi(modalityType, 'fnc'))
+    inputText(numParameters).help = struct('title', 'Output Files', 'string', 'All the output files will be preprended with this prefix.');
     
+    numParameters = numParameters + 1;
+    
+    inputText(numParameters).promptString = ['Have You Selected The ', modalityType, ' Data Files?'];
+    inputText(numParameters).answerString = 'Select';
+    inputText(numParameters).uiType = 'pushbutton';
+    inputText(numParameters).dataType = 'string';
+    inputText(numParameters).tag = 'files';
+    inputText(numParameters).enable = 'on';
+    inputText(numParameters).value = 1;
+    inputText(numParameters).flag = 'scalar';
     if (~strcmpi(modalityType, 'smri'))
-        
-        numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
-        inputText(numParameters).answerString = char(icatb_preproc_data);
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).dataType = 'string';
-        inputText(numParameters).tag = 'preproc_type';
-        inputText(numParameters).enable = 'on';
-        inputText(numParameters).value = preproc_default;
-        inputText(numParameters).flag = 'scalar';
-        inputText(numParameters).help = struct('title', 'Pre-processing', 'string', char('Data is pre-processed prior to the first data reduction. Options are discussed below:', '1) Remove Mean Per Timepoint - At each time point, image mean is removed.', ...
-            '2) Remove Mean Per Voxel - Time-series mean is removed at each voxel', '3) Intensity Normalization - At each voxel, time-series is scaled to have a mean of 100. Since the data is already scaled to percent signal change, there is no need to scale the components.', ...
-            '4) Variance Normalization - At each voxel, time-series is linearly detrended and converted to Z-scores.'));
-        
-        
+        if (~strcmpi(modalityType, 'fnc'))
+            inputText(numParameters).help = struct('title', 'Data', 'string', ['There are two ways to select the data. Option one requires a separate directory for each subject and all subject directories are', ...
+                ' stored in one root directory and subjects have the same file pattern. Otherwise use option 2. After the data is selected, *Subject.mat file is created and the component numbers are by default set to 20.']);
+        else
+            inputText(numParameters).help = struct('title', 'Data', 'string', ...
+                'Enter input parameter file containing GIFT analysis. If FNC matrices are selected instead of parameter file, enter matrices for each session. Contrast vector can be specified to subtract sessions or leave empty if you want to average.');
+        end
     else
-        
+        inputText(numParameters).help = struct('title', 'Data', 'string', 'Select all subject images. After the data is selected, *Subject.mat file is created and the component numbers are by default set to 20.');
+    end
+    
+    if (strcmpi(modalityType, 'fmri'))
         numParameters = numParameters + 1;
         
-        inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
-        inputText(numParameters).answerString = char('Remove Mean Per Subject', 'None');
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).dataType = 'string';
-        inputText(numParameters).tag = 'preproc_type';
+        inputText(numParameters).promptString = 'Enter TR in seconds';
+        inputText(numParameters).answerString = num2str(EXPERIMENTAL_TR);
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'TR';
         inputText(numParameters).enable = 'on';
         inputText(numParameters).value = 1;
         inputText(numParameters).flag = 'scalar';
-        inputText(numParameters).help = struct('title', 'Pre-processing', 'string', 'Option is provided to remove voxel mean for each subject or skip the mean removal prior to PCA step.');
+        inputText(numParameters).help = struct('title', 'Experimental TR', 'string', ...
+            'Enter TR in seconds. If you have different TRs per subject, enter in a row vector like 2, 1.5, etc.');
+    end
+    
+    
+    if (~strcmpi(modalityType, 'fnc'))
+        
+        if (~strcmpi(modalityType, 'smri'))
+            
+            numParameters = numParameters + 1;
+            
+            inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
+            inputText(numParameters).answerString = char(icatb_preproc_data);
+            inputText(numParameters).uiType = 'popup';
+            inputText(numParameters).dataType = 'string';
+            inputText(numParameters).tag = 'preproc_type';
+            inputText(numParameters).enable = 'on';
+            inputText(numParameters).value = preproc_default;
+            inputText(numParameters).flag = 'scalar';
+            inputText(numParameters).help = struct('title', 'Pre-processing', 'string', char('Data is pre-processed prior to the first data reduction. Options are discussed below:', '1) Remove Mean Per Timepoint - At each time point, image mean is removed.', ...
+                '2) Remove Mean Per Voxel - Time-series mean is removed at each voxel', '3) Intensity Normalization - At each voxel, time-series is scaled to have a mean of 100. Since the data is already scaled to percent signal change, there is no need to scale the components.', ...
+                '4) Variance Normalization - At each voxel, time-series is linearly detrended and converted to Z-scores.'));
+            
+            
+        else
+            
+            numParameters = numParameters + 1;
+            
+            inputText(numParameters).promptString =  'Select Type Of Data Pre-processing';
+            inputText(numParameters).answerString = char('Remove Mean Per Subject', 'None');
+            inputText(numParameters).uiType = 'popup';
+            inputText(numParameters).dataType = 'string';
+            inputText(numParameters).tag = 'preproc_type';
+            inputText(numParameters).enable = 'on';
+            inputText(numParameters).value = 1;
+            inputText(numParameters).flag = 'scalar';
+            inputText(numParameters).help = struct('title', 'Pre-processing', 'string', 'Option is provided to remove voxel mean for each subject or skip the mean removal prior to PCA step.');
+            
+        end
         
     end
     
-end
-
-if (~(strcmpi(modalityType, 'eeg') || strcmpi(modalityType, 'fnc')))
+    if (~(strcmpi(modalityType, 'eeg') || strcmpi(modalityType, 'fnc')))
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString =  'What Mask Do You Want To Use?';
+        inputText(numParameters).answerString =  char('Default Mask', 'Average Mask', 'Select Mask', 'Default&ICV');
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'maskFile';
+        inputText(numParameters).enable = 'on';
+        inputText(numParameters).value = 1;
+        inputText(numParameters).flag = 'scalar';
+        
+        if (strcmpi(modalityType, 'fmri'))
+            inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Mask is calculated using all the files for subjects and sessions or only the first file for each subject and session depending upon the variable DEFAULT_MASK_OPTION value in defaults. Boolean AND operation is done to include the voxels that surpass the mean of each subject''s session.', ...
+                '2) Average Mask - An average mask is generated and subjects below a certain correlation threshold are excluded from the analysis. At the end of the mask generation, a GIFT batch file is created which can be used to run the group ICA.', ...
+                '3) Select Mask - Masks must be in Analyze or Nifti format.', ...
+                '4) Default & ICV Mask - This is same processing as Default Mask, with additional masking using SPMs intracranial volume mask (mask_ICV.nii) to remove eye artifacts'));
+        else
+            inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Default mask includes voxels greater than or equal to 1% of mean.', ...
+                '2) Average Mask - An average mask is generated and subjects below a certain correlation threshold are excluded from the analysis. At the end of the mask generation, a GIFT batch file is created which can be used to run the group ICA.', ...
+                '3) Select Mask - Masks must be in Analyze or Nifti format.', ...
+                '4) Default & ICV Mask - This is same processing as Default Mask, with additional masking using SPMs intracranial volume mask (mask_ICV.nii) to remove eye artifacts'));
+        end
+        
+        
+    end
     
-    numParameters = numParameters + 1;
-    
-    inputText(numParameters).promptString =  'What Mask Do You Want To Use?';
-    inputText(numParameters).answerString =  char('Default Mask', 'Average Mask', 'Select Mask', 'Default&ICV');
-    inputText(numParameters).uiType = 'popup';
-    inputText(numParameters).dataType = 'string';
-    inputText(numParameters).tag = 'maskFile';
-    inputText(numParameters).enable = 'on';
-    inputText(numParameters).value = 1;
-    inputText(numParameters).flag = 'scalar';
-    
-    if (strcmpi(modalityType, 'fmri'))
-        inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Mask is calculated using all the files for subjects and sessions or only the first file for each subject and session depending upon the variable DEFAULT_MASK_OPTION value in defaults. Boolean AND operation is done to include the voxels that surpass the mean of each subject''s session.', ...
-            '2) Average Mask - An average mask is generated and subjects below a certain correlation threshold are excluded from the analysis. At the end of the mask generation, a GIFT batch file is created which can be used to run the group ICA.', ...
-            '3) Select Mask - Masks must be in Analyze or Nifti format.', ...
-            '4) Default & ICV Mask - This is same processing as Default Mask, with additional masking using SPMs intracranial volume mask (mask_ICV.nii) to remove eye artifacts'));
-    else
-        inputText(numParameters).help = struct('title', 'Mask', 'string', char('1) Default Mask - Default mask includes voxels greater than or equal to 1% of mean.', ...
-            '2) Average Mask - An average mask is generated and subjects below a certain correlation threshold are excluded from the analysis. At the end of the mask generation, a GIFT batch file is created which can be used to run the group ICA.', ...
-            '3) Select Mask - Masks must be in Analyze or Nifti format.', ...
-            '4) Default & ICV Mask - This is same processing as Default Mask, with additional masking using SPMs intracranial volume mask (mask_ICV.nii) to remove eye artifacts'));
+    if ~(strcmpi(modalityType, 'fnc'))
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString =  'Select Type Of PCA';
+        inputText(numParameters).answerString = char(icatb_pca_options);
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'pcaType';
+        inputText(numParameters).enable = 'on';
+        inputText(numParameters).value = pca_default;
+        inputText(numParameters).flag = 'scalar';
+        inputText(numParameters).userdata = [];
+        inputText(numParameters).help = struct('title', 'PCA', 'string', char('There are five options like Standard, Expectation Maximization, SVD, MPOWIT and STP.', ...
+            '1) Standard - Eigen value decomposition method is used to determine dominant components of interest', ...
+            '2) Expectation Maximization - Expectation maximization method involves expectation and maximization steps to determine PCA components. It has fewer memory requirements but can be very slow if EM PCA is solved by loading data-set at a time. It is preferred to use MPOWIT method for faster convergence.', ...
+            '3) SVD - Singular value decomposition', ...
+            '4) MPOWIT - Multi power iteration method accelerates subspace iteration method to determine dominant components. MPOWIT converges in only a few iterations and is very useful when large data needs to be analyzed', ...
+            '5) STP - Subsampled time pca method is a variation of 3 step pca method which involves grouping subjects into groups and retaining intermediate components which are usually higher than the final number of components estimated'));
+        
     end
     
     
-end
-
-if ~(strcmpi(modalityType, 'fnc'))
-    numParameters = numParameters + 1;
     
-    inputText(numParameters).promptString =  'Select Type Of PCA';
-    inputText(numParameters).answerString = char(icatb_pca_options);
-    inputText(numParameters).uiType = 'popup';
-    inputText(numParameters).dataType = 'string';
-    inputText(numParameters).tag = 'pcaType';
-    inputText(numParameters).enable = 'on';
-    inputText(numParameters).value = pca_default;
-    inputText(numParameters).flag = 'scalar';
-    inputText(numParameters).userdata = [];
-    inputText(numParameters).help = struct('title', 'PCA', 'string', char('There are five options like Standard, Expectation Maximization, SVD, MPOWIT and STP.', ...
-        '1) Standard - Eigen value decomposition method is used to determine dominant components of interest', ...
-        '2) Expectation Maximization - Expectation maximization method involves expectation and maximization steps to determine PCA components. It has fewer memory requirements but can be very slow if EM PCA is solved by loading data-set at a time. It is preferred to use MPOWIT method for faster convergence.', ...
-        '3) SVD - Singular value decomposition', ...
-        '4) MPOWIT - Multi power iteration method accelerates subspace iteration method to determine dominant components. MPOWIT converges in only a few iterations and is very useful when large data needs to be analyzed', ...
-        '5) STP - Subsampled time pca method is a variation of 3 step pca method which involves grouping subjects into groups and retaining intermediate components which are usually higher than the final number of components estimated'));
+    
+    
+    if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc')))
+        
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString =  'Select Type Of Group PCA';
+        inputText(numParameters).answerString = groupPCAOpts;
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'group_pca_type';
+        inputText(numParameters).enable = 'on';
+        inputText(numParameters).value = group_pca_default;
+        inputText(numParameters).flag = 'scalar';
+        if strcmpi(modalityType, 'fmri')
+            inputText(numParameters).help = struct('title', 'Group PCA Type', 'string', char('1.) Subject Specific - PCA is done on each dataset before doing group PCA.', ...
+                '2.) Grand Mean - Each dataset is projected on to the eigen space of the mean of all datasets before doing group PCA. Please make sure that you have selected equal no. of timepoints between datasets.'));
+        else
+            inputText(numParameters).help = struct('title', 'Group PCA Type', 'string', char('1.) Subject Specific - PCA is done on each dataset before doing group PCA.', ...
+                '2.) Grand Mean - Each dataset is projected on to the eigen space of the mean of all datasets before doing group PCA. Please make sure that you have selected equal no. of electrodes between datasets.'));
+        end
+        
+        numParameters = numParameters + 1;
+        
+    end
     
 end
 
 if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc')))
-    
-    
-    numParameters = numParameters + 1;
-    
-    inputText(numParameters).promptString =  'Select Type Of Group PCA';
-    inputText(numParameters).answerString = groupPCAOpts;
-    inputText(numParameters).uiType = 'popup';
-    inputText(numParameters).dataType = 'string';
-    inputText(numParameters).tag = 'group_pca_type';
-    inputText(numParameters).enable = 'on';
-    inputText(numParameters).value = group_pca_default;
-    inputText(numParameters).flag = 'scalar';
-    if strcmpi(modalityType, 'fmri')
-        inputText(numParameters).help = struct('title', 'Group PCA Type', 'string', char('1.) Subject Specific - PCA is done on each dataset before doing group PCA.', ...
-            '2.) Grand Mean - Each dataset is projected on to the eigen space of the mean of all datasets before doing group PCA. Please make sure that you have selected equal no. of timepoints between datasets.'));
-    else
-        inputText(numParameters).help = struct('title', 'Group PCA Type', 'string', char('1.) Subject Specific - PCA is done on each dataset before doing group PCA.', ...
-            '2.) Grand Mean - Each dataset is projected on to the eigen space of the mean of all datasets before doing group PCA. Please make sure that you have selected equal no. of electrodes between datasets.'));
-    end
-    
-    numParameters = numParameters + 1;
-    
     inputText(numParameters).promptString =  'Select The Backreconstruction Type';
     inputText(numParameters).answerString =  backReconOptions;
     inputText(numParameters).uiType = 'popup';
@@ -281,6 +293,7 @@ end
 
 numParameters = numParameters + 1;
 
+
 inputText(numParameters).promptString = 'Do You Want To Scale The Results?';
 inputText(numParameters).answerString = scaleOptions;
 inputText(numParameters).uiType = 'popup';
@@ -297,7 +310,7 @@ if strcmpi(modalityType, 'fmri')
         '3) Scaling in Timecourses - Normalize spatial maps using maximum value (not absolute value) and apply it to timecourses.', ...
         '4) Scaling in Maps and Timecourses - Spatial maps are scaled using the standard deviation of timecourses and timecourses are scaled using the maximum spatial intensity value.'));
     
-elseif (strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc'))
+elseif (strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc') ||  strcmpi(modalityType, 'conn'))
     
     inputText(numParameters).help = struct('title', 'Scaling', 'string', 'Z-scores - Components are scaled to z-scores.');
     
@@ -376,7 +389,7 @@ if (strcmpi(modalityType, 'fmri'))
         '2) Temporal ICA - Independent components are determined by maximizing independence in time.'));
 end
 
-if (~strcmpi(modalityType, 'fnc'))
+if (~(strcmpi(modalityType, 'fnc')))
     numParameters = numParameters + 1;
     
     inputText(numParameters).promptString =  'How Many Data Reduction(PCA) Steps Do You Want To Run?';
@@ -436,7 +449,22 @@ inputText(numParameters).value = 1;
 inputText(numParameters).flag = 'scalar';
 inputText(numParameters).help = struct('title', 'IC', 'string', compMessage);
 
-if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc')))
+
+if (strcmpi(modalityType, 'conn'))
+    numParameters = numParameters + 1;
+    
+    inputText(numParameters).promptString =  'PC Multiplier';
+    inputText(numParameters).answerString =  '1.5';
+    inputText(numParameters).uiType = 'edit';
+    inputText(numParameters).dataType = 'string';
+    inputText(numParameters).tag = 'pc_multiplier';
+    inputText(numParameters).enable = 'on';
+    inputText(numParameters).value = 1;
+    inputText(numParameters).flag = 'scalar';
+    inputText(numParameters).help = struct('title', 'PC Multiplier', 'string', 'Number of components in the First PCA step is equal to PC multiplier applied on number of IC');
+end
+
+if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc') || strcmpi(modalityType, 'conn')))
     numParameters = numParameters + 1;
     
     inputText(numParameters).promptString =  'Do you want to autofill data reduction values?';
@@ -467,7 +495,7 @@ inputText(numParameters).help = struct('title', 'Stability Analysis Type', 'stri
     '4) Cross ISI - Cross ISI measures the distance between a pair of ICA solutions. The most consistent run is selected as the run with highest average cross ISI.'));
 
 
-if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc')))
+if (~(strcmpi(modalityType, 'smri') || strcmpi(modalityType, 'fnc') ))
     numParameters = numParameters + 1;
     
     inputText(numParameters).promptString =  'How do you want to run Group ICA?';

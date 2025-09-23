@@ -96,68 +96,52 @@ function done_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-results.b_chk_ena_stateguided = get(handles.tag_chk_ena_stateguided,'Value');
-results.b_chk_ena_statebased = get(handles.tag_chk_ena_statebased,'Value');
-results.b_chk_ena_metastate = get(handles.tag_chk_ena_metastate,'Value');
 
-if ~( results.b_chk_ena_stateguided || results.b_chk_ena_statebased || results.b_chk_ena_metastate )
-    msgH = msgbox('Please enable at least one post-processing type', 'Validation of Selection', 'modal');
-    waitfor(msgH);
-else
+results.regressCovFile = get(handles.regress_covariates, 'userdata');
 
-    results.regressCovFile = get(handles.regress_covariates, 'userdata');
-    
-    % State Based
-    results.tag_chk_ena_statebased = handles.tag_chk_ena_statebased;
-    opts = cellstr(get(handles.estimate_clusters, 'string'));
-    val = get(handles.estimate_clusters, 'value');
-    results.estimate_clusters = lower(deblank(opts{val}));
-    results.num_clusters = str2num(deblank(get(handles.num_clusters, 'string')));
-    results.num_comps_ica = str2num(deblank(get(handles.num_comps_ica, 'string')));
-    
-    opts = cellstr(lower(get(handles.ica_algorithm, 'string')));
-    val = get(handles.ica_algorithm, 'value');
-    results.ica_algorithm = opts{val};
-    
-    results.num_ica_runs = str2num(deblank(get(handles.num_ica_runs, 'string')));
-    results.kmeans_max_iter = handles.kmeans_max_iter; %str2num(deblank(get(handles.kmeans_max_iter, 'string')));
-    
-    % opts = cellstr(lower(get(handles.dmethod, 'string')));
-    % val = get(handles.dmethod, 'value');
-    results.dmethod = handles.dmethod; %opts{val};
-    results.kmeans_num_replicates = handles.kmeans_num_replicates;
-    results.num_tests_est_clusters = handles.num_tests_est_clusters;
-    results.kmeans_start = handles.kmeans_start;
-    
-    results.ref_chk_ena_stateguided = get(handles.tag_chk_ena_stateguided,'Value');
-    results.ref_spat_dfnc_calib_tf = get(handles.tag_ref_spat_dfnc_calib_tf,'Value');
-    results.tag_edt_stateguided_numcomps = num2str(get(handles.tag_edt_stateguided_numcomps,'String'));
-    
-    use_tall_array = 'no';
-    try
-        results.use_tall_array = handles.use_tall_array;
-    catch
-    end
-    
-    if (strcmpi(results.kmeans_start, 'user input'))
-        results.Cp = handles.Cp;
-        if (results.num_clusters ~= size(results.Cp, 1))
-            warning('No of rows in the initial centroids passed doesn''t match the number of clusters entered');
-            disp('Changing number of centroids to the no of rows in the initial centroids');
-            results.num_clusters = size(results.Cp, 1);
-        end
-    end
-    
-    opts = cellstr(lower(get(handles.meta_method, 'string')));
-    val = get(handles.meta_method, 'value');
-    results.meta_method = opts{val};
-    
-    setappdata(0, 'pdFNCAppData', results);
-    
-    delete(gcbf);
-    
-    drawnow;
+opts = cellstr(get(handles.estimate_clusters, 'string'));
+val = get(handles.estimate_clusters, 'value');
+results.estimate_clusters = lower(deblank(opts{val}));
+results.num_clusters = str2num(deblank(get(handles.num_clusters, 'string')));
+results.num_comps_ica = str2num(deblank(get(handles.num_comps_ica, 'string')));
+
+opts = cellstr(lower(get(handles.ica_algorithm, 'string')));
+val = get(handles.ica_algorithm, 'value');
+results.ica_algorithm = opts{val};
+
+results.num_ica_runs = str2num(deblank(get(handles.num_ica_runs, 'string')));
+results.kmeans_max_iter = handles.kmeans_max_iter; %str2num(deblank(get(handles.kmeans_max_iter, 'string')));
+
+% opts = cellstr(lower(get(handles.dmethod, 'string')));
+% val = get(handles.dmethod, 'value');
+results.dmethod = handles.dmethod; %opts{val};
+results.kmeans_num_replicates = handles.kmeans_num_replicates;
+results.num_tests_est_clusters = handles.num_tests_est_clusters;
+results.kmeans_start = handles.kmeans_start;
+use_tall_array = 'no';
+try
+    results.use_tall_array = handles.use_tall_array;
+catch
 end
+
+if (strcmpi(results.kmeans_start, 'user input'))
+    results.Cp = handles.Cp;
+    if (results.num_clusters ~= size(results.Cp, 1))
+        warning('No of rows in the initial centroids passed doesn''t match the number of clusters entered');
+        disp('Changing number of centroids to the no of rows in the initial centroids');
+        results.num_clusters = size(results.Cp, 1);
+    end
+end
+
+opts = cellstr(lower(get(handles.meta_method, 'string')));
+val = get(handles.meta_method, 'value');
+results.meta_method = opts{val};
+
+setappdata(0, 'pdFNCAppData', results);
+
+delete(gcbf);
+
+drawnow;
 
 
 % --- Executes on selection change in regress_covariates.
@@ -425,13 +409,12 @@ function help_regress_cov_Callback(hObject, eventdata, handles)
 % hObject    handle to help_regress_cov (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 msgH = msgbox(['Variance associated with the covariates will be regressed out from the windowed dFNC correlations. ', ...
     'You could select reduced model from mancova (fnc_stats/*results*fnc*mat) or continuous covariates in a single ascii file.'], 'Regress covariates', 'modal');
 waitfor(msgH);
 
 function handles = setFieldVals(handles, dfncInfo)
-
-%TReNDS default initiations
 
 if (~isempty(dfncInfo.regressCovFile))
     set(handles.regress_covariates, 'value', 2);
@@ -460,11 +443,6 @@ handles.dmethod = lower(deblank(dfncInfo.dmethod));
 kmeans_num_replicates = 5;
 try
     kmeans_num_replicates = dfncInfo.kmeans_num_replicates;
-catch
-end
-
-try
-    handles.tag_edt_stateguided_numcomps.String = num2str(dfncInfo.tag_edt_stateguided_numcomps);
 catch
 end
 
@@ -676,103 +654,3 @@ if (~isempty(answers))
     guidata(handles.post_process_dfnc, handles);
     
 end
-
-% --- Executes on button press.
-function but_help_ref_spat_dfnc_Callback(hObject, eventdata, handles)
-% hObject    handle to help_meta_method (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-msgH = msgbox('Saves back reconstructed state guided dFNC as variables sica_br and sica_calib in files named {prefix}_dfnc_sub_xxx_sess_yyy_results.mat', 'Reference Guided Spatial Constrained dFNC', 'modal');
-waitfor(msgH);
-
-function tag_ref_spat_dfnc_calib_tf_Callback(hObject, eventdata, handles)
-% hObject    handle to help_meta_method (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% --- Executes on button press in tag_chk_ena_stateguided.
-function tag_chk_ena_stateguided_Callback(hObject, eventdata, handles)
-% hObject    handle to tag_chk_ena_stateguided (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-if get(hObject,'Value') 
-    % tag_chk_ena_stateguided = true
-    b_enable_stateguided = 1;
-else
-    % tag_chk_ena_stateguided = False
-    b_enable_stateguided = 0;
-end
-
-fun_visible('tag_ref_spat_dfnc_calib_tf', b_enable_stateguided);
-fun_visible('text22', b_enable_stateguided);
-fun_visible('tag_edt_stateguided_numcomps', b_enable_stateguided);
-
-% --- Executes on button press in tag_chk_ena_statebased.
-function tag_chk_ena_statebased_Callback(hObject, eventdata, handles)
-% hObject    handle to tag_chk_ena_statebased (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-    
-    if get(hObject,'Value') 
-        % tag_chk_ena_statbased = true
-        b_enable_vis = 1;
-    else
-        % tag_chk_ena_statbased = False
-        b_enable_vis = 0;
-    end
-    
-    fun_visible('text5', b_enable_vis);
-    fun_visible('estimate_clusters', b_enable_vis);
-    fun_visible('num_clusters_txt', b_enable_vis);
-    fun_visible('num_clusters', b_enable_vis);
-
-
-
-% --- Executes on button press in tag_chk_ena_metastate.
-function tag_chk_ena_metastate_Callback(hObject, eventdata, handles)
-% hObject    handle to tag_chk_ena_metastate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-    if get(hObject,'Value') 
-        % tag_chk_ena_statbased = true
-        b_enable_vis = 1;
-    else
-        % tag_chk_ena_statbased = False
-        b_enable_vis = 0;
-    end
-    
-    fun_visible('text8', b_enable_vis);
-    fun_visible('num_comps_ica', b_enable_vis);
-    fun_visible('text16', b_enable_vis);
-    fun_visible('meta_method', b_enable_vis);
-    fun_visible('text9', b_enable_vis);
-    fun_visible('ica_algorithm', b_enable_vis);
-    fun_visible('text10', b_enable_vis);
-    fun_visible('num_ica_runs', b_enable_vis);
-
-function fun_visible(s_tag_obj, b_visible)
-
-    h_tag = findobj(gcbf, 'tag', s_tag_obj);
-    h_tag.Visible = b_visible;
-
-
-% --- Executes during object creation, after setting all properties.
-function tag_edt_stateguided_numcomps_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to tag_edt_stateguided_numcomps (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes on button press in tag_chk_ena_metastate.
-function tag_edt_stateguided_numcomps_Callback(hObject, eventdata, handles)
-% hObject    handle to tag_chk_ena_metastate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)

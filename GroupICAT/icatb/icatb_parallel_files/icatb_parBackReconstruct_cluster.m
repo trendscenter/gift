@@ -59,6 +59,13 @@ end
 
 meanMap = zeros(numComp, length(mask_ind));
 
+tmpMaskInd = mask_ind;
+
+if strcmpi(modalityType, 'conn')
+    tmpMaskInd = (1:length(sesInfo.userInput.mask_ind));
+end
+
+
 %% Loop over files
 parfor nDataSet = 1:length(dataSetsToRun)
     
@@ -76,7 +83,7 @@ parfor nDataSet = 1:length(dataSetsToRun)
     end
     
     % Read data
-    data = icatb_read_data(char(tmpFiles(nSet).name), [], mask_ind);
+    data = icatb_read_data(char(tmpFiles(nSet).name), [], tmpMaskInd);
     
     % Call pre-processing function
     data = icatb_preproc_data(data, preproc_type, verbose);

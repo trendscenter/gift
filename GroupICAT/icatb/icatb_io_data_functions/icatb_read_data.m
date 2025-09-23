@@ -19,6 +19,9 @@ if (iscell(P))
     P = char(P);
 end
 
+modalityType = icatb_get_modality;
+
+
 if (~exist('file_numbers', 'var'))
     file_numbers = [];
 end
@@ -51,6 +54,32 @@ end
 first_file = deblank(P(1, :));
 first_file = icatb_parseExtn(first_file);
 [pp, fileN, extn] = fileparts(first_file);
+
+
+if (strcmpi(modalityType, 'conn') && strcmpi(extn, '.mat'))
+    if (isempty(varToLoad))
+        dataInfo = load(deblank(P));
+    else
+        dataInfo = load(deblank(P), varToLoad);
+    end
+    %dataInfo = load(deblank(P));
+    fieldN = fieldnames(dataInfo);
+    data = getfield(dataInfo, fieldN{1});
+    if strcmpi(precisionType, 'single')
+        data = single(data);
+    else
+        data = double(data);
+    end
+    
+    if (~isempty(mask_ind))
+        data = data(1:length(mask_ind), 1:size(data,2));
+    end
+    
+    
+    HInfo = [];
+    XYZ = [];
+    return;
+end
 
 
 %% For EEG data

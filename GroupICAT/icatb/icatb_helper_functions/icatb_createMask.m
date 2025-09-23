@@ -60,7 +60,7 @@ countN = 0;
 
 %% Mask type
 if strcmpi(maskType, 'default')
-    if strcmpi(modalityType, 'fmri')
+    if strcmpi(modalityType, 'fmri') || strcmpi(modalityType, 'conn')
         if strcmpi(defaultMaskOption, 'all_files')
             disp('Default mask includes voxels >= mean. Using all files of the subjects to create default mask ...');
         else
@@ -79,7 +79,7 @@ end
 %% Default mask
 if strcmpi(maskType, 'default')
     
-    if strcmpi(modalityType, 'fmri')
+    if strcmpi(modalityType, 'fmri') || strcmpi(modalityType, 'conn')
         
         %% Loop over number of files
         for i = 1:length(files)
