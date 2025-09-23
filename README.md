@@ -1,11 +1,11 @@
 # GIFT 
 <!-- PLEASE DO NOT EDIT THIS LINE OR LINE BELOW -->
-### Group ICA/IVA software (MATLAB) v4.0.5.22
+### Group ICA/IVA software (MATLAB) v4.0.6.10
 <!-- PLEASE DO NOT EDIT ABOVE THIS LINE -->
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Announcements
 - Apple Silicon! If your Apple Silicon computer (M1, M2, M3 or M4) gives you errors you may need to unquarantine your mex files by doing following from a Mac terminal:
-cd /my/software/folder/gift/GroupICAT/icatb && find . -iname "*.mexmaca64" -exec xattr -d com.apple.quarantine {} \\; && find . -iname "*.mexmaci64" -exec xattr -d com.apple.quarantine {} \\;
+cd /my/software/folder/gift/GroupICAT/icatb && find . -iname "\*.mexmaca64" -exec xattr -d com.apple.quarantine {} \\; && find . -iname "\*.mexmaci64" -exec xattr -d com.apple.quarantine {} \\;
 - GIFT v4.0.5.14 (10/31/2024) slightly modified the dFNC and MANCOVAN processing order, now having the following steps: 1) detrending, 2) regressing out confounds, 3) despiking, 4) filtering.
 ### Table of Contents
 1. [Introduction](#secIntro)
@@ -15,9 +15,10 @@ cd /my/software/folder/gift/GroupICAT/icatb && find . -iname "*.mexmaca64" -exec
 5. [Version Compatability](#verComp)
 6. [Toolboxes and Features added to GIFT](#secTools)
 	1. [Mancovan](#secToolMan)
-	2. [NBiC](#secToolNbic)
- 	3. [Noise Cloud](#secToolNoise)
-  	4. [Autolabeller](#secToolAutolabeller) 
+ 	2. [EEGIFT](#secToolEEGIFT)
+	3. [NBiC](#secToolNbic)
+ 	4. [Noise Cloud](#secToolNoise)
+  	5. [Autolabeller](#secToolAutolabeller) 
 7. [Documentation/Manual](#manual)
 8. [FAQ](#faq)
 9. [Version History](#secVerHist)
@@ -63,6 +64,9 @@ to determine the significant covariates which are later used in the univariate t
 To invoke the toolbox, select â€œMancovanâ€? under â€œToolboxesâ€? menu (Figure 3.2). You could also
 invoke toolbox using mancovan_toolbox at the command prompt. Mancovan toolbox (Figure 3.38)
 is divided into four parts like create design matrix, setup features, run mancova and display.
+#### EEGIFT <a name="secToolEEGIFT"></a>
+[Click here for EEGIFT documentation](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/eegift/docs/v1.0c_EEGIFT_Walk_Through.pdf)
+
 #### N-BiC <a name="secToolNbic"></a>
 NBiC toolbox is based on the 2020 publication "N-BiC: A Method for Multi-Component and Symptom Biclustering of Structural MRI Data: Application to Schizophrenia" (Md Abdur Rahaman , Jessica A. Turner, Cota Navin Gupta, Srinivas Rachakonda, Jiayu Chen , Jingyu Liu , Theo G. M. van Erp, Steven Potkin, Judith Ford, Daniel Mathalon, Hyo Jong Lee, Wenhao Jiang, Bryon A. Mueller, Ole Andreassen, Ingrid Agartz, Scott R. Sponheim , Andrew R. Mayer, Julia Stephen , Rex E. Jung, Jose Canive, Juan Bustillo, and Vince D. Calhoun). This toolbox works on MATLAB versions greater than R2008a. [Click here for more info](https://github.com/trendscenter/gift/blob/master/GroupICAT/icatb/toolbox/nbic/README.md).
 #### Noise Cloud <a name="secToolNoise"></a>
