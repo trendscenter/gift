@@ -290,7 +290,7 @@ if (nargin > 0 && nargin <= 3)
                 ref_data = tmp';
             end
             [icasig_tmp, A] = icatb_gigicar(data, ref_data);
-            W = pinv(W);
+            W = pinv(W); % Just checking W exists as a filler here. Reconstruction of timecourses are done in the algorithm itself. 
             
             
         case 'iva-l'
@@ -500,4 +500,5 @@ else
     end
 end
 ICA_Options{end + 1} = 'initW';
+
 ICA_Options{end + 1} = W;
