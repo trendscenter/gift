@@ -113,5 +113,12 @@ switch lower(selectedString)
     case {'spatial dynamics hierarchy', 'sdh'}
         % Spatial dynamics hierarchy
         icatb_setup_sdh;
+    case 'greedy sort components'
+        % Greedy Sort Components
+
+        sesInfo = icatb_get_param(); % Gets parameter file through GUI
+        oc_sort = icatb_cls_greedy_sort_components(sesInfo); %initiates class
+        oc_sort.mpr_dialog % engages greedy sort
+
 end
 % end for switch
