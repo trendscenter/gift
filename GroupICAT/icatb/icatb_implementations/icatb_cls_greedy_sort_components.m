@@ -1,39 +1,27 @@
 classdef icatb_cls_greedy_sort_components < handle
-    % Date 9/26/25
+    % Date 9/30/25
     % Cyrus Eierud
-    % Code that greedily finds best correlated matches between your
+    % Code that greedily sorts the best correlated matches between your
     % components and a template
     % Example to calcuate and save state guided ICA:
-    %ce092925 %       oc_sgica = icatb_cls_sgica(dfncInfo);
-    %       oc_sgica = oc_sgica.set_s_outputDir(outputDir);
-    %       oc_sgica = oc_sgica.set_input_FNCdynflat(FNCdynflat);
-    %       n_ret = oc_sgica.calc_save;
-    % Example to return the report data in structure variable:
-    %       oc_sgica = icatb_cls_sgica(dfncInfo);
-    %       oc_sgica = oc_sgica.set_s_outputDir(outputDir); 
+    %    oc_sort = icatb_cls_greedy_sort_components(sesInfo); %sesInfo structure holds param file info
+    %    oc_sort.mpr_dialog % engages greedy sort
     
     properties
         stru_sesInfo % parameter file
         s_mask % mask used to remove non brain voxels
         s_components2compare % your blind components
-        i_components_order % model order number for your blind components
         s_template %template to compare against
         cob_components_filter_inclusion % components you want to keep as 1 and filter out as 0
         ard_corrs_table
         ari_ordered_pairs_table
-        ari_ordered_pairs_orig
-        %ce092925 coi_components_sorted %the blind source components you compare with template
-        %ce092925 coi_template_sorted % the template you compared your components to
-        %ce092925 cod_corrs_sorted % the correlation strength between your components and the template
+        ari_ordered_pairs_orig %The order number for both s_components2compare and the template
     end
 
     
     methods
         function n_err = m_calc_greed_match(o)
             % sorts components between your components and a template
-
-            %ce092625 create an error if mask, template or components have
-            %incompatible resolutions 
             
             n_err = 1;
 
@@ -130,7 +118,6 @@ classdef icatb_cls_greedy_sort_components < handle
             global FONT_COLOR;
             global UI_FS;
             
-            
             % set up fonts
             titleFont = 14;
             textFont = 12;
@@ -183,12 +170,15 @@ classdef icatb_cls_greedy_sort_components < handle
             text('units', 'normalized', 'string', 'Greedy Sort of Components vs a Template', 'position', titlePos, 'fontsize', titleFont, 'HorizontalAlignment', 'center', ...
                 'fontweight', 'bold', 'FontName', UI_FONTNAME, 'color', titleColor, 'FontAngle', 'italic');
             
-            textPos(2) = titlePos(2) - 0.15;
-            
-%             text('units', 'normalized', 'string', 'ce093025b', 'position', textPos, 'fontsize', textFont, 'HorizontalAlignment', 'left', ...
-%                 'fontweight', 'normal', 'FontName', UI_FONTNAME);
+            textPos(2) = titlePos(2) - 0.15-0.32;
 
-            textPos(2) = textPos(2) - 0.15;
+            % label
+            ui_template_pos(3) = 0.8; ui_template_pos(4) = 0.40;
+            ui_template_pos(1) = 0.1; ui_template_pos(2) = textPos(2);
+            icatb_uicontrol('parent', figHandle, 'units', 'normalized', 'style', 'text', 'position', ui_template_pos, ...
+                'string', 'After selecting parameter file pointing to your custom blind components, you may follow steps 1,2 and 3. Step 1 selects template. Optional step 2, inserting comma separated booleans, 1 for signal and 0 for noisy components (Autolabeller may discriminate). After step 3 (run), check the saved results file.', 'tag', 'tag_lab', 'fontsize', UI_FS - 1, 'HorizontalAlignment', 'left');
+
+            textPos(2) = textPos(2) - 0.11;
 
             % label
             ui_template_pos(3) = 0.5; ui_template_pos(4) = 0.08;
