@@ -62,6 +62,13 @@ function varargout = icatb_calculate_pca(files, numComp, varargin)
 % mask = 'myMask.nii';
 % [V, Lambda] = icatb_calculate_pca(files, numComp, 'mask', mask, 'whiten', false, 'type', 'best', 'maxram', 4);
 
+icatb_defaults;
+global NORAND_DETERMINISTIC;
+
+if NORAND_DETERMINISTIC
+    rng(1);
+end
+
 %% Initialize variables
 removeMean = 1;
 pcaType = 'standard';

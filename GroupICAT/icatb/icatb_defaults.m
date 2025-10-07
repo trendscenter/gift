@@ -233,6 +233,9 @@ global DIM_ESTIMATION_OPTS;
 %% Shuffle random numbers
 global RAND_SHUFFLE;
 
+%% Remove randomness (option should be false, except if advanced ICA expert need to change)
+global NORAND_DETERMINISTIC; %Makes parts of GIFT determinstic, including icatb_calculate_pca
+
 %% Results summary options
 global GICA_RESULTS_SUMMARY;
 
@@ -773,6 +776,9 @@ DIM_ESTIMATION_OPTS.fwhm = [5, 5, 5];
 
 %% shuffle random numbers
 RAND_SHUFFLE = 1;
+
+%% Remove randomness (option should be false, except if advanced ICA expert need to change)
+NORAND_DETERMINISTIC = 0;
 
 %% PRINT Resolution for gica summary 
 % display option of 1 uses publish and if you run out of memory errors use
