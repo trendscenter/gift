@@ -29,7 +29,7 @@ elseif strcmpi(group_ica_modality, 'fnc')
 elseif strcmpi(group_ica_modality, 'conn')
     modalityType = 'CONN';
     dataTitle = 'CONN';
-    compSetFields = {'ic', 'tc'};
+    compSetFields = {'ic', 'none'};
 else
     modalityType = 'EEG';
     dataTitle = 'EEG';

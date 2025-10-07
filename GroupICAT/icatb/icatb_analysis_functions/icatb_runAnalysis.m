@@ -437,15 +437,19 @@ try
             sesInfo = icatb_calculateICA(sesInfo, statusHandle);
         end
         
-        % Back Reconstruction
-        if(groupICAStep == 1 || groupICAStep == 5)
-            sesInfo = icatb_backReconstruct(sesInfo, statusHandle);
+        if ~strcmp(modalityType, 'CONN')
+            % Back Reconstruction
+            if(groupICAStep == 1 || groupICAStep == 5)
+                sesInfo = icatb_backReconstruct(sesInfo, statusHandle);
+            end
+            
+            % Calibrate Components
+            if(groupICAStep == 1 || groupICAStep == 6)
+                sesInfo = icatb_calibrateComponents(sesInfo, statusHandle);
+            end
+
         end
         
-        % Calibrate Components
-        if(groupICAStep == 1 || groupICAStep == 6)
-            sesInfo = icatb_calibrateComponents(sesInfo, statusHandle);
-        end
         
         % Group Stats
         if(groupICAStep == 1 || groupICAStep == 7)

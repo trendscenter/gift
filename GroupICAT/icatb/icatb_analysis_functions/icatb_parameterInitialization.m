@@ -162,6 +162,10 @@ else
     % get the count of the files
     [countFiles] = icatb_get_countTimePoints(sesInfo.userInput.files);
 end
+
+if strcmp(modalityType, 'CONN')
+    
+end
 % end for checking the time points
 
 checkTimePoints = find(countFiles ~= countFiles(1));
@@ -173,6 +177,7 @@ else
 end
 
 % store these two parameters
+
 sesInfo.flagTimePoints = flagTimePoints;
 sesInfo.diffTimePoints = countFiles;
 

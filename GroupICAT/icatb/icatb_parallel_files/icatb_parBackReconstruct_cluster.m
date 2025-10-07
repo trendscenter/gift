@@ -67,7 +67,7 @@ end
 
 
 %% Loop over files
-parfor nDataSet = 1:length(dataSetsToRun)
+for nDataSet = 1:length(dataSetsToRun)
     
     tmpDataSetsToRun = dataSetsToRun;
     nSet = tmpDataSetsToRun(nDataSet);
