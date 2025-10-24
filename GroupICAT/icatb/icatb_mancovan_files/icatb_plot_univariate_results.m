@@ -48,7 +48,11 @@ for nCov = 1:length(covariatesToPlot)
         featureName = results(nF).feature_name;
         if (strcmpi(featureName, 'spatial maps'))
             figTitle = 'Univariate Results (Spatial maps)';
-            nRows = 2;
+            if (strcmpi('1-way, x-level anova', mancovanInfo.designCriteria))
+                nRows = 1;
+            else
+                nRows = 2;            
+            end            
             structFile = mancovanInfo.display.structFile;
             gH = icatb_getGraphics(figTitle, 'graphics', 'univariate_results_spatial_maps', 'off');
             disp('Writing out composite images of covariates of interest ...');
@@ -89,54 +93,56 @@ for nCov = 1:length(covariatesToPlot)
             
             ch1 = drawSlices(axesH, hD);
             set(gH, 'visible', 'on');
-            
-            sh = subplot(nRows, 1, 2);
-            S = gather_univariate_effects(mancovanInfo, nF, covariatesToPlot{nCov}, timeNo);
-            S.colorbarLabel = 'Fraction Of Component';
-            
-            vars2 = {S, sh, cmap1(1:ceil(size(cmap1, 1)/2), :)};
-            [ch2, status, msgStr, BetaWeightsW, NsW] = plot_univariate_effects(vars2{:});
-            S.BetaWeightsW = BetaWeightsW;
-            S.NsW = NsW;
-            
-            tmpBetaFile = fullfile(outputDir, fileparts(results(nF).filesInfo.result_files{1}), [mancovanInfo.prefix, '_betas_', covariatesToPlot{nCov}, '.mat']);
-            % try
-            save(tmpBetaFile, 'S');
-            % catch
-            % end
-            
-            if (~status)
-                disp(['Feature ',featureName, ': ', msgStr]);
-                delete(gH);
-                continue;
-            end
-            
-            YLim = get(ch2, 'YLim');
-            YLim(2) = YLim(1) + 0.5*diff(YLim);
-            set(ch2, 'YLim', YLim);
-            
-            
-            YTicksCB = get(ch2, 'YTick');
-            
-            if (length(YTicksCB) > 3)
-                YTicksCB = [YTicksCB(1), median(YTicksCB), YTicksCB(end)];
-                set(ch2, 'YTick', YTicksCB);
-                set(ch2, 'YTickLabel', {'1', '0', '1'});
-            end
-            
-            childAxesH = get(findobj(gH, 'Type', 'Axes'), 'children');
-            %if (iscell(childAxesH))
-            %    childAxesH = cell2mat(childAxesH);
-            %end
-            for nChildH = 1:length(childAxesH)
-                if (iscell(childAxesH))
-                    set(childAxesH{nChildH}, 'hittest', 'off');
-                else
-                    set(childAxesH(nChildH), 'hittest', 'off');
+
+            if ~(strcmpi('1-way, x-level anova', mancovanInfo.designCriteria))
+                sh = subplot(nRows, 1, 2);
+                S = gather_univariate_effects(mancovanInfo, nF, covariatesToPlot{nCov}, timeNo);
+                S.colorbarLabel = 'Fraction Of Component';
+                
+                vars2 = {S, sh, cmap1(1:ceil(size(cmap1, 1)/2), :)};
+                [ch2, status, msgStr, BetaWeightsW, NsW] = plot_univariate_effects(vars2{:});
+                S.BetaWeightsW = BetaWeightsW;
+                S.NsW = NsW;
+                
+                tmpBetaFile = fullfile(outputDir, fileparts(results(nF).filesInfo.result_files{1}), [mancovanInfo.prefix, '_betas_', covariatesToPlot{nCov}, '.mat']);
+                % try
+                save(tmpBetaFile, 'S');
+                % catch
+                % end
+                
+                if (~status)
+                    disp(['Feature ',featureName, ': ', msgStr]);
+                    delete(gH);
+                    continue;
                 end
+                
+                YLim = get(ch2, 'YLim');
+                YLim(2) = YLim(1) + 0.5*diff(YLim);
+                set(ch2, 'YLim', YLim);
+                
+                
+                YTicksCB = get(ch2, 'YTick');
+                
+                if (length(YTicksCB) > 3)
+                    YTicksCB = [YTicksCB(1), median(YTicksCB), YTicksCB(end)];
+                    set(ch2, 'YTick', YTicksCB);
+                    set(ch2, 'YTickLabel', {'1', '0', '1'});
+                end
+                
+                childAxesH = get(findobj(gH, 'Type', 'Axes'), 'children');
+                %if (iscell(childAxesH))
+                %    childAxesH = cell2mat(childAxesH);
+                %end
+                for nChildH = 1:length(childAxesH)
+                    if (iscell(childAxesH))
+                        set(childAxesH{nChildH}, 'hittest', 'off');
+                    else
+                        set(childAxesH(nChildH), 'hittest', 'off');
+                    end
+                end
+                set([sh, ch2], 'ButtonDownFcn', {@openUnivEffects, vars2, ch2});
             end
             set([axesH, ch1], 'ButtonDownFcn', {@openOrthoViews, hD});
-            set([sh, ch2], 'ButtonDownFcn', {@openUnivEffects, vars2, ch2});
             
             clear hD vars2;
             
@@ -150,7 +156,6 @@ for nCov = 1:length(covariatesToPlot)
             load icatb_colors coldhot;
             %coldhot = coldhot_sensitive;
             load(fullfile(mancovanInfo.outputDir, mancovanInfo.outputFiles(nF).filesInfo.result_files{1}), 'freq');
-            nRows = 2;
             msgStr = ['Significant Effects Of ', covariatesToPlot{nCov}, ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
             % for nCov = 1:length(covariatesToPlot)
             [S, status] = gather_univariate_stats(mancovanInfo, nF, covariatesToPlot{nCov}, timeNo);
@@ -160,6 +165,13 @@ for nCov = 1:length(covariatesToPlot)
                 disp(['Feature ',featureName, ': No ', msgStr]);
                 continue;
             end
+
+            if (strcmpi(mancovanInfo.designCriteria, '1-way, x-level anova'))
+                nRows = 1;
+            else
+                nRows = 2;            
+            end
+
             sh = subplot(nRows, 1, 1);
             axesH = sh;
             cmap1 = coldhot;
@@ -167,54 +179,58 @@ for nCov = 1:length(covariatesToPlot)
             
             if (timeNo > 0)
                 S.c = [S.c, '(Time', num2str(timeNo), ')'];
-            end
-            
-            
+            end            
+
             vars1 = {S, freq, mancovanInfo.comps, mancovanInfo.display.p_threshold, mancovanInfo.display.threshdesc, cmap1, 'Component', 'Frequency (Hz)', sh};
             ch1 = plotUnivStats (vars1{:});
+
+            if ~(strcmpi('1-way, x-level anova', mancovanInfo.designCriteria))
+                vars1 = {S, freq, mancovanInfo.comps, mancovanInfo.display.p_threshold, mancovanInfo.display.threshdesc, cmap1, 'Component', 'Frequency (Hz)', sh};
+                ch1 = plotUnivStats (vars1{:});
             
-            sh = subplot( nRows, 1, 2);
-            S = gather_univariate_effects(mancovanInfo, nF, covariatesToPlot{nCov}, timeNo);
-            S.colorbarLabel = 'Fraction Of Spectrum';
-            vars2 = {S, sh, cmap1};
-            [ch2, status, msgStr, BetaWeightsW, NsW] = plot_univariate_effects(vars2{:});
-            S.BetaWeightsW = BetaWeightsW;
-            S.NsW = NsW;
-            
-            tmpBetaFile = fullfile(outputDir, fileparts(results(nF).filesInfo.result_files{1}), [mancovanInfo.prefix, '_betas_', covariatesToPlot{nCov}, '.mat']);
-            %   try
-            save(tmpBetaFile, 'S');
-            %  catch
-            %  end
-            
-            if (~status)
-                disp(['Feature ', featureName, ': ', msgStr]);
-                delete(gH);
-                continue;
-            end
-            
-            YTicksCB = get(ch2, 'YTick');
-            
-            if (length(YTicksCB) > 3)
-                YTicksCB = [YTicksCB(1), median(YTicksCB), YTicksCB(end)];
-                set(ch2, 'YTick', YTicksCB);
-                set(ch2, 'YTickLabel', {'1', '0', '1'});
-            end
-            
-            childAxesH = get(findobj(gH, 'Type', 'Axes'), 'children');
-            for nChildH = 1:length(childAxesH)
-                if (iscell(childAxesH))
-                    set(childAxesH{nChildH}, 'hittest', 'off');
-                else
-                    set(childAxesH(nChildH), 'hittest', 'off');
+                sh = subplot( nRows, 1, 2);
+                S = gather_univariate_effects(mancovanInfo, nF, covariatesToPlot{nCov}, timeNo);
+                S.colorbarLabel = 'Fraction Of Spectrum';
+                vars2 = {S, sh, cmap1};
+                [ch2, status, msgStr, BetaWeightsW, NsW] = plot_univariate_effects(vars2{:});
+                S.BetaWeightsW = BetaWeightsW;
+                S.NsW = NsW;
+                
+                tmpBetaFile = fullfile(outputDir, fileparts(results(nF).filesInfo.result_files{1}), [mancovanInfo.prefix, '_betas_', covariatesToPlot{nCov}, '.mat']);
+                %   try
+                save(tmpBetaFile, 'S');
+                %  catch
+                %  end
+                
+                if (~status)
+                    disp(['Feature ', featureName, ': ', msgStr]);
+                    delete(gH);
+                    continue;
                 end
+                
+                YTicksCB = get(ch2, 'YTick');
+                
+                if (length(YTicksCB) > 3)
+                    YTicksCB = [YTicksCB(1), median(YTicksCB), YTicksCB(end)];
+                    set(ch2, 'YTick', YTicksCB);
+                    set(ch2, 'YTickLabel', {'1', '0', '1'});
+                end
+                
+                childAxesH = get(findobj(gH, 'Type', 'Axes'), 'children');
+                for nChildH = 1:length(childAxesH)
+                    if (iscell(childAxesH))
+                        set(childAxesH{nChildH}, 'hittest', 'off');
+                    else
+                        set(childAxesH(nChildH), 'hittest', 'off');
+                    end
+                end
+                set([sh, ch2], 'ButtonDownFcn', {@openUnivEffects, vars2, ch2});
             end
             % if (iscell(childAxesH))
             %    childAxesH = cell2mat(childAxesH);
             %end
             % set(childAxesH, 'hittest', 'off');
             set([axesH, ch1], 'ButtonDownFcn', {@openUnivStats, vars1});
-            set([sh, ch2], 'ButtonDownFcn', {@openUnivEffects, vars2, ch2});
             
             clear vars1 vars2;
             
@@ -1234,7 +1250,18 @@ else
     M = imagesc(f,1:length(comps),A);
 end
 
-CLIM = [-max(abs(A(:))) max(abs(A(:)))];
+i_neg = sum(A(:) < 0);
+if (i_neg == 0)
+    % No negative values - just show pos
+    cmap = cmap(round(size(cmap,1)/2)+1:end,:);
+    s_label_unit = 'log_1_0(p-value)';
+    CLIM = [0 max(abs(A(:)))];
+else
+    s_label_unit = '-sign(t) log_1_0(p-value)'
+    CLIM = [-max(abs(A(:))) max(abs(A(:)))];
+end
+
+
 
 if (~isempty(find(CLIM ~= 0)))
     set(axesH, 'CLIM', CLIM);
@@ -1243,13 +1270,15 @@ end
 set(axesH,'YTick',1:length(comps),'YTickLabel',T.y, 'TickDir', 'out')
 %set(gca, 'CLim', [log10(eps) -log10(eps)])
 
+   
+
 colormap(cmap);
 C = colorbar;
 yt = get(C, 'YTick');
 if (strcmpi(threshdesc, 'bhfdr'))
     set(C, 'YTick', sort([yt, -fdrlim fdrlim]));
 end
-ylabel(C, '-sign(t) log_1_0(p-value)', 'Interpreter', 'tex');
+ylabel(C, s_label_unit, 'Interpreter', 'tex');
 if (length(find(A==0)) == numel(A))
     T.c = ['No ', T.c];
 end

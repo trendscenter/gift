@@ -13,7 +13,7 @@ if (isfield(mancovanInfo.userInput, 'univariate_tests'))
     
     testName = mancovanInfo.userInput.univariate_tests{1, 1};
     
-    if (strcmpi(testName, 'ttest') || strcmpi(testName, 'ttest2'))
+    if (strcmpi(testName, 'ttest') || strcmpi(testName, 'ttest2') || strcmpi(testName, '1-way, x-level anova'))
         
         if (strcmpi(testName, 'ttest'))
             desCriteria = 'one sample t-test';
@@ -38,8 +38,27 @@ if (isfield(mancovanInfo.userInput, 'univariate_tests'))
                 group_names = mancovanInfo.userInput.univariate_tests{1, 3};
             catch
             end
+
+        elseif (strcmpi(testName, '1-way, x-level anova'))
+
+            desCriteria = '1-way, x-level anova';
+            try
+                data_vals = mancovanInfo.userInput.ttestOpts.anova.val{1, 1};
+            catch
+            end
             
-        else
+            if (~iscell(data_vals))
+                data_vals = {data_vals};
+            end
+
+            desCriteria = '1-way, x-level anova';
+            
+            try
+                group_names = mancovanInfo.userInput.ttestOpts.anova.name{1,1}';
+            catch
+            end        
+            
+        else 
             
             desCriteria = 'two sample t-test';
             data_vals = mancovanInfo.userInput.univariate_tests{1, 2};

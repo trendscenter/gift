@@ -114,7 +114,7 @@ promptPos = [0.25 - 0.5*dropDownWidth, yPos - 0.5*yOffset, 0.4, promptHeight];
 
 textH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', 'position', promptPos, 'string', 'Select design criteria ...', 'tag', ...
     'prompt_design', 'fontsize', UI_FS - 1);
-designOptions = {'MANCOVA', 'One sample t-test', 'Two sample t-test', 'Paired T-test'};
+designOptions = {'MANCOVA', 'One sample t-test', 'Two sample t-test', '1-Way, x-level ANOVA', 'Paired T-test'};
 
 designValue = 1;
 try
@@ -680,6 +680,21 @@ elseif (strcmpi(strs{val}, 'two sample t-test'))
     
     ttestOpts.t.name = {group1Name, group2Name};
     ttestOpts.t.val = {groupVal1, groupVal2};
+    
+elseif (strcmpi(strs{val}, '1-way, x-level anova'))   
+
+    n_levels = icatb_inputdlg2('Enter number of ANOVA levels', 'ANOVA Levels', 1, {''});
+    n_levels = round(str2num(n_levels{1}));
+    cs_level_names = cell(n_levels,1);
+    ccoi_level_subs = cell(n_levels,1); 
+
+    for n_level = 1:n_levels
+        [cs_level_names{n_level}, ccoi_level_subs{n_level}] = icatb_select_groups_gui(subjectStr, ['Group ' num2str(n_level)], ['selGrp  ' num2str(n_level)], '', []);
+    end
+
+    ttestOpts.anova.name = {cs_level_names};
+    ttestOpts.anova.val = {ccoi_level_subs};
+    mancovanInfo.userInput.univariate_tests{1, 1} = '1-way, x-level anova';
     
 elseif (strcmpi(strs{val}, 'paired t-test'))
     
