@@ -1,29 +1,28 @@
 # ANOVA Implemented Into MANCOVAN 10/24/2025
 
-A 1-way (3-level) ANOVA has now been implemented in the GIFT GUI. You may find the following group-analysis example helpful: (https://github.com/trendscenter/gift/tree/master/GroupICAT/demo/gift_group_analysis).
-
-In order to run this you need to install the latest version (v4.0.6.13) of GIFT found at:
-https://github.com/trendscenter/gift
-Then you need to click the green [<> Code] button and then select the "Download ZIP" from the list
-
-
-Below are step-by-step instructions:
-
-GETTING STARTED EXAMPLE
-1. Run your ICA:
-First you need to run some type of GIFT ICA. For this demo we used a batch script such as the batch example found at https://github.com/trendscenter/gift/blob/master/GroupICAT/icatb/icatb_batch_files/batch_constrained_ica.m
-2. Launch GIFT (GUI mode):
-Type gift in the MATLAB command window.
-
-CONTINUING WITH ANOVA MODEL
-3. In GIFT, click the [Toolboxes/Mancovan] drop down box
-4. Click [Create Design Matrix] and then a the "Select ICA/Mancovan Parameter..." window appears
-5. In the "Select..." window, browse to the output directory where you saved your parameter file from step 1, (if you downloaded the demodata from our group-analysis page (above) you pick neuromark_ica_parameter_info.mat from the demo_input3neuromark/gift_out directory.
-Demo data link is: https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip
-6. Choose an output directory for ANOVA results.
-7. On the Setup Design page:
-* Select Disign Criteria: 1-way, x-level ANOVA
-* When prompted for "ANOVA Levels," enter 3 (or 2 if testing equivalence to our two-sample t-test in the demo/gift_group_analysis link, above).
+A 1-way (3-level) ANOVA has now been implemented in the GIFT GUI. You may find the following group-analysis example helpful: (https://github.com/trendscenter/gift/tree/master/GroupICAT/demo/gift_group_analysis).<BR>
+<BR>
+In order to run this you need to install the latest version (v4.0.6.13) of GIFT found at:<BR>
+https://github.com/trendscenter/gift<BR>
+Then you need to click the green [<> Code] button and then select the "Download ZIP" from the list<BR>
+<BR>
+Below are step-by-step instructions:<BR>
+<BR>
+GETTING STARTED EXAMPLE<BR>
+1. Run your ICA:<BR>
+First you need to run some type of GIFT ICA. For this demo we used a batch script such as the batch example found at https://github.com/trendscenter/gift/blob/master/GroupICAT/icatb/icatb_batch_files/batch_constrained_ica.m<BR>
+2. Launch GIFT (GUI mode):<BR>
+Type gift in the MATLAB command window.<BR>
+<BR>
+CONTINUING WITH ANOVA MODEL<BR>
+3. In GIFT, click the [Toolboxes/Mancovan] drop down box<BR>
+4. Click [Create Design Matrix] and then a the "Select ICA/Mancovan Parameter..." window appears<BR>
+5. In the "Select..." window, browse to the output directory where you saved your parameter file from step 1, (if you downloaded the demodata from our group-analysis page (above) you pick neuromark_ica_parameter_info.mat from the demo_input3neuromark/gift_out directory.<BR>
+Demo data link is: https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip<BR>
+6. Choose an output directory for ANOVA results.<BR>
+7. On the Setup Design page:<BR>
+* Select Disign Criteria: 1-way, x-level ANOVA<BR>
+* When prompted for "ANOVA Levels," enter 3 (or 2 if testing equivalence to our two-sample t-test in the demo/gift_group_analysis link, above).<BR>
 8. Additional windows appears where you select the subject IDs for each group (levels) and in our 2 level anova we typed "males" for group 1 and then pasted in the subject ids for the males (1, 3, 4, 5, 10, 12, 14, 15, 17, 18, 21, 23, 25, 29, 30) in the textbox above the [OK] button. After the paste  we just pressed [OK]
 9. Then we typed "females" (2nd level) for group 2 and then pasted in 2, 6, 7, 8, 9, 11, 13, 16, 19, 20, 22, 24, 26, 27, 28 and then pressed [OK]
 10. Click [Create]
