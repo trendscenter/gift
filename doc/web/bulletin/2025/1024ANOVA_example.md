@@ -36,7 +36,7 @@ Demo data link is: https://trends-public-website-fileshare.s3.amazonaws.com/publ
 <BR>18. Click "Autoselect No. Of Components For Each Feature Using MDL" to select it and then tick it again to deselect it to get the "Enter No. Of Components For Each Feature in a vector" and enter "2" in the textbox above the [Run]-button
 <BR>19. Click [Run]
 <BR>20. (Back to the mancovan Toolbox), press [Run Mancovan]
-<BR>21. Window "About Remove nuisance" ops up and in this case click [No] (yes is mostly for multi site studies)
+<BR>21. Window "About Remove nuisance" pops up and in this case click [No] (yes is mostly for multi site studies)
 <BR>22. Again pick your mancovan file that should appear in the file list (using our data it was neuromark_mancovan.mat)
 <BR>23. Click [Display]
 <BR>24. Again pick your mancovan file that should appear in the file list (using our data it was neuromark_mancovan.mat)
