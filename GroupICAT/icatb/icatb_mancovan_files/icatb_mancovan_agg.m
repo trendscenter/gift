@@ -94,9 +94,16 @@ for nF = 1:length(mancovanInfo.outputFiles)
         for nTest = 1:length(tests)
             uni_results_info{nF, nR, nTest} = UNI.stats{nTest};
         end
-        
-        FstatInfo{nF, nR} = UNI.FstatInfo;
-        
+
+        try
+            FstatInfo{nF, nR} = UNI.FstatInfo;
+        catch
+            %if component is not selected:
+            UNI.FstatInfo.t = UNI.t;
+            UNI.FstatInfo.p = UNI.p;
+            UNI.FstatInfo.stats = UNI.stats;
+            FstatInfo{nF, nR} = UNI.FstatInfo;
+        end        
     end
     
 end
@@ -108,7 +115,10 @@ clear mancovanInfo;
 mancovanInfo.comps = mInfo.comps;
 mancovanInfo.features = mInfo.features;
 mancovanInfo.outputFiles = mInfo.outputFiles;
-mancovanInfo.cov = mInfo.cov;
+try
+    mancovanInfo.cov = mInfo.cov; %may not exist if only fnc_corrs
+catch
+end
 mancovanInfo.prefix = mInfo.prefix;
 mancovanInfo.comp = mInfo.comp;
 mancovanInfo.tests = tests;
