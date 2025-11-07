@@ -18,7 +18,7 @@ CONTINUING WITH ANOVA MODEL.<BR>
 3. In GIFT, click the [Dynamic Functional Connectivity] button.<BR>
 4. Click the [Temporal dFNC (ICA)] button.<BR>
 5. Click the [Setup / Run Analysis] button.<BR>
-6. Browse to your parameter file from your ICA run you want to explore with ANOVA dFNC (you may download demodata from our group-analysis page (above), picking neuromark_ica_parameter_info.mat from the demo_input3neuromark/gift_out directory.<BR>
+6. Browse to your parameter file from your ICA run you want to explore with ANOVA dFNC. Alternativelu, you may download demodata from our group-analysis page (above), picking neuromark_ica_parameter_info.mat from the demo_input3neuromark/gift_out directory.<BR>
 Demo data link is: https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/data/demo_input3neuromark.zip<BR>
 7. Select output folder your ANOVA results will be saved.<BR>
 8. Add components (and domains) by clicking the [+] button. Then type in domain name at Enter Network name and then select the components that domain includes (use shift or control to select multiple components for domain). Finally click [Done] button to add the domain and components. You may also add more than one domain if you choose.<BR>
