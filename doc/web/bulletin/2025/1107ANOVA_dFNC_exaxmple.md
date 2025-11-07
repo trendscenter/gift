@@ -30,8 +30,8 @@ Demo data link is: https://trends-public-website-fileshare.s3.amazonaws.com/publ
 14. Enter name for Group 1 (level 1) e.g., Male1, and then select the subjects (using the mouse and the control button on the keyboard) to select subjects to add. You may also enter the comma separated vector of subject numbers in the textbox under the list, such as
 1, 3, 4, 5, 10, 12, 14, 15, 17<BR>
 15. Analogously for level2 you may add a group/level name (Male2) with subjects (17, 18, 21, 23, 25, 29, 30).
-16. Analogously for level3 you may add a group/level name (Females) with subjects (2, 6, 7, 8, 9, 11, 13, 16, 19, 20, 22, 24, 26, 27, 28).
+16. Analogously for level3 you may add a group/level name (Females) with subjects (2, 6, 7, 8, 9, 11, 13, 16, 19, 20, 22, 24, 26, 27, 28).<BR>
 17. Back to the "Figure 1:dFNC Stats GUI" window, you may get more results lowering the "Enter threshold in windows (Max...) from 10 to 1.<BR>
 18. Click [Calculate] button.<BR>
-19. Within a minute the MATLAB command window will dispaly Stats completed. Please see results file , followed by the mat file containing your statistics. This file may be loaded using the MATLAB load command.
+19. Within a minute the MATLAB command window will dispaly Stats completed. Please see results file , followed by the mat file containing your statistics. This file may be loaded using the MATLAB load command.<BR>
 20. To see a report with the ANOVA statistics you may click the HTML Report button from the menu at the top. You can see the MATLAB working on a report a few minutes. Finally a report will be generated in your internet browser (or you may neet to look for an html folder with a web page with ANOVA results).
