@@ -86,7 +86,7 @@ defaultWindowSize = min([Nwin, 10]);
 % drawnow;
 
 
-desCriteriaOptions = {'One sample t-test', 'Two sample t-test', 'Paired T-test'};
+desCriteriaOptions = {'One sample t-test', 'Two sample t-test', 'Paired T-test', '1-way, x-level anova'};
 figureData.outputDir = outputDir;
 figureData.prefix = dfncInfo.prefix;
 figureData.dfncOutputDir = dfncOutputDir;
@@ -528,7 +528,7 @@ try
     
     load (figData.cluster_stats_file);
     
-    if (isempty(figData.cov) && strcmpi(designCriteria, 'anova'))
+    if (isempty(figData.cov) && strcmpi(designCriteria, 'anova')) %102925anova
         error('Please enter covariates in order to do stats');
     end
     
@@ -567,7 +567,7 @@ try
     %data = figData.data;
     
     %% Covariates
-    if (strcmpi(designCriteria, 'anova'))
+    if (strcmpi(designCriteria, 'anova')) %102925anova
         covH = findobj(handles, 'tag', 'cov');
         covVal = get(covH, 'value');
         if (isempty(covVal))
@@ -584,7 +584,7 @@ try
     
     %% Model Type
     modelType = 'linear';
-    if (strcmpi(designCriteria, 'anova'))
+    if (strcmpi(designCriteria, 'anova')) %102925anova
         if (length(covVal) > 1)
             chkModel = icatb_questionDialog('title', 'Model Interactions', 'textbody', 'Do You Want To Model Interactions?');
             if (chkModel)
@@ -606,13 +606,21 @@ try
     %     end
     
     try
-        groupNames = figData.ttestOpts.t.name;
+        if (strcmpi('1-way, x-level anova', figData.ttestOpts.des))
+            groupNames = figData.ttestOpts.anova.name;
+        else
+            groupNames = figData.ttestOpts.t.name;
+        end
     catch
         error('Select datasets for computing t-tests');
     end
     
     try
-        groupVals = figData.ttestOpts.t.val;
+        if (strcmpi('1-way, x-level anova', figData.ttestOpts.des))
+            groupVals = figData.ttestOpts.anova.val;
+        else
+            groupVals = figData.ttestOpts.t.val;
+        end
     catch
         error('Select datasets for computing t-tests');
     end
@@ -872,6 +880,56 @@ try
         
         drawnow;
         
+    elseif (strcmpi(designCriteria, '1-way, x-level anova'))
+        %% Paired sample t-test
+        
+        disp('Selected design criteria is 1-way, x-level ANOVA');
+
+
+        if (size(dfnc_corrs, 1) > 1)
+            dfnc_corrs = squeeze(mean(dfnc_corrs, 1));
+        else
+            dfnc_corrs = squeeze(dfnc_corrs);
+        end
+
+        oc_mancovan_anova = icatb_cls_mancovan_anova('1-way, x-level anova');
+        [stats_u, F_u, p_u, tmp_con_name, N, subject_indices, mean_u] = oc_mancovan_anova.m_calc_anova_dfnc(dfnc_corrs, groupVals, groupNames);    
+        
+        % stats_u{1} = get_contrast_label(stats_u{1}, ttestNames, ttestNames, {tmp_con_name});
+
+        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_anova1_results.mat']);
+        disp(['Two sample t-test results are saved in ', outFile]);
+        fprintf('\n\n');
+        save(outFile, 'F_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
+        
+        
+        if (exist('dfncTaskConnectivity', 'var'))
+            
+            
+            modelX = ones(length(g1) + length(g2), 1);
+            modelX(length(g1) + 1:end) = 0;
+            
+            clear t_task_conn p_task_conn stats_task_conn mean_task_conn
+            
+            mean_task_conn = cell(2, length(selectedRegressors));
+            t_task_conn = cell(1, length(selectedRegressors));
+            p_task_conn = cell(1, length(selectedRegressors));
+            stats_task_conn = cell(1, length(selectedRegressors));
+            
+            for nRegress = 1:length(selectedRegressors)
+                disp(['Computing one sample t-test on task connectivity (', selectedRegressors{nRegress}, ' ...']);
+                tmp1 = squeeze(dfncTaskConnectivity(g1, :, nRegress));
+                tmp2 = squeeze(dfncTaskConnectivity(g2, :, nRegress));
+                mean_task_conn{1, nRegress} = mean(tmp1);
+                mean_task_conn{2, nRegress} = mean(tmp2);
+                [t_task_conn{nRegress}, p_task_conn{nRegress}, stats_task_conn{nRegress}] = mT([tmp1;tmp2], modelX, [], 1, {'verbose'});
+            end
+            save(outFile, 't_task_conn', 'p_task_conn', 'stats_task_conn', 'mean_task_conn', '-append');
+        end        
+
+
+
+
         
         %     elseif (strcmpi(designCriteria, 'anova'))
         %         %% Anova
@@ -1068,7 +1126,14 @@ elseif (strcmpi(designCriteria, 'paired t-test'))
     
     ttestOpts.t.name = {group1Name, group2Name};
     ttestOpts.t.val = {groupVal1, groupVal2};
+elseif  (strcmpi(designCriteria, '1-way, x-level anova'))
     
+    oc_mancovan_anova = icatb_cls_mancovan_anova('1-way, x-level anova');
+    [cs_level_names ccoi_level_subs] = oc_mancovan_anova.get_mcs_levels_GUI(subjectStr);     
+
+    ttestOpts.anova.name = cs_level_names;
+    ttestOpts.anova.val = ccoi_level_subs;
+
 end
 
 figData.ttestOpts = ttestOpts;

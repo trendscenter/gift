@@ -1488,60 +1488,9 @@ else
     elseif (strcmpi(mancovanInfo.designCriteria, '1-way, x-level anova'))
         % data: rows x columns   (rows = subjects, cols = features)
 
-        [i_subs, i_features] = size(data);
+        oc_mancovan_anova = icatb_cls_mancovan_anova('1-way, x-level anova');
+        [stats_u, t_u, p_u, tmp_con_name] = oc_mancovan_anova.m_calc_anova(data, mancovanInfo);    
         
-        ari_group_subs = zeros(i_subs,1);
-        for i_group = 1:length(mancovanInfo.userInput.ttestOpts.anova.val{1, 1})
-            ix_grp = mancovanInfo.userInput.ttestOpts.anova.val{1, 1}{i_group,1};
-            ari_group_subs(ix_grp) = i_group;
-        end
-        
-        % Preallocate outputs (store F in t_u{1} to mimic your interface)
-        t_u{1}     = NaN(1, i_features);   % will hold F-statistic for each column
-        p_u{1}     = NaN(1, i_features);   % p-value per column
-        stats_u{1}.Terms = cell(1,1);
-        %stats_u{1}.X = NaN(1, i_features);
-        stats_u{1}.SSE = NaN(1, i_features);
-        stats_u{1}.DFE = NaN(1,i_features);
-        stats_u{1}.MSE = NaN(1, i_features);
-        %stats_u{1}.B = NaN(1, i_features);
-        stats_u{1}.Levels = [1,0];
-        stats_u{1}.Term = 1;           % scalar => treated as "main effect"
-        
-        for j = 1:i_features
-            y = data(:, j);
-            % handle NaNs (optional; anova1 ignores NaNs in y, but we match group length)
-            idx = ~isnan(y);
-            if sum(idx) < 3 || numel(unique(ari_group_subs(idx))) < 2
-                continue  % not enough data/levels
-            end
-        
-            [p, tbl, stats_an] = anova1(y(idx), ari_group_subs(idx), 'off');  % no figure
-        
-            % Extract ANOVA pieces
-            Fval = tbl{2,5};      % F
-            SS   = tbl{2,2};      % treatment sum of squares
-            MS   = tbl{2,4};      % treatment mean square
-        
-            % Fill "like" your [t_u, p_u, stats_u] interface
-            t_u{1}(j)          = Fval;         % using F in place of t
-            p_u{1}(j)          = p;
-            stats_u{1}.F(j)    = Fval;
-            stats_u{1}.DFE(j)   = stats_an.df; 
-            stats_u{1}.SSE(j)   = SS;
-            stats_u{1}.MSE(j)   = MS;
-            
-%             if ~isfield(stats_u{1}(j),'Levels') || isempty(stats_u{1}(j).Levels)
-%                 stats_u{1}(j).Levels = [1 0]; % minimal placeholder so get_contrast_label doesn't error
-%             end
-        end
-        if length(mancovanInfo.userInput.ttestOpts.anova.val{1, 1}) == 2
-            tmp_con_name = ['ANOVA Levels: ' mancovanInfo.userInput.ttestOpts.anova.name{1, 1}{1,1} ', ' mancovanInfo.userInput.ttestOpts.anova.name{1, 1}{2,1}];
-        elseif length(mancovanInfo.userInput.ttestOpts.anova.val{1, 1}) == 3
-            tmp_con_name = ['ANOVA Levels: ' mancovanInfo.userInput.ttestOpts.anova.name{1, 1}{1,1} ', ' mancovanInfo.userInput.ttestOpts.anova.name{1, 1}{2,1} ', ' mancovanInfo.userInput.ttestOpts.anova.name{1, 1}{3,1}];
-        else
-            tmp_con_name = [num2str(length(mancovanInfo.userInput.ttestOpts.anova.val{1, 1})) ' ANOVA Levels'];
-        end
         stats_u{1} = get_contrast_label(stats_u{1}, ttestNames, ttestNames, {tmp_con_name});
     else
         %paired ttest
