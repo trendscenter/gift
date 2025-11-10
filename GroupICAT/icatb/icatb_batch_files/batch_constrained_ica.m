@@ -86,7 +86,7 @@ scaleType = 2;
 algoType = 'moo-icar';
 
 %% Specify spatial reference files for constrained ICA (spatial) or moo-icar.
-refFiles = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\Neuromark_fMRI_1.0.nii'; 
+refFiles = which('Neuromark_fMRI_1.0.nii');
 
 %% Report generator (fmri and smri only)
 display_results.formatName = 'html';
@@ -95,7 +95,7 @@ display_results.convert_to_zscores = 'yes';
 display_results.threshold = 1.0;
 display_results.image_values = 'positive and negative';
 display_results.slice_plane = 'axial';
-display_results.anatomical_file = 'C:\Users\srrac\Desktop\GroupICATv4.0c\icatb\icatb_templates\ch2bet_3x3x3.nii';
+display_results.anatomical_file = which('ch2bet_3x3x3.nii');
 
 %% Network summary options
 %Network names and components are used in the plots (only fmri). If you are using
@@ -124,4 +124,5 @@ display_results.network_summary_opts.convert_to_z = 'yes';
 %colormap of the correlations
 %display_results.network_summary_opts.cmap = jet(64);
 %CLIM - range of the data values in [min_value, max_value] format
+
 %display_results.network_summary_opts.CLIM=CLIM;
