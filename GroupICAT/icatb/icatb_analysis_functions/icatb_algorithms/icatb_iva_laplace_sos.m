@@ -1,64 +1,71 @@
-function [W,cost,isi] = icatb_iva_laplace_sos(X,varargin)
-% [W,cost,shapePass,isi] = iva_mpe_decp_v2(X,varargin)
+function [W,cost_function] = icatb_iva_laplace_sos(X,varargin)
+% 11/10/25 Cyrus at TReNDs
+% 11/10/25, Replaced function based upon update from Erdem at Adali lab
+% 11/10/25, Previous icatb_iva_laplace_sos.m found in git records
+% Trung's implementation - 02/2024
 %
-% Implementation of the independent vector analysis (IVA)
-% algorithm using an correlated multivariate Laplace prior. This implementation also makes use of decoupling method to
-% achieve 'Newton' like convergence. (see references below)
+% Implementation of IVA with the multivariate laplacian distribution.
 %
-% Input:
-% X - data observations from K data sets, i.e. X(:,:,k)=A(:,:,k)*S(:,:,k), 
-% where A(:,:,k) is an N x N unknowned invertible mixing matrix and 
-% S(:,:,k) is an N x T  matrix with the nth row corresponding to T samples 
-% of the nth source in the kth dataset.  For IVA it is assumed that the 
-% source is statistically independent of all the sources within a dataset 
-% and exactly dependent on at most one source in each of the other 
-% datasets. The data, X, is a 3-dimensional matrix of dimensions N x T x K.
-% The latter enforces the assumption of an equal number of samples in each 
-% dataset.
+% For a general description of the algorithm and its relationship with others,
+% see http://mlsp.umbc.edu/jointBSS_introduction.html
+%
+%%% Input:
+% X - data observations from K data sets, i.e. X{k}=A{k}*S{k}, where A{k}
+% is an N x N unknowned invertible mixing matrix and S{k} is N x T  matrix
+% with the nth row corresponding to T samples of the nth source in the kth
+% dataset.  For IVA it is assumed that the source is statistically
+% independent of all the sources within a dataset and exactly dependent on
+% at most one source in each of the other datasets. The data, X, is a 
+% 3-dimensional matrix of dimensions N x T x K. 
 % 
-% varargin - an optional input which is a structure containing the
-% following elements. Note that default values are listed next to the 
-% structure elements.
+%%% Output:
+% W - the estimated demixing matrices so that ideally W{k}*A{k} = P*D{k}
+% where P is any arbitrary permutation matrix and D{k} is any diagonal
+% invertible (scaling) matrix.  Note P is common to all datasets; this is
+% to indicate that the local permuation ambiguity between dependent sources
+% across datasets should ideally be resolved by IVA.
 %
-%    'whiten',true, ... % whitening is optional
-%    'verbose',false, ... % verbose true enables print statements
-%    'A',[], ... % true mixing matrices A, automatically sets verbose
-%    'W_init',[], ... % initial estimates for demixing matrices in W
-%    'maxIter',2*512, ... % max number of iterations
-%    'terminationCriterion','ChangeInW', ... % criterion for terminating iterations: (ChangeInCost), ChangeInW
-%    'termThreshold',1e-4, ... % termination threshold
-%    'alpha0',0.1 ... % initial step size scaling
+% cost_function - the objective function for each iteration
 %
-% Output:
-% W - the estimated demixing matrices so that ideally 
-% W(:,:,k)*A(:,:,k) = P*D(:,:,k) where P is any arbitrary permutation 
-% matrix and D(:,:,k) is any diagonal invertible (scaling) matrix.  Note P 
-% is common to all datasets; this is to indicate that the local permuation 
-% ambiguity between dependent sources across datasets should ideally be 
-% resolved by IVA.
+%%% Required functions in this package:
+% decouple_trick.m
+% getopt.m
+% logdet.m
+% pca_whitening.m
 %
-% cost - the cost for each iteration
+%%% Example call:
+% W = iva_l_sos(X, 'initW', W0, 'minIter', 100)
+% Optional input pairs and default values are given in Params
+%
+%%% References
+% [1]- S. Bhinge, R. Mowakeaa, V.D. Calhoun, T. Adali, "Extraction of time-varying 
+%    spatio-temporal networks using parameter-tuned constrained IVA." IEEE 
+%    Transactions on Medical Imaging, 2019, vol. 38, no. 7, 1715-1725 
+% [2] - Mowakeaa, R., Boukouvalas, Z., Long, Q., & Adali, T. (2019). "IVA using
+%    complex multivariate GGD: application to fMRI analysis."
+%    Multidimensional Systems and Signal Processing, 1-20.
+% [3] - E. E. Kumbasar, H. Yang, V. Trung, V. D. Calhoun, & T. Adali, 
+%    "Fusion of Multitask fMRI Data with Constrained Independent Vector 
+%    Analysis,"2025 59th Annual Conference on Information Sciences and Systems 
+%    (CISS), Baltimore, MD, USA, 2025, pp. 1-6.
+% [3] - 
+%%% Copyright (C) 2024 MLSP Lab
 % 
-% isi - joint inter-symbol-interference is available if user supplies true
-% mixing matrices for computing a performance metric. Returns NaN if mixing
-% matrix is not given as input.
-%
-%
-% Example call:
-% W=iva_mpe_decp_v2(X)
-%
-% To test code call function with no input arguments: iva_mpe_decp_v2
-%
-% Coded by Matthew Anderson (matt.anderson at umbc.edu)
-% Modified by Suchita Bhinge (suchita1 at umbc.edu) on September 14 2018:
-% Modification is in the score function in order to account for effect on
-% large number of datasets
-%
-% References:
-%
-% [1] S. Bhinge, R. Mowakeaa, V. D. Calhoun, & T. Adali, "Extraction of time-varying spatio-temporal networks using parameter-tuned constrained IVA," Transaction on Medical Imaging, accepted for publication.
-% [2] M. Anderson, T. Adali, & X.-L. Li,  "Joint Blind Source Separation of Multivariate Gaussian Sources: Algorithms and Performance Analysis," IEEE Trans. Signal Process., 2012, 60, 1672-1683
-% [3] M. Anderson, G.-S. Fu, R. Phlypo, and T. Adali, "Independent vector analysis: Identification conditions and performance bounds," IEEE Trans. Signal Processing, vol. 62, pp. 4399-4410, Sep. 2014.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+% GNU General Public License for more details.
+% Please make sure you include the references in any related work.
+% 
+% A copy of the GNU General Public License can be found at
+% <https://mlsp.umbc.edu/resources.html>.
+% If not, see <https://www.gnu.org/licenses/>.
+
 
 % Version 01 - 20120919 - Initial publication.
 % Version 02 - 20140806 - Improved notation in comments.
@@ -70,231 +77,177 @@ if nargin==0
    return
 end
 
-%% Gather Options
-
-% build default options structure
-Params=struct( ...
-   'whiten',true, ... % whitening is optional
-   'gradProjection',false, ... % project gradient onto orthogonal direction
-   'verbose',true, ... % verbose true enables print statements
-   'A',[], ... % true mixing matrices A, automatically sets verbose
-   'initW',[], ... % initial estimates for demixing matrices in W
-   'maxIter',2*512, ... % max number of iterations
-   'terminationCriterion','ChangeInW', ... % criterion for terminating iterations: ChangeInCost, (ChangeInW)
-   'termThreshold',1e-4, ... % termination threshold
-   'alpha0',1.0 ... % initial step size scaling
-   );
-
-% load in user supplied options
-Params=getopt(Params,varargin{:});
-alphaMin=Params.termThreshold; % alpha0 will max(alphaMin,alphaScale*alpha0)
-alphaScale=0.9;
-supplyA=~isempty(Params.A); % set to true if user has supplied true mixing matrices
-outputISI=false;
-
-%% Create cell versions
-% Faster than using the more natural 3-dimensional version
-if iscell(Params.A)
-   K=length(Params.A);
-   A=zeros([size(Params.A{1}) K]);
-   for k=1:K
-      A(:,:,k)=Params.A{k};
-   end
-   Params.A=A;
-   clear A
-end
-
-[N,T,K]=size(X); % the input format insures all datasets have equal number of samples
-
-if Params.whiten
-   [X,V]=whiten(X);
-else
-    %Whitening matrix is identity matrix, needed for seed
-    for k = 1 : K
-        V(:,:,k) = diag(ones(1,N));
+    %% Gather Options
+    [N, T, K] = size(X);
+    
+    %% Gather options
+    
+    % build default options structure
+    Params = struct( ...
+        'whiten', true, ... % whitening is optional
+        'initW', [], ... % initial estimates for demixing matrices in W
+        'maxIter', 1000, ... % max number of iterations
+        'minIter', 300, ... % min number of iterations
+        'termThreshold', 1e-6, ... % termination threshold based on change in W
+        'alpha0', 1, ... % initial step size
+        'stepsizeDecrease', 0.95, ... % decrement scale in step size if cost function increases
+        'minStepsize', 1e-6, ... % minimum step size
+        'checkpoints', false, ... % periodically save current results
+        'updateCOV', true, ... % update the covariance estimate for every k
+        'sortSCVs', true, ... % reoder SCVs from most to least ill-conditioned
+        'checkpointID', '' ... % for naming the checkpoint files
+    );
+    
+    % load in user supplied options
+    Params = getopt(Params, varargin{:});
+    beta = 0.5;
+    stepsize = Params.alpha0;
+    
+    
+    % compute Kotz constant while avoiding numerical error when K is large
+    % and/or beta is small
+    % COV = p_Kotz * Sigma
+    log_p_Kotz = log(2) / beta + gammaln((K + 2)/2/beta) - log(K) - gammaln(K/2/beta);
+    p_Kotz = exp(log_p_Kotz);
+    
+    if Params.whiten
+        [X, V] = pca_whitening(X);
     end
-end
-
-Rx=cell(K,K);
-for k1=1:K
-   Rx{k1,k1}=1/T*(X(:,:,k1)*X(:,:,k1)');
-   for k2=(k1+1):K
-      Rx{k1,k2}=1/T*(X(:,:,k1)*X(:,:,k2)');
-      Rx{k2,k1}=Rx{k1,k2}';
-   end
-end
-
-
-%% Initialize W
-if ~isempty(Params.initW)
-   W=Params.initW;
-   if size(W,3)==1 && size(W,1)==N && size(W,2)==N
-      W=repmat(W,[1,1,K]);
-   end
-   if Params.whiten
-      for k=1:K
-         W(:,:,k)=W(:,:,k)/V(:,:,k);
-      end
-   end
-else
-   W=randn(N,N,K);
-end
-
-for k=1:K
-   W(:,:,k)=vecnorm(W(:,:,k)')';
-end
-%% When mixing matrix A supplied
-% verbose is set to true
-% outputISI can be computed if requested
-% A matrix is conditioned by V if data is whitened
-if supplyA
-   % only reason to supply A matrices is to display running performance
-   %Params.verbose=true;
-   if nargout>2
-      outputISI=true;
-   end
-   if Params.whiten
-      for k = 1:K
-         Params.A(:,:,k) = V(:,:,k)*Params.A(:,:,k);
-      end
-   end
-end
-
-%% Initialize some local variables
-cost=nan(1,Params.maxIter);
-gammaShape=(K+1).^0.5; %.. Modified by Suchita Bhinge... September 14 2018
-isi=nan(1,Params.maxIter);
-Y=X*0;
-
-%% Main Iteration Loop
-for iter = 1:Params.maxIter
-   termCriterion=0;
-   
-   % Current estimated sources
-   for k=1:K
-      Y(:,:,k)=W(:,:,k)*X(:,:,k);
-   end
-   
-   % Some additional computations of performance via ISI when true A is supplied
-   if supplyA
-      [amari_avg_isi,amari_joint_isi]=bss_isi(W,Params.A);
-      if outputISI
-         isi(iter)=amari_joint_isi;
-      end
-   end
-   
-   W_old=W; % save current W as W_old
-   [cost(iter),~,ft(iter),st(iter)]=comp_l_sos_cost(W,X);
-   Q=0; R=0;
-   
-   for n=1:N      
-      
-      [hnk,Q,R]=decouple_trick(W,n,Q,R);
-      
-      yn=squeeze(Y(n,:,:))';
-      % Efficient version of Ryn=yn*yn'/T;
-      Ryn=eye(K); %
-      for k1=1:K
-         for k2=k1:K
-            Ryn(k1,k2)=W(n,:,k1)*Rx{k1,k2}*W(n,:,k2)';
-            if k1~=k2
-               Ryn(k2,k1)=Ryn(k1,k2)';
+    
+    % Pre-compute correlation in X
+    Rx = cell(K, K);
+    for k = 1:K
+        Rx{k, k} = 1 / T * (X(:, :, k) * X(:, :, k)');
+        for k2 = (k + 1):K
+            Rx{k, k2} = 1 / T * (X(:, :, k) * X(:, :, k2)');
+            Rx{k2, k} = Rx{k, k2}';
+        end
+    end
+    
+    % Initialize W
+    if ~isempty(Params.initW)
+        W = Params.initW;
+        if Params.whiten
+            for k = 1:K
+                W(:, :, k) = W(:, :, k) / V(:, :, k);
             end
-         end % k2
-      end %k1
-      
-      %% Loop over each dataset
-      for k=1:K
-         % Derivative of cost function with respect to wnk
-         invRyn=inv(Ryn);
-         gipyn=dot(yn,invRyn*yn); %#ok<MINV> % since inverse already inverted, this is faster than Cov_n\yn
-         
-         phi=(invRyn(k,:)*yn).*gipyn.^(-0.5)*gammaShape; %.. Modified by Suchita Bhinge... September 14 2018
-         dW= (X(:,:,k)*phi')/T - hnk(:,k)/(W(n,:,k)*hnk(:,k));
-         
-         if Params.gradProjection
-            dW=vecnorm(dW - W(n,:,k)*dW*W(n,:,k)'); % non-colinear direction normalized
-         end
-         
-         W(n,:,k)=vecnorm(W(n,:,k)' - Params.alpha0*dW)';
-         yn(k,:)=W(n,:,k)*X(:,:,k);
-         
-         for kk=1:K
-            Ryn(k,kk)=W(n,:,k)*Rx{k,kk}*W(n,:,kk)'; % = yn*yn'/T;
-         end
-         Ryn(:,k)=Ryn(k,:)';
-      end % k
-   end % n
-   
-   %% Calculate termination criterion
-   switch lower(Params.terminationCriterion)
-      case lower('ChangeInW')
-         for k=1:K
-            termCriterion = max(termCriterion,max(1-abs(diag(W_old(:,:,k)*W(:,:,k)'))));
-         end % k
-      case lower('ChangeInCost')
-         if iter==1
-            termCriterion=1;
-         else
-            termCriterion=abs(cost(iter-1)-cost(iter))/abs(cost(iter));
-         end
-      otherwise
-         error('Unknown termination method.')
-   end
-   
-   %% Check the termination condition
-   if termCriterion < Params.termThreshold || iter == Params.maxIter
-       
-      break;
-   elseif isnan(cost(iter))
-      for k = 1:K
-         W(:,:,k) = eye(N) + 0.1*randn(N);
-      end
-      if Params.verbose
-         fprintf('\n W blowup, restart with new initial value.');
-      end
-   elseif iter>1 && cost(iter)>cost(iter-1)
-      % see if this improves convergence
-      Params.alpha0=max(alphaMin,alphaScale*Params.alpha0);
-   end
-   
-   %% Display Iteration Information
-   if Params.verbose
-      if supplyA
-         fprintf('\n Step %d: W change: %f, Cost: %f, Avg ISI: %f, Joint ISI: %f',  ...
-            iter, termCriterion,cost(iter),amari_avg_isi,amari_joint_isi);
-      else
-         fprintf('\n Step %d: W change: %f, Cost: %f', iter, termCriterion,cost(iter));
-      end
-   end % options.verbose
-end % iter
-
-%% Finish Display
-if iter==1 && Params.verbose
-   if supplyA
-      fprintf('\n Step %d: W change: %f, Cost: %f, Avg ISI: %f, Joint ISI: %f',  ...
-         iter, termCriterion,cost(iter),amari_avg_isi,amari_joint_isi);
-   else
-      fprintf('\n Step %d: W change: %f, Cost: %f', iter, termCriterion,cost(iter));
-   end
-end % options.verbose
-
-if Params.verbose
-   fprintf('\n');
-end
-
-%% Clean-up Outputs
-if Params.whiten
-   for k=1:K
-      W(:,:,k)=W(:,:,k)*V(:,:,k);
-   end
-end
-
+        end
+    else
+        W = randn(N, N, K);
+    end
+    % make sure rows of W is normalized
+    for k = 1:K
+        W(:, :, k) = vecnorm(W(:, :, k));
+    end
+    
+    % Initialize source-related quantities based on initial W
+    COV_N_est = zeros(K, K, N);
+    Y = zeros(size(X));
+    for k = 1:K
+        Y(:, :, k) = W(:, :, k) * X(:, :, k);
+    
+        for n = 1:N
+            for k2 = k:K
+                COV_N_est(k, k2, n) = W(n, :, k) * Rx{k, k2} * W(n, :, k2)';
+                if k < k2
+                    COV_N_est(k2, k, n) = COV_N_est(k, k2, n);
+                end
+            end
+        end
+    end
+    Sigma_N_est = COV_N_est / p_Kotz;
+    
+    %% Run algorithm
+    cost_function = [];
+    cost_const = N * (K / 2 * log(pi) + gammaln(K/2/beta) + K / 2 / beta * log(2) - log(beta) - gammaln(K/2));
+    for iter = 1:Params.maxIter
+    
+        cost = cost_const;
+        for n = 1:N
+            Yn = squeeze(Y(n, :, :)); % TxK
+            Zn = Yn / Sigma_N_est(:, :, n); % TxK
+            cost = cost + .5 * logdet(Sigma_N_est(:, :, n)) + 0.5 * mean(dot(Zn, Yn, 2).^beta);
+        end
+        for k = 1:K
+            cost = cost - log(abs(det(W(:, :, k))));
+        end
+        cost_function = [cost_function, cost];
+        if length(cost_function) > 1 && cost_function(end) > cost_function(end-1)
+            stepsize = max(stepsize*Params.stepsizeDecrease, Params.minStepsize);
+        end
+    
+        W_old = W;
+        Q = 0;
+        R = 0;
+        for n = 1:N
+            [Dn, Q, R] = decouple_trick(W, n, Q, R); % N*K
+    
+            Yn = squeeze(Y(n, :, :)); % TxK
+            Zn = Yn / Sigma_N_est(:, :, n); % TxK
+            ySiy = dot(Zn, Yn, 2).^(beta - 1); % Tx1
+            for k = 1:K
+                phi_nk = Zn(:, k) .* ySiy; % Tx1
+                dWnk = (beta/T) * X(:, :, k) * phi_nk - Dn(:, k) / (W(n, :, k) * Dn(:, k)); % Nx1
+    
+                dWnk = dWnk - W(n, :, k) * dWnk * W(n, :, k)'; % Nx1
+                dWnk = dWnk / norm(dWnk); % check Li's 2010 TSP paper
+                temp = W(n, :, k) - stepsize * dWnk';
+                W(n, :, k) = temp / norm(temp); % 1xN
+    
+                % update variables that depend on Wnk
+                Yn(:, k) = W(n, :, k) * X(:, :, k);
+                for k2 = 1:K
+                    Sigma_N_est(k, k2, n) = W(n, :, k) * Rx{k, k2} * W(n, :, k2)' / p_Kotz;
+                    Sigma_N_est(k2, k, n) = Sigma_N_est(k, k2, n);
+                end
+                if Params.updateCOV && k < K
+                    Zn = Yn / Sigma_N_est(:, :, n); % TxK
+                    ySiy = dot(Zn, Yn, 2).^(beta - 1); % Tx1
+                end
+            end % k
+    
+            Y(n, :, :) = Yn;
+        end % n
+    
+        currentChange = 0;
+        for k = 1:K
+            currentChange = max(currentChange, max(1-abs(diag(W_old(:, :, k)*W(:, :, k)'))));
+        end
+    
+        if currentChange < Params.termThreshold && iter > Params.minIter
+            break;
+        end
+    
+        if Params.checkpoints && mod(iter, 25) == 0
+            save(['cIVA_', num2str(iter), '_', char(datetime('now'), 'MM_dd_yyyy_HH_mm_ss'), '.mat'], 'W', 'cost_function', ...
+                'stepsize', 'currentChange', 'COV_N_est', 'dWnk')
+        end
+    end
+    
+    %% Dewhitening
+    if Params.whiten
+        for k = 1:K
+            W(:, :, k) = W(:, :, k) * V(:, :, k);
+        end
+    end
+    
+    % Resort order of SCVs from most to least ill-conditioned
+    if Params.sortSCVs
+        % det_COV = zeros(n, 1); %ce111025 typo
+        det_COV = zeros(N, 1); 
+        for n = 1:N
+            det_COV(n) = det(COV_N_est(:, :, n));
+        end
+        [~, isort] = sort(det_COV);
+        % COV_N_est=COV_N_est(:,:,isort);
+        for k = 1:K
+            W(:, :, k) = W(isort, :, k);
+        end
+    end
 
 %% Return
-
 return;
-% END OF iva_mpe_decp_v2
+% END OF iva
 
 function test_iva_mpe_decp_v2
 %% built-in test function for iva_mpe_decp_v2
@@ -1305,3 +1258,96 @@ else
    end % nargout>2
 end
 return
+
+function v = logdet(A, op)
+%LOGDET Computation of logarithm of determinant of a matrix
+%
+%   v = logdet(A);
+%       computes the logarithm of determinant of A. 
+%
+%       Here, A should be a square matrix of double or single class.
+%       If A is singular, it will returns -inf.
+%
+%       Theoretically, this function should be functionally 
+%       equivalent to log(det(A)). However, it avoids the 
+%       overflow/underflow problems that are likely to 
+%       happen when applying det to large matrices.
+%
+%       The key idea is based on the mathematical fact that
+%       the determinant of a triangular matrix equals the
+%       product of its diagonal elements. Hence, the matrix's
+%       log-determinant is equal to the sum of their logarithm
+%       values. By keeping all computations in log-scale, the
+%       problem of underflow/overflow caused by product of 
+%       many numbers can be effectively circumvented.
+%
+%       The implementation is based on LU factorization.
+%
+%   v = logdet(A, 'chol');
+%       If A is positive definite, you can tell the function 
+%       to use Cholesky factorization to accomplish the task 
+%       using this syntax, which is substantially more efficient
+%       for positive definite matrix. 
+%
+%   Remarks
+%   -------
+%       logarithm of determinant of a matrix widely occurs in the 
+%       context of multivariate statistics. The log-pdf, entropy, 
+%       and divergence of Gaussian distribution typically comprises 
+%       a term in form of log-determinant. This function might be 
+%       useful there, especially in a high-dimensional space.       
+%
+%       Theoretially, LU, QR can both do the job. However, LU 
+%       factorization is substantially faster. So, for generic
+%       matrix, LU factorization is adopted. 
+%
+%       For positive definite matrices, such as covariance matrices,
+%       Cholesky factorization is typically more efficient. And it
+%       is STRONGLY RECOMMENDED that you use the chol (2nd syntax above) 
+%       when you are sure that you are dealing with a positive definite
+%       matrix.
+%
+%   Examples
+%   --------
+%       % compute the log-determinant of a generic matrix
+%       A = rand(1000);
+%       v = logdet(A);
+%
+%       % compute the log-determinant of a positive-definite matrix
+%       A = rand(1000);
+%       C = A * A';     % this makes C positive definite
+%       v = logdet(C, 'chol');
+%
+
+%   Copyright 2008, Dahua Lin, MIT
+%   Email: dhlin@mit.edu
+%
+%   This file can be freely modified or distributed for any kind of 
+%   purposes.
+%
+
+%% argument checking
+
+assert(isfloat(A) && ndims(A) == 2 && size(A,1) == size(A,2), ...
+    'logdet:invalidarg', ...
+    'A should be a square matrix of double or single class.');
+
+if nargin < 2
+    use_chol = 0;
+else
+    assert(strcmpi(op, 'chol'), ...
+        'logdet:invalidarg', ...
+        'The second argument can only be a string ''chol'' if it is specified.');
+    use_chol = 1;
+end
+
+%% computation
+
+if use_chol
+    v = 2 * sum(log(diag(chol(A))));
+else
+    [L, U, P] = lu(A);
+    du = diag(U);
+    c = det(P) * prod(sign(du));
+    v = log(c) + sum(log(abs(du)));
+end

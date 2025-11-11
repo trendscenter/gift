@@ -661,7 +661,7 @@ switch (lower(ica_algorithm))
         
         inputText(numParameters).promptString = 'Enter stopping tolerance';
         inputText(numParameters).uiType = 'edit';
-        inputText(numParameters).answerString = num2str(1e-4);
+        inputText(numParameters).answerString = num2str(1e-6);
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'termThreshold';
         inputText(numParameters).enable = 'on';
@@ -677,24 +677,25 @@ switch (lower(ica_algorithm))
         
         numParameters = numParameters + 1;
         
-        inputText(numParameters).promptString = 'Select stopping criteria';
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).answerString = char('ChangeInW', 'ChangeInCost');
-        inputText(numParameters).dataType = 'string';
-        inputText(numParameters).tag = 'terminationCriterion';
-        inputText(numParameters).enable = 'on';
-        
-        numParameters = numParameters + 1;
-        
-        inputText(numParameters).promptString = 'Display statements';
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).answerString = char('true', 'false');
-        inputText(numParameters).dataType = 'numeric';
-        inputText(numParameters).tag = 'verbose';
-        inputText(numParameters).enable = 'on';
-        
-        
-        numParameters = numParameters + 1;
+% % % %         ce111125
+% % % %         inputText(numParameters).promptString = 'Select stopping criteria';
+% % % %         inputText(numParameters).uiType = 'popup';
+% % % %         inputText(numParameters).answerString = char('ChangeInW', 'ChangeInCost');
+% % % %         inputText(numParameters).dataType = 'string';
+% % % %         inputText(numParameters).tag = 'terminationCriterion';
+% % % %         inputText(numParameters).enable = 'on';
+% % % %         
+% % % %         numParameters = numParameters + 1;
+% % % %         
+% % % %         inputText(numParameters).promptString = 'Display statements';
+% % % %         inputText(numParameters).uiType = 'popup';
+% % % %         inputText(numParameters).answerString = char('true', 'false');
+% % % %         inputText(numParameters).dataType = 'numeric';
+% % % %         inputText(numParameters).tag = 'verbose';
+% % % %         inputText(numParameters).enable = 'on';
+% % % %         
+% % % %         
+% % % %         numParameters = numParameters + 1;
         
         inputText(numParameters).promptString = 'Enter initial weights. You can use iva-g or any valid evaluation string.';
         inputText(numParameters).uiType = 'edit';
