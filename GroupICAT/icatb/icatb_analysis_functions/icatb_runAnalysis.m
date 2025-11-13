@@ -105,7 +105,7 @@ try
     doSPMStats = 0;
 
     sar_algolist = (icatb_icaAlgorithm);
-    if strcmpi('iva',sar_algolist(sesInfo.userInput.algorithm,1:3))
+    if icatb_string_compare('iva',lower(sar_algolist(sesInfo.userInput.algorithm,:)))
         if (sesInfo.userInput.numOfSub == 1) && (sesInfo.userInput.numOfSess == 1)
             %If IVA is run with single subject it will run ICA instead
             disp(['icatb_warn [' char(datetime) '] runAnalysis: Please note that IVA is identical to ICA for single subject analysis!']);
@@ -276,10 +276,12 @@ try
     
     
     if (strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained'))
-        % No data reduction
-        stepsToRun(stepsToRun == 3) = [];
-        % No back-reconstruction
-        stepsToRun(stepsToRun == 5) = [];
+        if ~icatb_string_compare('iva',lower(sar_algolist(sesInfo.userInput.algorithm,:)))
+            % No data reduction unless IVA
+            stepsToRun(stepsToRun == 3) = [];
+            % No back-reconstruction  unless IVA
+            stepsToRun(stepsToRun == 5) = [];
+        end
     end
     
     

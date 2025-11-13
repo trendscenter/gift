@@ -123,7 +123,7 @@ if strcmpi(ica_types{sesInfo.algorithm}, 'gig-ica')
     ica_types{sesInfo.algorithm} = 'moo-icar';
 end
 
-if (strcmpi(ica_types{sesInfo.algorithm}, 'moo-icar') || strcmpi(ica_types{sesInfo.algorithm}, 'constrained ica (spatial)'))
+if (strcmpi(ica_types{sesInfo.algorithm}, 'moo-icar') || icatb_string_compare(ica_types{sesInfo.algorithm}, 'constrained'))
     % No data reduction
     stepsToCheck(stepsToCheck == 3) = [];
     % No back-reconstruction
@@ -157,7 +157,7 @@ for nStep = stepsToCheck
             end
             
             chkOneStepPCA = strcmpi(ica_types{sesInfo.algorithm}, 'iva-gl') || strcmpi(ica_types{sesInfo.algorithm}, 'iva-l') || strcmpi(ica_types{sesInfo.algorithm}, 'moo-icar') || ...
-                strcmpi(ica_types{sesInfo.algorithm}, 'constrained ica (spatial)');
+               icatb_string_compare(ica_types{sesInfo.algorithm}, 'constrained');
             
             totalPCAs = sesInfo.reduction(j).numOfGroupsAfterCAT;
             
@@ -479,7 +479,7 @@ for nStep = stepsToCheck
         end
         
         if (~strcmpi(ica_types{sesInfo.algorithm}, 'iva-gl') && ~strcmpi(ica_types{sesInfo.algorithm}, 'iva-l') && ~strcmpi(ica_types{sesInfo.algorithm}, 'moo-icar') && ...
-                ~strcmpi(ica_types{sesInfo.algorithm}, 'constrained ica (spatial)'))
+                ~icatb_string_compare(ica_types{sesInfo.algorithm}, 'constrained'))
             
             try
                 

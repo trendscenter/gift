@@ -21,8 +21,10 @@ function varargout = icatb_icaAlgorithm(ica_algorithm, data, ICA_Options)
 if (strcmpi(modalityType, 'fmri'))
     % all the available algorithms for fmri data
     icaAlgo = char('Infomax','Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
-        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', 'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'MOO-ICAR', ...
-        'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', 'IVA-L-SOS-Adaptive', 'Adaptive Reverse Constrained ICA EBM');
+        'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'Radical ICA', ...
+        'Combi', 'ICA-EBM', 'ERBM', 'IVA-GL', 'MOO-ICAR', 'IVA-L', 'Sparse ICA-EBM', ...
+        'IVA-L-SOS', 'IVA-L-SOS-Adaptive', 'Adaptive Reverse Constrained ICA EBM', ...
+        'Adaptive Reverse Constrained IVA Gauss', 'Threshold Free Constrained IVA Gauss');
 elseif (strcmpi(modalityType, 'smri'))
     % all the available algorithms for EEG data
     icaAlgo = char('Infomax', 'Fast ICA', 'Erica', 'Simbec', 'Evd', 'Jade Opac', 'Amuse', ...
@@ -373,11 +375,24 @@ if (nargin > 0 && nargin <= 3)
             end
 
             [icasig_tmp, A, W] = icatb_AR_Constrainguess_mated_ICA_EBM(data, ref_data, ICA_Options{:});
-            
+        case 'adaptive reverse constrained iva gauss'
+            ICA_Options{end + 1} = 'whiten';
+            ICA_Options{end + 1} = false;  
+            ref_data = icatb_read_data(ICA_Options{2}{1}, [], ICA_Options{2}{2});   
+            [W, cost_function, eps_yr] = icatb_ar_constrained_ivag(data, ref_data, ICA_Options{3:length(ICA_Options)});
+            [W, A, icasig_tmp] = correct_sign(W, data);
+
+        case 'threshold free constrained iva gauss'
+
+            ICA_Options{end + 1} = 'whiten';
+            ICA_Options{end + 1} = false;
+            ref_data = icatb_read_data(ICA_Options{2}{1}, [], ICA_Options{2}{2}); 
+            [W, cost_function, eps_yr] = icatb_tf_constrained_ivag(data, ref_data, ICA_Options{3:length(ICA_Options)});
+            [W, A, icasig_tmp] = correct_sign(W, data);
+
+
             
             % Add your own ICA algorithm code below
-            
-            
     end
     % end for checking the ICA algorithms
     

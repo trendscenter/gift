@@ -233,7 +233,6 @@ end
     
     % Resort order of SCVs from most to least ill-conditioned
     if Params.sortSCVs
-        % det_COV = zeros(n, 1); %ce111025 typo
         det_COV = zeros(N, 1); 
         for n = 1:N
             det_COV(n) = det(COV_N_est(:, :, n));

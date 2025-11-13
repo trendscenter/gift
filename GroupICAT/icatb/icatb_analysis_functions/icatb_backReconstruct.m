@@ -41,7 +41,10 @@ if strcmpi(algorithmName, 'gig-ica')
 end
 
 if (strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained') )
-    return;
+    if ~icatb_string_compare('iva',lower(algorithmName))
+        %keep going if IVA
+        return;
+    end
 end
 
 useTemporalICA = 0;

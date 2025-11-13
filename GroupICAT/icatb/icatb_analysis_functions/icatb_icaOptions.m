@@ -677,26 +677,6 @@ switch (lower(ica_algorithm))
         
         numParameters = numParameters + 1;
         
-% % % %         ce111125
-% % % %         inputText(numParameters).promptString = 'Select stopping criteria';
-% % % %         inputText(numParameters).uiType = 'popup';
-% % % %         inputText(numParameters).answerString = char('ChangeInW', 'ChangeInCost');
-% % % %         inputText(numParameters).dataType = 'string';
-% % % %         inputText(numParameters).tag = 'terminationCriterion';
-% % % %         inputText(numParameters).enable = 'on';
-% % % %         
-% % % %         numParameters = numParameters + 1;
-% % % %         
-% % % %         inputText(numParameters).promptString = 'Display statements';
-% % % %         inputText(numParameters).uiType = 'popup';
-% % % %         inputText(numParameters).answerString = char('true', 'false');
-% % % %         inputText(numParameters).dataType = 'numeric';
-% % % %         inputText(numParameters).tag = 'verbose';
-% % % %         inputText(numParameters).enable = 'on';
-% % % %         
-% % % %         
-% % % %         numParameters = numParameters + 1;
-        
         inputText(numParameters).promptString = 'Enter initial weights. You can use iva-g or any valid evaluation string.';
         inputText(numParameters).uiType = 'edit';
         inputText(numParameters).answerString = 'iva-g';
@@ -1015,7 +995,118 @@ switch (lower(ica_algorithm))
         inputText(numParameters).dataType = 'string';
         inputText(numParameters).tag = 'complexestimation';
         inputText(numParameters).enable = 'on';
+
+    case 'adaptive reverse constrained iva gauss'
+        %% adaptive reverse constrained iva gauss
         
+        dlg_title = 'Select the Options for the daptive reverse constrained iva gauss distribution algorithm';
+        
+        numParameters = 1;
+        
+        inputText(numParameters).promptString = 'Select verbose';
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).answerString = char('true', 'false');
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'verbose';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter initial weights. You can use any valid evaluation string.';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'initW';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter stopping tolerance';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1e-6);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'minChange';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter initial step size';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '1';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'initStepsize';
+        inputText(numParameters).enable = 'on';
+
+        inputText(numParameters).promptString = 'Enter mmin no. of iterations';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(100);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'minIter';
+        inputText(numParameters).enable = 'on';           
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'Enter max no. of iterations';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1000);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'maxIter';
+        inputText(numParameters).enable = 'on';    
+
+    case 'threshold free constrained iva gauss'
+        %% threshold free constrained iva gauss
+        
+        dlg_title = 'Select the Options for the threshold free constrained iva gauss distribution algorithm';
+        
+        numParameters = 1;
+        
+        inputText(numParameters).promptString = 'Select verbose';
+        inputText(numParameters).uiType = 'popup';
+        inputText(numParameters).answerString = char('true', 'false');
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'verbose';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter initial weights. You can use any valid evaluation string.';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'initW';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter stopping tolerance';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1e-6);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'minChange';
+        inputText(numParameters).enable = 'on';
+        
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'Enter initial step size';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '1';
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'initStepsize';
+        inputText(numParameters).enable = 'on';
+
+        inputText(numParameters).promptString = 'Enter mmin no. of iterations';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(100);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'minIter';
+        inputText(numParameters).enable = 'on';           
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'Enter max no. of iterations';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1000);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'maxIter';
+        inputText(numParameters).enable = 'on';    
 end
 %% End for ICA algorithm options
 

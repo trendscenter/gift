@@ -181,7 +181,7 @@ prevrend.col = col;
 %==========================================================================
 %spm('Pointer','Watch');
 
-%ce081722 if showbar, spm_progress_bar('Init', size(dat,1)*length(rend),...
+%%% % %%% if showbar, spm_progress_bar('Init', size(dat,1)*length(rend),...
 %         'Formatting Renderings', 'Number completed'); end
 for i=1:length(rend)
     rend{i}.max=0;
@@ -199,12 +199,12 @@ for i=1:length(rend)
     end
     rend{i}.ren(rend{i}.ren>=1) = 1;
     rend{i}.ren(rend{i}.ren<=0) = 0;
-    %ce081722     if showbar, spm_progress_bar('Set', i); end
+    %%% % %%%     if showbar, spm_progress_bar('Set', i); end
 end
-%ce081722 if showbar, spm_progress_bar('Clear'); end
+%%% % %%% if showbar, spm_progress_bar('Clear'); end
 
-%ce081722 if showbar, spm_progress_bar('Init', length(dat)*length(rend),...
-%ce081722         'Making pictures', 'Number completed'); end
+%%% % %%% if showbar, spm_progress_bar('Init', length(dat)*length(rend),...
+%%% % %%%         'Making pictures', 'Number completed'); end
 
 mx = zeros(length(rend),1)+eps;
 mn = zeros(length(rend),1);
@@ -273,14 +273,14 @@ for j=1:length(dat)
         
         rend{i}.data{j} = X;
         
-        %ce081722 if showbar, spm_progress_bar('Set', i+(j-1)*length(rend)); end
+        %%% % %%% if showbar, spm_progress_bar('Set', i+(j-1)*length(rend)); end
     end
 end
 
 mxmx = max(mx);
 mnmn = min(mn);
 
-%ce081722 if showbar, spm_progress_bar('Clear'); end
+%%% % %%% if showbar, spm_progress_bar('Clear'); end
 
 %-Display
 %==========================================================================

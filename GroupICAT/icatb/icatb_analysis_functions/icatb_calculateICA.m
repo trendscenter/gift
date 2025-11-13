@@ -202,7 +202,7 @@ if (strcmpi(modalityType, 'fmri'))
     end
 end
 
-if (~strcmpi(algorithmName, 'moo-icar') && ~icatb_string_compare(algorithmName, 'constrained'))
+if ( icatb_string_compare('iva',lower(algorithmName)) || (~strcmpi(algorithmName, 'moo-icar') && ~icatb_string_compare(algorithmName, 'constrained'))  )
     data = icatb_getDataForICA(sesInfo, algorithmName, statusHandle);
 else
     parICAReference(sesInfo, algorithmName, parallel_info, statusHandle);

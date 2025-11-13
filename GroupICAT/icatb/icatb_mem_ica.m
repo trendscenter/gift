@@ -142,7 +142,7 @@ if strcmpi(icaAlgo, 'iva-gl')
         pca_opts(nOpts).precision = precisionType;
     end
     
-elseif (strcmpi(icaAlgo, 'constrained ica (spatial)') || strcmpi(icaAlgo, 'moo-icar'))
+elseif (icatb_string_compare(icaAlgo, 'constrained') || strcmpi(icaAlgo, 'moo-icar'))
     
     mems = compute_mem_requirements(1, voxels, time_points, time_points, numOfPC1, precisionType);
     chk = strcmpi(mems(:, 3), 'yes');

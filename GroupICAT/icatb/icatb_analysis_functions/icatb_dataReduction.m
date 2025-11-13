@@ -44,7 +44,10 @@ if (strcmpi(algoName, 'gig-ica'))
 end
 
 if (strcmpi(algoName, 'moo-icar') || icatb_string_compare(algoName, 'constrained'))
-    return;
+    if ~icatb_string_compare('iva',lower(algoName))
+        % If IVA then make PCA anyway
+        return;
+    end
 end
 
 

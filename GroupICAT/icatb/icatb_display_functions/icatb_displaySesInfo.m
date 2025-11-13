@@ -259,7 +259,7 @@ if strcmpi(selected_ica_algorithm, 'gig-ica')
 end
 
 
-if (~(strcmpi(selected_ica_algorithm, 'iva-gl') || strcmpi(selected_ica_algorithm, 'moo-icar') || strcmpi(selected_ica_algorithm, 'constrained ica (spatial)') || useTemporalICA))
+if (~(strcmpi(selected_ica_algorithm, 'iva-gl') || strcmpi(selected_ica_algorithm, 'moo-icar') || icatb_string_compare(selected_ica_algorithm, 'constrained') || useTemporalICA))
     % Back Reconstruction Type
     backReconType = 'Regular';
     if (isfield(sesInfo, 'backReconType'))

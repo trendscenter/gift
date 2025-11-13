@@ -71,7 +71,7 @@ if strcmpi(algorithmName, 'gig-ica')
     algorithmName = 'moo-icar';
 end
 
-if ((sesInfo.userInput.numOfSub*sesInfo.userInput.numOfSess == 1) || strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)'))
+if ((sesInfo.userInput.numOfSub*sesInfo.userInput.numOfSess == 1) || strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained'))
     showPerfsettings = 'off';
 end
 
@@ -150,7 +150,7 @@ if (conserve_disk_space == 1)
     userdata([6, 8]) = [];
 end
 
-if (strcmpi(algorithmName, 'moo-icar') || strcmpi(algorithmName, 'constrained ica (spatial)'))
+if (strcmpi(algorithmName, 'moo-icar') || icatb_string_compare(algorithmName, 'constrained'))
     
     chkSpInds = strcmpi(analysisStr, 'back reconstruct');
     analysisStr(chkSpInds) = [];
