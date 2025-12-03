@@ -1095,14 +1095,14 @@ switch (lower(ica_algorithm))
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'refNormalize';
         inputText(numParameters).enable = 'on';     
-% 
-%         numParameters = numParameters + 1;
-%         inputText(numParameters).promptString = 'correlation threshold for constrained algorithm (e.g.,0:0.01:1)';
-%         inputText(numParameters).uiType = 'edit';
-%         inputText(numParameters).answerString = '0:0.01:1';
-%         inputText(numParameters).dataType = 'string';
-%         inputText(numParameters).tag = 'rhoList';
-%         inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'correlation threshold for constrained algorithm (e.g.,0:0.01:1)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '0:0.01:1';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'rhoList';
+        inputText(numParameters).enable = 'on';
 
         numParameters = numParameters + 1;
         inputText(numParameters).promptString = 'penalty parameter';

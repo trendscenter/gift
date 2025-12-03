@@ -98,7 +98,7 @@ function groupAnalysis_Callback(hObject, eventdata, handles)
 
 % Setup ICA Analysis Callback
 
-analysisType = questdlg('Which Analysis You Want To Run?', 'Analysis Type', 'Standard ICA/IVA', 'Spatial Reference Based ICA', 'Standard ICA/IVA');
+analysisType = questdlg('Which Analysis You Want To Run?', 'Analysis Type', 'Standard ICA/IVA', 'Spatial Reference Based ICA/IVA', 'Standard ICA/IVA');
 
 if (isempty(analysisType))
     return;
