@@ -999,7 +999,7 @@ switch (lower(ica_algorithm))
     case 'adaptive reverse constrained iva gauss'
         %% adaptive reverse constrained iva gauss
         
-        dlg_title = 'Select the Options for the daptive reverse constrained iva gauss distribution algorithm';
+        dlg_title = 'Select the Options for the adaptive reverse constrained iva gauss distribution algorithm';
 
         numParameters = 1;
         
@@ -1016,7 +1016,6 @@ switch (lower(ica_algorithm))
         
         inputText(numParameters).promptString = 'Select verbose';
         inputText(numParameters).uiType = 'checkbox';
-%         inputText(numParameters).answerString = char('false','true'); %true def
         inputText(numParameters).value = 0; %false def
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'verbose';
@@ -1075,7 +1074,6 @@ switch (lower(ica_algorithm))
         numParameters = numParameters + 1;
         inputText(numParameters).promptString = 'whitening (T/F)';
         inputText(numParameters).uiType = 'checkbox';
-%         inputText(numParameters).answerString = char('false','true'); %false default
         inputText(numParameters).value = 0; %false def
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'whiten';
@@ -1098,13 +1096,13 @@ switch (lower(ica_algorithm))
         inputText(numParameters).tag = 'refNormalize';
         inputText(numParameters).enable = 'on';     
 
-%         numParameters = numParameters + 1;
-%         inputText(numParameters).promptString = 'correlation threshold for constrained algorithm (e.g.,0:0.01:1)';
-%         inputText(numParameters).uiType = 'edit';
-%         inputText(numParameters).answerString = '0:0.01:1';
-%         inputText(numParameters).dataType = 'string';
-%         inputText(numParameters).tag = 'rhoList';
-%         inputText(numParameters).enable = 'on';
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'correlation threshold for constrained algorithm (e.g.,0:0.01:1)';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '0:0.01:1';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'rhoList';
+        inputText(numParameters).enable = 'on';
 
         numParameters = numParameters + 1;
         inputText(numParameters).promptString = 'penalty parameter';
@@ -1161,7 +1159,6 @@ switch (lower(ica_algorithm))
         
         inputText(numParameters).promptString = 'Select verbose';
         inputText(numParameters).uiType = 'checkbox';
-%         inputText(numParameters).answerString = char('false','true'); %true def
         inputText(numParameters).value = 0; %false def
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'verbose';
@@ -1220,7 +1217,6 @@ switch (lower(ica_algorithm))
         numParameters = numParameters + 1;
         inputText(numParameters).promptString = 'whitening (T/F)';
         inputText(numParameters).uiType = 'checkbox';
-%         inputText(numParameters).answerString = char('false','true'); %false default
         inputText(numParameters).value = 0; %false def
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'whiten';
@@ -1286,6 +1282,8 @@ if exist('inputText', 'var')
     
     % Input dialog box
     answer = icatb_inputDialog('inputtext', inputText, 'Title', dlg_title, 'handle_visibility',  handle_visibility, 'windowStyle', windowStyle);
+
+
     
     
     % ICA options with flags and the values corresponding to it

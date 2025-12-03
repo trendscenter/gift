@@ -92,6 +92,13 @@ Params = struct( ...
     'updateCOV', true ... % update the covariance estimate for every k
 );
 
+% Change varargin so possible rhoList will use eval
+for i = 1:2:length(varargin)
+    if strcmpi('rhoList',varargin(i))   
+        varargin{i+1} = eval(varargin{i+1});
+    end
+end
+
 % load in user supplied options
 Params = getopt(Params, varargin{:});
 stepsize = Params.initStepsize;
