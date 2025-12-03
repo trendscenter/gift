@@ -85,6 +85,7 @@ Params = struct( ...
     'lambda', 1, ... % lagrange multiplier parameter
     'checkpoints', false, ... % periodically save current results
     'updateCOV', true, ... % update the covariance estimate for every k    
+    'verbose', false, ... % not used yet        
     'checkpointID', '' ... % for naming the checkpoint files
 );
 

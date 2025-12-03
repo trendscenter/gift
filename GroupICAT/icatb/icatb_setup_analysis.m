@@ -1700,7 +1700,6 @@ allAlgorithms = cellstr(get(hObject, 'string'));
 mask_ind = sesInfo.userInput.mask_ind;
 numComp = sesInfo.userInput.numComp;
 
-
 %% group ica type
 groupICATypeTag = 'group_ica_type';
 groupICAAnalysisHandle = findobj(handles, 'tag', groupICATypeTag);
@@ -1752,13 +1751,13 @@ end
 
 % Select the options of the ICA algorithm other than Erica ICA algorithm
 matchedInd = strmatch(algorithmName, lower({'Infomax', 'Fast ICA', 'SDD ICA', 'Semi-blind Infomax', 'Constrained ICA (Spatial)', 'FBSS', 'ERBM', 'IVA-GL', 'IVA-L', 'Sparse ICA-EBM', 'IVA-L-SOS', ...
-    'IVA-L-SOS-Adaptive', 'Adaptive Reverse Constrained ICA EBM'}), 'exact');
+    'IVA-L-SOS-Adaptive', 'Adaptive Reverse Constrained ICA EBM','Adaptive Reverse Constrained IVA Gauss', 'Threshold Free Constrained IVA Gauss'}), 'exact');
 
 sesInfo.userInput.ICA_Options = {};
 
 if (~isempty(matchedInd))
     
-    if strcmpi(ICAOPTIONS_WINDOW_DISPLAY, 'on')
+    if strcmpi(ICAOPTIONS_WINDOW_DISPLAY, 'on') 
         sesInfo.userInput.ICA_Options = icatb_icaOptions(dataSize, sesInfo.userInput.algorithm, ica_options_visibility);
     end
     % Check if cancel button for input dialog is selected
@@ -1841,7 +1840,17 @@ if (icatb_string_compare(algorithmName, 'constrained') || strcmpi(algorithmName,
         error('Aggregate images/spatial templates need to be selected in order to use moo-icar, constrained ica approaches or iva-l-sos-adaptive algorithms');
     end
     % end
-    
+
+    if icatb_string_compare(algorithmName, 'constrained iva')
+
+        n_ref_comps = size(spatial_references,1);
+        % Constrained IVA demands #components <= reference
+        tag_num_comp = findobj(handles, 'tag', 'numComp');
+        if str2num(tag_num_comp.String) < n_ref_comps
+            disp(['icatb_err[' char(datetime) '] For constrained IVA number of components have to be the same or higher than the reference. Please change Number of IC (perhaps 1.5x the number of ref components) and number of PCA accordingly.']);
+            error(['icatb_err[' char(datetime) '] For constrained IVA number of components have to be the same or higher than the reference. Please change Number of IC (perhaps 1.5x the number of ref components) and number of PCA accordingly.']);
+        end
+    end
     
     % Get the count for spatial reference files
     numSpatialFiles = icatb_get_countTimePoints(spatial_references);
@@ -1882,9 +1891,12 @@ if (icatb_string_compare(algorithmName, 'constrained') || strcmpi(algorithmName,
     
     % Update ICA Options
     sesInfo.userInput.ICA_Options = {'ref_data', {spatial_references, sesInfo.userInput.mask_ind}, ICAOptions{:}};
-    sesInfo.userInput.numComp = length(fileNumbers);
-    sesInfo.userInput.numOfPC1 = sesInfo.userInput.numComp;
-    
+    if sesInfo.userInput.numComp < length(fileNumbers)
+        sesInfo.userInput.numComp = length(fileNumbers);
+    end
+    if sesInfo.userInput.numOfPC1 < length(fileNumbers)
+        sesInfo.userInput.numOfPC1 = length(fileNumbers);
+    end    
 end
 % End for implementing the Multi-fixed ICA algorithm
 

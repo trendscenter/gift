@@ -262,6 +262,22 @@ handles.maskFile = maskFile;
 
 guidata(handles.output, handles);
 
+function s = cell_to_literal(C)
+% Function that creates strings from cell arrays
+    parts = cell(1, numel(C));
+    for k = 1:numel(C)
+        v = C{k};
+        if ischar(v)
+            parts{k} = ['''' v ''''];        % char → 'text'
+        elseif isempty(v) && ischar(v)
+            parts{k} = '''''';               % empty char → ''
+        elseif (isnumeric(v) || islogical(v)) && isscalar(v)
+            parts{k} = num2str(v);           % numeric scalar
+        else
+            error('Unsupported cell content type at index %d', k);
+        end
+    end
+    s = ['{' strjoin(parts, ', ') '}'];
 
 function TR_Callback(hObject, eventdata, handles)
 % hObject    handle to TR (see GCBO)
@@ -426,6 +442,23 @@ handles.network_summary_opts = network_summary_opts;
 if (~isempty(bids_info))
     handles.bids_info = bids_info;
 end
+
+
+if icatb_string_compare(algorithm, 'constrained iva')
+    %add parameter choices
+
+    stru_file_info=icatb_spm_vol(atlas_mask_file);
+    n_num_comps = size(stru_file_info,1);
+    n_num_comps_x_1p5=round(n_num_comps*1.5);
+    dataSize = [n_num_comps_x_1p5,0];
+    algorithm_index = find(strcmpi(cellstr(icatb_icaAlgorithm), algorithm));
+    s_vis='on'; %true
+    handles.ICA_Options = icatb_icaOptions(dataSize, algorithm_index, s_vis, n_num_comps_x_1p5);
+    handles.numOfPC1 = handles.ICA_Options{2};
+    handles.numOfPC2 = handles.ICA_Options{2};
+    handles.ICA_Options(1:2) = [];
+end
+
 
 generateBatch(handles);
 
@@ -692,6 +725,16 @@ batchInfo.algoType = handles.algorithm;
 comments{end + 1} = '%% ICA algorithm to use.';
 batchInfo.refFiles = handles.refFiles;
 comments{end + 1} = '%% Reference templates';
+
+if icatb_string_compare(handles.algorithm, 'constrained iva')
+    batchInfo.numOfPC1 = handles.numOfPC1;
+    comments{end + 1} = '%% For constrained IVA settings';
+    batchInfo.numOfPC2 = handles.numOfPC2;
+    comments{end + 1} = '%% For constrained IVA settings';
+    batchInfo.icaOptions = handles.ICA_Options;
+    comments{end + 1} = '%% For constrained IVA settings';
+end
+
 %batchInfo.display_results = 'display_results;';
 %comments{end + 1} = '%% Display results';
 
@@ -706,7 +749,10 @@ for nF = 1:length(fnames)
     if (isempty(tmp))
         tmp = [fnames{nF}, ' = {};'];
     else
-        if (~strcmpi(fnames{nF}, 'input_data_file_patterns') && ~strcmpi(fnames{nF}, 'parallel_info') && ~strcmpi(fnames{nF}, 'display_results') ...
+        if icatb_string_compare(fnames{nF}, 'icaOptions')
+            tmp = cell_to_literal(tmp);
+            tmp = [fnames{nF}, ' = ', tmp];
+        elseif (~strcmpi(fnames{nF}, 'input_data_file_patterns') && ~strcmpi(fnames{nF}, 'parallel_info') && ~strcmpi(fnames{nF}, 'display_results') ...
                 && ~strcmpi(fnames{nF}, 'bids_info'))
             if (isnumeric(tmp))
                 tmp = sprintf('%s = %s;', fnames{nF}, mat2str(tmp, 4));
@@ -714,7 +760,6 @@ for nF = 1:length(fnames)
                 tmp = sprintf('%s = ''%s'';', fnames{nF}, tmp);
             end
         else
-            
             tmp = [fnames{nF}, ' = ', tmp];
         end
     end
@@ -931,3 +976,5 @@ if (~isempty(answers))
 end
 
 guidata(handles.output, handles);
+
+

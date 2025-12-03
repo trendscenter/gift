@@ -1,4 +1,4 @@
-function ICA_Options = icatb_icaOptions(dataSize, algorithm_index, handle_visibility)
+function ICA_Options = icatb_icaOptions(dataSize, algorithm_index, handle_visibility, n_optional_modorder)
 %% Return arguments depending on the ICA algorithm
 % icatb_icaOptions uses icatb_inputDialog function to return ICA options
 % ICA Options is a cell arary with strings followed by values
@@ -70,7 +70,7 @@ switch (lower(ica_algorithm))
         
         if strcmpi(ica_algorithm, 'infomax')
             % dialog Title
-            dlg_title = 'Select the Options for the Infomax algorithm';
+            dlg_title = 'Select the Options for the ICA/IVA algorithm';
         else
             % dialog Title
             dlg_title = 'Select the Options for the SDD ICA algorithm';
@@ -1000,8 +1000,19 @@ switch (lower(ica_algorithm))
         %% adaptive reverse constrained iva gauss
         
         dlg_title = 'Select the Options for the daptive reverse constrained iva gauss distribution algorithm';
-        
+
         numParameters = 1;
+        
+        if nargin > 3
+            inputText(numParameters).promptString = 'Select IVA model order that may be higher han template';
+            inputText(numParameters).uiType = 'edit';
+            inputText(numParameters).answerString = num2str(n_optional_modorder);
+            inputText(numParameters).dataType = 'numeric';
+            inputText(numParameters).tag = 'model_order';
+            inputText(numParameters).enable = 'on';
+            
+            numParameters = numParameters + 1;            
+        end      
         
         inputText(numParameters).promptString = 'Select verbose';
         inputText(numParameters).uiType = 'popup';
@@ -1059,6 +1070,17 @@ switch (lower(ica_algorithm))
         
         numParameters = 1;
         
+        if nargin > 3
+            inputText(numParameters).promptString = 'Select IVA model order that may be higher han template';
+            inputText(numParameters).uiType = 'edit';
+            inputText(numParameters).answerString = num2str(n_optional_modorder);
+            inputText(numParameters).dataType = 'numeric';
+            inputText(numParameters).tag = 'model_order';
+            inputText(numParameters).enable = 'on';
+
+            numParameters = numParameters + 1;            
+        end      
+
         inputText(numParameters).promptString = 'Select verbose';
         inputText(numParameters).uiType = 'popup';
         inputText(numParameters).answerString = char('true', 'false');

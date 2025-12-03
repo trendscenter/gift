@@ -783,8 +783,12 @@ ICAOptions = sesInfo.userInput.ICA_Options;
 
 % Update ICA Options
 sesInfo.userInput.ICA_Options = [{'ref_data', {spatial_references, sesInfo.userInput.mask_ind}}, ICAOptions];
-sesInfo.userInput.numComp = numSpatialFiles;
-sesInfo.userInput.numOfPC1 = sesInfo.userInput.numComp;
+ica_algo = lower(cellstr(icatb_icaAlgorithm));
+if ~icatb_string_compare(ica_algo{sesInfo.userInput.algorithm}, 'constrained iva')
+    % skip the lowering of components in case of constrained IVA
+    sesInfo.userInput.numComp = numSpatialFiles;
+    sesInfo.userInput.numOfPC1 = sesInfo.userInput.numComp;
+end
 
 function ICA_Options = chkICAOptions(ICA_Options, inputData)
 %% Check ICA Options

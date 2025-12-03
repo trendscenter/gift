@@ -88,6 +88,7 @@ Params = struct( ...
     'gamma', 100, ... % penalty parameter
     'maxMu', 1, ... % maximum value of mu
     'checkpoints', false, ... % periodically save current results
+    'verbose', false, ... % not used yet    
     'updateCOV', true ... % update the covariance estimate for every k
 );
 
