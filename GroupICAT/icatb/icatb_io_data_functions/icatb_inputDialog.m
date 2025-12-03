@@ -132,6 +132,8 @@ for ii = 1:length(inputParameters)
     % check the uicontrol type
     if strcmp(lower(getStyle), 'edit')
         answerString = deblank(getString);
+    elseif strcmp(lower(getStyle), 'checkbox')
+        answerString = num2str(getValue);
     else
         answerString = deblank(getString(getValue, :));
     end

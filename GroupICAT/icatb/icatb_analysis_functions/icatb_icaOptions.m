@@ -1015,8 +1015,9 @@ switch (lower(ica_algorithm))
         end      
         
         inputText(numParameters).promptString = 'Select verbose';
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).answerString = char('true', 'false');
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true'); %true def
+        inputText(numParameters).value = 0; %false def
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'verbose';
         inputText(numParameters).enable = 'on';
@@ -1061,7 +1062,83 @@ switch (lower(ica_algorithm))
         inputText(numParameters).answerString = num2str(1000);
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'maxIter';
-        inputText(numParameters).enable = 'on';    
+        inputText(numParameters).enable = 'on';   
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'decrement factor in step size if cost function increases';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(0.95);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'stepsizeDecrease';
+        inputText(numParameters).enable = 'on';   
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'whitening (T/F)';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true'); %false default
+        inputText(numParameters).value = 0; %false def
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'whiten';
+        inputText(numParameters).enable = 'on';        
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'minimum step size';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1e-6);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'minStepsize';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'normalize the references';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('mean','variance'); %var default
+        inputText(numParameters).value = 1; %true default
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'refNormalize';
+        inputText(numParameters).enable = 'on';     
+
+%         numParameters = numParameters + 1;
+%         inputText(numParameters).promptString = 'correlation threshold for constrained algorithm (e.g.,0:0.01:1)';
+%         inputText(numParameters).uiType = 'edit';
+%         inputText(numParameters).answerString = '0:0.01:1';
+%         inputText(numParameters).dataType = 'string';
+%         inputText(numParameters).tag = 'rhoList';
+%         inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'penalty parameter';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(100);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'gamma';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'maximum value of mu';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'maxMu';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'periodically save current results (T/F)';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true');%false def
+        inputText(numParameters).value = 0; %false def
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'checkpoints';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'update the covariance estimate for every k (T/F)';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true'); %true def
+        inputText(numParameters).value = 1; %true def
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'updateCOV';
+        inputText(numParameters).enable = 'on';
 
     case 'threshold free constrained iva gauss'
         %% threshold free constrained iva gauss
@@ -1080,10 +1157,12 @@ switch (lower(ica_algorithm))
 
             numParameters = numParameters + 1;            
         end      
-
+  
+        
         inputText(numParameters).promptString = 'Select verbose';
-        inputText(numParameters).uiType = 'popup';
-        inputText(numParameters).answerString = char('true', 'false');
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true'); %true def
+        inputText(numParameters).value = 0; %false def
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'verbose';
         inputText(numParameters).enable = 'on';
@@ -1128,7 +1207,78 @@ switch (lower(ica_algorithm))
         inputText(numParameters).answerString = num2str(1000);
         inputText(numParameters).dataType = 'numeric';
         inputText(numParameters).tag = 'maxIter';
-        inputText(numParameters).enable = 'on';    
+        inputText(numParameters).enable = 'on';   
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'decrement factor in step size if cost function increases';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(0.95);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'stepsizeDecrease';
+        inputText(numParameters).enable = 'on';   
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'whitening (T/F)';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true'); %false default
+        inputText(numParameters).value = 0; %false def
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'whiten';
+        inputText(numParameters).enable = 'on';        
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'minimum step size';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1e-6);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'minStepsize';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'normalize the references';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('mean','variance'); %var default
+        inputText(numParameters).value = 1; %true default
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'refNormalize';
+        inputText(numParameters).enable = 'on';     
+
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'lagrange multiplier parameter';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = num2str(1);
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'lambda';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'periodically save current results (T/F)';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true');%false def
+        inputText(numParameters).value = 0; %false def
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'checkpoints';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        inputText(numParameters).promptString = 'update the covariance estimate for every k (T/F)';
+        inputText(numParameters).uiType = 'checkbox';
+%         inputText(numParameters).answerString = char('false','true'); %true def
+        inputText(numParameters).value = 1; %true def
+        inputText(numParameters).dataType = 'numeric';
+        inputText(numParameters).tag = 'updateCOV';
+        inputText(numParameters).enable = 'on';
+
+        numParameters = numParameters + 1;
+        
+        inputText(numParameters).promptString = 'for naming the checkpoint files';
+        inputText(numParameters).uiType = 'edit';
+        inputText(numParameters).answerString = '';
+        inputText(numParameters).dataType = 'string';
+        inputText(numParameters).tag = 'checkpointID';
+        inputText(numParameters).enable = 'on';
+        
 end
 %% End for ICA algorithm options
 
