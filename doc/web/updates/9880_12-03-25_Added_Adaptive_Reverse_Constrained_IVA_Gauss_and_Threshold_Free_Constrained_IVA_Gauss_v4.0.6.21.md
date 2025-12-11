@@ -1,3 +1,4 @@
+# Added Adaptive Reverse Constrained IVA Gauss and Threshold Free Constrained IVA Gauss v4.0.6.21<BR>
 Adaptive Reverse Constrained IVA Gauss and Threshold Free Constrained IVA Gauss, were implemented. About 15 hyperparameters per algorithm may be set. Works for both old and new GUI and batch mode.
 
 Implementation of adaptive-reverse constrained IVA with multivariate Gaussian distribution (ar-cIVA-G) that incorporates prior informationabout the sources into the IVA cost function. By alternating between a conservative scheme and an assertive scheme, ar-cIVA-G optimally controls the effect of each reference on the corresponding estimated source. There is no need for users to specify the degree of similarity between the estimate and the reference signal. For a general description of the algorithm and its relationship with others, see http://mlsp.umbc.edu/jointBSS_introduction.html.
