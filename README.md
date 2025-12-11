@@ -82,7 +82,7 @@ Autolabeller info will soon come here ...
 [Click here for FAQ](https://github.com/trendscenter/gift/blob/master/doc/web/faq/README.md)
 
 ### Version History<a name="secVerHist"></a>
-More information about about the GIFT version history is found at the following link: [GIFT version history](https://github.com/trendscenter/gift/blob/master/doc/web/updates/README.md) 
+More information about about the GIFT version history is found at the following link: [GIFT version history](https://github.com/trendscenter/gift/blob/master/doc/web/updates) 
 
 ### Publications<a name="pubs"></a>
 [Click here for a list of GIFT related publications](https://github.com/trendscenter/gift/blob/master/doc/web/publications/README.md) 
