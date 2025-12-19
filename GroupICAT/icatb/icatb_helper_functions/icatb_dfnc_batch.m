@@ -184,10 +184,7 @@ try
     dfncInfo.postprocess.ref_chk_ena_stateguided = inputData.dfnc_params.ref_chk_ena_stateguided;
 catch
 end
-try
-    dfncInfo.postprocess.ref_spat_dfnc_calib_tf = inputData.dfnc_params.ref_spat_dfnc_calib_tf;
-catch
-end
+
 try
     dfncInfo.postprocess.tag_edt_stateguided_numcomps = inputData.dfnc_params.tag_edt_stateguided_numcomps;
 catch

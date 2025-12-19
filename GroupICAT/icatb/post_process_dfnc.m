@@ -22,7 +22,7 @@ function varargout = post_process_dfnc(varargin)
 
 % Edit the above text to modify the response to help post_process_dfnc
 
-% Last Modified by GUIDE v2.5 20-Feb-2017 09:26:07
+% Last Modified by GUIDE v2.5 03-Sep-2025 11:30:40 M2016
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -113,7 +113,7 @@ else
     val = get(handles.estimate_clusters, 'value');
     results.estimate_clusters = lower(deblank(opts{val}));
     results.num_clusters = str2num(deblank(get(handles.num_clusters, 'string')));
-    results.num_comps_ica = str2num(deblank(get(handles.num_comps_ica, 'string')));
+    results.num_comps_ica = str2num(deblank(get(handles.num_comps_ica, 'string')));    
     
     opts = cellstr(lower(get(handles.ica_algorithm, 'string')));
     val = get(handles.ica_algorithm, 'value');
@@ -130,8 +130,8 @@ else
     results.kmeans_start = handles.kmeans_start;
     
     results.ref_chk_ena_stateguided = get(handles.tag_chk_ena_stateguided,'Value');
-    results.ref_spat_dfnc_calib_tf = get(handles.tag_ref_spat_dfnc_calib_tf,'Value');
     results.tag_edt_stateguided_numcomps = num2str(get(handles.tag_edt_stateguided_numcomps,'String'));
+    results.tag_edt_stateguided_threshold_level = str2double(deblank(get(handles.tag_edt_stateguided_threshold_level,'String')));
     
     use_tall_array = 'no';
     try
@@ -683,13 +683,8 @@ function but_help_ref_spat_dfnc_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-msgH = msgbox('Saves back reconstructed state guided dFNC as variables sica_br and sica_calib in files named {prefix}_dfnc_sub_xxx_sess_yyy_results.mat', 'Reference Guided Spatial Constrained dFNC', 'modal');
+msgH = msgbox('No. of components is an integer of ICAs your results is divided by. Threshold level in percent (T.level%) is the top and bottom percentile that time course may dwell at. Saves back reconstructed state guided dFNC as variables and the ICA priors under the sgica structure in files named {prefix}_dfnc_post_process.mat', 'Reference Guided Spatial Constrained dFNC', 'modal');
 waitfor(msgH);
-
-function tag_ref_spat_dfnc_calib_tf_Callback(hObject, eventdata, handles)
-% hObject    handle to help_meta_method (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --- Executes on button press in tag_chk_ena_stateguided.
 function tag_chk_ena_stateguided_Callback(hObject, eventdata, handles)
@@ -705,7 +700,6 @@ else
     b_enable_stateguided = 0;
 end
 
-fun_visible('tag_ref_spat_dfnc_calib_tf', b_enable_stateguided);
 fun_visible('text22', b_enable_stateguided);
 fun_visible('tag_edt_stateguided_numcomps', b_enable_stateguided);
 
@@ -776,3 +770,26 @@ function tag_edt_stateguided_numcomps_Callback(hObject, eventdata, handles)
 % hObject    handle to tag_chk_ena_metastate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+
+function tag_edt_stateguided_threshold_level_Callback(hObject, eventdata, handles)
+% hObject    handle to tag_edt_stateguided_threshold_level (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of tag_edt_stateguided_threshold_level as text
+%        str2double(get(hObject,'String')) returns contents of tag_edt_stateguided_threshold_level as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function tag_edt_stateguided_threshold_level_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to tag_edt_stateguided_threshold_level (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

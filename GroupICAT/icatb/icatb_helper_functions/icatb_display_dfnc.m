@@ -32,6 +32,7 @@ outputDir = pwd;
 
 dfncInfo.outputDir = outputDir;
 
+
 post_process_file = fullfile(outputDir,  [dfncInfo.prefix, '_post_process.mat']);
 
 %% Plot Correlations
@@ -99,7 +100,7 @@ promptPos = get(textH, 'position');
 
 listPos = [promptPos(1) + promptPos(3) + xOffset, yPos - yOffset - popupHeight, popupWidth, popupHeight];
 listH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'listbox', 'position', listPos, 'string', ...
-    char('FNC Oscillations', 'Cluster stats', 'Meta State Analysis', 'TVdFNC Analysis', 'Task Connectivity'), 'tag', 'select_list', 'min', 0, 'max', 1);
+    char('FNC Oscillations', 'Cluster stats', 'Meta State Analysis', 'TVdFNC Analysis', 'Task Connectivity', 'State Guided ICA'), 'tag', 'select_list', 'min', 0, 'max', 1);
 
 set(graphicsHandle, 'visible', 'on');
 set(graphicsHandle, 'userdata', dfncInfo);

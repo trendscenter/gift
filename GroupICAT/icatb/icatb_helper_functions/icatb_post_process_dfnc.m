@@ -63,7 +63,7 @@ distance_opts =  {'City', 'sqEuclidean', 'Hamming', 'Correlation', 'Cosine'};
 kmeans_num_replicates = 5;
 num_tests_est_clusters = 10;
 ref_chk_ena_stateguided = 1; % May be used in case batch is run without var
-ref_spat_dfnc_calib_tf = 1; % May be used in case batch is run without var
+tag_edt_stateguided_threshold_level = 25; % May be used in case batch is run without var
 tag_edt_stateguided_numcomps = 10; % May be used in case batch is run without var
 b_chk_ena_stateguided = 1; % May be used in case batch is run without var
 b_chk_ena_statebased = 1;% May be used in case batch is run without var
@@ -76,8 +76,7 @@ try
     dmethod = dfncInfo.postprocess.dmethod;
     kmeans_num_replicates = dfncInfo.postprocess.kmeans_num_replicates;
     ref_chk_ena_stateguided = dfncInfo.postprocess.ref_chk_ena_stateguided;
-    ref_spat_dfnc_calib_tf = dfncInfo.postprocess.ref_spat_dfnc_calib_tf;
-    
+
 catch
 end
 
@@ -163,7 +162,7 @@ if (showGUI)
         'kmeans_num_replicates', kmeans_num_replicates, ...
         'num_tests_est_clusters', num_tests_est_clusters, 'kmeans_start', kmeans_start, ...
         'use_tall_array', use_tall_array, ...
-        'ref_spat_dfnc_calib_tf', ref_spat_dfnc_calib_tf, ...
+        'tag_edt_stateguided_threshold_level', tag_edt_stateguided_threshold_level, ...
         'tag_edt_stateguided_numcomps', tag_edt_stateguided_numcomps, ...
         'tag_chk_ena_stateguided', b_chk_ena_stateguided, ...
         'tag_chk_ena_statebased', b_chk_ena_statebased, ...
@@ -273,7 +272,7 @@ dfncInfo.postprocess.b_chk_ena_stateguided = b_chk_ena_stateguided;
 if b_chk_ena_stateguided
     if showGUI
         dfncInfo.postprocess.ref_chk_ena_stateguided = ref_chk_ena_stateguided;
-        dfncInfo.postprocess.ref_spat_dfnc_calib_tf = ref_spat_dfnc_calib_tf;          
+        dfncInfo.postprocess.tag_edt_stateguided_threshold_level = tag_edt_stateguided_threshold_level; %already stringified  
         dfncInfo.postprocess.tag_edt_stateguided_numcomps = str2num(tag_edt_stateguided_numcomps);
     %else if batch script was run these variables are already set
     end
@@ -471,83 +470,26 @@ for nR = 1:length(dfncInfo.outputFiles)
     
 end
 
+post_process_file = fullfile(outputDir,  [dfncInfo.prefix, '_post_process.mat']);
 
 if ( b_chk_ena_stateguided )
-    ncomps = dfncInfo.postprocess.tag_edt_stateguided_numcomps; % ica components
-    % ICA reference guided spatial dfnc
-    data = [FNCdynflat{1}; FNCdynflat{2}];
-  
-    [whitesig, dewhiteM] = icatb_calculate_pca(data', ncomps);
-    [~, W_blindICA, A_blindICA, sources] = icatb_icaAlgorithm(1, whitesig'); %gettig template (blindly)
-    A_blindICA = dewhiteM*A_blindICA;
-    W_blindICA = pinv(A_blindICA);
-    
-    priors = sources';
-    
-    % Back Reconstruction constrained_source
-    for subject = 1:dfncInfo.userInput.numOfSub
-        for nSess = 1:dfncInfo.userInput.numOfSess
-            % Get the matrix from the current cell
-            dfnc = FNCdynflat{(subject-1)*dfncInfo.userInput.numOfSess+nSess}; 
-        
-            % MOO-ICAR (constrained ICA), A = loadings and sources = components
-            [~, W, sica_br.fnc_A, sica_br.fnc_S] = icatb_icaAlgorithm('MOO-ICAR', dfnc, {'ref_data', priors'});
-        
-            s_sub_sess_save = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
-            save(s_sub_sess_save, '-nocompression', '-append', 'sica_br');
-        end
-    end
+    %Perform state guided ICA
+    oc_sgica = icatb_cls_sgica(dfncInfo);
+    oc_sgica = oc_sgica.set_s_outputDir(outputDir);
+    oc_sgica = oc_sgica.set_input_FNCdynflat(FNCdynflat);
 
-    if ( dfncInfo.postprocess.ref_spat_dfnc_calib_tf  && b_chk_ena_stateguided )
-        % Calibration
-    
-        num_individuals = (dfncInfo.userInput.numOfSub-1)*dfncInfo.userInput.numOfSess+dfncInfo.userInput.numOfSess;
-        % Process each individual within the group
-        for subject = 1:dfncInfo.userInput.numOfSub
-            for nSess = 1:dfncInfo.userInput.numOfSess    
-                ix_scan = (subject-1)*dfncInfo.userInput.numOfSess+nSess;
-                % Load dFNC data for the current individual
-                dFNC_ind = FNCdynflat{(subject-1)*dfncInfo.userInput.numOfSess+nSess}; % 
-                % Load constrained sourcesfor the current scan
-                s_sub_sess_file = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
-                load(s_sub_sess_file, 'sica_br');
-                predictors = zeros(numel(dFNC_ind), dfncInfo.postprocess.tag_edt_stateguided_numcomps);
-                % Prepare the predictors by computing a_i * s_i for each component i
-                for i1 = 1:dfncInfo.postprocess.tag_edt_stateguided_numcomps
-                    % Extract component a_i (windows-by-1 vector)
-                    a_i = sica_br.fnc_A(:, i1); % 
-                    s_i = sica_br.fnc_S(i1, :); % 
-                    % Compute the product a_i * s_i to create the predictor for component i
-                    component_vector = a_i * s_i; % 115 x 1378
-                    predictors(:, i1) = component_vector(:); %flatten & matrix
-                end
-                response = dFNC_ind(:); % Flatten dFNC data
-                % Perform multiple regression to get beta weights for each component
-                beta = regress(response, predictors);
-                sica_calib.fnc_A = zeros(size(sica_br.fnc_A));
-                sica_calib.fnc_S = zeros(size(sica_br.fnc_S));
-                % Apply beta weights and scale each component by std
-                for i2 = 1:dfncInfo.postprocess.tag_edt_stateguided_numcomps
-                    % Scale the component (sica_calib.fnc_S)
-                    std_i = std(sica_br.fnc_S(i2, :)); % Compute standard deviation of the scaled component
-                    sica_calib.fnc_S(i2, :) = sica_br.fnc_S(i2, :)/std_i;
-                    % sica_calib.fnc_A = final_timecourse + (sica_calib.fnc_S / std_i) * std(A_ind(:, i));
-                    sica_calib.fnc_A(:,i2) = beta(i2) * sica_br.fnc_A(:, i2) * std_i;               
-                end
-                s_sub_sess_save = [dfncInfo.userInput.prefix, '_sub_', icatb_returnFileIndex(subject), '_sess_', icatb_returnFileIndex(nSess), '_results.mat'];
-                save(s_sub_sess_save, '-nocompression', '-append', 'sica_calib');
-            end
-        end
+    n_ret = oc_sgica.calc_save;
+    if n_ret > 0
+        disp(['icatb_warn ' char(datetime) 'clsd_sgica reported problems']);
     end
+   
 end
 
 
 FNCamp = FNCamp / M;
 FNCcm = FNCcm / M;
 
-
-post_process_file = fullfile(outputDir,  [dfncInfo.prefix, '_post_process.mat']);
-icatb_save(post_process_file, 'FNCamp', 'FNCcm');
+icatb_save(post_process_file, '-nocompression', '-append', 'FNCamp', 'FNCcm');
 
 clear FNCamp FNCcm;
 
