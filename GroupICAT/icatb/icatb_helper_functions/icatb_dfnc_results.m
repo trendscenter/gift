@@ -111,7 +111,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
         figVisible = 'on';
         
-        resultFiles = {[dfncInfo.prefix, '_one_sample_ttest_results.mat'], [dfncInfo.prefix, '_paired_ttest_results.mat'], [dfncInfo.prefix, '_two_sample_ttest_results.mat']};
+        resultFiles = {[dfncInfo.prefix, '_one_sample_ttest_results.mat'], [dfncInfo.prefix, '_paired_ttest_results.mat'], [dfncInfo.prefix, '_two_sample_ttest_results.mat'], [dfncInfo.prefix, '_anova1_results.mat']};
         
         countR = 0;
         for nR = 1:length(resultFiles)
@@ -122,86 +122,271 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             
             if (exist(fname, 'file'))
                 
-                load(fname, 'mean_u', 't_u', 'p_u', 'groupNames', 'N', 'groupVals');
+                load(fname, 'F_u', 'mean_u', 't_u', 'p_u', 'groupNames', 'N', 'groupVals');
                 
                 if (isfield(dfncInfo.userInput, 'selectedRegressors'))
                     load(fname, 'mean_task_conn', 't_task_conn', 'p_task_conn');
                 end
+
+                %% ===== ANOVA-only block (no-ops for t-tests) =====
+                doANOVA = strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_anova1_results.mat']);
+                if doANOVA
+                    % ---------- Common flags ----------
+                    % (no need to detect one/two/paired here — ANOVA ignores those)
                 
-                %% Mean
-                CLIM = abs([mean_u{:}]);
-                CLIM = max(abs(CLIM(:)));
-                CLIM = icatb_z_to_r(CLIM);
-                CLIM = [-CLIM, CLIM];
+                    %% ===== Means (cluster states) =====
+                    CLIM = abs([mean_u{:}]);
+                    CLIM = max(abs(CLIM(:)));
+                    CLIM = icatb_z_to_r(CLIM);
+                    CLIM = [-CLIM, CLIM];
                 
-                %% Loop over number of groups
-                for nRows = 1:size(mean_u, 1)
-                    files = cell(1, size(mean_u, 2));
-                    %% Loop over number of cluster states
-                    for nC = 1:size(mean_u, 2)
-                        tmpM = mean_u{nRows, nC};
-                        if (~isempty(tmpM))
-                            tmpM = reshape(icatb_z_to_r(tmpM(:)), size(tmpM));
-                            H = icatb_getGraphics('Cluster stats', 'graphics', 'dfnc_summary', figVisible);
-                            colormap(jet);
-                            set(H, 'resize', 'on');
-                            sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
-                            tmpM = icatb_vec2mat(tmpM, 1);
-                            titleText = ['State ', num2str(nC), ' ', groupNames{nRows}, '=', num2str(N(nRows, nC))];
-                            [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
-                                network_values, network_names);
-                            ylabel(CH, 'Correlations');
-                            title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
-                            set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
-                            % write out mean maps
-                            if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
-                                outFile = [dfncInfo.prefix, '_mean_cluster_ttest_', icatb_returnFileIndex(nC), '.jpg'];
-                                tag = 'Cluster Mean correlations';
-                            elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                                outFile = [dfncInfo.prefix, '_mean_cluster_ttest2_group', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
-                                tag = ['Cluster Mean correlations of group ',  groupNames{nRows}];
-                            else
-                                outFile = [dfncInfo.prefix, '_mean_cluster_paired_ttest_cond', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
-                                tag = ['Cluster Mean correlations of condition ',  groupNames{nRows}];
+                    for nRows = 1:size(mean_u, 1)
+                        files = cell(1, size(mean_u, 2));
+                        for nC = 1:size(mean_u, 2)
+                            tmpM = mean_u{nRows, nC};
+                            if ~isempty(tmpM)
+                                tmpM = reshape(icatb_z_to_r(tmpM(:)), size(tmpM));
+                                H = icatb_getGraphics('Cluster ANOVA stats', 'graphics', 'dfnc_summary', figVisible);
+                                colormap(jet); set(H,'resize','on');
+                                sh = axes('units','normalized','position',[0.2,0.2,0.6,0.6]);
+                                tmpM = icatb_vec2mat(tmpM, 1);
+                                titleText = ['State ', num2str(nC), ' ', groupNames{nRows}, '=', num2str(N{nRows, nC})];
+                                [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                                                          network_values, network_names);
+                                ylabel(CH, 'Correlations');
+                                title(titleText, 'parent', sh, 'horizontalAlignment','center','fontname',UI_FONTNAME,'fontsize',UI_FS-2);
+                                set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                
+                                % ANOVA mean map filename/tag
+                                outFile = [dfncInfo.prefix, '_mean_cluster_anova_group', num2str(nRows) ,'_', icatb_returnFileIndex(nC), '.jpg'];
+                                tag     = 'Cluster ANOVA mean correlations';
+                
+                                printFile(H, fullfile(html_dir, outFile));
+                                files{nC} = outFile;
+                                close(H);
                             end
-                            
+                        end
+                        countR = countR + 1;
+                        results(countR).file = files;
+                        results(countR).text = ['Mean is computed for each cluster state of group ', groupNames{nRows}, ...
+                                                '. Number of subjects with finite correlations is also shown.'];
+                        results(countR).tag  = tag;
+                    end
+                
+                    %% ===== Task means (optional) =====
+                    if isfield(dfncInfo,'userInput') && isfield(dfncInfo.userInput,'selectedRegressors') && exist('mean_task_conn','var') && ~isempty(mean_task_conn)
+                        CLIM = abs([mean_task_conn{:}]);
+                        CLIM = max(abs(CLIM(:)));
+                        CLIM = icatb_z_to_r(CLIM);
+                        CLIM = [-CLIM, CLIM];
+                
+                        for nRows = 1:size(mean_task_conn, 1)
+                            files = cell(1, size(mean_task_conn, 2));
+                            for nC = 1:size(mean_task_conn, 2)
+                                tmpM = mean_task_conn{nRows, nC};
+                                if ~isempty(tmpM)
+                                    tmpM = reshape(icatb_z_to_r(tmpM(:)), size(tmpM));
+                                    H = icatb_getGraphics('Task connectivity ANOVA stats', 'graphics', 'dfnc_summary', figVisible);
+                                    colormap(jet); set(H,'resize','on');
+                                    sh = axes('units','normalized','position',[0.2,0.2,0.6,0.6]);
+                                    tmpM = icatb_vec2mat(tmpM, 1);
+                                    titleText = ['Mean of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
+                                    [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                                                              network_values, network_names);
+                                    ylabel(CH, 'Correlations');
+                                    title(titleText, 'parent', sh, 'horizontalAlignment','center','fontname',UI_FONTNAME,'fontsize',UI_FS-2);
+                                    set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                
+                                    outFile = [dfncInfo.prefix, '_mean_task_anova_', icatb_returnFileIndex(nC), '.jpg'];
+                                    tag     = 'Task Connectivity ANOVA mean correlations';
+                
+                                    printFile(H, fullfile(html_dir, outFile));
+                                    files{nC} = outFile;
+                                    close(H);
+                                end
+                            end
+                            countR = countR + 1;
+                            results(countR).file = files;
+                            results(countR).text = ['Task connectivity mean is computed for each group ', groupNames{nRows}];
+                            results(countR).tag  = tag; clear tag;
+                        end
+                    end
+                
+                    %% ===== ANOVA significance maps (per state) =====
+                    % Expect p-values in p_u{state} (and optionally F-statistics in F_u{state})
+                    files = cell(1, length(p_u));
+                    for nC = 1:length(p_u)
+                        ps = p_u{nC};
+                        if isempty(ps), continue; end
+                
+                        if ~strcmpi(statsInfo.threshdesc,'none')
+                            [p_masked, ~] = get_sig_pvalues(ps, statsInfo.p_threshold, statsInfo.threshdesc);
+                        else
+                            p_masked = statsInfo.p_threshold;
+                        end
+                        good_inds = ps < p_masked;
+                        if ~any(good_inds), continue; end
+                
+                        tmpM = zeros(size(ps));
+                        tmpM(good_inds) = -log10(ps(good_inds) + eps);  % unsigned for ANOVA
+                        tmpM = icatb_vec2mat(tmpM, 1);
+                        tmpM(isnan(tmpM)) = 0;
+                
+                        H = icatb_getGraphics('Cluster ANOVA stats', 'graphics', 'dfnc_summary', figVisible);
+                        colormap(jet); set(H,'resize','on');
+                        sh = axes('units','normalized','position',[0.2,0.2,0.6,0.6]);
+                
+                        if ~strcmpi(statsInfo.threshdesc,'none')
+                            [p_masked2, ~] = get_sig_pvalues(ps(~isnan(ps)), statsInfo.p_threshold, statsInfo.threshdesc);
+                            fdrlim = -log10(p_masked2);
+                        end
+                
+                        CLIM = [0 max(abs(tmpM(:)))];
+                        titleText = ['ANOVA of State ', num2str(nC)];
+                        [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                                                  network_values, network_names);
+                        if ~strcmpi(statsInfo.threshdesc,'none')
+                            ytick = get(CH,'YTick'); set(CH,'YTick', sort([ytick, fdrlim]));
+                        end
+                        ylabel(CH, '-log_1_0(p-value)', 'Interpreter','tex');
+                        title(titleText, 'parent', sh, 'horizontalAlignment','center','fontname',UI_FONTNAME,'fontsize',UI_FS-2);
+                        set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                
+                        outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, ...
+                                   '_cluster_anova_', icatb_returnFileIndex(nC), '.jpg'];
+                        printFile(H, fullfile(html_dir, outFile));
+                        files{nC} = outFile;
+                        close(H);
+                    end
+                
+                    countR = countR + 1;
+                    results(countR).file = files(~cellfun(@isempty,files));
+                    results(countR).text = 'Cluster ANOVA results:';
+                    results(countR).tag  = 'Cluster ANOVA results';
+                
+                    %% ===== Task ANOVA significance maps (optional) =====
+                    if exist('p_task_conn','var') && ~isempty(p_task_conn) && isfield(dfncInfo,'userInput') ...
+                            && isfield(dfncInfo.userInput,'selectedRegressors')
+                
+                        files = cell(1, length(p_task_conn));
+                        for nC = 1:length(p_task_conn)
+                            ps = p_task_conn{nC};
+                            if isempty(ps), continue; end
+                
+                            if ~strcmpi(statsInfo.threshdesc,'none')
+                                [p_masked, ~] = get_sig_pvalues(ps, statsInfo.p_threshold, statsInfo.threshdesc);
+                            else
+                                p_masked = statsInfo.p_threshold;
+                            end
+                            good_inds = ps < p_masked;
+                            if ~any(good_inds), continue; end
+                
+                            tmpM = zeros(size(ps));
+                            tmpM(good_inds) = -log10(ps(good_inds) + eps);
+                            tmpM = icatb_vec2mat(tmpM, 1); tmpM(isnan(tmpM)) = 0;
+                
+                            H = icatb_getGraphics('Task Connectivity ANOVA stats', 'graphics', 'dfnc_summary', figVisible);
+                            colormap(jet); set(H,'resize','on');
+                            sh = axes('units','normalized','position',[0.2,0.2,0.6,0.6]);
+                
+                            if ~strcmpi(statsInfo.threshdesc,'none')
+                                [p_masked2, ~] = get_sig_pvalues(ps(~isnan(ps)), statsInfo.p_threshold, statsInfo.threshdesc);
+                                fdrlim = -log10(p_masked2);
+                            end
+                
+                            CLIM = [0 max(abs(tmpM(:)))];
+                            titleText = ['ANOVA of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
+                            [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                                                      network_values, network_names);
+                            if ~strcmpi(statsInfo.threshdesc,'none')
+                                ytick = get(CH,'YTick'); set(CH,'YTick', sort([ytick, fdrlim]));
+                            end
+                            ylabel(CH, '-log_1_0(p-value)', 'Interpreter','tex');
+                            title(titleText, 'parent', sh, 'horizontalAlignment','center','fontname',UI_FONTNAME,'fontsize',UI_FS-2);
+                            set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                
+                            outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, ...
+                                       '_task_anova_', icatb_returnFileIndex(nC), '.jpg'];
                             printFile(H, fullfile(html_dir, outFile));
                             files{nC} = outFile;
                             close(H);
-                            %end
                         end
-                    end
-                    %% End of loop over number of cluster states
-                    countR = countR + 1;
-                    results(countR).file = files;
-                    results(countR).text = ['Mean is computed for each cluster state of group ', groupNames{nRows}, '. Number of subjects with finite correlations is also shown.'];
-                    results(countR).tag = tag;
-                    %clear tag;
-                end
-                %% End of loop over number of groups
                 
-                if (isfield(dfncInfo.userInput, 'selectedRegressors'))
+                        countR = countR + 1;
+                        results(countR).file = files(~cellfun(@isempty,files));
+                        results(countR).text = 'Task connectivity ANOVA results:';
+                        results(countR).tag  = 'Task Connectivity ANOVA results';
+                    end
+                
+                    %% ===== Mean dwell time (figure only; keep tables in your existing t-test code) =====
+                    cluster_stats_file = fullfile(cluster_stats_directory,  [dfncInfo.prefix, '_cluster_stats.mat']);
+                    load(cluster_stats_file, 'state_vector_stats');
+                    if ~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat'])
+                        mean_dwell_time = reshape(state_vector_stats.mean_dwell_time, ...
+                                                  dfncInfo.userInput.numOfSess, dfncInfo.userInput.numOfSub, ...
+                                                  size(state_vector_stats.mean_dwell_time, 2));
+                        if size(mean_dwell_time,1) > 1
+                            mean_dwell_time = mean(mean_dwell_time);
+                        end
+                    else
+                        mean_dwell_time = state_vector_stats.mean_dwell_time;
+                    end
+                    mean_dwell_time = squeeze(mean_dwell_time);
+                
+                    H = icatb_getGraphics('Cluster ANOVA stats', 'graphics', 'dfnc_summary', figVisible);
+                    colormap(jet); set(H,'resize','on');
+                    sh = axes('units','normalized','position',[0.2,0.2,0.6,0.6]);
+                    colors = {'r','k','b','y','c'}; area_colors = {[1,0.6,0.78],[0.8,0.8,0.8],[0.6,0.6,1],[0.4,0.4,0.1],[0,0.6,1]};
+                    numClusterStates = size(state_vector_stats.mean_dwell_time, 2);
+                    legendStr = cell(1, 2*length(groupVals));
+                    groupValsMax = length(groupVals);
+                    if groupValsMax > 5
+                        % plot max five levels
+                        groupValsMax = 5;
+                        disp('Meta state Plot trunkated to only 5 levels')
+                    end
+                    for nGroups = 1:groupValsMax
+                        icatb_plot_with_ste_area(sh, 1:numClusterStates, mean_dwell_time(groupVals{nGroups}, :), [], colors{nGroups}, area_colors{nGroups});
+                        legendStr{2*nGroups - 1} = [groupNames{nGroups}, '+/-SEM'];
+                        legendStr{2*nGroups}     = groupNames{nGroups};
+                        hold on;
+                    end
+                    legend(legendStr{:}); hold off;
+                    title('Mean Dwell Time Vs Cluster States', 'parent', sh, 'horizontalAlignment','center','fontname',UI_FONTNAME,'fontsize',UI_FS-2);
+                    set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                    ylabel('Mean dwell time in windows'); xlabel('Cluster states');
+                
+                    outFile = [dfncInfo.prefix, '_mdt_anova.jpg'];
+                    tag     = 'Mean dwell time (ANOVA context)';
+                    printFile(H, fullfile(html_dir, outFile)); close(H);
+                
+                    countR = countR + 1;
+                    results(countR).file = {outFile};
+                    results(countR).text = 'Mean dwell time in windows';
+                    results(countR).tag  = tag;
+                else
+                    % ALL NON ANOVA display     
+                
                     %% Mean
-                    CLIM = abs([mean_task_conn{:}]);
+                    CLIM = abs([mean_u{:}]);
                     CLIM = max(abs(CLIM(:)));
                     CLIM = icatb_z_to_r(CLIM);
                     CLIM = [-CLIM, CLIM];
                     
                     %% Loop over number of groups
-                    for nRows = 1:size(mean_task_conn, 1)
-                        files = cell(1, size(mean_task_conn, 2));
-                        %% Loop over number of regressors
-                        for nC = 1:size(mean_task_conn, 2)
-                            tag = '';
-                            tmpM = mean_task_conn{nRows, nC};
+                    for nRows = 1:size(mean_u, 1)
+                        files = cell(1, size(mean_u, 2));
+                        %% Loop over number of cluster states
+                        for nC = 1:size(mean_u, 2)
+                            tmpM = mean_u{nRows, nC};
                             if (~isempty(tmpM))
                                 tmpM = reshape(icatb_z_to_r(tmpM(:)), size(tmpM));
-                                H = icatb_getGraphics('Task connectivity stats', 'graphics', 'dfnc_summary', figVisible);
+                                H = icatb_getGraphics('Cluster stats', 'graphics', 'dfnc_summary', figVisible);
                                 colormap(jet);
                                 set(H, 'resize', 'on');
                                 sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
                                 tmpM = icatb_vec2mat(tmpM, 1);
-                                titleText = ['Mean of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
+                                titleText = ['State ', num2str(nC), ' ', groupNames{nRows}, '=', num2str(N(nRows, nC))];
                                 [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
                                     network_values, network_names);
                                 ylabel(CH, 'Correlations');
@@ -209,14 +394,14 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                 % write out mean maps
                                 if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
-                                    outFile = [dfncInfo.prefix, '_mean_task_ttest_', icatb_returnFileIndex(nC), '.jpg'];
-                                    tag = 'Task Connectivity Mean correlations';
+                                    outFile = [dfncInfo.prefix, '_mean_cluster_ttest_', icatb_returnFileIndex(nC), '.jpg'];
+                                    tag = 'Cluster Mean correlations';
                                 elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                                    outFile = [dfncInfo.prefix, '_mean_task_ttest2_group', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
-                                    tag = ['Task Connectivity Mean correlations of group ',  groupNames{nRows}];
+                                    outFile = [dfncInfo.prefix, '_mean_cluster_ttest2_group', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
+                                    tag = ['Cluster Mean correlations of group ',  groupNames{nRows}];
                                 else
-                                    outFile = [dfncInfo.prefix, '_mean_task_paired_ttest_cond', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
-                                    tag = ['Task Connectivity Mean correlations of condition ',  groupNames{nRows}];
+                                    outFile = [dfncInfo.prefix, '_mean_cluster_paired_ttest_cond', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
+                                    tag = ['Cluster Mean correlations of condition ',  groupNames{nRows}];
                                 end
                                 
                                 printFile(H, fullfile(html_dir, outFile));
@@ -228,104 +413,77 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                         %% End of loop over number of cluster states
                         countR = countR + 1;
                         results(countR).file = files;
-                        results(countR).text = ['Task connectivity mean is computed for each group ', groupNames{nRows}];
+                        results(countR).text = ['Mean is computed for each cluster state of group ', groupNames{nRows}, '. Number of subjects with finite correlations is also shown.'];
                         results(countR).tag = tag;
-                        clear tag;
+                        %clear tag;
                     end
                     %% End of loop over number of groups
                     
-                    
-                end
-                
-                
-                
-                %% T-value
-                files = cell(1, length(t_u));
-                for nC = 1:length(t_u)
-                    %% use -1og10(p)*sign(t)
-                    ps = p_u{nC};
-                    ts = t_u{nC};
-                    if (~isempty(ts))
-                        if (~strcmpi(statsInfo.threshdesc, 'none'))
-                            %p_masked = icatb_fdr(ps, statsInfo.p_threshold);
-                            [p_masked, ps]  = get_sig_pvalues(ps, statsInfo.p_threshold, statsInfo.threshdesc);
-                        else
-                            p_masked = statsInfo.p_threshold;
-                        end
-                        good_inds = ps < p_masked;
+                    if (isfield(dfncInfo.userInput, 'selectedRegressors'))
+                        %% Mean
+                        CLIM = abs([mean_task_conn{:}]);
+                        CLIM = max(abs(CLIM(:)));
+                        CLIM = icatb_z_to_r(CLIM);
+                        CLIM = [-CLIM, CLIM];
                         
-                        if (~isempty(find(good_inds == 1)))
-                            
-                            tmpM = zeros(size(ps));
-                            tmpM(good_inds) = -log10(ps(good_inds) + eps).*sign(ts(good_inds));
-                            tmpM = icatb_vec2mat(tmpM, 1);
-                            tmpM(isnan(tmpM)) = 0;
-                            
-                            H = icatb_getGraphics('Cluster stats', 'graphics', 'dfnc_summary', figVisible);
-                            colormap(jet);
-                            set(H, 'resize', 'on');
-                            sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
-                            if (~strcmpi(statsInfo.threshdesc, 'none'))
-                                %p_masked  = icatb_fdr(ps(find(isnan(ps) == 0)), statsInfo.p_threshold);
-                                [p_masked, tmppp]  = get_sig_pvalues(ps(find(isnan(ps) == 0)), statsInfo.p_threshold, statsInfo.threshdesc);
-                                disp(p_masked)
-                                fdrlim = -log10(p_masked);
-                            else
-                                p_masked = statsInfo.p_threshold;
+                        %% Loop over number of groups
+                        for nRows = 1:size(mean_task_conn, 1)
+                            files = cell(1, size(mean_task_conn, 2));
+                            %% Loop over number of regressors
+                            for nC = 1:size(mean_task_conn, 2)
+                                tag = '';
+                                tmpM = mean_task_conn{nRows, nC};
+                                if (~isempty(tmpM))
+                                    tmpM = reshape(icatb_z_to_r(tmpM(:)), size(tmpM));
+                                    H = icatb_getGraphics('Task connectivity stats', 'graphics', 'dfnc_summary', figVisible);
+                                    colormap(jet);
+                                    set(H, 'resize', 'on');
+                                    sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
+                                    tmpM = icatb_vec2mat(tmpM, 1);
+                                    titleText = ['Mean of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
+                                    [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
+                                        network_values, network_names);
+                                    ylabel(CH, 'Correlations');
+                                    title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                                    set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                                    % write out mean maps
+                                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                                        outFile = [dfncInfo.prefix, '_mean_task_ttest_', icatb_returnFileIndex(nC), '.jpg'];
+                                        tag = 'Task Connectivity Mean correlations';
+                                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                                        outFile = [dfncInfo.prefix, '_mean_task_ttest2_group', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
+                                        tag = ['Task Connectivity Mean correlations of group ',  groupNames{nRows}];
+                                    else
+                                        outFile = [dfncInfo.prefix, '_mean_task_paired_ttest_cond', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
+                                        tag = ['Task Connectivity Mean correlations of condition ',  groupNames{nRows}];
+                                    end
+                                    
+                                    printFile(H, fullfile(html_dir, outFile));
+                                    files{nC} = outFile;
+                                    close(H);
+                                    %end
+                                end
                             end
-                            
-                            CLIM = [-max(abs(tmpM(:))) max(abs(tmpM(:)))];
-                            titleText = ['Results of State ', num2str(nC)];
-                            [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
-                                network_values, network_names);
-                            ytick = get(CH, 'YTick');
-                            if (~strcmpi(statsInfo.threshdesc, 'none'))
-                                set(CH, 'YTick', sort([ytick, -fdrlim fdrlim]));
-                            end
-                            ylabel(CH, '-sign(t) log_1_0(p-value)', 'Interpreter', 'tex');
-                            title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
-                            set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
-                            % write out t-values
-                            if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
-                                outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_ttest_', icatb_returnFileIndex(nC), '.jpg'];
-                            elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                                outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_ttest2_', icatb_returnFileIndex(nC), '.jpg'];
-                            else
-                                outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_paired_ttest_', icatb_returnFileIndex(nC), '.jpg'];
-                            end
-                            printFile(H, fullfile(html_dir, outFile));
-                            files{nC} = outFile;
-                            close(H);
+                            %% End of loop over number of cluster states
+                            countR = countR + 1;
+                            results(countR).file = files;
+                            results(countR).text = ['Task connectivity mean is computed for each group ', groupNames{nRows}];
+                            results(countR).tag = tag;
+                            clear tag;
                         end
+                        %% End of loop over number of groups
+                        
+                        
                     end
-                end
-                
-                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
-                    titleText = ['Cluster One sample t-test results of group ', groupNames{1}, ':'];
-                    tag = 'Cluster One sample t-test results';
-                elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                    titleText = ['Cluster Two sample t-test results of group ', groupNames{1}, ' vs ', ' group ', groupNames{2}, ':'];
-                    tag = 'Cluster Two sample t-test results';
-                else
-                    titleText = ['Cluster Paired t-test results of condition ', groupNames{1}, ' vs ', ' condition ', groupNames{2}, ':'];
-                    tag = 'Cluster Paired t-test results';
-                end
-                
-                countR = countR + 1;
-                results(countR).file = files;
-                results(countR).text = titleText;
-                results(countR).tag = tag;
-                clear tag;
-                
-                
-                if (isfield(dfncInfo.userInput, 'selectedRegressors'))
+                    
+                    
                     
                     %% T-value
-                    files = cell(1, length(t_task_conn));
-                    for nC = 1:length(t_task_conn)
+                    files = cell(1, length(t_u));
+                    for nC = 1:length(t_u)
                         %% use -1og10(p)*sign(t)
-                        ps = p_task_conn{nC};
-                        ts = t_task_conn{nC};
+                        ps = p_u{nC};
+                        ts = t_u{nC};
                         if (~isempty(ts))
                             if (~strcmpi(statsInfo.threshdesc, 'none'))
                                 %p_masked = icatb_fdr(ps, statsInfo.p_threshold);
@@ -342,7 +500,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 tmpM = icatb_vec2mat(tmpM, 1);
                                 tmpM(isnan(tmpM)) = 0;
                                 
-                                H = icatb_getGraphics('Task Connectivity stats', 'graphics', 'dfnc_summary', figVisible);
+                                H = icatb_getGraphics('Cluster stats', 'graphics', 'dfnc_summary', figVisible);
                                 colormap(jet);
                                 set(H, 'resize', 'on');
                                 sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
@@ -356,7 +514,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 end
                                 
                                 CLIM = [-max(abs(tmpM(:))) max(abs(tmpM(:)))];
-                                titleText = ['Results of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
+                                titleText = ['Results of State ', num2str(nC)];
                                 [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
                                     network_values, network_names);
                                 ytick = get(CH, 'YTick');
@@ -368,11 +526,11 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                 % write out t-values
                                 if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
-                                    outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_ttest_', icatb_returnFileIndex(nC), '.jpg'];
+                                    outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_ttest_', icatb_returnFileIndex(nC), '.jpg'];
                                 elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                                    outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_ttest2_', icatb_returnFileIndex(nC), '.jpg'];
+                                    outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_ttest2_', icatb_returnFileIndex(nC), '.jpg'];
                                 else
-                                    outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_paired_ttest_', icatb_returnFileIndex(nC), '.jpg'];
+                                    outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_paired_ttest_', icatb_returnFileIndex(nC), '.jpg'];
                                 end
                                 printFile(H, fullfile(html_dir, outFile));
                                 files{nC} = outFile;
@@ -382,14 +540,14 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                     end
                     
                     if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
-                        titleText = ['Task connectivity One sample t-test results of group ', groupNames{1}, ':'];
-                        tag = 'Task Connectivity One sample t-test results';
+                        titleText = ['Cluster One sample t-test results of group ', groupNames{1}, ':'];
+                        tag = 'Cluster One sample t-test results';
                     elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                        titleText = ['Task connectivity Two sample t-test results of group ', groupNames{1}, ' vs ', ' group ', groupNames{2}, ':'];
-                        tag = 'Task Connectivity Two sample t-test results';
+                        titleText = ['Cluster Two sample t-test results of group ', groupNames{1}, ' vs ', ' group ', groupNames{2}, ':'];
+                        tag = 'Cluster Two sample t-test results';
                     else
-                        titleText = ['Task connectivity Paired t-test results of condition ', groupNames{1}, ' vs ', ' condition ', groupNames{2}, ':'];
-                        tag = 'Task Connectivity Paired t-test results';
+                        titleText = ['Cluster Paired t-test results of condition ', groupNames{1}, ' vs ', ' condition ', groupNames{2}, ':'];
+                        tag = 'Cluster Paired t-test results';
                     end
                     
                     countR = countR + 1;
@@ -398,221 +556,302 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                     results(countR).tag = tag;
                     clear tag;
                     
-                end
-                
-                %% Plot mean dwell time for each group
-                cluster_stats_file = fullfile(cluster_stats_directory,  [dfncInfo.prefix, '_cluster_stats.mat']);
-                load(cluster_stats_file, 'state_vector_stats');
-                cluster_stats_variables = whos('-file', cluster_stats_file);
-                chk_nuisance_cov = strmatch('nuisance_cov_file', char(cluster_stats_variables.name), 'exact');
-                if (~isempty(chk_nuisance_cov))
-                    try
-                        load(cluster_stats_file, 'nuisance_cov_file');
-                        tmp_nuisance = icatb_load_ascii_or_mat(nuisance_cov_file);
-                        tmp_nuisance = icatb_zscore(tmp_nuisance);
-                    catch
+                    
+                    if (isfield(dfncInfo.userInput, 'selectedRegressors'))
+                        
+                        %% T-value
+                        files = cell(1, length(t_task_conn));
+                        for nC = 1:length(t_task_conn)
+                            %% use -1og10(p)*sign(t)
+                            ps = p_task_conn{nC};
+                            ts = t_task_conn{nC};
+                            if (~isempty(ts))
+                                if (~strcmpi(statsInfo.threshdesc, 'none'))
+                                    %p_masked = icatb_fdr(ps, statsInfo.p_threshold);
+                                    [p_masked, ps]  = get_sig_pvalues(ps, statsInfo.p_threshold, statsInfo.threshdesc);
+                                else
+                                    p_masked = statsInfo.p_threshold;
+                                end
+                                good_inds = ps < p_masked;
+                                
+                                if (~isempty(find(good_inds == 1)))
+                                    
+                                    tmpM = zeros(size(ps));
+                                    tmpM(good_inds) = -log10(ps(good_inds) + eps).*sign(ts(good_inds));
+                                    tmpM = icatb_vec2mat(tmpM, 1);
+                                    tmpM(isnan(tmpM)) = 0;
+                                    
+                                    H = icatb_getGraphics('Task Connectivity stats', 'graphics', 'dfnc_summary', figVisible);
+                                    colormap(jet);
+                                    set(H, 'resize', 'on');
+                                    sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
+                                    if (~strcmpi(statsInfo.threshdesc, 'none'))
+                                        %p_masked  = icatb_fdr(ps(find(isnan(ps) == 0)), statsInfo.p_threshold);
+                                        [p_masked, tmppp]  = get_sig_pvalues(ps(find(isnan(ps) == 0)), statsInfo.p_threshold, statsInfo.threshdesc);
+                                        disp(p_masked)
+                                        fdrlim = -log10(p_masked);
+                                    else
+                                        p_masked = statsInfo.p_threshold;
+                                    end
+                                    
+                                    CLIM = [-max(abs(tmpM(:))) max(abs(tmpM(:)))];
+                                    titleText = ['Results of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
+                                    [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
+                                        network_values, network_names);
+                                    ytick = get(CH, 'YTick');
+                                    if (~strcmpi(statsInfo.threshdesc, 'none'))
+                                        set(CH, 'YTick', sort([ytick, -fdrlim fdrlim]));
+                                    end
+                                    ylabel(CH, '-sign(t) log_1_0(p-value)', 'Interpreter', 'tex');
+                                    title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                                    set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                                    % write out t-values
+                                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                                        outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_ttest_', icatb_returnFileIndex(nC), '.jpg'];
+                                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                                        outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_ttest2_', icatb_returnFileIndex(nC), '.jpg'];
+                                    else
+                                        outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_paired_ttest_', icatb_returnFileIndex(nC), '.jpg'];
+                                    end
+                                    printFile(H, fullfile(html_dir, outFile));
+                                    files{nC} = outFile;
+                                    close(H);
+                                end
+                            end
+                        end
+                        
+                        if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                            titleText = ['Task connectivity One sample t-test results of group ', groupNames{1}, ':'];
+                            tag = 'Task Connectivity One sample t-test results';
+                        elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                            titleText = ['Task connectivity Two sample t-test results of group ', groupNames{1}, ' vs ', ' group ', groupNames{2}, ':'];
+                            tag = 'Task Connectivity Two sample t-test results';
+                        else
+                            titleText = ['Task connectivity Paired t-test results of condition ', groupNames{1}, ' vs ', ' condition ', groupNames{2}, ':'];
+                            tag = 'Task Connectivity Paired t-test results';
+                        end
+                        
+                        countR = countR + 1;
+                        results(countR).file = files;
+                        results(countR).text = titleText;
+                        results(countR).tag = tag;
+                        clear tag;
+                        
                     end
-                end
-                if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat']))
-                    mean_dwell_time = reshape (state_vector_stats.mean_dwell_time, dfncInfo.userInput.numOfSess, dfncInfo.userInput.numOfSub, size(state_vector_stats.mean_dwell_time, 2));
-                else
-                    mean_dwell_time = state_vector_stats.mean_dwell_time;
-                end
-                H = icatb_getGraphics('Cluster stats', 'graphics', 'dfnc_summary', figVisible);
-                colormap(jet);
-                set(H, 'resize', 'on');
-                sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
-                colors = {'r', 'k'};
-                area_colors = {[1, 0.6, 0.78], [0.8, 0.8, 0.8]};
-                numClusterStates = size(state_vector_stats.mean_dwell_time, 2);
-                if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat']))
-                    if (size(mean_dwell_time, 1) > 1)
-                        % average across sessions
-                        mean_dwell_time = mean(mean_dwell_time);
+                    
+                    %% Plot mean dwell time for each group
+                    cluster_stats_file = fullfile(cluster_stats_directory,  [dfncInfo.prefix, '_cluster_stats.mat']);
+                    load(cluster_stats_file, 'state_vector_stats');
+                    cluster_stats_variables = whos('-file', cluster_stats_file);
+                    chk_nuisance_cov = strmatch('nuisance_cov_file', char(cluster_stats_variables.name), 'exact');
+                    if (~isempty(chk_nuisance_cov))
+                        try
+                            load(cluster_stats_file, 'nuisance_cov_file');
+                            tmp_nuisance = icatb_load_ascii_or_mat(nuisance_cov_file);
+                            tmp_nuisance = icatb_zscore(tmp_nuisance);
+                        catch
+                        end
                     end
-                end
-                mean_dwell_time = squeeze(mean_dwell_time);
-                legendStr = cell(1, 2*length(groupVals));
-                for nGroups = 1:length(groupVals)
-                    icatb_plot_with_ste_area(sh, 1:numClusterStates, mean_dwell_time(groupVals{nGroups}, :), [], colors{nGroups}, area_colors{nGroups});
-                    legendStr{2*nGroups - 1} = [groupNames{nGroups}, '+/-SEM'];
-                    legendStr{2*nGroups} = groupNames{nGroups};
-                    hold on;
-                end
-                legend(legendStr{:});
-                hold off;
-                title('Mean Dwell Time Vs Cluster States', 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
-                set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
-                titleText = 'Mean dwell time in windows';
-                ylabel(titleText);
-                xlabel('Cluster states');
-                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
-                    outFile = [dfncInfo.prefix, '_mdt_ttest.jpg'];
-                    tag = 'Mean dwell time';
-                elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                    outFile = [dfncInfo.prefix, '_mdt_ttest2.jpg'];
-                    tag = 'Mean dwell time of each group';
-                else
-                    outFile = [dfncInfo.prefix, '_mdt_paired_ttest.jpg'];
-                    tag = 'Mean dwell time of each condition';
-                end
-                printFile(H, fullfile(html_dir, outFile));
-                clear files;
-                files{1} = outFile;
-                countR = countR + 1;
-                results(countR).file = files;
-                results(countR).text = titleText;
-                results(countR).tag = tag;
-                clear tag;
-                close(H);
-                
-                clear files;
-                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
-                    % Regress covariates
-                    tmp_mean_dwell_time = mean_dwell_time;
-                    if (exist('tmp_nuisance', 'var'))
-                        for nMDT = 1:size(tmp_mean_dwell_time, 2)
-                            ttt_mdt = tmp_mean_dwell_time(:, nMDT);
-                            ttt_mdt_inds = find(ttt_mdt ~= 0);
-                            tmp_mean_dwell_time(ttt_mdt_inds, nMDT) = regress_cov(ttt_mdt(ttt_mdt_inds), tmp_nuisance(ttt_mdt_inds, :));
+                    if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat']))
+                        mean_dwell_time = reshape (state_vector_stats.mean_dwell_time, dfncInfo.userInput.numOfSess, dfncInfo.userInput.numOfSub, size(state_vector_stats.mean_dwell_time, 2));
+                    else
+                        mean_dwell_time = state_vector_stats.mean_dwell_time;
+                    end
+                    H = icatb_getGraphics('Cluster stats', 'graphics', 'dfnc_summary', figVisible);
+                    colormap(jet);
+                    set(H, 'resize', 'on');
+                    sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
+                    colors = {'r', 'k'};
+                    area_colors = {[1, 0.6, 0.78], [0.8, 0.8, 0.8]};
+                    numClusterStates = size(state_vector_stats.mean_dwell_time, 2);
+                    if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat']))
+                        if (size(mean_dwell_time, 1) > 1)
+                            % average across sessions
+                            mean_dwell_time = mean(mean_dwell_time);
+                        end
+                    end
+                    mean_dwell_time = squeeze(mean_dwell_time);
+                    legendStr = cell(1, 2*length(groupVals));
+                    for nGroups = 1:length(groupVals)
+                        icatb_plot_with_ste_area(sh, 1:numClusterStates, mean_dwell_time(groupVals{nGroups}, :), [], colors{nGroups}, area_colors{nGroups});
+                        legendStr{2*nGroups - 1} = [groupNames{nGroups}, '+/-SEM'];
+                        legendStr{2*nGroups} = groupNames{nGroups};
+                        hold on;
+                    end
+                    legend(legendStr{:});
+                    hold off;
+                    title('Mean Dwell Time Vs Cluster States', 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                    set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+                    titleText = 'Mean dwell time in windows';
+                    ylabel(titleText);
+                    xlabel('Cluster states');
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                        outFile = [dfncInfo.prefix, '_mdt_ttest.jpg'];
+                        tag = 'Mean dwell time';
+                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                        outFile = [dfncInfo.prefix, '_mdt_ttest2.jpg'];
+                        tag = 'Mean dwell time of each group';
+                    else
+                        outFile = [dfncInfo.prefix, '_mdt_paired_ttest.jpg'];
+                        tag = 'Mean dwell time of each condition';
+                    end
+                    printFile(H, fullfile(html_dir, outFile));
+                    clear files;
+                    files{1} = outFile;
+                    countR = countR + 1;
+                    results(countR).file = files;
+                    results(countR).text = titleText;
+                    results(countR).tag = tag;
+                    clear tag;
+                    close(H);
+                    
+                    clear files;
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                        % Regress covariates
+                        tmp_mean_dwell_time = mean_dwell_time;
+                        if (exist('tmp_nuisance', 'var'))
+                            for nMDT = 1:size(tmp_mean_dwell_time, 2)
+                                ttt_mdt = tmp_mean_dwell_time(:, nMDT);
+                                ttt_mdt_inds = find(ttt_mdt ~= 0);
+                                tmp_mean_dwell_time(ttt_mdt_inds, nMDT) = regress_cov(ttt_mdt(ttt_mdt_inds), tmp_nuisance(ttt_mdt_inds, :));
+                            end
+                        end
+                        
+                        allCombs = nchoosek(1:length(groupVals), 2);
+                        for nComb = 1:size(allCombs, 1)
+                            
+                            g1Name = groupNames{allCombs(nComb, 1)};
+                            g2Name = groupNames{allCombs(nComb, 2)};
+                            mG1 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 1)}, :);
+                            mG2 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 2)}, :);
+                            
+                            pvals_mdt = NaN(1, size(mean_dwell_time, 2));
+                            tvals_mdt = NaN(1, size(mean_dwell_time, 2));
+                            
+                            for nState = 1:length(pvals_mdt)
+                                
+                                tmp_mG1 = mG1(:, nState);
+                                tmp_mG2 =  mG2(:, nState);
+                                try
+                                    if (DFNC_DEFAULTS.mdt_exclude_zeros)
+                                        tmp_mG1 = tmp_mG1(tmp_mG1 ~= 0);
+                                        tmp_mG2 = tmp_mG2(tmp_mG2 ~= 0);
+                                    end
+                                catch
+                                end
+                                if (~isempty(tmp_mG1) && ~isempty(tmp_mG2))
+                                    [pvals_mdt(nState), tvals_mdt(nState)] = icatb_ttest2(tmp_mG1, tmp_mG2, 0);
+                                end
+                            end
+                            
+                            titleStr = ['Two sample t-test of mean dwell time between groups ', g1Name, ' & ', g2Name];
+                            
+                            g1Name(isspace(g1Name)) = '';
+                            g2Name(isspace(g2Name)) = '';
+                            
+                            ttest2FileName = [dfncInfo.prefix, '_ttest2_', g1Name, '_', g2Name, '.txt'];
+                            numPara = 1;
+                            varStruct(numPara).tag = 'State#';
+                            varStruct(numPara).value = (1:length(pvals_mdt))';
+                            
+                            numPara = numPara + 1;
+                            varStruct(numPara).tag = 'p-value';
+                            varStruct(numPara).value = num2str(pvals_mdt(:), '%0.4f');
+                            
+                            numPara = numPara + 1;
+                            varStruct(numPara).tag = 'T-value';
+                            varStruct(numPara).value = num2str(tvals_mdt(:), '%0.4f');
+                            
+                            icatb_printToFile(fullfile(html_dir,  ttest2FileName), varStruct, '', 'column_wise');
+                            clear varStruct;
+                            
+                            tag = ['Two sample t-test on MDT between ', g1Name, ' vs ', g2Name];
+                            countR = countR + 1;
+                            results(countR).file = {ttest2FileName};
+                            results(countR).text = titleStr;
+                            results(countR).tag = tag;
+                            clear tag;
                         end
                     end
                     
-                    allCombs = nchoosek(1:length(groupVals), 2);
-                    for nComb = 1:size(allCombs, 1)
-                        
-                        g1Name = groupNames{allCombs(nComb, 1)};
-                        g2Name = groupNames{allCombs(nComb, 2)};
-                        mG1 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 1)}, :);
-                        mG2 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 2)}, :);
-                        
-                        pvals_mdt = NaN(1, size(mean_dwell_time, 2));
-                        tvals_mdt = NaN(1, size(mean_dwell_time, 2));
-                        
-                        for nState = 1:length(pvals_mdt)
-                            
-                            tmp_mG1 = mG1(:, nState);
-                            tmp_mG2 =  mG2(:, nState);
-                            try
-                                if (DFNC_DEFAULTS.mdt_exclude_zeros)
-                                    tmp_mG1 = tmp_mG1(tmp_mG1 ~= 0);
-                                    tmp_mG2 = tmp_mG2(tmp_mG2 ~= 0);
-                                end
-                            catch
-                            end
-                            if (~isempty(tmp_mG1) && ~isempty(tmp_mG2))
-                                [pvals_mdt(nState), tvals_mdt(nState)] = icatb_ttest2(tmp_mG1, tmp_mG2, 0);
+                    
+
+                    
+                    
+                    
+                    
+
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat'])
+            
+            
+                        tmp_mean_dwell_time = mean_dwell_time;
+                        if (exist('tmp_nuisance', 'var'))
+                            for nMDT = 1:size(tmp_mean_dwell_time, 2)
+                                ttt_mdt = tmp_mean_dwell_time(:, nMDT);
+                                ttt_mdt_inds = find(ttt_mdt ~= 0);
+                                tmp_mean_dwell_time(ttt_mdt_inds, nMDT) = regress_cov(ttt_mdt(ttt_mdt_inds), tmp_nuisance(ttt_mdt_inds, :));
                             end
                         end
-                        
-                        titleStr = ['Two sample t-test of mean dwell time between groups ', g1Name, ' & ', g2Name];
-                        
-                        g1Name(isspace(g1Name)) = '';
-                        g2Name(isspace(g2Name)) = '';
-                        
-                        ttest2FileName = [dfncInfo.prefix, '_ttest2_', g1Name, '_', g2Name, '.txt'];
-                        numPara = 1;
-                        varStruct(numPara).tag = 'State#';
-                        varStruct(numPara).value = (1:length(pvals_mdt))';
-                        
-                        numPara = numPara + 1;
-                        varStruct(numPara).tag = 'p-value';
-                        varStruct(numPara).value = num2str(pvals_mdt(:), '%0.4f');
-                        
-                        numPara = numPara + 1;
-                        varStruct(numPara).tag = 'T-value';
-                        varStruct(numPara).value = num2str(tvals_mdt(:), '%0.4f');
-                        
-                        icatb_printToFile(fullfile(html_dir,  ttest2FileName), varStruct, '', 'column_wise');
-                        clear varStruct;
-                        
-                        tag = ['Two sample t-test on MDT between ', g1Name, ' vs ', g2Name];
-                        countR = countR + 1;
-                        results(countR).file = {ttest2FileName};
-                        results(countR).text = titleStr;
-                        results(countR).tag = tag;
-                        clear tag;
-                    end
-                end
-                
-                
-
-                
-                
-                
-                
-
-                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat'])
-        
-        
-                    tmp_mean_dwell_time = mean_dwell_time;
-                    if (exist('tmp_nuisance', 'var'))
-                        for nMDT = 1:size(tmp_mean_dwell_time, 2)
-                            ttt_mdt = tmp_mean_dwell_time(:, nMDT);
-                            ttt_mdt_inds = find(ttt_mdt ~= 0);
-                            tmp_mean_dwell_time(ttt_mdt_inds, nMDT) = regress_cov(ttt_mdt(ttt_mdt_inds), tmp_nuisance(ttt_mdt_inds, :));
-                        end
-                    end
-                   
-                    allCombs = nchoosek(1:length(groupVals), 2);
-                    for nComb = 1:size(allCombs, 1)
                        
-                        g1Name = groupNames{allCombs(nComb, 1)};
-                        g2Name = groupNames{allCombs(nComb, 2)};
-                        mG1 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 1)}, :);
-                        mG2 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 2)}, :);
-                       
-                        pvals_mdt = NaN(1, size(mean_dwell_time, 2));
-                        tvals_mdt = NaN(1, size(mean_dwell_time, 2));
-                       
-                        for nState = 1:length(pvals_mdt)
+                        allCombs = nchoosek(1:length(groupVals), 2);
+                        for nComb = 1:size(allCombs, 1)
                            
-                            tmp_mG1subtG2 = mG1(:, nState) - mG2(:, nState);
-                            try
-                                if (DFNC_DEFAULTS.mdt_exclude_zeros)
-                                    tmp_mG1subtG2 = tmp_mG1subtG2(tmp_mG1subtG2 ~= 0);
+                            g1Name = groupNames{allCombs(nComb, 1)};
+                            g2Name = groupNames{allCombs(nComb, 2)};
+                            mG1 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 1)}, :);
+                            mG2 = tmp_mean_dwell_time(groupVals{allCombs(nComb, 2)}, :);
+                           
+                            pvals_mdt = NaN(1, size(mean_dwell_time, 2));
+                            tvals_mdt = NaN(1, size(mean_dwell_time, 2));
+                           
+                            for nState = 1:length(pvals_mdt)
+                               
+                                tmp_mG1subtG2 = mG1(:, nState) - mG2(:, nState);
+                                try
+                                    if (DFNC_DEFAULTS.mdt_exclude_zeros)
+                                        tmp_mG1subtG2 = tmp_mG1subtG2(tmp_mG1subtG2 ~= 0);
+                                    end
+                                catch
                                 end
-                            catch
+                                if ~isempty(tmp_mG1subtG2)
+                                    [pvals_mdt(nState), tvals_mdt(nState)] = icatb_ttest(tmp_mG1subtG2);
+                                end
                             end
-                            if ~isempty(tmp_mG1subtG2)
-                                [pvals_mdt(nState), tvals_mdt(nState)] = icatb_ttest(tmp_mG1subtG2);
-                            end
+                           
+                            titleStr = ['Paired t-test on MDT between ', g1Name, ' & ', g2Name];
+                           
+                            g1Name(isspace(g1Name)) = '';
+                            g2Name(isspace(g2Name)) = '';
+                           
+                            s_ttst_pair_filename = [dfncInfo.prefix, '_paired_ttest_', g1Name, '_', g2Name, '.txt'];
+                            numPara = 1;
+                            varStruct(numPara).tag = 'State#';
+                            varStruct(numPara).value = (1:length(pvals_mdt))';
+                           
+                            numPara = numPara + 1;
+                            varStruct(numPara).tag = 'p-value';
+                            varStruct(numPara).value = num2str(pvals_mdt(:), '%0.4f');
+                           
+                            numPara = numPara + 1;
+                            varStruct(numPara).tag = 'T-value';
+                            varStruct(numPara).value = num2str(tvals_mdt(:), '%0.4f');
+                           
+                            icatb_printToFile(fullfile(html_dir,  s_ttst_pair_filename), varStruct, '', 'column_wise');
+                            clear varStruct;
+                            
+                            tag = ['Paired t-test of mean dwell time between ', g1Name, ' vs ', g2Name];
+                            countR = countR + 1;
+                            results(countR).file = {s_ttst_pair_filename};
+                            results(countR).text = titleStr;
+                            results(countR).tag = tag;
+                            clear tag;                    
                         end
-                       
-                        titleStr = ['Paired t-test on MDT between ', g1Name, ' & ', g2Name];
-                       
-                        g1Name(isspace(g1Name)) = '';
-                        g2Name(isspace(g2Name)) = '';
-                       
-                        s_ttst_pair_filename = [dfncInfo.prefix, '_paired_ttest_', g1Name, '_', g2Name, '.txt'];
-                        numPara = 1;
-                        varStruct(numPara).tag = 'State#';
-                        varStruct(numPara).value = (1:length(pvals_mdt))';
-                       
-                        numPara = numPara + 1;
-                        varStruct(numPara).tag = 'p-value';
-                        varStruct(numPara).value = num2str(pvals_mdt(:), '%0.4f');
-                       
-                        numPara = numPara + 1;
-                        varStruct(numPara).tag = 'T-value';
-                        varStruct(numPara).value = num2str(tvals_mdt(:), '%0.4f');
-                       
-                        icatb_printToFile(fullfile(html_dir,  s_ttst_pair_filename), varStruct, '', 'column_wise');
-                        clear varStruct;
-                        
-                        tag = ['Paired t-test of mean dwell time between ', g1Name, ' vs ', g2Name];
-                        countR = countR + 1;
-                        results(countR).file = {s_ttst_pair_filename};
-                        results(countR).text = titleStr;
-                        results(countR).tag = tag;
-                        clear tag;                    
                     end
-                end
-        
-                
-                
-                
-                
+            
+                 end
+                    
+                    
+                    
                 
                 
                 
@@ -685,6 +924,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             %    meta_states_info.kmeans.summary.total_dist];
             %dat = {pca_dat, tica_dat, sica_dat, kmeans_dat};
             %clear pca_dat tica_dat sica_dat kmeans_dat;
+            b_skip = 0;
             for nR = 1:length(resultFiles)
                 fname = fullfile(cluster_stats_directory, resultFiles{nR});
                 if (exist(fname, 'file'))
@@ -772,6 +1012,59 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                         
                         icatb_printToFile(fullfile(html_dir,  outFile), varStruct, '', 'column_wise');
                         clear varStruct;
+                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_anova1_results.mat'])
+                        % ANOVA1 may get dwelling stats later
+                        b_skip = 1;
+                        disp('Anova may get dwelling stats in the future');
+% 
+%                         coi_tot =[];
+%                         for i_group = 1:length(groupNames)
+%                             %ccod_tmp_grp{i_group,1} = squeeze(dat{nM}(find(groupVals{1} == i_group), :, i_state));
+%                             ccod_tmp_grp{i_group,1} = squeeze(dat{1,1}(groupVals{i_group},:);
+%                             c_chk_grp{i_group,1} = find(isfinite(ccod_tmp_grp{i_group,1}(:, 1)) == 1);              
+%                             coi_tot=[coi_tot ; c_chk_grp{i_group,1}];
+%                         end
+%                         outFile = [dfncInfo.prefix, '_meta_state_anova1_lev', num2str(length(groupNames)), '.txt'];
+%                         tag = 'Meta State: Anova1';
+%                         titleStr = ['Meta State: Levels ',  num2str(length(groupNames))];
+% 
+%                         N1 = length(groupVals{1});
+%                         N2 = length(groupVals{2});
+%                         X = ones(N1 + N2, 1);
+%                         X(N1 + 1:end) = 0;
+%                         
+%                         T = [];
+%                         P = [];
+%                         M1 = [];
+%                         M2 = [];
+%                         clear t_u p_u stats_u;
+%                         
+%                         for nM = 1:length(metaMethods)
+%                             [p_u, tbl, stats_an] = anova1([dat{nM}(groupVals{1}, :);dat{nM}(groupVals{2}, :)], groupNames, 'off'); 
+%                             tmp1 = dat{nM}(groupVals{1}, :);
+%                             %[t_u, p_u, stats_u] = mT([tmp1;tmp2],X, [], 1, {'verbose'});
+%                             T = [T; t_u];
+%                             P = [P; p_u];
+%                             M1 = [M1; mean(tmp1)];
+%                             M2 = [M2; mean(tmp2)];
+%                         end
+%                         
+%                         clear varStruct;
+%                         
+%                         numPara = 1;
+%                         varStruct(numPara).tag = 'Method';
+%                         varStruct(numPara).value = char(metaMethods);
+%                         
+%                         for nP = 1:size(T, 2)
+%                             numPara = numPara + 1;
+%                             varStruct(numPara).tag = metaFields{nP};
+%                             varStruct(numPara).value = strcat('Tval = ', num2str(T(:, nP),'%0.4f'), ', Pval = ', num2str(P(:, nP),'%0.4f'), ...
+%                                 ', Mean of Group1 = ', num2str(M1(:, nP),'%0.4f'), ', Mean of Group2 = ', num2str(M2(:, nP),'%0.4f'));
+%                         end
+%                         
+%                         icatb_printToFile(fullfile(html_dir,  outFile), varStruct, '', 'column_wise');
+%                         clear varStruct;
+
                     else
                         
                         outFile = [dfncInfo.prefix, '_meta_state_ttest_', groupNames{1}, '_', groupNames{2}, '.txt'];
@@ -816,10 +1109,11 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                         
                         
                     end
-                    
-                    results(countR).file = {outFile};
-                    results(countR).text = titleStr;
-                    results(countR).tag = tag;
+                    if ~b_skip
+                        results(countR).file = {outFile};
+                        results(countR).text = titleStr;
+                        results(countR).tag = tag;
+                    end
                     
                 end
             end
@@ -1273,7 +1567,7 @@ function [p_masked, p]  = get_sig_pvalues(p, thresh, criteria)
     p_masked = thresh;
     if (strcmpi(criteria, 'mafdr'))
         p = mafdr(p);
-    elseif(strcmpi(criteria, 'fdr'))
+    elseif(strcmpi(criteria, 'fdr') || strcmpi(criteria, 'bhfdr'))
         p_masked = icatb_fdr(p, thresh);
     end
 end
