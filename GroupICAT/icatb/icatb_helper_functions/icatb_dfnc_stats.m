@@ -705,14 +705,10 @@ try
     elseif (strcmpi(designCriteria, 'two sample t-test'))
         
         disp('Selected design criteria is two sample t-test');
-
-% if ( b_chk_ena_stateguided ) 
-%         oc_sgica = icatb_cls_sgica(dfncInfo);
-%         [con_pos_transit_all, con_pos_dwell_all, con_neg_transit_all, con_neg_dwell_all] = oc_sgica.report_dwell_tran(sgica);
-%         oc_sgica.cls_stat_two_sample(obj, figData);
-% end
         
         %% Two sample t-test
+
+        % regular correlations stats
         if (size(dfnc_corrs, 1) > 1)
             dfnc_corrs = squeeze(mean(dfnc_corrs, 1));
         else
@@ -726,55 +722,50 @@ try
                 dfncTaskConnectivity = squeeze(dfncTaskConnectivity);
             end
         end
-        
-        numClusters = size(dfnc_corrs, 3);
-        
-        %% Initialize results
-        t_u = cell(1, numClusters);
-        p_u = t_u;
-        stats_u = t_u;
-        N = zeros(2, numClusters);
-        mean_u = cell(2, numClusters);
-        
-        g1 = [figData.ttestOpts.t.val{1}];
-        g2 = [figData.ttestOpts.t.val{2}];
-        subject_indices = cell(2, numClusters);
-        
-        %% Compute and save
-        for nC = 1:numClusters
-            disp(['Computing two sample t-test on cluster state# ', num2str(nC), ' ...']);
-            %tmp = squeeze(dfnc_corrs(:, :, nC));
-            tmp1 =  squeeze(dfnc_corrs(g1, :, nC));
-            tmp2 =  squeeze(dfnc_corrs(g2, :, nC));
-            
-            chk1 = find(isfinite(tmp1(:, 1)) == 1);
-            chk2 = find(isfinite(tmp2(:, 1)) == 1);
-            
-            if (~isempty(chk1) && ~isempty(chk2))
-                if ((length(chk1) + length(chk2)) > 2)
-                    tmp1 = tmp1(chk1, :);
-                    tmp2 = tmp2(chk2, :);
-                    N1 = length(chk1);
-                    N2 = length(chk2);
-                    modelX = ones(N1 + N2, 1);
-                    modelX(N1 + 1:end) = 0;
-                    N(1, nC) = N1;
-                    N(2, nC) = N2;
-                    subject_indices{1, nC} = g1(chk1);
-                    subject_indices{2, nC} = g2(chk2);
-                    mean_u{1, nC} = mean(tmp1);
-                    mean_u{2, nC} = mean(tmp2);
-                    [t_u{nC}, p_u{nC}, stats_u{nC}] = mT([tmp1;tmp2], modelX, [], 1, {'verbose'});
-                end
-            end
-            
+
+        oc_stats = icatb_dfnc_stats_cls();
+        [t_u, p_u, stats_u, mean_u, N, subject_indices] = oc_stats.m_ttest2(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+     
+        % Stats for state guided if available
+        % Check post process file
+        post_process_file = fullfile(figData.outputDir,  [figData.prefix , '_post_process.mat']);
+        if (~exist(post_process_file, 'file'))
+            error('Please run postprocess step in order to use dfnc cluster stats');
+        end
+        stru_sgica = load(post_process_file, 'sgica'); 
+
+        %check if var stru_sgica.sgica.calib exists
+        b_save_sgica=0;
+        if isfield(stru_sgica, 'sgica') 
+            b_save_sgica=1;            
+            oc_sgica = icatb_cls_sgica(figData.dfncInfo);
+            [con_pos_transit_all, con_pos_dwell_all, con_neg_transit_all, con_neg_dwell_all] = oc_sgica.report_dwell_tran(stru_sgica.sgica);
+            con_pos_transit_all = mean(con_pos_transit_all,1); %average over sessions
+            con_pos_transit_all = permute(con_pos_transit_all, [2 1 3]); % reorder for stats
+            con_pos_dwell_all = mean(con_pos_dwell_all,1); %average over sessions
+            con_pos_dwell_all = permute(con_pos_dwell_all, [2 1 3]); % reorder for stats
+            con_neg_transit_all = mean(con_neg_transit_all,1); %average over sessions
+            con_neg_transit_all = permute(con_neg_transit_all, [2 1 3]); % reorder for stats
+            con_neg_dwell_all = mean(con_neg_dwell_all,1); %average over sessions
+            con_neg_dwell_all = permute(con_neg_dwell_all, [2 1 3]); % reorder for stats        
+    
+            [sgica.stats.ttest2.con_pos_transit_all.t_u, sgica.stats.ttest2.con_pos_transit_all.p_u, sgica.stats.ttest2.con_pos_transit_all.stats_u, sgica.stats.ttest2.con_pos_transit_all.mean_u, sgica.stats.ttest2.con_pos_transit_all.N, sgica.stats.ttest2.con_pos_transit_all.subject_indices] = oc_stats.m_ttest2(con_pos_transit_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            [sgica.stats.ttest2.con_pos_dwell_all.t_u, sgica.stats.ttest2.con_pos_dwell_all.p_u, sgica.stats.ttest2.con_pos_dwell_all.stats_u, sgica.stats.ttest2.con_pos_dwell_all.mean_u, sgica.stats.ttest2.con_pos_dwell_all.N, sgica.stats.ttest2.con_pos_dwell_all.subject_indices] = oc_stats.m_ttest2(con_pos_dwell_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            [sgica.stats.ttest2.con_neg_transit_all.t_u, sgica.stats.ttest2.con_neg_transit_all.p_u, sgica.stats.ttest2.con_neg_transit_all.stats_u, sgica.stats.ttest2.con_neg_transit_all.mean_u, sgica.stats.ttest2.con_neg_transit_all.N, sgica.stats.ttest2.con_neg_transit_all.subject_indices] = oc_stats.m_ttest2(con_neg_transit_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            [sgica.stats.ttest2.con_neg_dwell_all.t_u, sgica.stats.ttest2.con_neg_dwell_all.p_u, sgica.stats.ttest2.con_neg_dwell_all.stats_u, sgica.stats.ttest2.con_neg_dwell_all.mean_u, sgica.stats.ttest2.con_neg_dwell_all.N, sgica.stats.ttest2.con_neg_dwell_all.subject_indices] = oc_stats.m_ttest2(con_neg_dwell_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+
         end
         
-        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_two_sample_ttest_results.mat']);
-        disp(['Two sample t-test results are saved in ', outFile]);
+        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_two_sample_ttest_results.mat']);        
+        if b_save_sgica
+            save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices', 'sgica');
+            disp(['Two sample t-test results (state-based dFNC) are saved in ', outFile]);
+            disp(['Found state guided data and saved 2ttest of it, will be saved in sgica structure in file ' outFile])
+        else            
+            save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
+            disp(['Two sample t-test results (state-based dFNC) are saved in ', outFile]);
+        end
         fprintf('\n\n');
-        save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
-        
         
         if (exist('dfncTaskConnectivity', 'var'))
             
