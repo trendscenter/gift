@@ -1304,11 +1304,23 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         %% State Guided ICA
 
         oc_sgica = icatb_cls_sgica(dfncInfo);
-        [con_pos_transit_all, con_pos_dwell_all, con_neg_transit_all, con_neg_dwell_all] = oc_sgica.report_dwell_tran(sgica);
+
+        n_subs = size(sgica.calib_all_sub_fnc_A,4);
+        n_sesss = size(sgica.calib_all_sub_fnc_A,3);
+        n_clusts_sgica = size(sgica.calib_all_sub_fnc_A,2);
+        n_winds = size(sgica.calib_all_sub_fnc_A,1);
+        ar_sgica_state_max = zeros(n_winds*n_sesss,n_subs);
+        for n_subj = 1:n_subs
+            for n_sess = 1:n_sesss
+                ar_ind_tmp = zscore(squeeze(sgica.calib_all_sub_fnc_A(:,:,n_sess,n_subj)));
+                [~, ar_ind_tmp] = max(ar_ind_tmp', [], 1);
+                ar_sgica_state_max(1+(n_sess-1)*n_winds:n_sess*n_winds,n_subj) = ar_ind_tmp;
+            end
+        end
+        
+        [matNumTransitions, matFractStateTime, matTransitions, matMeanDwellTime] = m_state_vec_stats('_display_sum_scores_sgica.mat', n_subs, ar_sgica_state_max, n_clusts_sgica, dfncInfo);
 
         for ii = 1:size(sgica.priors,2)
-            con_pos_dwell = con_pos_dwell_all(:,:,ii);
-            con_neg_dwell = con_neg_dwell_all(:,:,ii);
             fig_title = ['IC FNC prior (', num2str(ii), ')'];
             H(ii).H = icatb_getGraphics(fig_title, 'graphics', 'dfnc_summary7', figVisible);
             colormap(jet);
@@ -1316,38 +1328,54 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             CLIM = max(abs(sgica.priors(:)));
             CLIM = [-CLIM, CLIM];
             tmp = icatb_vec2mat(sgica.priors(:, ii), 1);
-            d_tot_time_pos = round(mean(con_pos_dwell)*dfncInfo.TR(1),1) ; 
-            d_tot_time_neg = round(mean(con_neg_dwell)*dfncInfo.TR(1),1) ; 
-            d_dwell_time_pos = round(sum(sum(con_pos_dwell))/(size(sgica.calib_all_sub_fnc_A,4)*size(sgica.calib_all_sub_fnc_A,3)));
-            d_dwell_time_neg = round(sum(sum(con_neg_dwell))/(size(sgica.calib_all_sub_fnc_A,4)*size(sgica.calib_all_sub_fnc_A,3)));
-            titleStr = sprintf('Pos: %.1f seconds (%d%%), Neg: %.1f seconds (%d%%)', d_tot_time_pos, d_dwell_time_pos, d_tot_time_neg, d_dwell_time_neg);
+            d_state_winds = sum(sum(ar_sgica_state_max == ii));
+            titleStr = sprintf('Top loading value in %.1f seconds (%d%%)', d_state_winds*dfncInfo.TR(1), round(d_state_winds/prod(size(ar_sgica_state_max))*100));
             icatb_plot_FNC(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis square;
             set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
         end
 
-        con_pos_dwell_all_flat = oc_sgica.ar_report_dwell(con_pos_dwell_all);
-        H(end+1).H = icatb_getGraphics('Reference Guided Spatial dFNC Pos. Stats', 'graphics', 'dfnc_summary1', figVisible);
+        % Max Dwelling time
+        H(end+1).H = icatb_getGraphics('Reference Guided Spatial dFNC Max Stats', 'graphics', 'dfnc_summary1', figVisible);
         colormap(jet);
-        oc_sgica.plot_mn_dwell(con_pos_dwell_all_flat, H(end).H, size(sgica.br_all_sub_fnc_A,1));
-        h_tmp = ancestor(gca,'figure');
-        set(findobj(h_tmp, 'type', 'axes'), 'YColor', FONT_COLOR, 'XColor', FONT_COLOR);
-        
-        con_neg_dwell_all_flat = oc_sgica.ar_report_dwell(con_neg_dwell_all);
-        H(end+1).H = icatb_getGraphics('Reference Guided Spatial dFNC Neg. Stats', 'graphics', 'dfnc_summary2', figVisible);
-        colormap(jet);
-        oc_sgica.plot_mn_dwell(con_neg_dwell_all_flat, H(end).H, size(sgica.br_all_sub_fnc_A,1));
+        oc_sgica.plot_mn_dwell(matMeanDwellTime, H(end).H, size(sgica.br_all_sub_fnc_A,1));
         h_tmp = ancestor(gca,'figure');
         set(findobj(h_tmp, 'type', 'axes'), 'YColor', FONT_COLOR, 'XColor', FONT_COLOR);
 
-        con_pos_transit_all_flat = oc_sgica.ar_report_dwell(con_pos_transit_all);
-        con_neg_transit_all_flat = oc_sgica.ar_report_dwell(con_neg_transit_all);
+        % transition matrix of max component
         H(end+1).H = icatb_getGraphics('Reference Guided Spatial dFNC Transitions', 'graphics', 'dfnc_summary3', figVisible);
-        colormap(jet);
-        oc_sgica.plot_transitions(con_pos_transit_all_flat, con_neg_transit_all_flat, H(end).H);
+        nTMLen = length(squeeze(mean(matTransitions))); % Remove diagonal from color scheme
+        maxI = max(max(  (1-eye(nTMLen))  .*  squeeze(mean(matTransitions))  )); % Remove diagonal from color scheme
+        % Plot Matrix with max non-diagonal colors
+        imagesc(squeeze(mean(matTransitions)), 'AlphaData', (1-eye(nTMLen)), [0 maxI])
+        diag_vals = diag(squeeze(mean(matTransitions)));
         h_tmp = ancestor(gca,'figure');
         set(findobj(h_tmp, 'type', 'axes'), 'YColor', FONT_COLOR, 'XColor', FONT_COLOR);    
+        % Print probability as text over the diagonal to see if it drops 0.005 or more
+        bgColor = get(H(end).H, 'Color');
+        if (all(bgColor == 0))
+            foregroundcolor = 'w';
+        else
+            foregroundcolor = 'k';
+        end
+        LABEL=cellstr(sprintfc('%0.2f',round(100*diag_vals)/100)); % Two decimal points
+        hold on;
+        for ii = 1:nTMLen;
+            T =text(ii,ii,LABEL{ii});
+            set(T, 'Color', foregroundcolor, 'HorizontalAlignment', 'Center');
+        end
+        
+        colormap(jet);
+        C = colorbar;
+        set(get(C, 'YLabel'), 'String', 'Probability')
+        C.Color = foregroundcolor;
+        axis square
+        set(gca, 'XTick', 1:n_clusts_sgica, 'YTick', 1:n_clusts_sgica)
+        xlabel('State at t')
+        ylabel('State at t-1')
+        title(sprintf('Number of transitions between state with top loading value: %0.1f +/- %0.1f', mean(matNumTransitions), std(matNumTransitions)))
+
             
     else
         
@@ -1419,29 +1447,8 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         end
         
         %% State vector stats
-        
-        matFractStateTime = zeros(M, dfncInfo.postprocess.num_clusters);
-        matTransitions = zeros(M, dfncInfo.postprocess.num_clusters, dfncInfo.postprocess.num_clusters);
-        matMeanDwellTime = zeros(M, dfncInfo.postprocess.num_clusters);
-        matNumTransitions = zeros(M, 1);
-        for ii = 1:M
-            [FRii, TMii, MDTii, NTii] = icatb_dfnc_statevector_stats(aIND(:,ii), dfncInfo.postprocess.num_clusters);
-            matFractStateTime(ii,:) = FRii;
-            matTransitions(ii,:,:) = TMii;
-            matMeanDwellTime(ii,:) = MDTii;
-            matNumTransitions(ii) = NTii;
-        end
-        
-        % save the summary statistics
-        README_icatb={'Score Summary Information'; ...
-                'Type following commands to get statistacal reports'; ...
-                'mean(matFractStateTime(:,:)) % returns the average fractal state time for the group'; ...
-                'squeeze(mean(matTransitions(:,:,:))) % returns the mean of the transition matrix' ; ...
-                'mean(matMeanDwellTime) % returns the mean of the subject mean dwell times' ; ...
-                'matNumTransitions % returns the number of transitions per subject'};
-        save(fullfile(dfncInfo.outputDir, [dfncInfo.prefix '_display_sum_scores.mat']), 'README_icatb', 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime');
-        disp(['dFNC summary statistics saved to ' fullfile(dfncInfo.outputDir, [dfncInfo.prefix '_display_sum_scores.mat'])]);
-        
+        [matNumTransitions, matFractStateTime, matTransitions, matMeanDwellTime] = m_state_vec_stats('_display_sum_scores.mat', dfncInfo.userInput.numOfSub, aIND, dfncInfo.postprocess.num_clusters, dfncInfo);
+
         H(end+1).H = icatb_getGraphics('State Vector Stats', 'graphics', 'dfnc_summary4', figVisible);
         colormap(jet);
         
@@ -1570,4 +1577,35 @@ function [p_masked, p]  = get_sig_pvalues(p, thresh, criteria)
     elseif(strcmpi(criteria, 'fdr') || strcmpi(criteria, 'bhfdr'))
         p_masked = icatb_fdr(p, thresh);
     end
+end
+
+function [matNumTransitions, matFractStateTime, matTransitions, matMeanDwellTime] = m_state_vec_stats(s_suffix, M, aIND, n_clusters, dfncInfo)
+%STATS Summary of this function goes here
+%   Detailed explanation goes here
+% M is number of subjects
+% aIND is the array holding the states for each window for all subjects
+% dfncInfo are the variables from the dfnc parameter file
+
+
+    matFractStateTime = zeros(M, n_clusters);
+    matTransitions = zeros(M, n_clusters, n_clusters);
+    matMeanDwellTime = zeros(M, n_clusters);
+    matNumTransitions = zeros(M, 1);
+    for ii = 1:M
+        [FRii, TMii, MDTii, NTii] = icatb_dfnc_statevector_stats(aIND(:,ii), n_clusters);
+        matFractStateTime(ii,:) = FRii;
+        matTransitions(ii,:,:) = TMii;
+        matMeanDwellTime(ii,:) = MDTii;
+        matNumTransitions(ii) = NTii;
+    end
+    
+    % save the summary statistics
+    README_icatb={'Score Summary Information'; ...
+            'Type following commands to get statistacal reports'; ...
+            'mean(matFractStateTime(:,:)) % returns the average fractal state time for the group'; ...
+            'squeeze(mean(matTransitions(:,:,:))) % returns the mean of the transition matrix' ; ...
+            'mean(matMeanDwellTime) % returns the mean of the subject mean dwell times' ; ...
+            'matNumTransitions % returns the number of transitions per subject'};
+    save(fullfile(dfncInfo.outputDir, [dfncInfo.prefix s_suffix]), 'README_icatb', 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime');
+    disp(['dFNC summary statistics saved to ' fullfile(dfncInfo.outputDir, [dfncInfo.prefix s_suffix])]);
 end

@@ -108,38 +108,6 @@ classdef icatb_cls_sgica
      %   end
         end
 
-        function [con_pos_transit_all, con_pos_dwell_all, con_neg_transit_all, con_neg_dwell_all] = report_dwell_tran(obj, sgica)
-            con_pos_transit_all = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4), size(sgica.priors,2));
-            con_pos_dwell_all = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4), size(sgica.priors,2));
-            con_neg_transit_all = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4), size(sgica.priors,2));
-            con_neg_dwell_all = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4), size(sgica.priors,2));      
-        
-            for ii = 1:size(sgica.priors,2) %loop over componets
-        
-                con_pos_transit = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4));
-                con_pos_dwell = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4));
-                con_neg_transit = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4));
-                con_neg_dwell = zeros(size(sgica.calib_all_sub_fnc_A,3), size(sgica.calib_all_sub_fnc_A,4));        
-                for i_sub=1:size(sgica.calib_all_sub_fnc_A,4)
-                    for i_ses=1:size(sgica.calib_all_sub_fnc_A,3)
-                        d_max = max(sgica.calib_all_sub_fnc_A(:,ii,i_ses,i_sub));
-                        d_min = min(sgica.calib_all_sub_fnc_A(:,ii,i_ses,i_sub));
-                        d_level_top = sgica.calib_all_sub_fnc_A(:,ii,i_ses,i_sub) > (d_max-(d_max-d_min)*0.01*obj.dfncInfo.postprocess.tag_edt_stateguided_threshold_level);
-                        d_level_bot = sgica.calib_all_sub_fnc_A(:,ii,i_ses,i_sub) < (d_min+(d_max-d_min)*0.01*obj.dfncInfo.postprocess.tag_edt_stateguided_threshold_level);
-                        con_pos_dwell(i_ses,i_sub) = sum(d_level_top);
-                        con_pos_transit(i_ses,i_sub) = sum(diff([0 d_level_top']) == 1);
-                        con_neg_dwell(i_ses,i_sub) = sum(d_level_bot);
-                        con_neg_transit(i_ses,i_sub) = sum(diff([0 d_level_bot']) == 1);
-                    end
-                end
-        
-                con_pos_transit_all(:,:,ii) = con_pos_transit; clear con_pos_transit;
-                con_pos_dwell_all(:,:,ii)  =con_pos_dwell; clear con_pos_dwell;
-                con_neg_transit_all(:,:,ii) = con_neg_transit; clear con_neg_transit;
-                con_neg_dwell_all(:,:,ii)  = con_neg_dwell; clear con_neg_dwell;
-            end
-        end
-
         function con_dwell_all_flat = ar_report_dwell(obj, con_dwell_all)
             con_dwell_all_flat = permute(con_dwell_all,[3,1,2]);
             con_dwell_all_flat = reshape(con_dwell_all_flat,[], size(con_dwell_all_flat,2)*size(con_dwell_all_flat,3));

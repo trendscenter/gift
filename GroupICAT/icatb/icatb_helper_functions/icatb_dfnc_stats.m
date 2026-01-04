@@ -723,8 +723,7 @@ try
             end
         end
 
-        oc_stats = icatb_dfnc_stats_cls();
-        [t_u, p_u, stats_u, mean_u, N, subject_indices] = oc_stats.m_ttest2(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+        [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_ttest2(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
      
         % Stats for state guided if available
         % Check post process file
@@ -734,26 +733,21 @@ try
         end
         stru_sgica = load(post_process_file, 'sgica'); 
 
-        %check if var stru_sgica.sgica.calib exists
+        %check if var stru_sgica.sgica.calib_all_sub_fnc_A exists
         b_save_sgica=0;
         if isfield(stru_sgica, 'sgica') 
-            b_save_sgica=1;            
-            oc_sgica = icatb_cls_sgica(figData.dfncInfo);
-            [con_pos_transit_all, con_pos_dwell_all, con_neg_transit_all, con_neg_dwell_all] = oc_sgica.report_dwell_tran(stru_sgica.sgica);
-            con_pos_transit_all = mean(con_pos_transit_all,1); %average over sessions
-            con_pos_transit_all = permute(con_pos_transit_all, [2 1 3]); % reorder for stats
-            con_pos_dwell_all = mean(con_pos_dwell_all,1); %average over sessions
-            con_pos_dwell_all = permute(con_pos_dwell_all, [2 1 3]); % reorder for stats
-            con_neg_transit_all = mean(con_neg_transit_all,1); %average over sessions
-            con_neg_transit_all = permute(con_neg_transit_all, [2 1 3]); % reorder for stats
-            con_neg_dwell_all = mean(con_neg_dwell_all,1); %average over sessions
-            con_neg_dwell_all = permute(con_neg_dwell_all, [2 1 3]); % reorder for stats        
+            b_save_sgica=1;  
+            % Below variables should have been calculated in previous step
+            % and may be loaded
+            load(fullfile(figData.dfncInfo.outputDir, [figData.dfncInfo.prefix '_display_sum_scores_sgica.mat']), 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime', 'README_icatb');
+            n_subj = size(matTransitions,1);
+            matTransitions = reshape(matTransitions, n_subj, []);
+            matTransitions = permute(matTransitions, [1 3 2]); % reorder for stats
+            matMeanDwellTime = permute(matMeanDwellTime, [1 3 2]); % reorder for stats
+% %             con_neg_dwell_all = permute(con_neg_dwell_all, [2 1 3]); % reorder for stats        
     
-            [sgica.stats.ttest2.con_pos_transit_all.t_u, sgica.stats.ttest2.con_pos_transit_all.p_u, sgica.stats.ttest2.con_pos_transit_all.stats_u, sgica.stats.ttest2.con_pos_transit_all.mean_u, sgica.stats.ttest2.con_pos_transit_all.N, sgica.stats.ttest2.con_pos_transit_all.subject_indices] = oc_stats.m_ttest2(con_pos_transit_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
-            [sgica.stats.ttest2.con_pos_dwell_all.t_u, sgica.stats.ttest2.con_pos_dwell_all.p_u, sgica.stats.ttest2.con_pos_dwell_all.stats_u, sgica.stats.ttest2.con_pos_dwell_all.mean_u, sgica.stats.ttest2.con_pos_dwell_all.N, sgica.stats.ttest2.con_pos_dwell_all.subject_indices] = oc_stats.m_ttest2(con_pos_dwell_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
-            [sgica.stats.ttest2.con_neg_transit_all.t_u, sgica.stats.ttest2.con_neg_transit_all.p_u, sgica.stats.ttest2.con_neg_transit_all.stats_u, sgica.stats.ttest2.con_neg_transit_all.mean_u, sgica.stats.ttest2.con_neg_transit_all.N, sgica.stats.ttest2.con_neg_transit_all.subject_indices] = oc_stats.m_ttest2(con_neg_transit_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
-            [sgica.stats.ttest2.con_neg_dwell_all.t_u, sgica.stats.ttest2.con_neg_dwell_all.p_u, sgica.stats.ttest2.con_neg_dwell_all.stats_u, sgica.stats.ttest2.con_neg_dwell_all.mean_u, sgica.stats.ttest2.con_neg_dwell_all.N, sgica.stats.ttest2.con_neg_dwell_all.subject_indices] = oc_stats.m_ttest2(con_neg_dwell_all, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
-
+            [sgica.stats.ttest2.matTransitions.t_u, sgica.stats.ttest2.matTransitions.p_u, sgica.stats.ttest2.matTransitions.stats_u, sgica.stats.ttest2.matTransitions.mean_u, sgica.stats.ttest2.matTransitions.N, sgica.stats.ttest2.matTransitions.subject_indices] = m_ttest2(matTransitions, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            [sgica.stats.ttest2.matMeanDwellTime.t_u, sgica.stats.ttest2.matMeanDwellTime.p_u, sgica.stats.ttest2.matMeanDwellTime.stats_u, sgica.stats.ttest2.matMeanDwellTime.mean_u, sgica.stats.ttest2.matMeanDwellTime.N, sgica.stats.ttest2.matMeanDwellTime.subject_indices] = m_ttest2(matMeanDwellTime, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
         end
         
         outFile = fullfile(cluster_stats_directory, [figData.prefix, '_two_sample_ttest_results.mat']);        
@@ -1304,3 +1298,53 @@ betas = pinv(X)*tc;
 
 % Remove variance associated with the covariates
 tc = tc - X*betas;
+
+
+function [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_ttest2(statvals_subjxvalsxclusters, grp1, grp2)
+    % cls_m_ttest2 does a two sample ttest of array statvals_subjxvalsxclusters
+    % grp1 is the column vector of subject indexes for grp1
+    % grp2 is the column vector of subject indexes for grp2
+    disp('Design criteria two sample t-test will be performed');
+
+    numClusters = size(statvals_subjxvalsxclusters, 3);
+    
+    %% Initialize results
+    t_u = cell(1, numClusters);
+    p_u = t_u;
+    stats_u = t_u;
+    N = zeros(2, numClusters);
+    mean_u = cell(2, numClusters);
+
+    subject_indices = cell(2, numClusters);
+    
+    %% Compute and save
+    for nC = 1:numClusters
+        disp(['Computing two sample t-test on cluster state# ', num2str(nC), ' ...']);
+        tmp1 =  squeeze(statvals_subjxvalsxclusters(grp1, :, nC));
+        tmp2 =  squeeze(statvals_subjxvalsxclusters(grp2, :, nC));
+        
+        chk1 = find(isfinite(tmp1(:, 1)) == 1);
+        chk2 = find(isfinite(tmp2(:, 1)) == 1);
+        
+        if (~isempty(chk1) && ~isempty(chk2))
+            if ((length(chk1) + length(chk2)) > 2)
+                tmp1 = tmp1(chk1, :);
+                tmp2 = tmp2(chk2, :);
+                N1 = length(chk1);
+                N2 = length(chk2);
+                modelX = ones(N1 + N2, 1);
+                modelX(N1 + 1:end) = 0;
+                N(1, nC) = N1;
+                N(2, nC) = N2;
+                subject_indices{1, nC} = grp1(chk1);
+                subject_indices{2, nC} = grp2(chk2);
+                mean_u{1, nC} = mean(tmp1);
+                mean_u{2, nC} = mean(tmp2);
+                [t_u{nC}, p_u{nC}, stats_u{nC}] = mT([tmp1;tmp2], modelX, [], 1, {'verbose'});
+            end
+        end
+        
+    end
+
+
+
