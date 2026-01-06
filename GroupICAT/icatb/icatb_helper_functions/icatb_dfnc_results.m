@@ -111,7 +111,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
         figVisible = 'on';
         
-        resultFiles = {[dfncInfo.prefix, '_one_sample_ttest_results.mat'], [dfncInfo.prefix, '_paired_ttest_results.mat'], [dfncInfo.prefix, '_two_sample_ttest_results.mat'], [dfncInfo.prefix, '_anova1_results.mat']};
+        resultFiles = {[dfncInfo.prefix, '_statebased_ttest1_results.mat'], [dfncInfo.prefix, '_statebased_ttestpair_results.mat'], [dfncInfo.prefix, '_statebased_ttest2_results.mat'], [dfncInfo.prefix, '_statebased_anova1_results.mat']};
         
         countR = 0;
         for nR = 1:length(resultFiles)
@@ -129,7 +129,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                 end
 
                 %% ===== ANOVA-only block (no-ops for t-tests) =====
-                doANOVA = strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_anova1_results.mat']);
+                doANOVA = strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_anova1_results.mat']);
                 if doANOVA
                     % ---------- Common flags ----------
                     % (no need to detect one/two/paired here — ANOVA ignores those)
@@ -321,7 +321,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                     %% ===== Mean dwell time (figure only; keep tables in your existing t-test code) =====
                     cluster_stats_file = fullfile(cluster_stats_directory,  [dfncInfo.prefix, '_cluster_stats.mat']);
                     load(cluster_stats_file, 'state_vector_stats');
-                    if ~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat'])
+                    if ~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttestpair_results.mat'])
                         mean_dwell_time = reshape(state_vector_stats.mean_dwell_time, ...
                                                   dfncInfo.userInput.numOfSess, dfncInfo.userInput.numOfSub, ...
                                                   size(state_vector_stats.mean_dwell_time, 2));
@@ -393,10 +393,10 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                 set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                 % write out mean maps
-                                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                                     outFile = [dfncInfo.prefix, '_mean_cluster_ttest_', icatb_returnFileIndex(nC), '.jpg'];
                                     tag = 'Cluster Mean correlations';
-                                elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                                elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                                     outFile = [dfncInfo.prefix, '_mean_cluster_ttest2_group', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
                                     tag = ['Cluster Mean correlations of group ',  groupNames{nRows}];
                                 else
@@ -447,10 +447,10 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                     title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                     set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                     % write out mean maps
-                                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                                         outFile = [dfncInfo.prefix, '_mean_task_ttest_', icatb_returnFileIndex(nC), '.jpg'];
                                         tag = 'Task Connectivity Mean correlations';
-                                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                                         outFile = [dfncInfo.prefix, '_mean_task_ttest2_group', num2str(nRows), '_', icatb_returnFileIndex(nC), '.jpg'];
                                         tag = ['Task Connectivity Mean correlations of group ',  groupNames{nRows}];
                                     else
@@ -525,9 +525,9 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                 set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                 % write out t-values
-                                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                                if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                                     outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_ttest_', icatb_returnFileIndex(nC), '.jpg'];
-                                elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                                elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                                     outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_ttest2_', icatb_returnFileIndex(nC), '.jpg'];
                                 else
                                     outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_cluster_paired_ttest_', icatb_returnFileIndex(nC), '.jpg'];
@@ -539,10 +539,10 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                         end
                     end
                     
-                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                         titleText = ['Cluster One sample t-test results of group ', groupNames{1}, ':'];
                         tag = 'Cluster One sample t-test results';
-                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                         titleText = ['Cluster Two sample t-test results of group ', groupNames{1}, ' vs ', ' group ', groupNames{2}, ':'];
                         tag = 'Cluster Two sample t-test results';
                     else
@@ -606,9 +606,9 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                     title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                     set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                                     % write out t-values
-                                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                                         outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_ttest_', icatb_returnFileIndex(nC), '.jpg'];
-                                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                                         outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_ttest2_', icatb_returnFileIndex(nC), '.jpg'];
                                     else
                                         outFile = [dfncInfo.prefix, '_logp_value_', num2str(statsInfo.p_threshold), '_', statsInfo.threshdesc, '_task_paired_ttest_', icatb_returnFileIndex(nC), '.jpg'];
@@ -620,10 +620,10 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                             end
                         end
                         
-                        if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                        if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                             titleText = ['Task connectivity One sample t-test results of group ', groupNames{1}, ':'];
                             tag = 'Task Connectivity One sample t-test results';
-                        elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                        elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                             titleText = ['Task connectivity Two sample t-test results of group ', groupNames{1}, ' vs ', ' group ', groupNames{2}, ':'];
                             tag = 'Task Connectivity Two sample t-test results';
                         else
@@ -652,7 +652,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                         catch
                         end
                     end
-                    if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat']))
+                    if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttestpair_results.mat']))
                         mean_dwell_time = reshape (state_vector_stats.mean_dwell_time, dfncInfo.userInput.numOfSess, dfncInfo.userInput.numOfSub, size(state_vector_stats.mean_dwell_time, 2));
                     else
                         mean_dwell_time = state_vector_stats.mean_dwell_time;
@@ -664,7 +664,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                     colors = {'r', 'k'};
                     area_colors = {[1, 0.6, 0.78], [0.8, 0.8, 0.8]};
                     numClusterStates = size(state_vector_stats.mean_dwell_time, 2);
-                    if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat']))
+                    if (~strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttestpair_results.mat']))
                         if (size(mean_dwell_time, 1) > 1)
                             % average across sessions
                             mean_dwell_time = mean(mean_dwell_time);
@@ -685,10 +685,10 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                     titleText = 'Mean dwell time in windows';
                     ylabel(titleText);
                     xlabel('Cluster states');
-                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                         outFile = [dfncInfo.prefix, '_mdt_ttest.jpg'];
                         tag = 'Mean dwell time';
-                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                         outFile = [dfncInfo.prefix, '_mdt_ttest2.jpg'];
                         tag = 'Mean dwell time of each group';
                     else
@@ -706,7 +706,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                     close(H);
                     
                     clear files;
-                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                         % Regress covariates
                         tmp_mean_dwell_time = mean_dwell_time;
                         if (exist('tmp_nuisance', 'var'))
@@ -781,7 +781,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                     
                     
 
-                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_paired_ttest_results.mat'])
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttestpair_results.mat'])
             
             
                         tmp_mean_dwell_time = mean_dwell_time;
@@ -930,7 +930,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                 if (exist(fname, 'file'))
                     countR = length(results) + 1;
                     load(fname, 'groupNames', 'groupVals');
-                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_one_sample_ttest_results.mat'])
+                    if strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest1_results.mat'])
                         
                         tag = 'Meta State: One sample t-test';
                         titleStr = ['Meta State: One sample t-test on ', groupNames{1}];
@@ -969,7 +969,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                         
                         icatb_printToFile(fullfile(html_dir,  outFile), varStruct, '', 'column_wise');
                         clear varStruct;
-                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_two_sample_ttest_results.mat'])
+                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_ttest2_results.mat'])
                         
                         outFile = [dfncInfo.prefix, '_meta_state_ttest2_', groupNames{1}, '_', groupNames{2}, '.txt'];
                         tag = 'Meta State: Two sample t-test';
@@ -1012,7 +1012,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                         
                         icatb_printToFile(fullfile(html_dir,  outFile), varStruct, '', 'column_wise');
                         clear varStruct;
-                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_anova1_results.mat'])
+                    elseif strcmpi(resultFiles{nR}, [dfncInfo.prefix, '_statebased_anova1_results.mat'])
                         % ANOVA1 may get dwelling stats later
                         b_skip = 1;
                         disp('Anova may get dwelling stats in the future');
@@ -1319,11 +1319,11 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         end
         
         [matNumTransitions, matFractStateTime, matTransitions, matMeanDwellTime] = m_state_vec_stats('_display_sum_scores_sgica.mat', n_subs, ar_sgica_state_max, n_clusts_sgica, dfncInfo);
-
+        oc_fnc = icatb_cls_fnc_misc();
         for ii = 1:size(sgica.priors,2)
             fig_title = ['IC FNC prior (', num2str(ii), ')'];
             H(ii).H = icatb_getGraphics(fig_title, 'graphics', 'dfnc_summary7', figVisible);
-            colormap(jet);
+            colormap(oc_fnc.get_colors_jet_white([-1,1]));
             sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
             CLIM = max(abs(sgica.priors(:)));
             CLIM = [-CLIM, CLIM];
@@ -1333,8 +1333,10 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             icatb_plot_FNC(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis square;
-            set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
+            set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);            
         end
+
+        icatb_dfnc_results_plot_buttons(H)
 
         % Max Dwelling time
         H(end+1).H = icatb_getGraphics('Reference Guided Spatial dFNC Max Stats', 'graphics', 'dfnc_summary1', figVisible);
@@ -1366,7 +1368,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             set(T, 'Color', foregroundcolor, 'HorizontalAlignment', 'Center');
         end
         
-        colormap(jet);
+        colormap(oc_fnc.get_colors_jet_white([-1,1]));
         C = colorbar;
         set(get(C, 'YLabel'), 'String', 'Probability')
         C.Color = foregroundcolor;

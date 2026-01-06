@@ -139,7 +139,6 @@ classdef icatb_cls_sgica
             ylabel('Frequency')
             xlabel('Reference Guided Spatial dFNC (ICA index)')
             
-            
             subplot(2,1,2)
             if SS
                 plot(1:k, con_dwell_all_flat, 'm');
@@ -255,7 +254,7 @@ classdef icatb_cls_sgica
 %                 
 %             end
 %             
-%             outFile = fullfile(cluster_stats_directory, [figData.prefix, '_two_sample_ttest_results.mat']);
+%             outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_ttest2_results.mat']);
 %             disp(['Two sample t-test results are saved in ', outFile]);
 %             fprintf('\n\n');
 %             save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');

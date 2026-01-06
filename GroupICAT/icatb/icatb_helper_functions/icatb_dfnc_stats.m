@@ -47,13 +47,17 @@ if (~exist(post_process_file, 'file'))
     error('Please run postprocess step in order to use dfnc cluster stats');
 end
 
-
-load (post_process_file, 'clusterInfo');
-Nwin = length(clusterInfo.IDXall) / length(dfncInfo.outputFiles);
-
 if (~exist('outputDir', 'var'))
     outputDir = icatb_selectEntry('title', 'Select stats output directory ...', 'typeEntity', 'directory');
 end
+
+load (post_process_file, 'clusterInfo');
+if exist('clusterInfo', 'var')
+    b_statebased_avail = 1;
+else
+    b_statebased_avail = 0;
+end
+Nwin = length(clusterInfo.IDXall) / length(dfncInfo.outputFiles);
 
 drawnow;
 
@@ -678,7 +682,7 @@ try
             end
         end
         
-        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_one_sample_ttest_results.mat']);
+        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_ttest1_results.mat']);
         disp(['One sample t-test results are saved in ', outFile]);
         fprintf('\n\n');
         save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
@@ -746,16 +750,45 @@ try
             matMeanDwellTime = permute(matMeanDwellTime, [1 3 2]); % reorder for stats
 % %             con_neg_dwell_all = permute(con_neg_dwell_all, [2 1 3]); % reorder for stats        
     
-            [sgica.stats.ttest2.matTransitions.t_u, sgica.stats.ttest2.matTransitions.p_u, sgica.stats.ttest2.matTransitions.stats_u, sgica.stats.ttest2.matTransitions.mean_u, sgica.stats.ttest2.matTransitions.N, sgica.stats.ttest2.matTransitions.subject_indices] = m_ttest2(matTransitions, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
-            [sgica.stats.ttest2.matMeanDwellTime.t_u, sgica.stats.ttest2.matMeanDwellTime.p_u, sgica.stats.ttest2.matMeanDwellTime.stats_u, sgica.stats.ttest2.matMeanDwellTime.mean_u, sgica.stats.ttest2.matMeanDwellTime.N, sgica.stats.ttest2.matMeanDwellTime.subject_indices] = m_ttest2(matMeanDwellTime, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            [sgica.ttest2.matTransitions.cod_state_tscores, sgica.ttest2.matTransitions.cod_state_pvals, sgica.ttest2.matTransitions.cod_state_stats_misc, sgica.ttest2.matTransitions.cod_state_means, sgica.ttest2.matTransitions.cod_state_Ns, sgica.ttest2.matTransitions.cod_state_subject_indices] = m_ttest2(matTransitions, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            sgica.ttest2.matTransitions.groupNames=groupNames;
+            [sgica.ttest2.matMeanDwellTime.cod_state_tscores, sgica.ttest2.matMeanDwellTime.cod_state_pvals, sgica.ttest2.matMeanDwellTime.cod_state_stats_misc, sgica.ttest2.matMeanDwellTime.cod_state_means, sgica.ttest2.matMeanDwellTime.cod_state_Ns, sgica.ttest2.matMeanDwellTime.cod_state_subject_indices] = m_ttest2(matMeanDwellTime, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);            
+            sgica.ttest2.matMeanDwellTime.groupNames=groupNames;
+
+            b_visible=1; %ce010526
+            H.H = icatb_getGraphics('Reference Guided Spatial dFNC Max Stats', 'graphics', 'dfnc_summary1', b_visible);
+            bgColor = get(H.H, 'Color');
+            if (all(bgColor == 0))
+                foregroundcolor = 'w';
+            else
+                foregroundcolor = 'k';
+            end
+            plot(cell2mat(sgica.ttest2.matMeanDwellTime.cod_state_means(1,:)), '-s');hold on;plot(cell2mat(sgica.ttest2.matMeanDwellTime.cod_state_means(2,:)), '-s');
+            h_ax_tmp=gca; 
+            h_ax_tmp.XTick = floor(h_ax_tmp.XLim(1)) : ceil(h_ax_tmp.XLim(2));
+            h_ax_tmp.XColor= foregroundcolor;
+            h_ax_tmp.YColor= foregroundcolor;
+            box off; set(gca, 'TickDir', 'out')
+            ylabel('Mean', 'Color', foregroundcolor);
+            xlabel('Reference Guided Spatial dFNC state (ICA index), * denotes significant mean difference (p < 0.05)', 'Color', foregroundcolor);
+            title('Reference Guided Spatial dFNC Mean Dwell Times', 'Color', foregroundcolor);
+            ron_sign_states = find(cell2mat(sgica.ttest2.matMeanDwellTime.cod_state_pvals) <0.05);
+            if ~isempty(ron_sign_states)
+                text(ron_sign_states, max(cell2mat(sgica.ttest2.matMeanDwellTime.cod_state_means(:,ron_sign_states))), '*','Color',foregroundcolor,'FontSize',18);
+                text(ron_sign_states, min(cell2mat(sgica.ttest2.matMeanDwellTime.cod_state_means(:,ron_sign_states))), '*','Color',foregroundcolor,'FontSize',18);
+            end
+            legend(groupNames{1, 1}  , groupNames{1, 2});
+            icatb_plotNextPreviousExitButtons(H);
         end
         
-        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_two_sample_ttest_results.mat']);        
+        %ce010526 make the case state guided was not run               
         if b_save_sgica
-            save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices', 'sgica');
+            outFile = fullfile(cluster_stats_directory, [figData.prefix, '_sgica_ttest2_results.mat']); 
+            save(outFile, 'sgica');
             disp(['Two sample t-test results (state-based dFNC) are saved in ', outFile]);
             disp(['Found state guided data and saved 2ttest of it, will be saved in sgica structure in file ' outFile])
         else            
+            outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_ttest2_results.mat']); 
             save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
             disp(['Two sample t-test results (state-based dFNC) are saved in ', outFile]);
         end
@@ -842,7 +875,7 @@ try
             
         end
         
-        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_paired_ttest_results.mat']);
+        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_ttestpair_results.mat']);
         disp(['Paired t-test results are saved in ', outFile]);
         fprintf('\n\n');
         save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
@@ -888,7 +921,7 @@ try
          
         % stats_u{1} = get_contrast_label(stats_u{1}, ttestNames, ttestNames, {tmp_con_name}); 
  
-        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_anova1_results.mat']); 
+        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_anova1_results.mat']); 
         disp(['Two sample t-test results are saved in ', outFile]); 
         fprintf('\n\n'); 
         save(outFile, 'F_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices'); 
