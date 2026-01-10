@@ -1448,7 +1448,12 @@ try
             selectedVal = inputText(preProcVisuoTag).value;
             sesInfo.userInput.preproc_type = lower(options{selectedVal});
         catch
-            sesInfo.userInput.preproc_type = 'remove mean per timepoint';
+            s_mod_tmp = icatb_get_modality;
+            if (~strcmpi(lower(s_mod_tmp), 'smri'))
+                sesInfo.userInput.preproc_type = 'remove mean per timepoint';
+            else
+                sesInfo.userInput.preproc_type = 'remove mean per subject';
+            end
         end
     end
     
