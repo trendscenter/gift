@@ -866,30 +866,36 @@ try
             sgica.ttestpair.matMeanDwellTime.groupNames=groupNames;
 
             b_visible=1; %ce010526
-            H.H = icatb_getGraphics('Reference Guided Spatial dFNC Max Stats', 'graphics', 'dfnc_summary1', b_visible);
+            H(1).H = icatb_getGraphics('Reference Guided Spatial dFNC Max Means per State', 'graphics', 'dfnc_summary1', b_visible);
             bgColor = get(H.H, 'Color');
             if (all(bgColor == 0))
                 foregroundcolor = 'w';
             else
                 foregroundcolor = 'k';
             end
-            plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(1,:)), '-s');hold on;plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(2,:)), '-s');
-            h_ax_tmp=gca; 
+            h_ax_tmp=gca;             
+
+            yyaxis right;
+            rod_plot = -log10([sgica.ttestpair.matMeanDwellTime.cod_state_pvals{1,:}]).*sign([sgica.ttestpair.matMeanDwellTime.cod_state_tscores{1, :}]);
+            hold on; 
+            bar(rod_plot, 'FaceAlpha', 0.6);
+            ylim([min(rod_plot)*1.5 max(rod_plot)*1.5]);
+            ylabel('Significant Group Difference, log(p)*sign(t)');
+
+            yyaxis left
+            plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(1,:)), '-sb', 'LineWidth',2.5);
+            hold on;
+            plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(2,:)), '-sy','LineWidth',2.5);
             h_ax_tmp.XTick = floor(h_ax_tmp.XLim(1)) : ceil(h_ax_tmp.XLim(2));
             h_ax_tmp.XColor= foregroundcolor;
             h_ax_tmp.YColor= foregroundcolor;
-            box off; set(gca, 'TickDir', 'out')
-            ylabel('Mean', 'Color', foregroundcolor);
-            xlabel('Reference Guided Spatial dFNC state (ICA index), * denotes significant mean difference (p < 0.05)', 'Color', foregroundcolor);
-            title('Reference Guided Spatial dFNC Mean Dwell Times', 'Color', foregroundcolor);
-            ron_sign_states = find(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_pvals) <0.05);
-            if ~isempty(ron_sign_states)
-                text(ron_sign_states, max(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(:,ron_sign_states))), '*','Color',foregroundcolor,'FontSize',18);
-                text(ron_sign_states, min(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(:,ron_sign_states))), '*','Color',foregroundcolor,'FontSize',18);
-            end
+            ylabel('Group Means', 'Color', foregroundcolor);
             legend(groupNames{1, 1}  , groupNames{1, 2});
-            icatb_plotNextPreviousExitButtons(H);
 
+            box off; set(gca, 'TickDir', 'out')
+            xlabel('Reference Guided Spatial dFNC state (IC index)', 'Color', foregroundcolor);
+            title('Reference Guided Spatial dFNC Mean Dwell Times', 'Color', foregroundcolor);
+            icatb_plotNextPreviousExitButtons(H);
         end
 
         if b_save_sgica
