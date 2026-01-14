@@ -727,7 +727,7 @@ try
             end
         end
 
-        [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_ttest2(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+        [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_sgica_ttest2(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
      
         % Stats for state guided if available
         % Check post process file
@@ -750,9 +750,9 @@ try
             matMeanDwellTime = permute(matMeanDwellTime, [1 3 2]); % reorder for stats
 % %             con_neg_dwell_all = permute(con_neg_dwell_all, [2 1 3]); % reorder for stats        
     
-            [sgica.ttest2.matTransitions.cod_state_tscores, sgica.ttest2.matTransitions.cod_state_pvals, sgica.ttest2.matTransitions.cod_state_stats_misc, sgica.ttest2.matTransitions.cod_state_means, sgica.ttest2.matTransitions.cod_state_Ns, sgica.ttest2.matTransitions.cod_state_subject_indices] = m_ttest2(matTransitions, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            [sgica.ttest2.matTransitions.cod_state_tscores, sgica.ttest2.matTransitions.cod_state_pvals, sgica.ttest2.matTransitions.cod_state_stats_misc, sgica.ttest2.matTransitions.cod_state_means, sgica.ttest2.matTransitions.cod_state_Ns, sgica.ttest2.matTransitions.cod_state_subject_indices] = m_sgica_ttest2(matTransitions, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
             sgica.ttest2.matTransitions.groupNames=groupNames;
-            [sgica.ttest2.matMeanDwellTime.cod_state_tscores, sgica.ttest2.matMeanDwellTime.cod_state_pvals, sgica.ttest2.matMeanDwellTime.cod_state_stats_misc, sgica.ttest2.matMeanDwellTime.cod_state_means, sgica.ttest2.matMeanDwellTime.cod_state_Ns, sgica.ttest2.matMeanDwellTime.cod_state_subject_indices] = m_ttest2(matMeanDwellTime, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);            
+            [sgica.ttest2.matMeanDwellTime.cod_state_tscores, sgica.ttest2.matMeanDwellTime.cod_state_pvals, sgica.ttest2.matMeanDwellTime.cod_state_stats_misc, sgica.ttest2.matMeanDwellTime.cod_state_means, sgica.ttest2.matMeanDwellTime.cod_state_Ns, sgica.ttest2.matMeanDwellTime.cod_state_subject_indices] = m_sgica_ttest2(matMeanDwellTime, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);            
             sgica.ttest2.matMeanDwellTime.groupNames=groupNames;
 
             b_visible=1; %ce010526
@@ -826,60 +826,83 @@ try
         %% Paired sample t-test
         
         disp('Selected design criteria is paired sample t-test');
-        
-        % reshape to (sessions x subjects) x component pairs x cluster
-        % states
+
+        % regular correlations stats
+        % reshape to (sessions x subjects) x component pairs x cluster states
         dfnc_corrs = reshape(dfnc_corrs, size(dfnc_corrs, 1)*size(dfnc_corrs, 2), size(dfnc_corrs, 3), size(dfnc_corrs, 4));
-        
         if (exist('dfncTaskConnectivity', 'var'))
-            
             dfncTaskConnectivity = reshape(dfncTaskConnectivity, size(dfncTaskConnectivity, 1)*size(dfncTaskConnectivity, 2), size(dfncTaskConnectivity, 3), ...
                 size(dfncTaskConnectivity, 4));
-            
+        end        
+
+        [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_sgica_ttest_paired(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);     
+
+        % Stats for state guided if available
+        % Check post process file
+        %ce0113326 check dir using other dir than outputdir
+        post_process_file = fullfile(figData.outputDir,  [figData.prefix , '_post_process.mat']);
+        if (~exist(post_process_file, 'file'))
+            error('Please run postprocess step in order to use dfnc cluster stats');
         end
-        
-        numClusters = size(dfnc_corrs, 3);
-        
-        %% Initialize results
-        t_u = cell(1, numClusters);
-        p_u = t_u;
-        stats_u = t_u;
-        N = zeros(2, numClusters);
-        mean_u = cell(2, numClusters);
-        
-        g1 = [figData.ttestOpts.t.val{1}];
-        g2 = [figData.ttestOpts.t.val{2}];
-        subject_indices = cell(2, numClusters);
-        
-        %% Compute and save
-        for nC = 1:numClusters
-            disp(['Computing paired sample t-test on cluster state# ', num2str(nC), ' ...']);
-            %tmp = squeeze(dfnc_corrs(:, :, nC));
-            tmp1 =  squeeze(dfnc_corrs(g1, :, nC));
-            tmp2 =  squeeze(dfnc_corrs(g2, :, nC));
-            
-            chk = find(isfinite(tmp1(:, 1).*tmp2(:, 1)) == 1);
-            
-            if (length(chk) > 1)
-                tmp1 = tmp1(chk, :);
-                tmp2 = tmp2(chk, :);
-                N(1, nC) = length(chk);
-                N(2, nC) = N(1, nC);
-                modelX = ones(N(1, nC), 1);
-                mean_u{1, nC} = mean(tmp1);
-                mean_u{2, nC} = mean(tmp2);
-                subject_indices{1, nC} = g1(chk);
-                subject_indices{2, nC} = g2(chk);
-                [t_u{nC}, p_u{nC}, stats_u{nC}] = mT(tmp1 - tmp2, modelX, [], 0, {'verbose'});
+        stru_sgica = load(post_process_file, 'sgica'); 
+
+        %check if var stru_sgica.sgica.calib_all_sub_fnc_A exists
+        b_save_sgica=0;
+        if isfield(stru_sgica, 'sgica') 
+            b_save_sgica = true;
+
+            % Below variables should have been calculated in previous step
+            % and may be loaded
+            load(fullfile(figData.dfncInfo.outputDir, [figData.dfncInfo.prefix '_display_sum_scores_sgica.mat']), 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime', 'README_icatb');
+            n_subj = size(matTransitions,1);
+            matTransitions = reshape(matTransitions, n_subj, []);
+            matTransitions = permute(matTransitions, [1 3 2]); % reorder for stats
+            matMeanDwellTime = permute(matMeanDwellTime, [1 3 2]); % reorder for stats
+% %             con_neg_dwell_all = permute(con_neg_dwell_all, [2 1 3]); % reorder for stats        
+    
+            [sgica.ttestpair.matTransitions.cod_state_tscores, sgica.ttestpair.matTransitions.cod_state_pvals, sgica.ttestpair.matTransitions.cod_state_stats_misc, sgica.ttestpair.matTransitions.cod_state_means, sgica.ttestpair.matTransitions.cod_state_Ns, sgica.ttestpair.matTransitions.cod_state_subject_indices] = m_sgica_ttest_paired(matTransitions, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+            sgica.ttestpair.matTransitions.groupNames=groupNames;
+            [sgica.ttestpair.matMeanDwellTime.cod_state_tscores, sgica.ttestpair.matMeanDwellTime.cod_state_pvals, sgica.ttestpair.matMeanDwellTime.cod_state_stats_misc, sgica.ttestpair.matMeanDwellTime.cod_state_means, sgica.ttestpair.matMeanDwellTime.cod_state_Ns, sgica.ttestpair.matMeanDwellTime.cod_state_subject_indices] = m_sgica_ttest_paired(matMeanDwellTime, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);            
+            sgica.ttestpair.matMeanDwellTime.groupNames=groupNames;
+
+            b_visible=1; %ce010526
+            H.H = icatb_getGraphics('Reference Guided Spatial dFNC Max Stats', 'graphics', 'dfnc_summary1', b_visible);
+            bgColor = get(H.H, 'Color');
+            if (all(bgColor == 0))
+                foregroundcolor = 'w';
+            else
+                foregroundcolor = 'k';
             end
-            
+            plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(1,:)), '-s');hold on;plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(2,:)), '-s');
+            h_ax_tmp=gca; 
+            h_ax_tmp.XTick = floor(h_ax_tmp.XLim(1)) : ceil(h_ax_tmp.XLim(2));
+            h_ax_tmp.XColor= foregroundcolor;
+            h_ax_tmp.YColor= foregroundcolor;
+            box off; set(gca, 'TickDir', 'out')
+            ylabel('Mean', 'Color', foregroundcolor);
+            xlabel('Reference Guided Spatial dFNC state (ICA index), * denotes significant mean difference (p < 0.05)', 'Color', foregroundcolor);
+            title('Reference Guided Spatial dFNC Mean Dwell Times', 'Color', foregroundcolor);
+            ron_sign_states = find(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_pvals) <0.05);
+            if ~isempty(ron_sign_states)
+                text(ron_sign_states, max(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(:,ron_sign_states))), '*','Color',foregroundcolor,'FontSize',18);
+                text(ron_sign_states, min(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(:,ron_sign_states))), '*','Color',foregroundcolor,'FontSize',18);
+            end
+            legend(groupNames{1, 1}  , groupNames{1, 2});
+            icatb_plotNextPreviousExitButtons(H);
+
         end
-        
-        outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_ttestpair_results.mat']);
-        disp(['Paired t-test results are saved in ', outFile]);
+
+        if b_save_sgica
+            outFile = fullfile(cluster_stats_directory, [figData.prefix, '_sgica_ttestpair_results.mat']); 
+            save(outFile, 'sgica');
+            disp(['Found state guided data and saved 2ttest of it, will be saved in sgica structure in file ' outFile])
+        else
+            outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_ttestpair_results.mat']);
+            save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
+            disp(['Paired t-test results from state-based dFNC, were saved in ', outFile]);            
+        end
         fprintf('\n\n');
-        save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
-        
+
         
         if (exist('dfncTaskConnectivity', 'var'))
             
@@ -1332,9 +1355,8 @@ betas = pinv(X)*tc;
 % Remove variance associated with the covariates
 tc = tc - X*betas;
 
-
-function [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_ttest2(statvals_subjxvalsxclusters, grp1, grp2)
-    % cls_m_ttest2 does a two sample ttest of array statvals_subjxvalsxclusters
+function [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_sgica_ttest2(statvals_subjxvalsxclusters, grp1, grp2)
+    % cls_m_sgica_ttest2 does a two sample ttest of array statvals_subjxvalsxclusters
     % grp1 is the column vector of subject indexes for grp1
     % grp2 is the column vector of subject indexes for grp2
     disp('Design criteria two sample t-test will be performed');
@@ -1380,4 +1402,42 @@ function [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_ttest2(statvals_sub
     end
 
 
-
+function [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_sgica_ttest_paired(statvals_subjxvalsxclusters, grp1, grp2)         
+        
+        numClusters = size(statvals_subjxvalsxclusters, 3);
+        
+        %% Initialize results
+        t_u = cell(1, numClusters);
+        p_u = t_u;
+        stats_u = t_u;
+        N = zeros(2, numClusters);
+        mean_u = cell(2, numClusters);
+        
+        g1 = grp1;
+        g2 = grp2;
+        subject_indices = cell(2, numClusters);
+        
+        %% Compute and save
+        for nC = 1:numClusters
+            disp(['Computing paired sample t-test on cluster state# ', num2str(nC), ' ...']);
+            %tmp = squeeze(dfnc_corrs(:, :, nC));
+            tmp1 =  squeeze(statvals_subjxvalsxclusters(g1, :, nC));
+            tmp2 =  squeeze(statvals_subjxvalsxclusters(g2, :, nC));
+            
+            chk = find(isfinite(tmp1(:, 1).*tmp2(:, 1)) == 1);
+            
+            if (length(chk) > 1)
+                tmp1 = tmp1(chk, :);
+                tmp2 = tmp2(chk, :);
+                N(1, nC) = length(chk);
+                N(2, nC) = N(1, nC);
+                modelX = ones(N(1, nC), 1);
+                mean_u{1, nC} = mean(tmp1);
+                mean_u{2, nC} = mean(tmp2);
+                subject_indices{1, nC} = g1(chk);
+                subject_indices{2, nC} = g2(chk);
+                [t_u{nC}, p_u{nC}, stats_u{nC}] = mT(tmp1 - tmp2, modelX, [], 0, {'verbose'});
+            end
+            
+        end
+            
