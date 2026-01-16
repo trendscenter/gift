@@ -1486,7 +1486,11 @@ function H = icatb_pop_transit(n_win, s_title, sgica, H)
             T =text(ii,ii,LABEL{ii});
             set(T, 'Color', foregroundcolor, 'HorizontalAlignment', 'Center');
         end
-        colormap(hot);
+
+        oc_fnc = icatb_cls_fnc_misc();
+        colormap(oc_fnc.get_colors_jet_white([-1,1]));
+        CLIM = max(abs(tmp_vec));
+        set(h_ax_tmp, 'clim', [-CLIM, CLIM]);        
         C = colorbar;
         set(get(C, 'YLabel'), 'String', 'log10(p)*sign(t)')
         C.Color = foregroundcolor;
