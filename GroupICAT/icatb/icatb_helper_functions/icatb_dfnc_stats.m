@@ -864,37 +864,18 @@ try
             sgica.ttestpair.matTransitions.groupNames=groupNames;
             [sgica.ttestpair.matMeanDwellTime.cod_state_tscores, sgica.ttestpair.matMeanDwellTime.cod_state_pvals, sgica.ttestpair.matMeanDwellTime.cod_state_stats_misc, sgica.ttestpair.matMeanDwellTime.cod_state_means, sgica.ttestpair.matMeanDwellTime.cod_state_Ns, sgica.ttestpair.matMeanDwellTime.cod_state_subject_indices] = m_sgica_ttest_paired(matMeanDwellTime, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);            
             sgica.ttestpair.matMeanDwellTime.groupNames=groupNames;
+        
 
-            b_visible=1; %ce010526
-            H(1).H = icatb_getGraphics('Reference Guided Spatial dFNC Max Means per State', 'graphics', 'dfnc_summary1', b_visible);
-            bgColor = get(H.H, 'Color');
-            if (all(bgColor == 0))
-                foregroundcolor = 'w';
-            else
-                foregroundcolor = 'k';
-            end
-            h_ax_tmp=gca;             
+            H = icatb_pop_mns_p('Reference Guided Spatial dFNC Max Mean Dwell Times per State', 1, ... 
+                'Group Means', 'Significant Group Difference, log(p)*sign(t)', ...
+                groupNames{1, 1}, groupNames{1, 2}, ...
+                'Reference Guided Spatial dFNC state (IC index)', sgica);
+            
+            s_title_tmp = ['Significant Difference between groups ' groupNames{1, 1} ' and ' groupNames{1, 2} , ...
+                ' in terms of State Transitions (SGICA dFNC)'];
 
-            yyaxis right;
-            rod_plot = -log10([sgica.ttestpair.matMeanDwellTime.cod_state_pvals{1,:}]).*sign([sgica.ttestpair.matMeanDwellTime.cod_state_tscores{1, :}]);
-            hold on; 
-            bar(rod_plot, 'FaceAlpha', 0.6);
-            ylim([min(rod_plot)*1.5 max(rod_plot)*1.5]);
-            ylabel('Significant Group Difference, log(p)*sign(t)');
+            H = icatb_pop_transit(2, s_title_tmp, sgica, H);
 
-            yyaxis left
-            plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(1,:)), '-sb', 'LineWidth',2.5);
-            hold on;
-            plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(2,:)), '-sy','LineWidth',2.5);
-            h_ax_tmp.XTick = floor(h_ax_tmp.XLim(1)) : ceil(h_ax_tmp.XLim(2));
-            h_ax_tmp.XColor= foregroundcolor;
-            h_ax_tmp.YColor= foregroundcolor;
-            ylabel('Group Means', 'Color', foregroundcolor);
-            legend(groupNames{1, 1}  , groupNames{1, 2});
-
-            box off; set(gca, 'TickDir', 'out')
-            xlabel('Reference Guided Spatial dFNC state (IC index)', 'Color', foregroundcolor);
-            title('Reference Guided Spatial dFNC Mean Dwell Times', 'Color', foregroundcolor);
             icatb_plotNextPreviousExitButtons(H);
         end
 
@@ -935,7 +916,6 @@ try
          
     elseif (strcmpi(designCriteria, '1-way, x-level anova')) 
         %% Paired sample t-test 
-         
         disp('Selected design criteria is 1-way, x-level ANOVA'); 
  
  
@@ -1447,3 +1427,71 @@ function [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_sgica_ttest_paired(
             
         end
             
+function H = icatb_pop_mns_p(s_title, n_win, s_ylabel_l, s_ylabel_r, s_label_grp1, s_label_grp2, s_label_x, sgica)
+        b_visible=1; %ce010526
+        H(n_win).H = icatb_getGraphics(s_title, 'graphics', 'dfnc_summary1', b_visible);
+        bgColor = get(H(n_win).H, 'Color');
+        if (all(bgColor == 0))
+            foregroundcolor = 'w';
+        else
+            foregroundcolor = 'k';
+        end
+        h_ax_tmp=gca;             
+
+        yyaxis right;
+        rod_plot = -log10([sgica.ttestpair.matMeanDwellTime.cod_state_pvals{1,:}]).*sign([sgica.ttestpair.matMeanDwellTime.cod_state_tscores{1, :}]);
+        hold on; 
+        bar(rod_plot, 'FaceAlpha', 0.6);
+        ylim([min(rod_plot)*1.5 max(rod_plot)*1.5]);
+        ylabel(s_ylabel_r);
+
+        yyaxis left
+        plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(1,:)), '-sb', 'LineWidth',2.5);
+        hold on;
+        plot(cell2mat(sgica.ttestpair.matMeanDwellTime.cod_state_means(2,:)), '-sy','LineWidth',2.5);
+        h_ax_tmp.XTick = floor(h_ax_tmp.XLim(1)) : ceil(h_ax_tmp.XLim(2));
+        h_ax_tmp.XColor= foregroundcolor;
+        h_ax_tmp.YColor= foregroundcolor;
+        ylabel(s_ylabel_l, 'Color', foregroundcolor);
+        legend(s_label_grp1  , s_label_grp2);
+
+        box off; set(gca, 'TickDir', 'out')
+        xlabel(s_label_x, 'Color', foregroundcolor);
+        title(s_title, 'Color', foregroundcolor);        
+
+function H = icatb_pop_transit(n_win, s_title, sgica, H)
+        b_visible=1; %ce010526
+        H(n_win).H = icatb_getGraphics(s_title, 'graphics', 'dfnc_summary1', b_visible);
+        bgColor = get(H(n_win).H, 'Color');
+        if (all(bgColor == 0))
+            foregroundcolor = 'w';
+        else
+            foregroundcolor = 'k';
+        end
+
+        h_ax_tmp=gca;  
+        tmp_vec=-log10(cell2mat(sgica.ttestpair.matTransitions.cod_state_pvals)).*sign(cell2mat(sgica.ttestpair.matTransitions.cod_state_tscores));
+        mat_transit_log10p = reshape(tmp_vec,sqrt(length(tmp_vec)),sqrt(length(tmp_vec)));
+        nTMLen = length(mat_transit_log10p);
+        maxI = max(max(  (1-eye(nTMLen))  .*  squeeze(mat_transit_log10p)  )); % Remove diagonal from color scheme
+        % Plot Matrix with max non-diagonal colors
+        imagesc(squeeze(mat_transit_log10p), 'AlphaData', (1-eye(nTMLen)), [0 maxI])
+        diag_vals = diag(squeeze(mat_transit_log10p));
+        h_tmp = ancestor(gca,'figure');
+        set(findobj(h_tmp, 'type', 'axes'), 'YColor', foregroundcolor, 'XColor', foregroundcolor);    
+        % Print probability as text over the diagonal to see if it drops 0.005 or more
+        LABEL=cellstr(sprintfc('%0.2f',round(100*diag_vals)/100)); % Two decimal points
+        hold on;
+        for ii = 1:nTMLen
+            T =text(ii,ii,LABEL{ii});
+            set(T, 'Color', foregroundcolor, 'HorizontalAlignment', 'Center');
+        end
+        colormap(hot);
+        C = colorbar;
+        set(get(C, 'YLabel'), 'String', 'log10(p)*sign(t)')
+        C.Color = foregroundcolor;
+        axis square
+        set(gca, 'XTick', 1:nTMLen, 'YTick', 1:nTMLen)
+        xlabel('State at t')
+        ylabel('State at t-1')
+        title(sprintf(s_title))
