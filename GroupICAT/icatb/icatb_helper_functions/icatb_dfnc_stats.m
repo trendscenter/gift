@@ -867,7 +867,7 @@ try
         
 
             H = icatb_pop_mns_p('Reference Guided Spatial dFNC Max Mean Dwell Times per State', 1, ... 
-                'Group Means', 'Significant Group Difference, log(p)*sign(t)', ...
+                'Group Means', 'Significant Group Difference, log(p)*sign(t), uncorrected', ...
                 groupNames{1, 1}, groupNames{1, 2}, ...
                 'Reference Guided Spatial dFNC state (IC index)', sgica);
             
@@ -1492,7 +1492,7 @@ function H = icatb_pop_transit(n_win, s_title, sgica, H)
         CLIM = max(abs(tmp_vec));
         set(h_ax_tmp, 'clim', [-CLIM, CLIM]);        
         C = colorbar;
-        set(get(C, 'YLabel'), 'String', 'log10(p)*sign(t)')
+        set(get(C, 'YLabel'), 'String', 'uncorrected log10(p)*sign(t)')
         C.Color = foregroundcolor;
         axis square
         set(gca, 'XTick', 1:nTMLen, 'YTick', 1:nTMLen)
