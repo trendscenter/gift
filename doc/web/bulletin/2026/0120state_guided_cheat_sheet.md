@@ -4,20 +4,20 @@ Before running these State Guided measures and statistics you have to have run a
 
 1. Start the GIFT GUI.
 2. Click [Dynamic Functional Connectivity...]. (see image below)<br>
-3. ![0120state_guided_cheat_sheet/image1.png](0120state_guided_cheat_sheet/image1.png)<br>
+![0120state_guided_cheat_sheet/image1.png](0120state_guided_cheat_sheet/image1.png)<br>
  
-4. Click [Temporal dFNC (ICA)].
-5. Click [Setup/Run Analysis].
-6. A file dialog appears, where you select the parameter file from your first (main) ICA run.
-7. A file dialog appears, where you select the output directory.
-8. A window appears where you use the [ + ] button to select the components to analyze
+3. Click [Temporal dFNC (ICA)].
+4. Click [Setup/Run Analysis].
+5. A file dialog appears, where you select the parameter file from your first (main) ICA run.
+6. A file dialog appears, where you select the output directory.
+7. A window appears where you use the [ + ] button to select the components to analyze
 (see the domains a and b in the attached image, which you may choose as SC, AU, SM, VI, CC,… etc… instead ).
-9. Click [Run].
-10. Wait until the MATLAB Command Window shows “analysis complete”.
-11. Click [Post-processing].
-12. Select the {prefix}_dfnc.mat file.
-13. In the Post-processing dFNC parameters window (see image below):
- 
+8. Click [Run].
+9. Wait until the MATLAB Command Window shows “analysis complete”.
+10. Click [Post-processing].
+11. Select the {prefix}_dfnc.mat file.
+12. In the Post-processing dFNC parameters window (see image below):<br>
+![0120state_guided_cheat_sheet/image2.png](0120state_guided_cheat_sheet/image2.png)<br>
 •	Keep 10 components/states, or change the number of components to the number of states you want.
 •	Set the Threshold level (%) to 10 or change the number of components if needed.
 •	Please do not disable or change any other settings for now, as this version is not very stable for alternative configurations (just run them too as default).
@@ -25,19 +25,21 @@ Before running these State Guided measures and statistics you have to have run a
 13. Wait until the Command Window shows “Done”.
 14. Click [Display] 
 •	Now select the dFNC param file , looking like {prefix}_dfnc.mat.
-•	Now you get the Display dFNC window popping up (image below)
- 
+•	Now you get the Display dFNC window popping up (image below)<br>
+![0120state_guided_cheat_sheet/image3.png](0120state_guided_cheat_sheet/image3.png)<br>
 o	Select “State Guided ICA” from the list and click [Display] again (see image)
-15. Report windows should now pop up (see below), 
-  
+15. Report windows should now pop up (see below), <br>
+![0120state_guided_cheat_sheet/image4.png](0120state_guided_cheat_sheet/image4.png)<br>
 •	including FNCs/States (see image), that you can click [->] to see the next report image. 
 o	On the windows top you can see prior (x), where x is the component/state number
 o	Over the FNC you see Pos Y seconds (Z%), Neg…, where Y shows how many seconds this FNC is active (and Z shows same number in percent) 
-o	If you chose 10 components/states you will have to click [->] ten times to see the frequency and drew times (see image below)
+o	If you chose 10 components/states you will have to click [->] ten times to see the frequency and drew times (see image below)<br>
+![0120state_guided_cheat_sheet/image5.png](0120state_guided_cheat_sheet/image1.png)<br>
  
 o	On each window top you see Pos stats in one window and Neg stats in second window<br>
 	Stats are how frequently each of the 10 states are and the mean dwell time spent in each of the 10 states<br>
 	Analogous for the negative states<br>
 	Final report page is the Reference Guided Spatia; dFNC Transitions window (see below)<br>
+![0120state_guided_cheat_sheet/image6.png](0120state_guided_cheat_sheet/image6.png)<br>
  
  
