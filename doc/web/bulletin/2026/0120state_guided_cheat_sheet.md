@@ -1,3 +1,7 @@
+#State Guided ICA Cheat Sheet
+
+Before running these State Guided measures and statistics you have to have run a blind or Neuromark ICA to perform following staps on.
+
 1. Start the GIFT GUI.
 2. Click [Dynamic Functional Connectivity...]. (see image below)
  
