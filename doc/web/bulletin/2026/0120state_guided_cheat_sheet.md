@@ -1,4 +1,4 @@
-#State Guided ICA Cheat Sheet
+# State Guided ICA Cheat Sheet
 
 Before running these State Guided measures and statistics you have to have run a blind or Neuromark ICA to perform following staps on.
 
