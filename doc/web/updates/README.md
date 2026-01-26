@@ -1,6 +1,6 @@
 # **GIFT Updates**
 
-For newer updates (than May 15, 2025), please click directly at the file in the list above (on [github.com](https://github.com/trendscenter/gift/edit/master/doc/web/updates)).
+For newer updates (than May 15, 2025), please click directly at the file in the list above (on [github.com](https://github.com/trendscenter/gift/edit/master/doc/web/updates/list)).
 
 ## GIFT 4.0.6.0 (May 15, 2025):
 - Added missing modalityType option
