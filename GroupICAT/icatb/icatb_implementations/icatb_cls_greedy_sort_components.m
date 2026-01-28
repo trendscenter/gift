@@ -3,13 +3,15 @@ classdef icatb_cls_greedy_sort_components < handle
     % Cyrus Eierud
     % Code that greedily sorts the best correlated matches between your
     % components and a template
+    % 1/27/26 Added function to sort between two arbitrary files.
     % Example to calcuate and save state guided ICA:
     %    oc_sort = icatb_cls_greedy_sort_components(sesInfo); %sesInfo structure holds param file info
-    %    oc_sort.mpr_dialog % engages greedy sort
+    %    oc_sort.m_dialog % engages greedy sort    
     
     properties
         stru_sesInfo % parameter file
         s_mask % mask used to remove non brain voxels
+        ron_mask_ix  % mask used to remove non brain voxels
         s_components2compare % your blind components
         s_template %template to compare against
         cob_components_filter_inclusion % components you want to keep as 1 and filter out as 0
@@ -17,7 +19,6 @@ classdef icatb_cls_greedy_sort_components < handle
         ari_ordered_pairs_table
         ari_ordered_pairs_orig %The order number for both s_components2compare and the template
     end
-
     
     methods
         function n_err = m_calc_greed_match(o)
@@ -25,49 +26,52 @@ classdef icatb_cls_greedy_sort_components < handle
             
             n_err = 1;
 
-            % Flatten mask
-            [VV, HInfo2] = icatb_returnHInfo(o.s_mask); 
-            icasig2 = icatb_spm_read_vols(VV);
-            structDIM2 = HInfo2.DIM;
-            icasig2 = reshape(icasig2, 1, prod(structDIM2));
-            icasig2(isnan(icasig2))=0; %clean nans
-            icasigMask=icasig2;
-            clear icasig2;
-            tol = 1e-2;
-            ixMas=find(abs(icasigMask - 1) < tol);
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Starting Greedy Sort'])
 
-            mat_flat_vox_by_coms_compare = o.mpr_get_comps(ixMas, o.cob_components_filter_inclusion, o.s_components2compare);
-            mat_flat_vox_by_coms_template = o.mpr_get_comps(ixMas, 1, o.s_template); 
+            if isempty(o.s_mask)
+                %Get the mask variable
+                ixMas = o.ron_mask_ix;
+            else
+                % Mask file exists - read it in and Flatten mask
+                [VV, HInfo2] = icatb_returnHInfo(o.s_mask); 
+                icasig2 = icatb_spm_read_vols(VV);
+                structDIM2 = HInfo2.DIM;
+                icasig2 = reshape(icasig2, 1, prod(structDIM2));
+                icasig2(isnan(icasig2))=0; %clean nans
+                icasigMask=icasig2;
+                clear icasig2;
+                tol = 1e-2;
+                ixMas=find(abs(icasigMask - 1) < tol);
+            end
 
-            sim = corr(mat_flat_vox_by_coms_compare,mat_flat_vox_by_coms_template);
-            nC = min(size(sim));
-            for ii=1:nC
-                [x,y] = find(sim == max(sim(:)));
-                x = x(1); y = y(1);
-                IDX1(ii,1) = x;
-                IDX2(ii,1) = y;
-                codCorr(ii,1) = sim(x,y);
-                sim(x,:) = nan;
-                sim(:,y) = nan;
-            end
-            o.ard_corrs_table = corr(mat_flat_vox_by_coms_compare,mat_flat_vox_by_coms_template);
-            o.ari_ordered_pairs_table = [IDX1 IDX2];
-            pos = find(o.cob_components_filter_inclusion);
-            for ii = 1:length(IDX1)
-                IDX1orig(ii,1) = pos(IDX1(ii));
-            end
-            o.ari_ordered_pairs_orig = [IDX1orig IDX2];
+            [o.ard_corrs_table, o.ari_ordered_pairs_table, o.ari_ordered_pairs_orig] = mpr_correlation(o, ixMas, o.s_components2compare, o.cob_components_filter_inclusion, o.s_template);
+
             save('o');
+
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Completed Greedy Sort'])
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Components sorted from file ' o.s_components2compare])
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Template sorted against ' o.s_template])
+            mkdir(fullfile(fileparts(o.s_components2compare),'utilities'));
+            save(fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat']), 'o');
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: cls_greedy_sort_components.m: Greedy sort component pairs across files, saved in var o.ari_ordered_pairs_table under ' fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat'])])
+            
             n_err = 0;
         end      
 
         function o = icatb_cls_greedy_sort_components(stru_sesInfo)
             % Constructor
-            if nargin > 0
+            if isempty(stru_sesInfo)
+                o.s_mask = ''; 
+                o.ron_mask_ix = [];
+                o.s_components2compare = [];
+            else
+                % needs to be the sesinfo variable in stru_sesInfo
                 o.stru_sesInfo = stru_sesInfo;
+                o.s_mask = fullfile(o.stru_sesInfo.outputDir, [o.stru_sesInfo.userInput.prefix, 'Mask.nii']); 
+                o.ron_mask_ix = [];
+                o.s_components2compare = fullfile(o.stru_sesInfo.outputDir, o.stru_sesInfo.icaOutputFiles(1).ses.name);                 
             end
-            o.s_mask = fullfile(o.stru_sesInfo.outputDir, [o.stru_sesInfo.userInput.prefix, 'Mask.nii']); 
-            o.s_components2compare = fullfile(o.stru_sesInfo.outputDir, o.stru_sesInfo.icaOutputFiles(1).ses.name); 
+
         end
 
         function val = get_s_mask(o)
@@ -103,7 +107,8 @@ classdef icatb_cls_greedy_sort_components < handle
             val = o.s_template;
         end
 
-        function h_popup = mpr_dialog(o)
+        function h_popup = m_dialog(o)
+
             % set up the defaults
             icatb_defaults;
             global BG_COLOR;
@@ -238,7 +243,18 @@ classdef icatb_cls_greedy_sort_components < handle
 
             set(figHandle, 'visible', 'on');
         end
-        
+
+        function arAllComp = m_greedy_simple(o, s_nii_1, s_nii_2)
+
+            o.s_components2compare=s_nii_1;
+            o.cob_components_filter_inclusion=1;
+            o.s_template=s_nii_2;
+
+            [ard_corrs_table, ari_ordered_pairs_table, ari_ordered_pairs_orig] = mpr_correlation(o,[], o.s_components2compare, 1, o.s_template);
+            n_err = o.m_calc_greed_match();
+
+        end
+
     end
 
     methods (Access = private)
@@ -279,15 +295,7 @@ classdef icatb_cls_greedy_sort_components < handle
                 disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: No booleans found for non noise. Using all components']);
             end
 
-            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Starting Greedy Sort'])
             n_err = o.m_calc_greed_match();
-            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Completed Greedy Sort'])
-            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Components sorted from file ' o.s_components2compare])
-            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Template sorted against ' o.s_template])
-            mkdir(fullfile(fileparts(o.s_components2compare),'utilities'));
-            save(fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat']), 'o');
-            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Greedy sort data saved under ' fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat'])])
-
         end     
 
         function arAllComp = mpr_get_comps(~, ixMas, cob_ic_keep, sIcFile)
@@ -321,8 +329,91 @@ classdef icatb_cls_greedy_sort_components < handle
 	            clear icasig2;
             end
             arAllComp=arAllComp';
+        end   
+
+
+        function [ard_corrs_table, ari_ordered_pairs_table, ari_ordered_pairs_orig] = mpr_correlation(o, ixMas, s_file_icas, rob_filter, s_file_template)
+            
+
+            if isempty(ixMas)
+                %create mask assuming a zero voxel is a outside of brain
+                [VV1, HInfo1] = icatb_returnHInfo(s_file_icas); 
+                ard_icas = icatb_spm_read_vols(VV1);
+            
+                [VV2, HInfo2] = icatb_returnHInfo(s_file_template); 
+                ard_template = icatb_spm_read_vols(VV2);
+            
+                % zeros determines the voxels that will be masked out
+                rod_mask = ard_icas .* ard_template;
+            
+                structDIM1 = HInfo1.DIM;
+                rod_mask = reshape(rod_mask, 1, prod(structDIM1));
+            
+                ix_rod_mask=find(rod_mask ~= 0); 
+                rod_mask(ix_rod_mask)=1; 
+            
+                ixMas=find(abs(rod_mask - 1) == 0);
+                o.ron_mask_ix = ixMas;
+            end
+
+            mat_flat_vox_by_coms_compare = o.mpr_get_comps(ixMas, rob_filter, s_file_icas);
+            mat_flat_vox_by_coms_template = o.mpr_get_comps(ixMas, 1, s_file_template); 
+
+            if rob_filter == 1
+                rob_filter = ones(size(mat_flat_vox_by_coms_compare,2),1);
+                o.cob_components_filter_inclusion = rob_filter;
+            end
+
+            sim = corr(mat_flat_vox_by_coms_compare,mat_flat_vox_by_coms_template);
+            nC = min(size(sim));
+            for ii=1:nC
+                [x,y] = find(sim == max(sim(:)));
+                x = x(1); y = y(1);
+                IDX1(ii,1) = x;
+                IDX2(ii,1) = y;
+                codCorr(ii,1) = sim(x,y);
+                sim(x,:) = nan;
+                sim(:,y) = nan;
+            end
+            ard_corrs_table = corr(mat_flat_vox_by_coms_compare,mat_flat_vox_by_coms_template);
+            ari_ordered_pairs_table = [IDX1 IDX2];
+            pos = find(rob_filter);
+            for ii = 1:length(IDX1)
+                IDX1orig(ii,1) = pos(IDX1(ii));
+            end
+            ari_ordered_pairs_orig = [IDX1orig IDX2];
+
         end
-   
+
+        function [ard_corrs_table, ari_ordered_pairs_table, ari_ordered_pairs_orig] = mpr_sort_greed(o, ixMas, s_file_icas, rob_filter, s_file_template)
+            % sorts components between your components and a template
+
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Starting Greedy Sort'])
+
+            % Flatten mask
+            [VV, HInfo2] = icatb_returnHInfo(o.s_mask); 
+            icasig2 = icatb_spm_read_vols(VV);
+            structDIM2 = HInfo2.DIM;
+            icasig2 = reshape(icasig2, 1, prod(structDIM2));
+            icasig2(isnan(icasig2))=0; %clean nans
+            icasigMask=icasig2;
+            clear icasig2;
+            tol = 1e-2;
+            ixMas=find(abs(icasigMask - 1) < tol);
+
+            [o.ard_corrs_table, o.ari_ordered_pairs_table, o.ari_ordered_pairs_orig] = mpr_correlation(o, ixMas, o.s_components2compare, o.cob_components_filter_inclusion, o.s_template);
+
+            save('o');
+
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Completed Greedy Sort'])
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Components sorted from file ' o.s_components2compare])
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Template sorted against ' o.s_template])
+            mkdir(fullfile(fileparts(o.s_components2compare),'utilities'));
+            save(fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat']), 'o');
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: cls_greedy_sort_components.m: Greedy sort component pairs across files, saved in var o.ari_ordered_pairs_table under ' fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat'])])
+            
+        end
+
     end
 end
 

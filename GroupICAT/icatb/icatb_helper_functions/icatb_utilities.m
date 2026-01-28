@@ -115,9 +115,38 @@ switch lower(selectedString)
         icatb_setup_sdh;
     case 'greedy sort components'
         % Greedy Sort Components
-        sesInfo = icatb_get_param(); % Gets parameter file through GUI
-        oc_sort = icatb_cls_greedy_sort_components(sesInfo); %initiates class
-        oc_sort.mpr_dialog % engages greedy sort
+
+        s_ret = questdlg('Greedy search between your GIFT project and a template or between 2 nii-files?', 'Pick an Alternative', 'Between project and Template', 'Between 2 nii-Files', 'Between project and Template');
+
+        if strcmpi('Between 2 nii-Files', s_ret)
+            h_tmp = icatb_dialogBox('title', 'About Greedy Sorter', 'windowStyle', 'modal', 'textbody' ,...
+                {'First, a note that nii files to sort must be' ...
+                'in same space, have same resolution and such' ...
+                'that any zero valued voxel will be masked out.' ...
+                'Masking between the two volumes will be created' ...
+                'from the first image of each dataset.Then a dialog ' ...
+                'window will let you pick the first nii-file and ' ...
+                'then a second dialog window will appear for the second' ...
+                'nii-file. After that the sort will process and save' ...
+                'results in file according with the command prompt info.'});
+            uiwait(h_tmp);
+            s_nii_1 = icatb_selectEntry('filter', '*nii;*.img', 'title', 'Select First ICA File ...');
+            if (isempty(s_nii_1))
+                error('First NII file is not selected properly');
+            end
+            s_nii_2 = icatb_selectEntry('filter', '*nii;*.img', 'title', 'Select Second ICA File or Template ...');
+            if (isempty(s_nii_1))
+                error('Second NII file is not selected properly');
+            end
+            oc_sort = icatb_cls_greedy_sort_components([]); %initiates class
+            oc_sort.m_greedy_simple(s_nii_1, s_nii_2); % engages greedy sort
+        else
+            % Between project and Template
+
+            sesInfo = icatb_get_param(); % Gets parameter file through GUI
+            oc_sort = icatb_cls_greedy_sort_components(sesInfo); %initiates class
+            oc_sort.m_dialog % engages greedy sort
+        end
 
 end
 % end for switch
