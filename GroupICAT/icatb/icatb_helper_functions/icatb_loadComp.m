@@ -139,7 +139,11 @@ if (~averageRuns)
     numRuns = length(sessions);
 end
 
-tp = min(sesInfo.diffTimePoints(indices));
+if strcmpi(modalityType, 'conn')
+    tp = sesInfo.userInput.numOfPC1;
+else
+    tp = min(sesInfo.diffTimePoints(indices));
+end
 
 if (loadIC)
     if (useCell)
@@ -356,10 +360,7 @@ end
 
 if (isfield(info, compSetFields{2}))
     tc = getfield(info, compSetFields{2});
-    if (size(tc, 1) ~= tp)
-        tc = tc';
-    end
-    tc = tc(:, compNumber);
+    tc = tc(:, compNumber); 
     
     if (~isempty(detrendNumber))
         tc = icatb_detrend(tc, 1, [], detrendNumber);

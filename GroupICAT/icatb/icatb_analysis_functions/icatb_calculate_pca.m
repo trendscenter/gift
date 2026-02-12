@@ -66,7 +66,13 @@ icatb_defaults;
 global NORAND_DETERMINISTIC;
 
 if NORAND_DETERMINISTIC
-    rng(1);
+    s_rand = rng;
+    if strcmpi(s_rand.Seed, 'not applicable')
+        % method not supporting seed
+        rng('default');
+    else
+        rng(1);
+    end
 end
 
 %% Initialize variables

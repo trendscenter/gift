@@ -31,6 +31,8 @@ if strcmpi(modalityType, 'eeg')
     time_points_type = 'EEG electrodes';
 elseif strcmpi(modalityType, 'smri')
     time_points_type = 'Subjects';
+elseif strcmpi(modalityType, 'conn')
+    time_points_type = 'PCA of Voxels';    
 else
     time_points_type = 'BOLD timepoints';
 end

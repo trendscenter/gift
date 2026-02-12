@@ -22,7 +22,7 @@ function varargout = post_process_dfnc(varargin)
 
 % Edit the above text to modify the response to help post_process_dfnc
 
-% Last Modified by GUIDE v2.5 03-Sep-2025 11:30:40 M2016
+% Last Modified by GUIDE v2.5 10-Feb-2026 22:36:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -131,7 +131,6 @@ else
     
     results.ref_chk_ena_stateguided = get(handles.tag_chk_ena_stateguided,'Value');
     results.tag_edt_stateguided_numcomps = num2str(get(handles.tag_edt_stateguided_numcomps,'String'));
-    results.tag_edt_stateguided_threshold_level = str2double(deblank(get(handles.tag_edt_stateguided_threshold_level,'String')));
     
     use_tall_array = 'no';
     try
@@ -770,26 +769,3 @@ function tag_edt_stateguided_numcomps_Callback(hObject, eventdata, handles)
 % hObject    handle to tag_chk_ena_metastate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
-
-function tag_edt_stateguided_threshold_level_Callback(hObject, eventdata, handles)
-% hObject    handle to tag_edt_stateguided_threshold_level (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of tag_edt_stateguided_threshold_level as text
-%        str2double(get(hObject,'String')) returns contents of tag_edt_stateguided_threshold_level as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function tag_edt_stateguided_threshold_level_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to tag_edt_stateguided_threshold_level (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end

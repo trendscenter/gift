@@ -64,13 +64,18 @@ if (strcmpi(precision, 'single') && (tol < 1e-4))
     end
 end
 
+if strcmpi(modalityType, 'conn')
+    mask_ind = (1:length(sesInfo.userInput.mask_ind));
+end
 
 %% Loop over groups after concatenation
 parfor nDataSet = 1:length(dataSetsToRun)
     
     tmpDataSetsToRun = dataSetsToRun;
+    tmpMaskInd = mask_ind;
     i = tmpDataSetsToRun(nDataSet);
     tmpFiles = files;
+    tmpFileName = tmpFiles(i).name;
     
     pcasig = []; dewhiteM = []; whiteM = [];
     
@@ -95,7 +100,7 @@ parfor nDataSet = 1:length(dataSetsToRun)
     disp(msg_string);
     
     %% Load data
-    data = preprocData(tmpFiles(i).name, mask_ind, preproc_type, precision);
+    data = preprocData(tmpFileName, tmpMaskInd, preproc_type, precision);
     
     %% Project data on to the eigen space of the mean data
     if (doGrandMeanPCA)

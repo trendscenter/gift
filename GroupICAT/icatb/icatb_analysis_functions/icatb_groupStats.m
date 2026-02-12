@@ -129,7 +129,11 @@ if (conserve_disk_space ~= 1)
         sesInfo.zipContents.files_in_zip.name = {};
     end
     
-    numTimePoints = min(diffTimePoints);
+    if strcmpi(modalityType,'conn')
+        numTimePoints = sesInfo.userInput.numOfPC1;
+    else
+        numTimePoints = min(diffTimePoints);
+    end
     
     subjectICAFiles = icatb_parseOutputFiles('icaOutputFiles', sesInfo.icaOutputFiles, 'numOfSub', sesInfo.numOfSub, 'numOfSess', sesInfo.numOfSess, 'flagTimePoints', sesInfo.flagTimePoints);
     
@@ -169,8 +173,12 @@ if (conserve_disk_space ~= 1)
         
         %for i=1:numSub
         for ses=1:numSess
-            
-            [tc, ic] = icatb_loadComp(sesInfo, (1:sesInfo.numComp), 'subjects', 1, 'sessions', ses, 'vars_to_load', compSetFields, 'subject_ica_files', subjectICAFiles);
+            if strcmp(modalityType,'CONN')
+                [ic] = icatb_loadComp(sesInfo, (1:sesInfo.numComp), 'subjects', 1, 'sessions', ses, 'vars_to_load', compSetFields, 'subject_ica_files', subjectICAFiles);
+                tc = ic; % HACK to allow GIFT to exit cleanly
+            else
+                [tc, ic] = icatb_loadComp(sesInfo, (1:sesInfo.numComp), 'subjects', 1, 'sessions', ses, 'vars_to_load', compSetFields, 'subject_ica_files', subjectICAFiles);
+            end
             ic = ic';
             if size(ic, 2) ~= length(mask_ind)
                 ic = ic(:, mask_ind);
