@@ -36,7 +36,7 @@ inputText = icatb_define_parameters(sesInfo);
 [modalityType] = icatb_get_modality;
 
 % Tags to be plotted in main figure window
-tagsTobePlotted = {'numComp', 'numOfPC1', 'algorithm', 'which_analysis', 'backReconType', 'scaleType', 'parallel_info'};
+tagsTobePlotted = {'numComp', 'algorithm', 'which_analysis', 'backReconType', 'scaleType', 'parallel_info'};
 
 
 handle_visibility = 'on';
