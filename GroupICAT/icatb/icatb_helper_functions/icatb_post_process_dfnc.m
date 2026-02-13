@@ -63,7 +63,6 @@ distance_opts =  {'City', 'sqEuclidean', 'Hamming', 'Correlation', 'Cosine'};
 kmeans_num_replicates = 5;
 num_tests_est_clusters = 10;
 ref_chk_ena_stateguided = 1; % May be used in case batch is run without var
-tag_edt_stateguided_threshold_level = 25; % May be used in case batch is run without var
 tag_edt_stateguided_numcomps = 10; % May be used in case batch is run without var
 b_chk_ena_stateguided = 1; % May be used in case batch is run without var
 b_chk_ena_statebased = 1;% May be used in case batch is run without var
@@ -162,7 +161,6 @@ if (showGUI)
         'kmeans_num_replicates', kmeans_num_replicates, ...
         'num_tests_est_clusters', num_tests_est_clusters, 'kmeans_start', kmeans_start, ...
         'use_tall_array', use_tall_array, ...
-        'tag_edt_stateguided_threshold_level', tag_edt_stateguided_threshold_level, ...
         'tag_edt_stateguided_numcomps', tag_edt_stateguided_numcomps, ...
         'tag_chk_ena_stateguided', b_chk_ena_stateguided, ...
         'tag_chk_ena_statebased', b_chk_ena_statebased, ...
@@ -272,7 +270,6 @@ dfncInfo.postprocess.b_chk_ena_stateguided = b_chk_ena_stateguided;
 if b_chk_ena_stateguided
     if showGUI
         dfncInfo.postprocess.ref_chk_ena_stateguided = ref_chk_ena_stateguided;
-        dfncInfo.postprocess.tag_edt_stateguided_threshold_level = tag_edt_stateguided_threshold_level; %already stringified  
         dfncInfo.postprocess.tag_edt_stateguided_numcomps = str2num(tag_edt_stateguided_numcomps);
     %else if batch script was run these variables are already set
     end
