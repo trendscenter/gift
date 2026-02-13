@@ -67,7 +67,7 @@ editTextH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'st
 
 
 % Prompt
-promptTextPos(2) = promptTextPos(2) - 1.2*yOffset - promptHeight;
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
 
 % Plot Text
 promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
@@ -85,7 +85,7 @@ buttonH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'styl
 
 
 % Prompt
-promptTextPos(2) = promptTextPos(2) - 1.2*yOffset - promptHeight;
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
 
 maskOptions =  char('Default Mask', 'Average Mask', 'Select Mask', 'Default&ICV');
 
@@ -105,7 +105,7 @@ popupH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style
     'horizontalalignment', 'left',  'tag', 'maskFile', 'value', 1, 'enable', 'inactive', 'callback', {@selectMaskCallback, graphicsHandle});
 
 % Prompt
-promptTextPos(2) = promptTextPos(2) - 1.2*yOffset - promptHeight;
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
 promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
     'position', promptTextPos, 'String', 'Enter sub-sampling depth to be applied on the mask', 'fontsize', UI_FS - 1, ...
     'horizontalalignment', 'center');
@@ -119,7 +119,7 @@ editTextH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'st
 
 
 % Prompt
-promptTextPos(2) = promptTextPos(2) - 1.2*yOffset - promptHeight;
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
 promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
     'position', promptTextPos, 'String', 'Select connectivity type', 'fontsize', UI_FS - 1, ...
     'horizontalalignment', 'center');
@@ -132,12 +132,12 @@ popupH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style
     'horizontalalignment', 'left',  'tag', 'conn_type', 'value', 1, 'enable', 'inactive');
 
 % Prompt
-promptTextPos(2) = promptTextPos(2) - 1.2*yOffset - promptHeight;
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
 promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
-    'position', promptTextPos, 'String', 'Due to large voxel wise matrix, import will reduce the matrix size using PCA (two steps below)', 'center');
+    'position', promptTextPos, 'String', 'Due to large voxel wise matrix, decomposition is used, starting first PCA step at import (below)', 'center');
 
 % Prompt
-promptTextPos(2) = promptTextPos(2) - 1.2*yOffset - promptHeight;
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
 promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
     'position', promptTextPos, 'String', 'Enter number of principal components at first level (may be 1.5 times of ICA components)', 'fontsize', UI_FS - 1, ...
     'horizontalalignment', 'center');
@@ -150,7 +150,7 @@ editTextH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'st
     'horizontalalignment', 'center',  'tag', 'tag_numOfPC1_cdicat');
 
 % Prompt
-promptTextPos(2) = promptTextPos(2) - 1.2*yOffset - promptHeight;
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
 promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
     'position', promptTextPos, 'String', 'Whitening PCA (Y/N)', 'fontsize', UI_FS - 1, ...
     'horizontalalignment', 'center');

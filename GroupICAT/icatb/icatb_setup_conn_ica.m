@@ -390,13 +390,7 @@ drawnow;
 
 sesInfo = handles_data.sesInfo;
 
-
-%%ce021126 pc_multiplierH = findobj(handles, 'tag', 'pc_multiplier');
-% pc_multiplier = str2num(get(pc_multiplierH, 'string'));
-% sesInfo.userInput.pc_multiplier = pc_multiplier;
-
-h_numOfPC1 = findobj(handles, 'tag', 'numOfPC1');
-numOfPC1 = str2num(get(h_numOfPC1, 'string'));
+numOfPC1 = sesInfo.userInput.numOfPC1;
 
 numCompH = findobj(handles, 'tag', 'numComp');
 numComp = str2num(get(numCompH, 'string'));
@@ -411,20 +405,11 @@ numofDatasets = sesInfo.userInput.numOfSub*sesInfo.userInput.numOfSess;
 numReductionSteps = 2;
 numOfPC3 = 0;
 
-%ce021126 if (pc_multiplier < 1)
-%     pc_multiplier = 1;
-% end
-
 if (numofDatasets == 1)
     numReductionSteps = 1;
 end
 
 numOfPC2 = numComp;
-
-% if (numReductionSteps > 1)
-%     numOfPC1 = min([numVoxels, ceil(pc_multiplier*numComp)]);
-%     numOfPC2 = numComp;
-% end
 
 sesInfo.userInput.numReductionSteps = numReductionSteps;
 

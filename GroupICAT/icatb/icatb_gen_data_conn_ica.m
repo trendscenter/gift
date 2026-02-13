@@ -165,7 +165,7 @@ for nDataset = 1:numOfDataSets
         tmpFiles = sesInfo.userInput.inputFiles(nDataset).name;
         tmpDat = icatb_read_data(tmpFiles, [], mask_ind);
         tmpDat = tmpDat';
-        conn_matrix = icatb_calc_ENLwFC(single(tmpDat));
+        conn_matrix = icatb_calc_ENLwFC(single(tmpDat), 'nonlinear');
         [conn_matrix, dewhiteM] = icatb_calculate_pca(conn_matrix, sesInfo.userInput.numOfPC1, 'type', 'mpowit', 'whiten', sesInfo.userInput.b_whitening_tmp);
         disp(['Saving file ', outFile, ' ...']);
         conn_matrix_ = struct('conn_matrix', conn_matrix);

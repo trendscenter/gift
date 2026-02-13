@@ -31,7 +31,7 @@ end
 load(param_file);
 
 if (~strcmpi(sesInfo.modality, 'conn'))
-    error('You need to use conn toolbox to display results');
+    error('You need to use Connectivity Domain ICA toolbox to display results');
 end
 
 
@@ -39,7 +39,7 @@ sesInfo.outputDir = outputDir;
 
 
 if (~strcmpi(sesInfo.modality, 'conn'))
-    error('You need to use conn toolbox to display results');
+    error('You need to use Connectivity Domain ICA toolbox to display results');
 end
 
 
@@ -152,7 +152,7 @@ end
 
 resultsInfo = [];
 
-%% CONN ICA Parameters
+%% Connectivity Domain ICA Parameters
 sesInfo.structFile = structFile;
 sesInfo.slice_plane = slice_plane;
 sesInfo.image_values = image_values;
@@ -171,15 +171,15 @@ htmlSummaryStr = [];
 if (saveFigInfo)
     if (~strcmpi(resultsFormat, 'pdf'))
         icatb_print_table(cellstr(newText), fullfile(resultsDir, 'params.txt'));
-        resultsInfo(end + 1).title = 'CONN ICA Parameters';
+        resultsInfo(end + 1).title = 'Connectivity Domain ICA Parameters';
         resultsInfo(end).text = ' ';
         resultsInfo(end).files = {'params.txt'};
-        htmlSummaryStr(end + 1).title = 'CONN ICA Parameters';
+        htmlSummaryStr(end + 1).title = 'Connectivity Domain ICA Parameters';
         htmlSummaryStr(end).tag =  'connica_params';
         htmlSummaryStr(end).str = get_result_strings(resultsDir, resultsInfo(end), htmlSummaryStr(end).tag);
         %writeHTML(resultsDir, resultsInfo(end), 'introduction.html', 'Group ICA Parameters');
     else
-        print_strs = cellstr(char('CONN ICA parameters:', '', newText));
+        print_strs = cellstr(char('Connectivity Domain ICA parameters:', '', newText));
         yPos = 1.1;
         gH = icatb_getGraphics(print_strs{1}, 'graphics', 'contentspdf', figVisible);
         aH = axes('units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8], 'parent', gH, 'visible', 'off', 'color', get(gH, 'color'));
@@ -330,7 +330,7 @@ for nF = 1:size(compFiles, 1)
         if (~strcmpi(resultsFormat, 'pdf'))
             
             if (nF == size(compFiles, 1))
-                resultsInfo(end + 1).title = 'CONN ICA Components';
+                resultsInfo(end + 1).title = 'Connectivity Domain ICA Components';
                 resultsInfo(end).text = ['<ul> <li> <b> a) Subject loading coefficients </b> </li>', ...
                     '<li> <b> b) Mean spatial maps </b> </li> </ul>'];
             end
@@ -932,7 +932,7 @@ k = (m4 ./ (s2.^2));
 function writeHTML2(fileName, resultsStr)
 
 
-start_string = '<html><head><title> CONN ICA Results </title></head>';
+start_string = '<html><head><title> Connectivity Domain ICA Results </title></head>';
 start_string = [start_string, '<p> </p><h2> Contents </h2><p><ul>'];
 
 

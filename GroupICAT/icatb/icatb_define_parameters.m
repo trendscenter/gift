@@ -405,26 +405,13 @@ if (~(strcmpi(modalityType, 'fnc')))
     
     numParameters = numParameters + 1;
     
-    if strcmpi(modalityType, 'conn')
-        s_tmp_enable = 'on';
-        s_tmp_answer_string = varargin{1,1}.userInput.numOfPC1; %sesInfo in varargin if CONN
-        s_tmp_ui_type = 'text';
-        s_tmp_visible = [];
-        s_tmp_promptString = 'Number Of PC (Step 1, chosen at import)';
-    else
-        s_tmp_enable = 'inactive';
-        s_tmp_answer_string = '0';
-        s_tmp_ui_type = 'edit';
-        s_tmp_visible = isHandleVisible;
-        s_tmp_promptString = 'Number Of PC (Step 1)';
-    end
-    inputText(numParameters).promptString = s_tmp_promptString;
-    inputText(numParameters).answerString = s_tmp_answer_string;
-    inputText(numParameters).uiType = s_tmp_ui_type;
+    inputText(numParameters).promptString = 'Number Of PC (Step 1)';
+    inputText(numParameters).answerString = '0';
+    inputText(numParameters).uiType = 'edit';
     inputText(numParameters).dataType = 'numeric';
     inputText(numParameters).tag = 'numOfPC1';
-    inputText(numParameters).enable = s_tmp_enable;
-    inputText(numParameters).visible = s_tmp_visible;
+    inputText(numParameters).enable = 'inactive';
+    inputText(numParameters).visible = isHandleVisible;
     inputText(numParameters).value = 1;
     inputText(numParameters).flag = 'scalar';
     inputText(numParameters).help = struct('title', 'PC1', 'string', 'No. of components desired in the first PCA step.');
