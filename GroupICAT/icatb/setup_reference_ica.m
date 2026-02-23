@@ -131,7 +131,7 @@ function template_selection_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 results = guidata(handles.output);
-P = icatb_selectEntry('filter', '*nii;*.img', 'title', 'Select template file ...');
+P = icatb_selectEntry('filter', '*nii;*.nii.gz;*.img', 'title', 'Select template file ...');
 if (~isempty(P))
     set(results.template_mask_file, 'string', deblank(P));
 end

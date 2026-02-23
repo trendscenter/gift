@@ -10,7 +10,14 @@ function varargout = icatb_setup_analysis(inputFile)
 if exist('inputFile', 'var')
     [pathstr, fileN, extn] = fileparts(inputFile);
     if ~strcmpi(extn, '.mat')
-        varargout{1} = icatb_read_batch_file(inputFile);
+        try
+            varargout{1} = icatb_read_batch_file(inputFile);
+        catch MErr
+            if ( strcmpi(MErr.identifier,'MATLAB:badsubscript') && strcmpi(MErr.message,'Index in position 1 exceeds array bounds.')  )
+                fprintf('\n**Error**: NeuroMark Template may not be found! Please check template file name\n');
+            end
+            rethrow(MErr)
+        end
         return;
     else
         sub_file = inputFile;
@@ -1834,7 +1841,7 @@ if (icatb_string_compare(algorithmName, 'constrained') || strcmpi(algorithmName,
     %         end
     %     else
     if (strcmpi(modalityType, 'fmri'))
-        gigFileP = '*agg*comp*.img;*agg*comp*.nii';
+        gigFileP = '*agg*comp*.img;*agg*comp*.nii;Neuromark_*.nii;Neuromark_*.nii.gz';
         gigFileTitle = 'Select aggregate images from group ica ...';
     else
         gigFileTitle = 'Select reference images ...';
