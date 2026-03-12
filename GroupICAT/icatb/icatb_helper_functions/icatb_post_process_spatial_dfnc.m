@@ -186,7 +186,13 @@ if (sdfncInfo.numGroups > 1)
             for n = m + 1:numComp
                 a = squeeze(MIStdVals{g1Ind}(m, n, :));
                 b = squeeze(MIStdVals{g2Ind}(m, n, :));
-                [p, h, stats] = icatb_ranksum(a, b, 'alpha', talpha);
+                try
+                    [p, h, stats] = ranksum(a, b, 'alpha', talpha);
+                catch
+                    % try to run the ranksum without statistics toolbox
+                    [p, h, stats] = icatb_ranksum(a, b, 'alpha', talpha);
+                end 
+                
                 if (h == 1)
                     me_pvalues(m, n) = p;
                     me_pvalues(n, m) = p;
