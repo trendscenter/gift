@@ -703,14 +703,24 @@ else
     for j = 1:size(barvalues, 1)
         for i = 1:size(barvalues, 2)
             count = count + 1;
-            bh(count)=bar(i + (j-1)*(size(barvalues, 2)) + 2*(j-1), barvalues(j,i), barWidth, 'facecolor', cmap(inds(i), :));
+
+            xloc = i + (j-1)*size(barvalues, 2) + 2*(j-1);
+            cmap = lines(size(barvalues,2));
+            thisColor = cmap(i,:);
+            disp(barvalues(j,i))
+
+            bh(count)=bar(xloc, barvalues(j,i), barWidth, 'facecolor', thisColor);
             if (i==ceil(size(barvalues, 2)/2))
                 ticks = [ticks, i + (j-1)*(size(barvalues, 2)) + 2*(j-1)];
             end
             set(gca, 'xtick', '');
             set(gca, 'xticklabel', '');
             hold on;
-            errorbar(i + (j-1)*(size(barvalues, 2)) + 2*(j-1), barvalues(j,i), errors(j,i), 'kx', 'linewidth', 1);
+
+            eh(count) = errorbar(xloc, barvalues(j,i), errors(j,i), ...
+                'LineStyle', 'none', ...
+                'Color', thisColor, ...
+                'LineWidth', 1);
         end
     end
     
