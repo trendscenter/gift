@@ -187,10 +187,11 @@ if (sdfncInfo.numGroups > 1)
                 a = squeeze(MIStdVals{g1Ind}(m, n, :));
                 b = squeeze(MIStdVals{g2Ind}(m, n, :));
                 try
-                    [p, h, stats] = ranksum(a, b, 'alpha', talpha);
+                    % try first the original way to run the ranksum without statistics toolbox
+                    [p, h, stats] = icatb_ranksum(a, b, 'alpha', talpha);                    
                 catch
-                    % try to run the ranksum without statistics toolbox
-                    [p, h, stats] = icatb_ranksum(a, b, 'alpha', talpha);
+                    % try with statistics toolbox
+                    [p, h, stats] = ranksum(a, b, 'alpha', talpha);
                 end 
                 
                 if (h == 1)
