@@ -97,7 +97,7 @@ switch ext
         end
 
     case {'.gz','.GZ'}
-        fprintf('Compressed NIfTI files are not supported.\n');
+        fprintf('Compressed NIfTI files may not be supported.\n');
         tmpname = tempname;
         try
             tmpname = char(gunzip(p,tmpname));
