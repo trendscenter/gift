@@ -284,9 +284,9 @@ end
 
 % MEta state
 dfncInfo.postprocess.b_chk_ena_metastate = b_chk_ena_metastate;
+dfncInfo.postprocess.dmethod = dmethod; %
 if b_chk_ena_metastate
     dfncInfo.postprocess.meta_method = meta_method;
-    dfncInfo.postprocess.dmethod = dmethod; %
     dfncInfo.postprocess.ica.num_comps = num_comps_ica;
     dfncInfo.postprocess.ica.algorithm = lower(ica_algorithm);
     dfncInfo.postprocess.ica.num_ica_runs = num_ica_runs;
@@ -486,7 +486,11 @@ end
 FNCamp = FNCamp / M;
 FNCcm = FNCcm / M;
 
-icatb_save(post_process_file, '-nocompression', '-append', 'FNCamp', 'FNCcm');
+if exist(post_process_file,'file')
+    icatb_save(post_process_file, '-nocompression', '-append', 'FNCamp', 'FNCcm');
+else
+    icatb_save(post_process_file, '-nocompression', 'FNCamp', 'FNCcm');
+end    
 
 clear FNCamp FNCcm;
 

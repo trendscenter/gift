@@ -168,6 +168,23 @@ editH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', '
     UI_FS - 1, 'tag', 'threshold_windows');
 
 
+% Plot popup DICE option
+
+popupTextPos = [xOffset, yPos - 6*yOffset - popupTextHeight, popupTextWidth, popupTextHeight];
+designTextH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'text', ...
+    'position', popupTextPos, 'String', 'Auxillary Statistic', 'fontsize', UI_FS - 1, ...
+    'horizontalalignment', 'center');
+
+popupPos(2) = popupTextPos(2);
+popupPos(3) = popupWidth;
+
+designPopupH = icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'popup', ...
+    'position', popupPos, 'String', {'No DICE', 'Include DICE'}, 'fontsize', UI_FS - 1, 'tag', 'tag_dice');
+
+promptHeight = 0.05;
+promptWidth = popupTextWidth;
+
+
 % controlWidth = 0.4;
 % listboxHeight = controlWidth; listboxWidth = controlWidth;
 %
@@ -196,7 +213,7 @@ calculateHeight = 0.05;
 yPos = 0.16;
 calculatePos = [0.5 - 0.5*calculateWidth, yPos, calculateWidth, calculateHeight];
 icatb_uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'pushbutton', 'position', calculatePos, 'string', 'Calculate', ...
-    'tag', 'calculate_button', 'fontsize', UI_FS - 1, 'callback', {@calculateCallback, InputHandle});
+    'tag', 'calculate_button', 'fontsize', UI_FS - 1, 'callback', {@calculateCallback, InputHandle, dfncInfo});
 
 
 % calculateWidth = 0.16;
@@ -388,7 +405,7 @@ try
     if (~exist('ind', 'var'))
         ind = length(statsInfo.cov) + 1;
     end
-    
+    findobj
     statsInfo.cov(ind).name = cov_name;
     statsInfo.cov(ind).value = deblank(cov_value(:)');
     statsInfo.cov(ind).transformation = lower(cov_transformation);
@@ -491,14 +508,35 @@ set(transformH, 'visible', 'off');
 set(transformH, 'enable', 'off');
 
 
-function calculateCallback(hObject, ed, handles)
+function calculateCallback(hObject, ed, handles, dfncInfo)
 %% Calculate callback
-%
+
+h_dice = findobj(handles, 'tag', 'tag_dice');
+h_design = findobj(handles, 'tag', 'design_criteria');
+if strcmpi('Include DICE',string(h_dice.String(h_dice.Value)))
+    %DICE
+
+    if strcmpi('Two sample t-test',string(h_design.String(h_design.Value)))
+
+        figData = get(handles, 'userdata');
+
+        s_grp1name = string(figData.ttestOpts.t.name(1));
+        s_grp2name = string(figData.ttestOpts.t.name(2));
+               
+        oc_dice = icatb_cls_dice(dfncInfo); %initiate
+        %oc_dice.set_subj_discrim(s_grp1name, s_grp2name, figData.ttestOpts.t.val{1, 1}, figData.ttestOpts.t.val{1, 2}) % populate subjs
+
+        oc_dice.plot_dice(s_grp1name, s_grp2name, figData.ttestOpts.t.val{1, 1}, figData.ttestOpts.t.val{1, 2})     
+    else
+        error('DICE only supports Two sample T-test yet')            
+    end
+end
+
+%the orig code
 
 figData = get(handles, 'userdata');
 
 nuisance_cov_file = deblank(figData.nuisance_cov_file);
-
 
 %% Compute median of correlations and save it
 cluster_stats_file = fullfile(figData.outputDir,  [figData.prefix, '_cluster_stats.mat']);
@@ -736,14 +774,15 @@ try
             error('Please run postprocess step in order to use dfnc cluster stats');
         end
         stru_sgica = load(post_process_file, 'sgica'); 
+        s_file_sgica_displayed = fullfile(figData.dfncInfo.outputDir, [figData.dfncInfo.prefix '_display_sum_scores_sgica.mat']);
 
         %check if var stru_sgica.sgica.calib_all_sub_fnc_A exists
         b_save_sgica=0;
-        if isfield(stru_sgica, 'sgica') 
+        if isfield(stru_sgica, 'sgica') && exist(s_file_sgica_displayed, 'file')
             b_save_sgica=1;  
             % Below variables should have been calculated in previous step
             % and may be loaded
-            load(fullfile(figData.dfncInfo.outputDir, [figData.dfncInfo.prefix '_display_sum_scores_sgica.mat']), 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime', 'README_icatb');
+            load(s_file_sgica_displayed, 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime', 'README_icatb');
             n_subj = size(matTransitions,1);
             matTransitions = reshape(matTransitions, n_subj, []);
             matTransitions = permute(matTransitions, [1 3 2]); % reorder for stats
@@ -784,7 +823,7 @@ try
         %ce010526 make the case state guided was not run               
         if b_save_sgica
             outFile = fullfile(cluster_stats_directory, [figData.prefix, '_sgica_ttest2_results.mat']); 
-            save(outFile, 'sgica');
+            icatb_save(outFile, 'sgica');
             disp(['Two sample t-test results (state-based dFNC) are saved in ', outFile]);
             disp(['Found state guided data and saved 2ttest of it, will be saved in sgica structure in file ' outFile])
         else            
@@ -846,14 +885,16 @@ try
         end
         stru_sgica = load(post_process_file, 'sgica'); 
 
+        s_file_sgica_displayed = fullfile(figData.dfncInfo.outputDir, [figData.dfncInfo.prefix '_display_sum_scores_sgica.mat']);
+
         %check if var stru_sgica.sgica.calib_all_sub_fnc_A exists
         b_save_sgica=0;
-        if isfield(stru_sgica, 'sgica') 
+        if isfield(stru_sgica, 'sgica') && exist(s_file_sgica_displayed, 'file')
             b_save_sgica = true;
 
             % Below variables should have been calculated in previous step
             % and may be loaded
-            load(fullfile(figData.dfncInfo.outputDir, [figData.dfncInfo.prefix '_display_sum_scores_sgica.mat']), 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime', 'README_icatb');
+            load(s_file_sgica_displayed, 'matNumTransitions', 'matFractStateTime', 'matTransitions', 'matMeanDwellTime', 'README_icatb');
             n_subj = size(matTransitions,1);
             matTransitions = reshape(matTransitions, n_subj, []);
             matTransitions = permute(matTransitions, [1 3 2]); % reorder for stats
@@ -1460,7 +1501,7 @@ function H = icatb_pop_mns_p(s_title, n_win, s_ylabel_l, s_ylabel_r, s_label_grp
         title(s_title, 'Color', foregroundcolor);        
 
 function H = icatb_pop_transit(n_win, s_title, sgica, H)
-        b_visible=1; %ce010526
+        b_visible=1; 
         H(n_win).H = icatb_getGraphics(s_title, 'graphics', 'dfnc_summary1', b_visible);
         bgColor = get(H(n_win).H, 'Color');
         if (all(bgColor == 0))

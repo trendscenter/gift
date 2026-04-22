@@ -1377,7 +1377,6 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         xlabel('State at t')
         ylabel('State at t-1')
         title(sprintf('Number of transitions between state with top loading value: %0.1f +/- %0.1f', mean(matNumTransitions), std(matNumTransitions)))
-
             
     else
         
