@@ -23,6 +23,7 @@ function fH = icatb_plot_connectogram(param_file, comp_network_names, varargin)
 %   11. title - Figure title
 %   12. display_type - By default slices are plotted. Option is provided to
 %   use surface plots using 'render' option.
+%   WARNING! The tiles may be radiological in render mode.
 %   13. image_data - By default, image data is converted to RGB for each
 %   component. You could provide custom RGB image in a cell array of length
 %   equal to the number of components.

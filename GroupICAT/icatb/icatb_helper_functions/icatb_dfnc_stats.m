@@ -511,63 +511,60 @@ set(transformH, 'enable', 'off');
 function calculateCallback(hObject, ed, handles, dfncInfo)
 %% Calculate callback
 
-h_dice = findobj(handles, 'tag', 'tag_dice');
-h_design = findobj(handles, 'tag', 'design_criteria');
-if strcmpi('Include DICE',string(h_dice.String(h_dice.Value)))
-    %DICE
-
-    if strcmpi('Two sample t-test',string(h_design.String(h_design.Value)))
-
-        figData = get(handles, 'userdata');
-
-        s_grp1name = string(figData.ttestOpts.t.name(1));
-        s_grp2name = string(figData.ttestOpts.t.name(2));
-               
-        oc_dice = icatb_cls_dice(dfncInfo); %initiate
-        %oc_dice.set_subj_discrim(s_grp1name, s_grp2name, figData.ttestOpts.t.val{1, 1}, figData.ttestOpts.t.val{1, 2}) % populate subjs
-
-        oc_dice.plot_dice(s_grp1name, s_grp2name, figData.ttestOpts.t.val{1, 1}, figData.ttestOpts.t.val{1, 2})     
-    else
-        error('DICE only supports Two sample T-test yet')            
-    end
-end
-
-%the orig code
-
-figData = get(handles, 'userdata');
-
-nuisance_cov_file = deblank(figData.nuisance_cov_file);
-
-%% Compute median of correlations and save it
-cluster_stats_file = fullfile(figData.outputDir,  [figData.prefix, '_cluster_stats.mat']);
-figData.cluster_stats_file = cluster_stats_file;
-threshH = findobj(handles, 'tag', 'threshold_windows');
-thresholdWindows = str2num(get(threshH, 'string'));
-if (isempty(thresholdWindows))
-    error('Enter a valid number for threshold');
-end
-thresholdWindows = ceil(thresholdWindows);
-disp(['Atleast ', num2str(thresholdWindows), ' windows must be present in each state to compute median of dFNC correlations']);
-disp('Using only median of dFNC correlations for each cluster state...');
-icatb_dfnc_cluster_stats(figData.dfncInfo, figData.outputDir, thresholdWindows);
-save(figData.cluster_stats_file, 'nuisance_cov_file', '-append');
-
-
 try
-    selectedRegressors = figData.dfncInfo.userInput.selectedRegressors;
-catch
-end
 
-stats_log = fullfile(figData.outputDir, [figData.prefix, '_stats.log']);
-diary (stats_log);
-try
-    
     %% Design criteria
     designCriteriaH = findobj(handles, 'tag', 'design_criteria');
     designOptions = get(designCriteriaH, 'string');
     designCriteriaVal = get(designCriteriaH, 'value');
     designCriteria = designOptions{designCriteriaVal};
+
+    h_dice = findobj(handles, 'tag', 'tag_dice');
+    if strcmpi('Include DICE',string(h_dice.String(h_dice.Value)))
+        %DICE
     
+        if strcmpi('Two sample t-test',string(designCriteriaH.String(designCriteriaH.Value)))
+    
+            figData = get(handles, 'userdata');
+    
+            s_grp1name = string(figData.ttestOpts.t.name(1));
+            s_grp2name = string(figData.ttestOpts.t.name(2));
+                   
+            oc_dice = icatb_cls_dice(dfncInfo); %initiate
+            %oc_dice.set_subj_discrim(s_grp1name, s_grp2name, figData.ttestOpts.t.val{1, 1}, figData.ttestOpts.t.val{1, 2}) % populate subjs
+    
+            oc_dice.plot_dice(s_grp1name, s_grp2name, figData.ttestOpts.t.val{1, 1}, figData.ttestOpts.t.val{1, 2})     
+        else
+            error('DICE only supports Two sample T-test yet')            
+        end
+    end
+    
+    figData = get(handles, 'userdata');
+    
+    nuisance_cov_file = deblank(figData.nuisance_cov_file);
+    
+    %% Compute median of correlations and save it
+    cluster_stats_file = fullfile(figData.outputDir,  [figData.prefix, '_cluster_stats.mat']);
+    figData.cluster_stats_file = cluster_stats_file;
+    threshH = findobj(handles, 'tag', 'threshold_windows');
+    thresholdWindows = str2num(get(threshH, 'string'));
+    if (isempty(thresholdWindows))
+        error('Enter a valid number for threshold');
+    end
+    thresholdWindows = ceil(thresholdWindows);
+    disp(['Atleast ', num2str(thresholdWindows), ' windows must be present in each state to compute median of dFNC correlations']);
+    disp('Using only median of dFNC correlations for each cluster state...');
+    icatb_dfnc_cluster_stats(figData.dfncInfo, figData.outputDir, thresholdWindows);
+    save(figData.cluster_stats_file, 'nuisance_cov_file', '-append');
+    
+    try
+        selectedRegressors = figData.dfncInfo.userInput.selectedRegressors;
+    catch
+    end
+    
+    stats_log = fullfile(figData.outputDir, [figData.prefix, '_stats.log']);
+    diary (stats_log);   
+
     load (figData.cluster_stats_file);
     
     if (isempty(figData.cov) && strcmpi(designCriteria, 'anova'))
@@ -1004,8 +1001,15 @@ try
 
     end
     
+    stru_dice_files = dir('*stats_dice_results.mat');
     disp('');
     disp(['Stats completed. Please see results file ', outFile]);
+    try
+        if ~isempty(stru_dice_files)
+            disp(['...and ', stru_dice_files.folder filesep stru_dice_files.name]);
+        end
+    catch
+    end
     disp('');
     disp('');
     

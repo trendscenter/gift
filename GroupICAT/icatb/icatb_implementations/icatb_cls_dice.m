@@ -118,14 +118,13 @@ classdef icatb_cls_dice
 
             % Number of time points / windows, number of correlations, total subjects
             nCorr = length(obj.dfncInfo.comps)^2/2-length(obj.dfncInfo.comps)/2;
-            Nsubjects = length(con_subs_grp0) + length(con_subs_grp1);
+            Nsubjects=obj.dfncInfo.userInput.numOfSub;
             Nnetworks = length(obj.dfncInfo.comps);
             
             groupNames.s_grp0 = char(s_grp0in); %make sure they are chars
             groupNames.s_grp1 = char(s_grp1in); %make sure they are chars
-
                
-            for i = [con_subs_grp0 con_subs_grp1]
+            for i = 1:Nsubjects
                 filename = [obj.dfncInfo.prefix '_sub_' sprintf('%03d', i) '_sess_001_results.mat'];
                 temp = load(filename);
                 if i ==1
@@ -134,7 +133,6 @@ classdef icatb_cls_dice
                 end
                 input_dfnc(:,:,i) = temp.FNCdyn;
             end
-            
             
             input_dfnc=input_dfnc - min(input_dfnc(:)); %creating tensor with all elements>0
             
@@ -159,9 +157,9 @@ classdef icatb_cls_dice
             end
             
             meanDynConnEntropy=squeeze(mean(entropyConnDistns,2));%temporal average of entropy of connectivities distributions
-            grp0indexes = 1:length(con_subs_grp0);
-            Cindexes = length(con_subs_grp0)+1:(length(con_subs_grp0)+length(con_subs_grp1));
-            Entropygrp0_mean = mean(meanDynConnEntropy(:,grp0indexes), 2); % mean ower time and subjects for grp0
+            grp0indexes = con_subs_grp0';
+            Cindexes = con_subs_grp1';
+            Entropygrp0_mean = mean(meanDynConnEntropy(:,grp0indexes), 2); % mean over time and subjects for grp0
             Entropygrp1_mean = mean(meanDynConnEntropy(:,Cindexes), 2); 
             
             Entropygrp0_std = std(meanDynConnEntropy(:,grp0indexes), 0, 2);
@@ -180,11 +178,11 @@ classdef icatb_cls_dice
             alpha=0.05;
             maxflag=1;
             
-            demo_fbirn=zeros(Nsubjects,1);
-            demo_fbirn(Cindexes)=1;
+            demo_fbirn=zeros(length([grp0indexes' Cindexes']),1);
+            demo_fbirn(length([grp0indexes])+1:end)=1;
 
             for c=1:Nnetworks
-                 [b1,st1]=robustfit(demo_fbirn, meanDynConnEntropy(c,:),'ols');
+                 [b1,st1]=robustfit(demo_fbirn, [meanDynConnEntropy(c,grp0indexes) meanDynConnEntropy(c,Cindexes)],'ols');
                  B1(c,:)=b1(2); %for disorder
                  p_u(c,:)=st1.p(2);
                  T1(c,:) = st1.t(2);
@@ -193,9 +191,9 @@ classdef icatb_cls_dice
             p_bhfdr_thresh=fdr(p_u(:),alpha,maxflag);
             
             index=find(p_u(:)<=p_bhfdr_thresh); % FDR correction
-            display([num2str(length(index)) ' Networks have p<=' num2str(p_bhfdr_thresh) ':']);
+            display([num2str(length(index)) ' Networks have p<=' num2str(p_bhfdr_thresh) ' (FDR corrected) :']);
             disp('ICE indexes:')
-            index
+            obj.dfncInfo.comps(index)
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             Tsz=T1(:);
@@ -211,7 +209,6 @@ classdef icatb_cls_dice
             % Define x-axis values (indices)
             x = 1:length(Entropygrp0_mean);
             % Create a figure and plot the mean with shaded standard deviation
-            %figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.5]); 
             figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.4]); % Make figure wider
             hold on;
             % Plot shaded area for grp0 group (in red)
@@ -224,16 +221,20 @@ classdef icatb_cls_dice
             fill([x, fliplr(x)], [Entropygrp1_mean + Entropygrp1_std; flipud(Entropygrp1_mean - Entropygrp1_std)]', ...
                 'b', 'FaceAlpha', 0.15, 'EdgeColor', 'none', 'DisplayName', sprintf('SD %s', groupNames.s_grp1));
             % Plot mean line for grp1 group with closed circle markers (in blue)
-            plot(x, Entropygrp1_mean, '-ob', 'LineWidth', 1.5, 'MarkerFaceColor', 'b', 'DisplayName', sprintf('Mean %s', groupNames.s_grp1));
-            xlim([1 53]);
+            plot(x, Entropygrp1_mean, '-ob', 'LineWidth', 1.5, 'MarkerFaceColor', 'b', 'DisplayName', sprintf('Mean %s', groupNames.s_grp1));          
             
             % Customize the plot
             xlabel('Networks', 'FontSize', 16, 'FontWeight', 'bold'); % Change x-axis label to 'ICN', make it larger and bold
             ylabel('Mean DICE', 'FontSize', 16, 'FontWeight', 'bold'); % Change y-axis label to 'Mean ICE', make it larger and bold
-            title(['Mean and SD (shaded) of DICE for ' groupNames.s_grp0 ' and ' groupNames.s_grp1], 'FontSize', 16, 'FontWeight', 'bold'); % Update title                              
-            
+            if numel(index) > 0
+                title(['Mean and SD (shaded) of DICE for ' groupNames.s_grp0 ' and ' groupNames.s_grp1 ', * denotes FDR (\alpha=0.05)'], 'FontSize', 16, 'FontWeight', 'bold');
+            else
+                title(['Mean and SD (shaded) of DICE for ' groupNames.s_grp0 ' and ' groupNames.s_grp1], 'FontSize', 16, 'FontWeight', 'bold'); % Update title                              
+            end
+
+            set(gca, 'XTick', x, 'XTickLabel', obj.dfncInfo.comps)
+
             % Customize legend (remove box around legend)
-            %legend('Location', 'best', 'Box', 'off');
             legend({['SD ' groupNames.s_grp0], ['Mean ' groupNames.s_grp0], ['SD ' groupNames.s_grp1], ['Mean ' groupNames.s_grp1]}, 'Location', 'best', 'Box', 'off');            
 
             % Remove box and grid from figure
@@ -252,19 +253,20 @@ classdef icatb_cls_dice
             end
 
             % Save statistics
-            stats.grp0_mean = Entropygrp0_mean;
-            stats.grp0_std = Entropygrp0_std;
-            stats.grp0_N = length(con_subs_grp0);
-            stats.grp1_mean = Entropygrp1_mean;
-            stats.grp1_std = Entropygrp1_std;
-            stats.grp1_N = length(con_subs_grp1);
-            stats.p_u = p_u;
-            stats.p_bhfdr_thresh = p_bhfdr_thresh;
-            subject_indices.ix_grp0=con_subs_grp0;
-            subject_indices.ix_grp1=con_subs_grp1;
+            stats_statebased_ttest2.grp0_mean = Entropygrp0_mean;
+            stats_statebased_ttest2.grp0_std = Entropygrp0_std;
+            stats_statebased_ttest2.grp0_N = length(con_subs_grp0);
+            stats_statebased_ttest2.grp1_mean = Entropygrp1_mean;
+            stats_statebased_ttest2.grp1_std = Entropygrp1_std;
+            stats_statebased_ttest2.grp1_N = length(con_subs_grp1);
+            stats_statebased_ttest2.p_u = p_u;
+            stats_statebased_ttest2.p_bhfdr_thresh = p_bhfdr_thresh;
+            stats_statebased_ttest2.subject_indices.ix_grp0=con_subs_grp0;
+            stats_statebased_ttest2.subject_indices.ix_grp1=con_subs_grp1;
+            stats_statebased_ttest2.groupNames=groupNames;
             s_stats = fullfile(obj.dfncInfo.outputDir, [obj.dfncInfo.prefix '_stats_dice_results.mat']);
             disp(['DICE summary statistics saved to ' s_stats]);
-            icatb_save(s_stats, 'stats', 'groupNames', 'subject_indices');
+            icatb_save(s_stats, 'stats_statebased_ttest2');
 
         end  
 
