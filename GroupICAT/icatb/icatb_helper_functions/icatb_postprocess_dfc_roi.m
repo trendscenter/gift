@@ -282,7 +282,7 @@ nVoxOptMax = 2; %temporary variable for while below
 while nVoxOpt <= nVoxOptMax %loop for voxel option
     count = 0;
     clear subCorrs; %voxel option needs several correlation matrices, generating sub level
-    for nSub = 1:dfcRoiInfo.userInput.numOfDataSets
+    for nSub = 1:dfcRoiInfo.userInput.numOfDataSets/dfcRoiInfo.userInput.filesInfo.numOfSess
         for nSess = 1:dfcRoiInfo.userInput.filesInfo.numOfSess
             count = count + 1;
             fn = fullfile(outDir, dfcRoiInfo.outputFiles{count});
