@@ -8,6 +8,23 @@ classdef icatb_cls_dice
     %              [3,4,7,8,9]); % where subj indices [1,2,5,6,10] may be
     %              a disorder (SZ) and subj indices [3,4,7,8,9] may be control
     %       n_ret = oc_dice.calc_save;
+    %
+    % This function computes Dynamic Inter-network Connectivity Entropy (DICE)
+    % from time-varying functional connectivity matrices. DICE quantifies the
+    % Shannon entropy of how each brain network/component distributes its
+    % functional connectivity across all other networks/components over time.
+    %
+    % The function estimates DICE for each network, sliding window, and subject;
+    % computes mean DICE values across windows; and evaluates statistical
+    % differences in DICE between patients and healthy controls.
+    %
+    % Reference:
+    %
+    % Maksymchuk, N., Miller, R. L., Bustillo, J. R., Ford, J. M.,
+    % Mathalon, D. H., Preda, A., Pearlson, G. D., & Calhoun, V. D. (2025).
+    % Static and Dynamic Cross-Network Functional Connectivity Shows Elevated
+    % Entropy in Schizophrenia Patients. Human Brain Mapping, 46(2), e70134.
+    % https://doi.org/10.1002/hbm.70134
 
     properties
         dfncInfo
