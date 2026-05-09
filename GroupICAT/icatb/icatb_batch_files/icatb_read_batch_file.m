@@ -362,7 +362,7 @@ if (~strcmpi(modalityType, 'conn'))
                     firstFile = deblank(firstFile(1, :));
                 end
                 
-                sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd);
+                sTemp = icatb_spm_reslice_x(firstFile, deblank(maskFile(1, :)), sesInfo.userInput.pwd);
                 [sFPath,sFName,sFExt] = fileparts(sTemp);
                 % Rename tmp output to the mask name
                 maskFile = [sesInfo.userInput.pwd filesep sesInfo.userInput.prefix 'Mask' sFExt];
@@ -810,7 +810,6 @@ if (length(find((imDims == funcDims) ~= 0)) ~= length(funcDims))
         num2str(imDims), num2str(funcDims));
     
     firstFile = deblank(sesInfo.userInput.files(1).name(1, :));
-    
     firstFileTmp = deblank(icatb_parseExtn(firstFile));
     if (strcmpi(firstFileTmp(end-2:end), '.gz'))
         gzfn = gunzip (firstFileTmp, tempdir);
@@ -819,7 +818,8 @@ if (length(find((imDims == funcDims) ~= 0)) ~= length(funcDims))
         firstFile = deblank(firstFile(1, :));
     end
     
-    spatial_references = noisecloud_spm_coregister(firstFile, deblank(spatial_references(1, :)), spatial_references, sesInfo.userInput.pwd);
+    spatial_references = icatb_spm_reslice_x(firstFile, deblank(spatial_references(1, :)), sesInfo.userInput.pwd);
+
 end
 
 %[images, imHInfo] = icatb_loadData(spatial_references);

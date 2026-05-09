@@ -1264,7 +1264,7 @@ try
                 firstFile = deblank(firstFile(1, :));
             end
             
-            sTemp = noisecloud_spm_coregister(firstFile, deblank(maskFile(1, :)), maskFile, sesInfo.userInput.pwd);
+            sTemp = icatb_spm_reslice_x(firstFile, deblank(maskFile(1, :)), sesInfo.userInput.pwd);
             [sFPath,sFName,sFExt] = fileparts(sTemp);
             % Rename tmp output to the mask name
             maskFile = [sesInfo.userInput.pwd filesep sesInfo.userInput.prefix 'Mask' sFExt];
@@ -1890,7 +1890,7 @@ if (icatb_string_compare(algorithmName, 'constrained') || strcmpi(algorithmName,
             firstFile = icatb_rename_4d_file(gzfn);
             firstFile = deblank(firstFile(1, :));
         end
-        spatial_references = noisecloud_spm_coregister(firstFile, deblank(spatial_references(1, :)), spatial_references, sesInfo.userInput.pwd);
+        spatial_references =       icatb_spm_reslice_x(firstFile, deblank(spatial_references(1, :)), sesInfo.userInput.pwd);
     end
     
     % [images, imHInfo] = icatb_loadData(spatial_references);
