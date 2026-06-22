@@ -2,6 +2,5 @@
 NeuroMark fMRI
 ==============
 
-This guide serves to demonstrate how one can get started with Sphinx and covers
-everything from installing Sphinx and configuring your first Sphinx project to
-using some of the advanced features Sphinx provides out-of-the-box.
+Here you can copy all info from https://trendscenter.org/data/
+but only for the fMRI templates.
