@@ -1,6 +1,6 @@
-============
+==============
 NeuroMark fMRI
-============
+==============
 
 This guide serves to demonstrate how one can get started with Sphinx and covers
 everything from installing Sphinx and configuring your first Sphinx project to
