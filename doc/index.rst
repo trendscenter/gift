@@ -1,6 +1,11 @@
-Hello World
+Group ICA/IVA Framework Toolbox
 ===========
 
-Welcome to Read the Docs page!
 
-This page is generated from GitHub.
+##NeuroMark
+ICA templates exists or multiple modalities, including fMRI, structural MRI, PET and more
+.. toctree::
+   :maxdepth: 2
+
+   Neuromark/index
+
