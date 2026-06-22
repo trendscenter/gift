@@ -1,12 +1,10 @@
 Group ICA/IVA Framework Toolbox
 ===============================
 
-
-NeuroMark
-ICA templates exists or multiple modalities, including fMRI, structural MRI, PET and more.y
+This is a test sentence from the main doc/index.rst file.
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
    Neuromark/index
-
