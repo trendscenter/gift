@@ -1128,7 +1128,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
     elseif strcmpi(display_criteria, 'meta state analysis')
         
-        if (~exist('dfncInfo', 'var'))
+        if (~exist('meta_states_info', 'var'))
             error('Meta states info doesn''t exist. You need to re-run the post-processing step');
         end
         
@@ -1222,7 +1222,9 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
         
     elseif strcmpi(display_criteria, 'tvdfnc analysis')
-        
+        if ~exist('tvdfncInfo', 'var')
+            error('TVdFNC info doesn''t exist. You need to re-run the post-processing step');
+        end
         %% Cluster centroids and derivatives
         M = length (dfncInfo.outputFiles);
         Nwin = length(tvdfncInfo.IDXall) / M;
@@ -1266,6 +1268,9 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         end
         
     elseif strcmpi(display_criteria, 'task connectivity')
+        if ~exist('task_connectivity', 'var')
+            error('Task Connectivity info doesn''t exist. You need to re-run the post-processing step');
+        end
         %% Task connectivity
         M = length (dfncInfo.outputFiles);
         for ii = 1:length(dfncInfo.outputFiles)
@@ -1302,6 +1307,9 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
     elseif strcmpi(display_criteria, 'state guided ica')
         %% State Guided ICA
+        if ~exist('sgica', 'var')
+            error('State Guided ICA info doesn''t exist. You need to re-run the post-processing step');
+        end
 
         oc_sgica = icatb_cls_sgica(dfncInfo);
 
@@ -1320,6 +1328,10 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
         [matNumTransitions, matFractStateTime, matTransitions, matMeanDwellTime] = m_state_vec_stats('_display_sum_scores_sgica.mat', n_subs, ar_sgica_state_max, n_clusts_sgica, dfncInfo);
         oc_fnc = icatb_cls_fnc_misc();
+        if ~exist('figCount', 'var')
+            figCount = 0; % set figcount =0 if it wasnt created before
+        end
+
         for ii = 1:size(sgica.priors,2)
             fig_title = ['IC FNC prior (', num2str(ii), ')'];
             H(ii).H = icatb_getGraphics(fig_title, 'graphics', 'dfnc_summary7', figVisible);
@@ -1379,7 +1391,9 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         title(sprintf('Number of transitions between state with top loading value: %0.1f +/- %0.1f', mean(matNumTransitions), std(matNumTransitions)))
             
     else
-        
+        if ~exist('clusterInfo','var')
+            error('Cluster stats doesn''t exist. You need to re-run the post-processing step');
+        end
         %% Cluster centroids
         M = length (dfncInfo.outputFiles);
         Nwin = length(clusterInfo.IDXall) / M;

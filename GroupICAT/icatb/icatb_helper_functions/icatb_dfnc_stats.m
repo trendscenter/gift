@@ -57,8 +57,13 @@ if exist('clusterInfo', 'var')
 else
     b_statebased_avail = 0;
 end
-Nwin = length(clusterInfo.IDXall) / length(dfncInfo.outputFiles);
-
+try
+    Nwin = length(clusterInfo.IDXall) / length(dfncInfo.outputFiles);
+catch %In case state-based dfnc was not run
+    tmp_sg=load(post_process_file);
+    Nwin = size(tmp_sg.sgica.calib_all_sub_fnc_A,1);
+    clear tmp_sg;
+end
 drawnow;
 
 if (isempty(outputDir))
@@ -554,18 +559,27 @@ try
     thresholdWindows = ceil(thresholdWindows);
     disp(['Atleast ', num2str(thresholdWindows), ' windows must be present in each state to compute median of dFNC correlations']);
     disp('Using only median of dFNC correlations for each cluster state...');
-    icatb_dfnc_cluster_stats(figData.dfncInfo, figData.outputDir, thresholdWindows);
-    save(figData.cluster_stats_file, 'nuisance_cov_file', '-append');
-    
-    try
-        selectedRegressors = figData.dfncInfo.userInput.selectedRegressors;
-    catch
+
+
+    s_post_process_file = fullfile(figData.dfncInfo.outputDir,  [figData.dfncInfo.prefix, '_post_process.mat']);
+    tmp_pp = load(s_post_process_file);
+    if isfield(tmp_pp, 'clusterInfo') %In case State based dfnc was not run
+        icatb_dfnc_cluster_stats(figData.dfncInfo, figData.outputDir, thresholdWindows);
+        save(figData.cluster_stats_file, 'nuisance_cov_file', '-append');
+        
+        try
+            selectedRegressors = figData.dfncInfo.userInput.selectedRegressors;
+        catch
+        end
     end
     
     stats_log = fullfile(figData.outputDir, [figData.prefix, '_stats.log']);
     diary (stats_log);   
 
-    load (figData.cluster_stats_file);
+    if isfield(tmp_pp, 'clusterInfo') %In case State based dfnc was not run
+        load (figData.cluster_stats_file);
+        clear tmp_pp;
+    end
     
     if (isempty(figData.cov) && strcmpi(designCriteria, 'anova'))
         error('Please enter covariates in order to do stats');
@@ -746,14 +760,15 @@ try
         disp('Selected design criteria is two sample t-test');
         
         %% Two sample t-test
-
-        % regular correlations stats
-        if (size(dfnc_corrs, 1) > 1)
-            dfnc_corrs = squeeze(mean(dfnc_corrs, 1));
-        else
-            dfnc_corrs = squeeze(dfnc_corrs);
+        if exist('dfnc_corrs', 'var') %In case State based dfnc was not run
+            % regular correlations stats
+            if (size(dfnc_corrs, 1) > 1)
+                dfnc_corrs = squeeze(mean(dfnc_corrs, 1));
+            else
+                dfnc_corrs = squeeze(dfnc_corrs);
+            end
         end
-        
+            
         if (exist('dfncTaskConnectivity', 'var'))
             if (size(dfncTaskConnectivity, 1) > 1)
                 dfncTaskConnectivity = squeeze(mean(dfncTaskConnectivity, 1));
@@ -761,9 +776,10 @@ try
                 dfncTaskConnectivity = squeeze(dfncTaskConnectivity);
             end
         end
-
-        [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_sgica_ttest2(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
-     
+        
+        if exist('dfnc_corrs', 'var') % check needed in case no state based dfnc
+            [t_u, p_u, stats_u, mean_u, N, subject_indices] = m_sgica_ttest2(dfnc_corrs, [figData.ttestOpts.t.val{1}], [figData.ttestOpts.t.val{2}]);
+        end
         % Stats for state guided if available
         % Check post process file
         post_process_file = fullfile(figData.outputDir,  [figData.prefix , '_post_process.mat']);
@@ -823,7 +839,8 @@ try
             icatb_save(outFile, 'sgica');
             disp(['Two sample t-test results (state-based dFNC) are saved in ', outFile]);
             disp(['Found state guided data and saved 2ttest of it, will be saved in sgica structure in file ' outFile])
-        else            
+        end
+        if exist('t_u','var') %Saving state based dFNC
             outFile = fullfile(cluster_stats_directory, [figData.prefix, '_statebased_ttest2_results.mat']); 
             save(outFile, 't_u', 'p_u', 'stats_u', 'mean_u', 'N', 'groupNames', 'groupVals', 'subject_indices');
             disp(['Two sample t-test results (state-based dFNC) are saved in ', outFile]);
@@ -1283,7 +1300,11 @@ try
     helpStr = 'Creating HTML file. This will involve writing jpeg files to the disk. Please wait ...';
     % helpH = helpdlg(helpStr);
     disp(helpStr);
-    results = icatb_dfnc_results(dfncInfo, 'group comparisons', statsInfo);
+    try
+        results = icatb_dfnc_results(dfncInfo, 'group comparisons', statsInfo);
+    catch 
+        error('Statistical HTML-based plots are only supported for state-based dFNC analysis. For other analysis types you may use the statistics from the statistics file to make your own plot. If you want state based dFNC plots you may re-run the post-processing with state based dFNC settings enabled');
+    end
     html_dir = fullfile( statsInfo.outputDir, 'html');
     html_file = fullfile(html_dir, [dfncInfo.prefix, '_stats.html']);
     
