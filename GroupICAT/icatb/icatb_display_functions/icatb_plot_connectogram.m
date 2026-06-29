@@ -16,7 +16,7 @@ function fH = icatb_plot_connectogram(param_file, comp_network_names, varargin)
 %   'postive', 'absolute value' and 'negative'.
 %   5. 'template_file' - Anatomical file name.
 %   6. 'slice_plane' - Anatomical plane to view.
-%   7. 'threshold' - Threshold value.
+%   7. 'threshold' - Threshold value for spatial maps.
 %   8. 'colorbar_label' - Colorbar label.
 %   9. cmap - Colormap of length 64 like hot(64).
 %   10. imwidth - Image Width. You could customize the image width like 0.05
@@ -71,14 +71,37 @@ global UI_FONTNAME;
 global UI_FS;
 
 %% Parse params
-threshold = 1.5;
-convert_to_zscores = 'yes';
-image_values = 'positive';
-load icatb_colors coldhot;
-cmap = coldhot(1:4:end, :);
-template_file = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
-slice_plane = 'sagittal';
-colorbar_label = 'Corr';
+% threshold = 1.5;
+% convert_to_zscores = 'yes';
+% image_values = 'positive';
+% load icatb_colors coldhot;
+% cmap = coldhot(1:4:end, :);
+% template_file = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
+% slice_plane = 'sagittal';
+% colorbar_label = 'Corr';
+if ~exist('threshold','var') || isempty(threshold)
+    threshold = 1.5;
+end
+if ~exist('convert_to_zscores','var') || isempty(convert_to_zscores)
+    convert_to_zscores = 'yes';
+end
+if ~exist('image_values','var') || isempty(image_values)
+    image_values = 'positive and negative';
+end
+if ~exist('cmap','var') || isempty(cmap)
+    load icatb_colors coldhot;
+    cmap = coldhot(1:4:end, :);
+end
+if ~exist('template_file','var') || isempty(template_file)
+    template_file = fullfile(fileparts(which('groupica.m')), 'icatb_templates', 'ch2bet_3x3x3.nii');
+end
+if ~exist('slice_plane','var') || isempty(slice_plane)
+    slice_plane = 'sagittal';
+end
+if ~exist('colorbar_label','var') || isempty(colorbar_label)
+    colorbar_label = 'Corr';
+end
+
 
 imWidth = CONNECTOGRAM_SM_WIDTH;
 try
