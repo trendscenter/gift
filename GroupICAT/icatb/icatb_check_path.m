@@ -40,7 +40,7 @@ function checkStartup
         
         if ~isempty(allDirs)
     
-            icatb_addpaths_common(giftPath, allDirs); % checks that common paths are included
+            local_addpaths_common(giftPath, allDirs); % checks that common paths are included
             
             [indices] = regexp(allDirs, 'icatb$');
             indices = good_cells(indices);
@@ -102,16 +102,19 @@ function checkReqdPaths
     end
     % End for adding required paths
 
-function icatb_addpaths_common(s_old_gift_or_fit, allDirs)
+function local_addpaths_common(s_gift_path, allDirs)
     %icatb_ADDPATHS_COMMON Summary of this function goes here
     % function for gift or fit to add the common folder if nonexistant
 
-    s_up1 = fileparts(s_old_gift_or_fit);
-    s_root = fileparts(s_up1);
+    try
+       s_up1 = fileparts(s_gift_path);
+       s_root = fileparts(s_up1);
 
-    s_prefix = [s_root filesep 'code/common'];
+       s_prefix = [s_root filesep 'code/common'];
 
-    if ~any(strncmp(allDirs, s_prefix, length(s_prefix)))
-        addpath(genpath(s_prefix));
+       if ~any(strncmp(allDirs, s_prefix, length(s_prefix)))
+	       addpath(genpath(s_prefix), '-end');
+       end
+    catch
     end
 
