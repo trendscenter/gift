@@ -387,7 +387,7 @@ try
         %                 gH = icatb_getGraphics(fig_title, 'graphics',  'FNC Correlations', 'on');
         %                 set(gH, 'resize', 'on');
         %                 axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-        %                 icatb_plot_FNC(M, [-CLIM, CLIM], cellstr(num2str(handles_data.mancovan.comps(:))), (1:length(handles_data.mancovan.comps)), gH, fig_title, axesH, ...
+        %                 trd_fnc_plot(M, [-CLIM, CLIM], cellstr(num2str(handles_data.mancovan.comps(:))), (1:length(handles_data.mancovan.comps)), gH, fig_title, axesH, ...
         %                     network_values, network_names);
         %                 colormap(coldhot);
         %

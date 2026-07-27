@@ -213,7 +213,7 @@ for nComp = 1:sesInfo.numComp
     pos = get(gH, 'position');
     %set(gH, 'position', pos);
     CLIM_corr = [-CLIM, CLIM];
-    icatb_plot_FNC(FNCM, CLIM_corr, cellstr(num2str(fncComps)), (1:length(fncComps)), gH, colorbar_label, gca, ...
+    trd_fnc_plot(FNCM, CLIM_corr, cellstr(num2str(fncComps)), (1:length(fncComps)), gH, colorbar_label, gca, ...
         network_values, comp_network_names(:,1));
     title(['FNC Comp ', icatb_returnFileIndex(nComp)]);
     %     set(findobj(gH, 'type', 'line'), 'linewidth', 1.5);

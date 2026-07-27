@@ -69,7 +69,7 @@ end
 
 
 %imagesc(FNC, CLIM);
-icatb_simtb_pcolor(1:length(RSN_I), 1:length(RSN_I), FNC');
+trd_fnc_simtb_pcolor(1:length(RSN_I), 1:length(RSN_I), FNC');
 set(sh, 'clim', CLIM); axis ij
 c = get(sh, 'Children');
 set(c(find(strcmp(get(c, 'Type'),'line'))), 'Color', bgColor);

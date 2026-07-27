@@ -242,7 +242,7 @@ if isappdata(0, 'inputDispData')
         gH = icatb_getGraphics('FNC Correlations', 'graphics', 'fnc_corrs', 'on');
         colormap(answers.cmap);
         drawnow;
-        [FH,AH,CH,IH] = icatb_plot_FNC(FNCM, answers.CLIM, cellstr(num2str(fncComps)), (1:length(fncComps)), gH, ['State #', num2str(nDict), ' ', answers.fnc_colorbar_label], gca, ...
+        [FH,AH,CH,IH] = trd_fnc_plot(FNCM, answers.CLIM, cellstr(num2str(fncComps)), (1:length(fncComps)), gH, ['State #', num2str(nDict), ' ', answers.fnc_colorbar_label], gca, ...
             network_values, comp_network_names(:,1));
         
         GraphicsHandle(end + 1).H = FH;

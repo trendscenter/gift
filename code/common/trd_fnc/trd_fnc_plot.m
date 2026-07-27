@@ -1,5 +1,6 @@
-function [F,A,C,I] = icatb_plot_FNC(FNC, CLIM, LABEL, RSN_I, F, T, sh, MOD, MOD_NAMES,excludeDiagonals)
-% [F,A,C,I] = plot_FNC(FNC, CLIM, LABEL, RSN_I, F, T)
+function [F,A,C,I] = trd_fnc_plot(FNC, CLIM, LABEL, RSN_I, F, T, sh, MOD, MOD_NAMES,excludeDiagonals)
+% [F,A,C,I] = trd_fnc_plot(FNC, CLIM, LABEL, RSN_I, F, T)
+% Moved from GIFT to common 7/27/26 Cyrus Eierud
 
 % define the size of each "MODULE"
 %MOD = [4, 2, 8, 10, 14, 9];
@@ -32,11 +33,11 @@ end
 
 
 if isvector(FNC)
-    FNC = icatb_vec2mat(FNC, 1);
+    FNC = trd_util_vec2mat(FNC, 1);
 else
     % make sure Nans are along the diagonal
     if (excludeDiagonals)
-        FNC = icatb_vec2mat(icatb_mat2vec(FNC),1);
+        FNC = trd_util_vec2mat(trd_util_mat2vec(FNC),1);
     end
 end
 
@@ -45,7 +46,7 @@ if ~exist('CLIM', 'var') || isempty(CLIM)
     if any(FNC(:)<0)
         CLIM = [-max(abs(FNC(:))), max(abs(FNC(:)))];
     else
-        temp = icatb_mat2vec(FNC);
+        temp = trd_util_mat2vec(FNC);
         CLIM = [min(temp(:)), max(temp(:))];
     end
 end
@@ -73,7 +74,7 @@ end
 
 
 %imagesc(FNC, CLIM);
-icatb_simtb_pcolor(1:length(RSN_I), 1:length(RSN_I), FNC');
+trd_fnc_simtb_pcolor(1:length(RSN_I), 1:length(RSN_I), FNC');
 set(sh, 'clim', CLIM); axis ij
 c = get(sh, 'Children');
 set(c(find(strcmp(get(c, 'Type'),'line'))), 'Color', [0.5, 0.5, 0]);

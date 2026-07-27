@@ -646,8 +646,8 @@ CLIM = max(abs(fnc_corrs_all(:)));
 gH = figure('color', 'w');
 set(gH, 'resize', 'on');
 axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-icatb_plot_FNC(fnc_corrs_all, [-CLIM, CLIM], cellstr(num2str(comps)), (1:length(comps)), gH, [], axesH);
-colormap(jet(64));
+trd_fnc_plot(fnc_corrs_all, [-CLIM, CLIM], cellstr(num2str(comps)), (1:length(comps)), gH, [], axesH);
+colormap(trd_fnc_cm_jetwhite([-1,1], 64));
 title('FNC Correlations', 'parent', axesH);
 fncHandles(end + 1) = gH;
 
@@ -655,8 +655,8 @@ for n = 1:length(grp_names)
     gH = figure('color', 'w');
     set(gH, 'resize', 'on');
     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    icatb_plot_FNC(fnc_grps{n}, [-CLIMG, CLIMG], cellstr(num2str(comps)), (1:length(comps)), gH, [], axesH);
-    colormap(jet(64));
+    trd_fnc_plot(fnc_grps{n}, [-CLIMG, CLIMG], cellstr(num2str(comps)), (1:length(comps)), gH, [], axesH);
+    colormap(trd_fnc_cm_jetwhite([-1,1], 64));
     title(['FNC Correlations of ', grp_names{n}], 'parent', axesH);
     fncHandles(end + 1) = gH;
 end
@@ -700,8 +700,8 @@ CLIM = [min(abs(spatial_maps_MI(:))), max(abs(spatial_maps_MI(:)))];
 gH = figure('color', 'w');
 set(gH, 'resize', 'on');
 axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-icatb_plot_FNC(spatial_maps_MI, CLIM, cellstr(num2str(comps)), (1:length(comps)), gH, ' ', axesH);
-colormap(jet(64));
+trd_fnc_plot(spatial_maps_MI, CLIM, cellstr(num2str(comps)), (1:length(comps)), gH, ' ', axesH);
+colormap(trd_fnc_cm_jetwhite([-1,1], 64));
 title('FNC metrics (Spatial maps)', 'parent', axesH);
 
 resultsInfo = [];

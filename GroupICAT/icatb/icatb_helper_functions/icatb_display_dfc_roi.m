@@ -61,7 +61,7 @@ for nF = 1:length(dfcRoiInfo.postprocess.outputFiles)
             titleStr = tmpStr;
             network_vals = ones(length(roi_labels_sel), 1);
             %cellstr(num2str((1:length(roi_labels_sel))'))
-            icatb_plot_FNC(tmp, CLIM, roi_labels_sel, (1:length(roi_labels_sel)), H, 'Correlations (z)', ...
+            trd_fnc_plot(tmp, CLIM, roi_labels_sel, (1:length(roi_labels_sel)), H, 'Correlations (z)', ...
                 sh(1), network_vals, roi_labels_sel);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis(sh, 'square');

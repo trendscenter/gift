@@ -861,8 +861,8 @@ if (isfield(aggregate, 'fnc'))
     gH = figure('color', 'w', 'visible', figVisible);
     set(gH, 'resize', 'on');
     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    icatb_plot_FNC(fnc_corrs_all, CLIM, cellstr(num2str(components(:))), (1:length(components(:))), gH, [], axesH);
-    colormap(jet(64));
+    trd_fnc_plot(fnc_corrs_all, CLIM, cellstr(num2str(components(:))), (1:length(components(:))), gH, [], axesH);
+    colormap(trd_fnc_cm_jetwhite([-1,1], 64));
     title('Average FNC Correlations', 'parent', axesH);
     
     fncHandles(1) = gH;
@@ -871,7 +871,7 @@ if (isfield(aggregate, 'fnc'))
     %     gH = figure('color', 'w', 'visible', figVisible);
     %     set(gH, 'resize', 'on');
     %     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    %     icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, [], axesH);
+    %     trd_fnc_plot(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, [], axesH);
     %     colormap(jet(64));
     %     title(['Average FNC Correlations of ', grp_names{n}], 'parent', axesH);
     %     fncHandles(end + 1) = gH;
@@ -924,8 +924,8 @@ if (isfield(aggregate, 'mi'))
     gH = figure('color', 'w', 'visible', figVisible);
     set(gH, 'resize', 'on');
     axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    icatb_plot_FNC(spatial_maps_MI, CLIM, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
-    colormap(jet(64));
+    trd_fnc_plot(spatial_maps_MI, CLIM, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
+    colormap(trd_fnc_cm_jetwhite([-1,1], 64));
     title('Average FNC metrics (Spatial maps)', 'parent', axesH);
     
     clear fncHandles;
@@ -935,7 +935,7 @@ if (isfield(aggregate, 'mi'))
     %         gH = figure('color', 'w', 'visible', figVisible);
     %         set(gH, 'resize', 'on');
     %         axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-    %         icatb_plot_FNC(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
+    %         trd_fnc_plot(fnc_grps{n}, CLIMG, cellstr(num2str(components(:))), (1:length(components)), gH, ' ', axesH);
     %         colormap(jet(64));
     %         title(['Average spatial FNC metrics of ', grp_names{n}], 'parent', axesH);
     %         fncHandles(end + 1) = gH;

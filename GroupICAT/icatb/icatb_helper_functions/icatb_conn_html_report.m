@@ -574,8 +574,8 @@ CLIM = [min(abs(spatial_maps_MI(:))), max(abs(spatial_maps_MI(:)))];
 gH = figure('color', 'w');
 set(gH, 'resize', 'on');
 axesH = axes('parent', gH, 'units', 'normalized', 'position', [0.1, 0.1, 0.8, 0.8]);
-icatb_plot_FNC(spatial_maps_MI, CLIM, cellstr(num2str(comps)), (1:length(comps)), gH, ' ', axesH);
-colormap(jet(64));
+trd_fnc_plot(spatial_maps_MI, CLIM, cellstr(num2str(comps)), (1:length(comps)), gH, ' ', axesH);
+colormap(trd_fnc_cm_jetwhite([-1,1], 64));
 title('FNC metrics (Spatial maps)', 'parent', axesH);
 
 resultsInfo = [];

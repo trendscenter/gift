@@ -177,8 +177,8 @@ for nrow = 1:num_rows
         if (countA <= length(groupNames))
             M = squeeze(mean(MIStdVals{countA}, 3));
             sh(countA) = subplot(num_rows, num_cols, countA);
-            [FH, AH, CH, IH] = icatb_plot_FNC(M, [], cellstr(num2str(post_process_params.comps(:))), (1:length(post_process_params.comps)), gH, ' ', sh(countA));
-            colormap(jet(64));
+            [FH, AH, CH, IH] = trd_fnc_plot(M, [], cellstr(num2str(post_process_params.comps(:))), (1:length(post_process_params.comps)), gH, ' ', sh(countA));
+            colormap(trd_fnc_cm_jetwhite([-1,1], 64));
             title(['Avg std of ', groupNames{countA}], 'parent', sh(countA), 'fontweight', 'bold', 'fontsize', 13);
             maxCLIM = [CLIM, max((M(:)))];
             minCLIM = [CLIM, min((M(:)))];
@@ -248,9 +248,9 @@ for nC = 1:length(groupCombNames)
     
     for nWin = 1:num_windows
         sh(nWin) = subplot(num_rows, num_cols, nWin);
-        [FH, AH, CH, IH] = icatb_plot_FNC(squeeze(tmp(nWin, :, :)), [-CLIM, CLIM], cellstr(num2str(post_process_params.comps(:))), (1:length(post_process_params.comps)), gH, ...
+        [FH, AH, CH, IH] = trd_fnc_plot(squeeze(tmp(nWin, :, :)), [-CLIM, CLIM], cellstr(num2str(post_process_params.comps(:))), (1:length(post_process_params.comps)), gH, ...
             ' ',  sh(nWin));
-        colormap(jet(64));
+        colormap(trd_fnc_cm_jetwhite([-1,1], 64));
         if ((nWin == round(num_cols/2)))
             title(char(groupCombNames{nC}, ' '), 'parent', sh(nWin), 'fontweight', 'bold', 'fontsize', 13);
         end
@@ -366,9 +366,9 @@ CLIM = [];
 for nG = 1:sdfncInfo.numGroups
     tmp = squeeze(median(MIStdVals{nG}, 3));
     sh(nG) = subplot(num_rows, num_cols, nG);
-    [FH, AH, CH, IH] = icatb_plot_FNC(tmp, [], cellstr(num2str(post_process_params.comps(:))), (1:length(post_process_params.comps)), gH, ' ', sh(nG));
+    [FH, AH, CH, IH] = trd_fnc_plot(tmp, [], cellstr(num2str(post_process_params.comps(:))), (1:length(post_process_params.comps)), gH, ' ', sh(nG));
     title(['Median of FC STD Of ', groupNames{nG}], 'parent', sh(nG), 'fontweight', 'bold', 'fontsize', 13);
-    colormap(jet(64));
+    colormap(trd_fnc_cm_jetwhite([-1,1], 64));
     CLIM = max([CLIM, max(abs(tmp(:)))]);
     delete(CH);
 end

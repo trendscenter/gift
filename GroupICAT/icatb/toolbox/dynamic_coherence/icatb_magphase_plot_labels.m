@@ -46,7 +46,7 @@ hold on;
 Overlay_Image = convert_to_RGB(Overlay_Image, CM_over, [-pi pi]);
 
 
-layer2 = icatb_simtb_pcolor(1:size(Overlay_Image,2), 1:size(Overlay_Image,1), Overlay_Image);
+layer2 = trd_fnc_simtb_pcolor(1:size(Overlay_Image,2), 1:size(Overlay_Image,1), Overlay_Image);
 
 axis(gca, 'square');
 

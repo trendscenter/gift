@@ -308,11 +308,11 @@ if (~isempty(FNCM))
     gH = icatb_getGraphics('FNC Correlations', 'graphics', 'fnc_corrs', 'on');
     pos = get(gH, 'position');
     %set(gH, 'position', pos);
-    icatb_plot_FNC(FNCM, [-CLIM, CLIM], cellstr(num2str(fncComps)), (1:length(fncComps)), gH, fnc_colorbar_label, gca, ...
+    trd_fnc_plot(FNCM, [-CLIM, CLIM], cellstr(num2str(fncComps)), (1:length(fncComps)), gH, fnc_colorbar_label, gca, ...
         network_values, comp_network_names(:,1));
     %     set(findobj(gH, 'type', 'line'), 'linewidth', 1.5);
     %     set(findobj(gH, 'type', 'line'), 'color', [0, 0, 0]);
-    colormap(jet);
+    colormap(trd_fnc_cm_jetwhite([-1,1]));
     SetProps(gH);
     tmp_f_name = [prefix, '_FNC'];
     outFNames = fullfile(outputDir, [tmp_f_name, '.fig']);

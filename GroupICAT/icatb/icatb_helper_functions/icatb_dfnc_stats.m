@@ -1553,8 +1553,7 @@ function H = icatb_pop_transit(n_win, s_title, sgica, H)
             set(T, 'Color', foregroundcolor, 'HorizontalAlignment', 'Center');
         end
 
-        oc_fnc = icatb_cls_fnc_misc();
-        colormap(oc_fnc.get_colors_jet_white([-1,1]));
+        colormap(trd_fnc_cm_jetwhite([-1,1]));
         CLIM = max(abs(tmp_vec));
         set(h_ax_tmp, 'clim', [-CLIM, CLIM]);        
         C = colorbar;

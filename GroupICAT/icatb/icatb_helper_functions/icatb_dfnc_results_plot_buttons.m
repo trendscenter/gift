@@ -39,13 +39,12 @@ function FigureCallback_contrast_norm(handleObj, event_data, handles)
     h_ax_tmp = handles.CurrentAxes;
     d_color_max = max(h_ax_tmp.Colorbar.Limits);
     d_color_min = min(h_ax_tmp.Colorbar.Limits);
-    oc_fnc = icatb_cls_fnc_misc();
     if d_color_min >= 0
         %only upper half
-        handles.Colormap = oc_fnc.get_colors_jet_white([0,1]);
+        handles.Colormap = trd_fnc_cm_jetwhite([0,1]);
     else
         %from middle of colors half
-        handles.Colormap = oc_fnc.get_colors_jet_white([-1,1]);
+        handles.Colormap = trd_fnc_cm_jetwhite([-1,1]);
     end
 end
 
@@ -56,17 +55,16 @@ function FigureCallback_contrastmore(handleObj, event_data, handles)
     h_ax_tmp = handles.CurrentAxes;
     d_color_max = max(h_ax_tmp.Colorbar.Limits);
     d_color_min = min(h_ax_tmp.Colorbar.Limits);
-    oc_fnc = icatb_cls_fnc_misc();
     if d_color_min >= 0
         %only upper half
-        mat_col_jet_white = oc_fnc.get_colors_jet_white([0,1]);
+        mat_col_jet_white = trd_fnc_cm_jetwhite([0,1]);
         mat_col_jet_white_xtra = mat_col_jet_white(end,:);
         for i_cols=1:round(length(mat_col_jet_white)*.65)
             mat_col_jet_white_xtra = [mat_col_jet_white_xtra;mat_col_jet_white_xtra];
         end
         handles.Colormap = [mat_col_jet_white;mat_col_jet_white(end,:)];
     else
-        mat_col_jet_white = oc_fnc.get_colors_jet_white([-1,1]);
+        mat_col_jet_white = trd_fnc_cm_jetwhite([-1,1]);
         mat_col_jet_white_cold = mat_col_jet_white(1,:);
         mat_col_jet_white_hot = mat_col_jet_white(end,:);
         for i_cols=1:round(length(mat_col_jet_white)*0.65/2)

@@ -73,7 +73,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
         CLIM = [min(FNCamp(:)), max(FNCamp(:))];
         FNCamp = icatb_vec2mat(FNCamp, 1);
-        icatb_plot_FNC(FNCamp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(1).H, 'Average Std Of FNC Spectra', ...
+        trd_fnc_plot(FNCamp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(1).H, 'Average Std Of FNC Spectra', ...
             sh, network_values, network_names);
         title('Average Std Of FNC Spectra', 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
         set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -94,7 +94,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         
         CLIM = [min(FNCcm(:)), max(FNCcm(:))];
         FNCcm = icatb_vec2mat(FNCcm, 1);
-        icatb_plot_FNC(FNCcm, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(2).H, 'Average Center-Of-Mass Of FNC Spectra', sh, ...
+        trd_fnc_plot(FNCcm, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(2).H, 'Average Center-Of-Mass Of FNC Spectra', sh, ...
             network_values, network_names);
         title('Average Center-Of-Mass Of FNC Spectra', 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
         set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -151,7 +151,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 sh = axes('units','normalized','position',[0.2,0.2,0.6,0.6]);
                                 tmpM = icatb_vec2mat(tmpM, 1);
                                 titleText = ['State ', num2str(nC), ' ', groupNames{nRows}, '=', num2str(N{nRows, nC})];
-                                [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                                [~,~,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
                                                           network_values, network_names);
                                 ylabel(CH, 'Correlations');
                                 title(titleText, 'parent', sh, 'horizontalAlignment','center','fontname',UI_FONTNAME,'fontsize',UI_FS-2);
@@ -191,7 +191,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                     sh = axes('units','normalized','position',[0.2,0.2,0.6,0.6]);
                                     tmpM = icatb_vec2mat(tmpM, 1);
                                     titleText = ['Mean of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
-                                    [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                                    [~,~,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
                                                               network_values, network_names);
                                     ylabel(CH, 'Correlations');
                                     title(titleText, 'parent', sh, 'horizontalAlignment','center','fontname',UI_FONTNAME,'fontsize',UI_FS-2);
@@ -243,7 +243,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                 
                         CLIM = [0 max(abs(tmpM(:)))];
                         titleText = ['ANOVA of State ', num2str(nC)];
-                        [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                        [~,~,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
                                                   network_values, network_names);
                         if ~strcmpi(statsInfo.threshdesc,'none')
                             ytick = get(CH,'YTick'); set(CH,'YTick', sort([ytick, fdrlim]));
@@ -296,7 +296,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                 
                             CLIM = [0 max(abs(tmpM(:)))];
                             titleText = ['ANOVA of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
-                            [~,~,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
+                            [~,~,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), 1:length(comps), H, titleText, sh, ...
                                                       network_values, network_names);
                             if ~strcmpi(statsInfo.threshdesc,'none')
                                 ytick = get(CH,'YTick'); set(CH,'YTick', sort([ytick, fdrlim]));
@@ -387,7 +387,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
                                 tmpM = icatb_vec2mat(tmpM, 1);
                                 titleText = ['State ', num2str(nC), ' ', groupNames{nRows}, '=', num2str(N(nRows, nC))];
-                                [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
+                                [FH,AH,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
                                     network_values, network_names);
                                 ylabel(CH, 'Correlations');
                                 title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -441,7 +441,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                     sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
                                     tmpM = icatb_vec2mat(tmpM, 1);
                                     titleText = ['Mean of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
-                                    [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
+                                    [FH,AH,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
                                         network_values, network_names);
                                     ylabel(CH, 'Correlations');
                                     title(titleText, 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -515,7 +515,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                 
                                 CLIM = [-max(abs(tmpM(:))) max(abs(tmpM(:)))];
                                 titleText = ['Results of State ', num2str(nC)];
-                                [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
+                                [FH,AH,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
                                     network_values, network_names);
                                 ytick = get(CH, 'YTick');
                                 if (~strcmpi(statsInfo.threshdesc, 'none'))
@@ -596,7 +596,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                                     
                                     CLIM = [-max(abs(tmpM(:))) max(abs(tmpM(:)))];
                                     titleText = ['Results of Task Connectivity (', dfncInfo.userInput.selectedRegressors{nC}, ')'];
-                                    [FH,AH,CH] = icatb_plot_FNC(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
+                                    [FH,AH,CH] = trd_fnc_plot(tmpM, CLIM, cellstr(num2str(comps)), (1:length(comps)), H, titleText, sh, ...
                                         network_values, network_names);
                                     ytick = get(CH, 'YTick');
                                     if (~strcmpi(statsInfo.threshdesc, 'none'))
@@ -1172,7 +1172,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
                 else
                     cbarTitle = 'Arbitrary';
                 end
-                [F, A, C, I] = icatb_plot_FNC(tmp2, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(figCount).H, cbarTitle, ...
+                [F, A, C, I] = trd_fnc_plot(tmp2, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(figCount).H, cbarTitle, ...
                     sh, network_values, network_names);
                 title([titles{nFig}, ' CP ', num2str(countS)], 'parent', sh, 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
                 set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -1195,7 +1195,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             %                 if (countS <= numComps)
             %                     sh = subplot(numRows, numCols, countS);
             %                     tmp2 = icatb_vec2mat(tmp(:, countS), 1);
-            %                     [F, A, C, I] = icatb_plot_FNC(tmp2, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(nFig).H, 'Arbitrary', ...
+            %                     [F, A, C, I] = trd_fnc_plot(tmp2, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(nFig).H, 'Arbitrary', ...
             %                         sh, network_values, network_names);
             %                     if (countS ~= numComps)
             %                         delete(C);
@@ -1245,21 +1245,21 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             CLIM = max(abs(tvdfnc_centroids(:)));
             CLIM = [-CLIM, CLIM];
             tmp = icatb_vec2mat(tvdfnc_centroids(ii, :), 1);
-            icatb_plot_FNC(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
+            trd_fnc_plot(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis square;
             set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             
             
             H(end+1).H = icatb_getGraphics(titleStr, 'graphics', 'dfnc_summary5', figVisible);
-            colormap(jet);
+            colormap(trd_fnc_cm_jetwhite([-1,1]));
             titleStr = ['TVdFNC Cluster Centroid Derivative (', num2str(ii), ')'];
             titleStr= [titleStr, ' ', tmpStr];
             sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
             CLIM = max(abs(tvdfnc_centroid_derivatives(:)));
             CLIM = [-CLIM, CLIM];
             tmp = icatb_vec2mat(tvdfnc_centroid_derivatives(ii, :), 1);
-            icatb_plot_FNC(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
+            trd_fnc_plot(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis square;
             set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -1291,7 +1291,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
             tmp = icatb_vec2mat(taskMean(ii, :), 1);
             titleStr = fig_title;
-            icatb_plot_FNC(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
+            trd_fnc_plot(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis square;
             set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -1327,7 +1327,6 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         end
         
         [matNumTransitions, matFractStateTime, matTransitions, matMeanDwellTime] = m_state_vec_stats('_display_sum_scores_sgica.mat', n_subs, ar_sgica_state_max, n_clusts_sgica, dfncInfo);
-        oc_fnc = icatb_cls_fnc_misc();
         if ~exist('figCount', 'var')
             figCount = 0; % set figcount =0 if it wasnt created before
         end
@@ -1335,14 +1334,14 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         for ii = 1:size(sgica.priors,2)
             fig_title = ['IC FNC prior (', num2str(ii), ')'];
             H(ii).H = icatb_getGraphics(fig_title, 'graphics', 'dfnc_summary7', figVisible);
-            colormap(oc_fnc.get_colors_jet_white([-1,1]));
+            colormap(trd_fnc_cm_jetwhite([-1,1]));
             sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
             CLIM = max(abs(sgica.priors(:)));
             CLIM = [-CLIM, CLIM];
             tmp = icatb_vec2mat(sgica.priors(:, ii), 1);
             d_state_winds = sum(sum(ar_sgica_state_max == ii));
             titleStr = sprintf('Top loading value in %.1f seconds (%d%%)', d_state_winds*dfncInfo.TR(1), round(d_state_winds/prod(size(ar_sgica_state_max))*100));
-            icatb_plot_FNC(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
+            trd_fnc_plot(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis square;
             set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);            
@@ -1380,7 +1379,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             set(T, 'Color', foregroundcolor, 'HorizontalAlignment', 'Center');
         end
         
-        colormap(oc_fnc.get_colors_jet_white([-1,1]));
+        colormap(trd_fnc_cm_jetwhite([-1,1]));
         C = colorbar;
         set(get(C, 'YLabel'), 'String', 'Probability')
         C.Color = foregroundcolor;
@@ -1408,7 +1407,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             CLIM = [-CLIM, CLIM];
             tmp = icatb_vec2mat(clusterInfo.Call(ii, :), 1);
             titleStr = sprintf('%d (%d%%)', sum(clusterInfo.IDXall == ii),  round(100*sum(clusterInfo.IDXall == ii)/length(clusterInfo.IDXall)));
-            icatb_plot_FNC(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
+            trd_fnc_plot(tmp, CLIM, cellstr(num2str(comps)), (1:length(comps)), H(ii).H, 'Correlations (z)', sh(1), network_values, network_names);
             title(titleStr, 'parent', sh(1), 'horizontalAlignment', 'center', 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
             axis square;
             set(sh, 'YColor', FONT_COLOR, 'XColor', FONT_COLOR, 'fontname', UI_FONTNAME, 'fontsize', UI_FS-2);
@@ -1425,7 +1424,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         %% Cluster Occurrences
         
         H(end + 1).H = icatb_getGraphics('Cluster Occurrences', 'graphics', 'dfnc_summary4', figVisible);
-        colormap(jet);
+        colormap(trd_fnc_cm_jetwhite([-1,1]));
         
         numCols = ceil(sqrt(dfncInfo.postprocess.num_clusters));
         numRows = ceil(dfncInfo.postprocess.num_clusters/numCols);
