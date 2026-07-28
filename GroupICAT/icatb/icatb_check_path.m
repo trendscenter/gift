@@ -107,14 +107,15 @@ function local_addpaths_common(s_gift_path, allDirs)
     % function for gift or fit to add the common folder if nonexistant
 
     try
-       s_up1 = fileparts(s_gift_path);
-       s_root = fileparts(s_up1);
-
-       s_prefix = [s_root filesep 'code/common'];
-
-       if ~any(strncmp(allDirs, s_prefix, length(s_prefix)))
-	       addpath(genpath(s_prefix), '-end');
-       end
+        s_up1 = fileparts(s_gift_path);
+        s_root = fileparts(s_up1);
+        
+        s_prefix = [s_root filesep 'code/common'];
+        
+        if ~any(strncmp(allDirs, s_prefix, length(s_prefix)))
+           addpath(genpath(s_prefix), '-end');
+        end
     catch
+        disp('Warning: Common dir may not have been added properly.');
     end
 
