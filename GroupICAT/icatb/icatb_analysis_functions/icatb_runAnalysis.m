@@ -41,6 +41,7 @@ try
     global OPEN_DISPLAY_GUI;
     global SPM_STATS_WRITE_TAL;
     global SPM_STATS_AVG_RUNS;
+    global NORAND_DETERMINISTIC;
     
     % Return modality type
     modalityType = icatb_get_modality;
@@ -382,7 +383,13 @@ try
     
     countStep = 0;
     for groupICAStep = stepsToRun
-        
+        try
+            if NORAND_DETERMINISTIC
+                rng(1); % Attempt to make GIFT deterministic
+            end
+        catch
+        end
+
         countStep = countStep + 1;
         
         % parameter initialization

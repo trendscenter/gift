@@ -64,6 +64,14 @@ function sbm_OpeningFcn(hObject, eventdata, handles, varargin)
 
 icatb_defaults;
 global RAND_SHUFFLE;
+global NORAND_DETERMINISTIC;
+
+try
+    if NORAND_DETERMINISTIC
+        rng(1); % Attempt to make GIFT deterministic
+    end
+catch
+end
 
 if (~isempty(RAND_SHUFFLE) && (RAND_SHUFFLE == 1))
     try
