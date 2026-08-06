@@ -10,6 +10,8 @@ function mat_colormap = trd_fnc_cm_jetwhite(Bar_range, n_colors)
         % Default: do not reduce the colormap
         if nargin < 2
             b_n_colors = false;
+        else
+            b_n_colors = true;
         end
 
         %% gradient map
