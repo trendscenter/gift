@@ -1,6 +1,6 @@
-## NeuroMark Template For [TReNDS Center](https://trendscenter.org/) implemented under GIFT Toolbox
+## NeuroMark Templates For [TReNDS Center](https://trendscenter.org/) implemented under GIFT Toolbox
 ------------------------------------------------------------
-NeuroMark Template
+NeuroMark Templates
 - Functional Magnetic Resonance Imaging (MRI)
     - Single-scale
         - Gray Matter (GM)
