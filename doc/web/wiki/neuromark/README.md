@@ -1,4 +1,4 @@
-## NeuroMark Templates For [TReNDS Center](https://trendscenter.org/) implemented under GIFT Toolbox
+## NeuroMark Templates for [TReNDS Center](https://trendscenter.org/) implemented under GIFT Toolbox
 ------------------------------------------------------------
 NeuroMark Templates
 - Functional Magnetic Resonance Imaging (MRI)
