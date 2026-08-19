@@ -4,8 +4,8 @@ NeuroMark Templates
 - Functional Magnetic Resonance Imaging (MRI)
     - Single-scale
         - Gray Matter (GM)
-            - <a href="./functionalMRI/Neuromark_fMRI_1.0.md">Foundational</a>
             - <a href="./functionalMRI/Neuromark_fMRI_2.0_modelorder-25.md">Low-order</a>
+            - <a href="./functionalMRI/Neuromark_fMRI_1.0.md">Conventional-order</a>            
             - <a href="./functionalMRI/Neuromark_fMRI_2.0_modelorder-175.md">High-order</a> 
             - <a href="./functionalMRI/Neuromark_fMRI_2.2_modelorder-500.md">Ultra-high-order</a>
     - Multi-scale
@@ -28,7 +28,7 @@ NeuroMark Templates
 - Single-Photon Emission Computed Tomography (SPECT)
     - Single-scale 
         - Gray Matter
-            - <a href="./SPECT/Neuromark_SPECT-TC99_1.0.md">Low-order</a> 
+            - <a href="./SPECT/Neuromark_SPECT-TC99_1.0.md">Conventional-order</a> 
 - Structural MRI
     - Single-scale
         - Gray Matter
