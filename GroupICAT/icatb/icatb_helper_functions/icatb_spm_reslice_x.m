@@ -9,7 +9,7 @@ function s_spatial_ref = icatb_spm_reslice_x(firstFile, s_source_template, s_wor
     copyfile(s_source_template, s_file_nmark_del)
 
     % Create list of volumes to send into icatb_spm_reslice
-    V_tmp = spm_vol(s_file_nmark_del);
+    V_tmp = icatb_spm_vol(s_file_nmark_del);
     nVols = numel(V_tmp);
     cs_nmark_list = cell(nVols+1,1);
     cs_nmark_list{1} = firstFile;
