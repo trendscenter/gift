@@ -1,5 +1,6 @@
 % Only works on Mac or linux
 % Cyrus 082426
+% example: results = runtests('test_icatb_nmark_batch')
 function tests = test_icatb_nmark_batch
     tests = functiontests(localfunctions);
 end
