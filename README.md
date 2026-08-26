@@ -37,6 +37,9 @@ GIFT is an application, originally supported by NIH grant 1RO1 EB000840 to Dr. V
 
 [**Complex GIFT**](https://trends-public-website-fileshare.s3.amazonaws.com/public_website_files/software/gift/software/GroupICATv2.0d_complex.zip) - ICA is applied on complex fMRI data. Please follow the read me text file instructions for doing complex fMRI ICA analysis.
 
+### NeuroMark Templates <a name="secNmark"></a>
+All our NeruoMark templates are found [at following location](./doc/web/wiki/neuromark/README.md). 
+
 ### GIFT BIDS-Apps <a name="secBids"></a>
 If you have your data in BIDS format or you want to run GIFT under a cluster you may want to our GIFT BIDS-Apps [gift-bids](https://github.com/trendscenter/gift-bids). 
 
