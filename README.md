@@ -10,19 +10,20 @@ cd /my/software/folder/gift/GroupICAT/icatb && find . -iname "\*.mexmaca64" -exe
 ### Table of Contents
 1. [Introduction](#secIntro)
 2. [Download](#secDownload)
-3. [GIFT BIDS-Apps](#secBids)
-4. [Screen Shots](#secScreen)
-5. [Version Compatability](#verComp)
-6. [Toolboxes and Features added to GIFT](#secTools)
+3. [NeuroMark ](#secNmark)
+4. [GIFT BIDS-Apps](#secBids)
+5. [Screen Shots](#secScreen)
+6. [Version Compatability](#verComp)
+7. [Toolboxes and Features added to GIFT](#secTools)
 	1. [Mancovan](#secToolMan)
  	2. [EEGIFT](#secToolEEGIFT)
 	3. [NBiC](#secToolNbic)
  	4. [Noise Cloud](#secToolNoise)
   	5. [Autolabeller](#secToolAutolabeller) 
-7. [Documentation/Manual](#manual)
-8. [FAQ](#faq)
-9. [Version History](#secVerHist)
-10. [Publications](#pubs)
+8. [Documentation/Manual](#manual)
+9. [FAQ](#faq)
+10. [Version History](#secVerHist)
+11. [Publications](#pubs)
 ---
 ### Introduction <a name="secIntro"></a>
 GIFT is an application, originally supported by NIH grant 1RO1 EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali and has been continuous supported by NIH and NSF. The MATLAB application implements multiple algorithms for independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT has been downloaded 18581 times (as of 7/6/24) by researchers world wide. For question or comments please contact Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu).
