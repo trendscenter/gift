@@ -5,7 +5,9 @@
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Announcements
 - Apple Silicon! If your Apple Silicon computer (M1, M2, M3 or M4) gives you errors you may need to unquarantine your mex files by doing following from a Mac terminal:
+```bash
 cd /my/software/folder/gift/GroupICAT/icatb && find . -iname "\*.mexmaca64" -exec xattr -d com.apple.quarantine {} \\; && find . -iname "\*.mexmaci64" -exec xattr -d com.apple.quarantine {} \\;
+```
 - GIFT v4.0.5.14 (10/31/2024) slightly modified the dFNC and MANCOVAN processing order, now having the following steps: 1) detrending, 2) regressing out confounds, 3) despiking, 4) filtering.
 ### Table of Contents
 1. [Introduction](#secIntro)
@@ -26,7 +28,7 @@ cd /my/software/folder/gift/GroupICAT/icatb && find . -iname "\*.mexmaca64" -exe
 11. [Publications](#pubs)
 ---
 ### Introduction <a name="secIntro"></a>
-GIFT is an application, originally supported by NIH grant 1RO1 EB000840 to Dr. Vince Calhoun and Dr. Tulay Adali and has been continuous supported by NIH and NSF. The MATLAB application implements multiple algorithms for independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT has been downloaded 18581 times (as of 7/6/24) by researchers world wide. For question or comments please contact Vince Calhoun (vcalhoun@gsu.edu) or Cyrus Eierud (ceierud@gsu.edu).
+GIFT is an application, originally supported by ```NIH grant 1RO1 EB000840``` to Dr. Vince Calhoun and Dr. Tulay Adali and has been continuous supported by NIH and NSF. The MATLAB application implements multiple algorithms for independent component analysis and blind source separation of group (and single subject) functional magnetic resonance imaging data. GIFT has been downloaded 18581 times (as of 7/6/24) by researchers world wide. For question or comments please contact Vince Calhoun ([vcalhoun@gsu.edu](mailto://vcalhoun@gsu.edu)) or Cyrus Eierud ([ceierud@gsu.edu](mailto://ceierud@gsu.edu)).
 
 ### Downloads <a name="secDownload"></a>
 **GroupICAT**  - Download latest version by clicking the green code button on the upper right on this page and then clone the software using the link and the git clone command in your terminal. Current version of Group ICA. Requires MATLAB R2008a and higher.
