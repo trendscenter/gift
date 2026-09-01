@@ -1,6 +1,6 @@
 ![](./im/nmark_top3.png)
 ## NeuroMark Templates for [TReNDS Center](https://trendscenter.org/) implemented under GIFT Toolbox
-------------------------------------------------------------
+---
 NeuroMark templates provide a robust decomposition of the whole brain into functionally meaningful components, enabling efficient and scalable analyses of thousands of subjects.<br>
 - Functional Magnetic Resonance Imaging (MRI)
     - Single-scale
@@ -39,4 +39,5 @@ NeuroMark templates provide a robust decomposition of the whole brain into funct
     - Single-scale 
         - White Matter
             - <a href="./diffusionMRI/Neuromark_dMRI_3.0_modelorder-100_3x3x3.md">High-order</a>
+---
 ![](./im/nmark22bottom.png)
