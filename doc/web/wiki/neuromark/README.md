@@ -9,8 +9,8 @@ NeuroMark templates provide a robust decomposition of the whole brain into funct
             - <a href="./functionalMRI/Neuromark_fMRI_2.0_modelorder-175.md">High-order</a> 
             - <a href="./functionalMRI/Neuromark_fMRI_2.2_modelorder-500.md">Ultra-high-order</a>
     - Multi-scale
-        - <a href="https://github.com/MahShidF/gift/tree/master/doc/wiki/neuromark/functionalMRI/Neuromark_fMRI_2.2_modelorder_multi.md">Gray Matter</a>
-            - <a href="https://github.com/MahShidF/gift/tree/master/doc/wiki/neuromark/functionalMRI/Neuromark_Template_2.2_fMRI_SZ.md">Disease-specific</a>
+        - <a href="./functionalMRI/Neuromark_fMRI_2.2_modelorder_multi.md">Gray Matter</a>
+            - <a href="./functionalMRI/Neuromark_Template_2.2_fMRI_SZ.md">Disease-specific</a>
         - <a href="./functionalMRI/Neuromark_fMRI_WM_2.2_modelorder-multi.md">White Matter (WM)</a>
         - <a href="./functionalMRI/Neuromark_fMRI_WMGM_2.2_modelorder-multi.md">White Matter + Gray Matter</a> 
     - Developmental
