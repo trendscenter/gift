@@ -39,4 +39,4 @@ NeuroMark templates provide a robust decomposition of the whole brain into funct
     - Single-scale 
         - White Matter
             - <a href="./diffusionMRI/Neuromark_dMRI_3.0_modelorder-100_3x3x3.md">High-order</a>
-![](./im/Graphic_Abstract.tif)
+![](./im/nmark22bottom.png)
