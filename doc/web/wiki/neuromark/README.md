@@ -1,4 +1,4 @@
-![](./im/top_nmark.png)
+![](./im/nmark_top2.png)
 ## NeuroMark Templates for [TReNDS Center](https://trendscenter.org/) implemented under GIFT Toolbox
 ------------------------------------------------------------
 NeuroMark templates provide a robust decomposition of the whole brain into functionally meaningful components, enabling efficient and scalable analyses of thousands of subjects.<br>
