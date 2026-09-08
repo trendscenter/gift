@@ -149,6 +149,115 @@ for nCov = 1:length(covariatesToPlot)
             %end
             
             figs(length(figs) + 1).H = gH;
+
+
+
+
+
+
+            
+
+            % all 20 components sepearate
+            % Add separate p-value/significance figure for each component
+            tmpPath = fileparts(results(nF).filesInfo.result_files{1});
+            
+            % Figure harvesting done by MATLAB publish is backwards
+            for ii = length(results(nF).filesInfo.result_files):-1:1
+            
+                % Get actual component number
+                load(fullfile(outputDir, results(nF).filesInfo.result_files{ii}), ...
+                    'comp_number');
+            
+                compIndex = icatb_returnFileIndex(comp_number);
+            
+                % Per-component significance image written by
+                % write_composite_sig_effects
+                if (timeNo > 0)
+                    compSigFile = fullfile(outputDir, tmpPath, ...
+                        [mancovanInfo.prefix, '_sm_', covariatesToPlot{nCov}, ...
+                        '_sig_effects_time', num2str(timeNo), '_comp_', ...
+                        compIndex, '.img']);
+                else
+                    compSigFile = fullfile(outputDir, tmpPath, ...
+                        [mancovanInfo.prefix, '_sm_', covariatesToPlot{nCov}, ...
+                        '_sig_effects_comp_', compIndex, '.img']);
+                end
+            
+                % The current write_composite_sig_effects function only writes
+                % the component image if there are significant voxels.
+                if ~exist(compSigFile, 'file')
+                    continue;
+                end
+            
+                tmpComp = icatb_loadData(compSigFile);
+            
+
+                % Skip empty images
+                if ~any(abs(tmpComp(:)) > eps)
+                    clear tmpComp;
+                    continue;
+                end
+            
+                figTitleComp = ['Univariate Results (Spatial maps) - Component ', ...
+                    num2str(comp_number)];
+            
+                gHComp = icatb_getGraphics(figTitleComp, 'graphics', ...
+                    ['univariate_results_spatial_maps_comp_', compIndex], 'off');
+            
+                axesHComp = subplot(1, 1, 1, 'Parent', gHComp);
+            
+                axesPos = get(axesHComp, 'position');
+                axesPos(1) = 0.055;
+                set(axesHComp, 'position', axesPos);
+            
+                tmpTitleComp = ['Significant Effects Of ', ...
+                    covariatesToPlot{nCov}, ...
+                    ' - Component ', num2str(comp_number), ...
+                    ' (p < ', num2str(mancovanInfo.display.p_threshold), ')'];
+            
+                if (timeNo > 0)
+                    tmpTitleComp = [tmpTitleComp, ...
+                        ' (Time', num2str(timeNo), ')'];
+                end
+            
+                hDComp = getCompositeData(compSigFile, ...
+                    'anatomical_file', structFile, ...
+                    'image_values', mancovanInfo.display.image_values, ...
+                    'convert_to_zscores', 'no', ...
+                    'threshold', eps);
+            
+                hDComp.currentFigure = gHComp;
+                hDComp.axesH = axesHComp;
+                hDComp.title = tmpTitleComp;
+            
+                colormap(gHComp, hDComp.cmap);
+            
+                chComp = drawSlices(axesHComp, hDComp);
+            
+                set([axesHComp, chComp], ...
+                    'ButtonDownFcn', {@openOrthoViews, hDComp});
+            
+                set(gHComp, 'visible', 'on');
+            
+                % Add this component figure as another results page
+                figs(length(figs) + 1).H = gHComp;
+
+
+                clear hDComp tmpComp;
+            end
+
+
+
+
+
+
+
+
+
+
+
+
+
             
         elseif (strcmpi(featureName, 'timecourses spectra'))
             figTitle = 'Univariate Results (Spectra)';
@@ -893,8 +1002,8 @@ labels = hD.title;
 cmap1 = hD.cmap;
 minMaxLabels = hD.minMaxLabels;
 CLIM = [1, size(cmap1, 1)];
-imagesc(data);
-axis image;
+imagesc(axesH, data);
+axis(axesH, 'image');
 set(axesH, 'CLIM', CLIM);
 % Plot label
 title(labels, 'parent', axesH, 'color', FONT_COLOR);
@@ -1128,18 +1237,50 @@ for nT = 1:length(terms)
             ts = UNI.t{mIND}(con_no, :);
             d =  ps.*sign(ts(bad_inds == 0));
             TEMP(tmp_mask_ind) = d;
+            % additional t-scores and contrast
+            try
+                T_TEMP = zeros(size(B));
+                T_TEMP(mask_ind) = ts; 
+                % Full contrast/effect image
+                betas = getBetaWeights(UNI.stats{mIND}, con_no);
+                CON_TEMP = zeros(size(B));
+                CON_TEMP(mask_ind) = betas;  
+                % Add folder to save
+                tmpPath2 = [tmpPath, filesep, 'extra_univariate', filesep];
+                if ~exist([outputDir filesep tmpPath2], 'dir')
+                    mkdir([outputDir filesep tmpPath2]);
+                end                
+            catch
+                disp('Warning icatb_plot_univariate_results: t-score diff and contrast images (not needed for GIFT) failed to save');
+            end
             
             if (~isempty(tmp_mask_ind))
                 
+                % save log(p)
                 if (timeNo > 0)
                     V.fname = fullfile(outputDir, tmpPath, [prefix, '_sm_', term, '_sig_effects_time', num2str(timeNo), '_comp_', icatb_returnFileIndex(comp_number), '.img']);
                 else
                     V.fname = fullfile(outputDir, tmpPath, [prefix, '_sm_', term, '_sig_effects_comp_', icatb_returnFileIndex(comp_number), '.img']);
-                end
-                
+                end                
                 V.n(1) = 1;
                 icatb_write_vol(V, TEMP);
-                
+                try
+                    % Write t-statistic image
+                    V.fname = fullfile(outputDir, tmpPath2, ...
+                        [prefix, '_sm_', term, '_t_comp_', ...
+                        icatb_returnFileIndex(comp_number), '.img']);
+                    V.n(1) = 1;
+                    icatb_write_vol(V, T_TEMP);
+                    
+                    % Write contrast/effect image
+                    V.fname = fullfile(outputDir, tmpPath2, ...
+                        [prefix, '_sm_', term, '_contrast_comp_', ...
+                        icatb_returnFileIndex(comp_number), '.img']);
+                    V.n(1) = 1;
+                    icatb_write_vol(V, CON_TEMP);
+                catch
+                    disp('Warning icatb_plot_univariate_results: t-score diff and contrast images (not needed for GIFT) failed to save');
+                end
             end
             
             %else

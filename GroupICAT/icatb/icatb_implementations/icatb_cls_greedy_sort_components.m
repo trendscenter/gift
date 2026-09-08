@@ -21,10 +21,10 @@ classdef icatb_cls_greedy_sort_components < handle
     end
     
     methods
-        function n_err = m_calc_greed_match(o)
+        function s_file_name_greed = m_calc_greed_match(o)
             % sorts components between your components and a template
             
-            n_err = 1;
+            s_file_name_greed = '**failed**';
 
             disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Starting Greedy Sort'])
 
@@ -46,16 +46,13 @@ classdef icatb_cls_greedy_sort_components < handle
 
             [o.ard_corrs_table, o.ari_ordered_pairs_table, o.ari_ordered_pairs_orig] = mpr_correlation(o, ixMas, o.s_components2compare, o.cob_components_filter_inclusion, o.s_template);
 
-            save('o');
-
             disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Completed Greedy Sort'])
             disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Components sorted from file ' o.s_components2compare])
             disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Template sorted against ' o.s_template])
             mkdir(fullfile(fileparts(o.s_components2compare),'utilities'));
-            save(fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat']), 'o');
-            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: cls_greedy_sort_components.m: Greedy sort component pairs across files, saved in var o.ari_ordered_pairs_table under ' fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat'])])
-            
-            n_err = 0;
+            s_file_name_greed = fullfile(fileparts(o.s_components2compare),['utilities' filesep ['greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat']]);
+            icatb_save(s_file_name_greed, 'o');
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: cls_greedy_sort_components.m: Greedy sort component pairs across files, saved in var o.ari_ordered_pairs_table under ' fullfile(s_file_name_greed)])
         end      
 
         function o = icatb_cls_greedy_sort_components(stru_sesInfo)
@@ -244,14 +241,14 @@ classdef icatb_cls_greedy_sort_components < handle
             set(figHandle, 'visible', 'on');
         end
 
-        function arAllComp = m_greedy_simple(o, s_nii_1, s_nii_2)
+        function s_file_name_greed = m_greedy_simple(o, s_nii_1, s_nii_2)
 
             o.s_components2compare=s_nii_1;
             o.cob_components_filter_inclusion=1;
             o.s_template=s_nii_2;
 
             [ard_corrs_table, ari_ordered_pairs_table, ari_ordered_pairs_orig] = mpr_correlation(o,[], o.s_components2compare, 1, o.s_template);
-            n_err = o.m_calc_greed_match();
+            s_file_name_greed = o.m_calc_greed_match();
 
         end
 
@@ -295,7 +292,7 @@ classdef icatb_cls_greedy_sort_components < handle
                 disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: No booleans found for non noise. Using all components']);
             end
 
-            n_err = o.m_calc_greed_match();
+            s_file_name_greed = o.m_calc_greed_match();
         end     
 
         function arAllComp = mpr_get_comps(~, ixMas, cob_ic_keep, sIcFile)
@@ -409,9 +406,9 @@ classdef icatb_cls_greedy_sort_components < handle
             disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Components sorted from file ' o.s_components2compare])
             disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: Template sorted against ' o.s_template])
             mkdir(fullfile(fileparts(o.s_components2compare),'utilities'));
-            save(fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat']), 'o');
-            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: cls_greedy_sort_components.m: Greedy sort component pairs across files, saved in var o.ari_ordered_pairs_table under ' fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat'])])
-            
+            s_file_to_save = fullfile(fileparts(o.s_components2compare),['utilities' filesep 'greedsort' datestr(datetime('now'),'yyyymmddHHMMSS') '.mat']);
+            icatb_save(s_file_to_save, 'o');
+            disp(['icatb_info [' char(datetime) '] cls_greedy_sort_components.m: cls_greedy_sort_components.m: Greedy sort component pairs across files, saved in var o.ari_ordered_pairs_table under ' s_file_to_save])            
         end
 
     end

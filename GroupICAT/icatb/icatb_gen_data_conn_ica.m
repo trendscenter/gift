@@ -1,6 +1,11 @@
 function sesInfo = icatb_gen_data_conn_ica(sesInfo)
 %% Generate connectivity matrices and save the files in MAT format
 %
+%% Load defaults
+icatb_defaults;
+
+%% Enforce MAT file version
+global ENFORCE_MAT_FILE_VER;
 
 outputDir = sesInfo.userInput.pwd;
 prefix = sesInfo.userInput.prefix;
@@ -154,11 +159,8 @@ for nDataset = 1:numOfDataSets
     sesNum = mod(nDataset-1, numOfSess) + 1;
     
     outFile = fullfile(outputDir, conn_dir, [prefix, '_sub', icatb_returnFileIndex(subNum), '_s', num2str(sesNum), '_conn_data.mat']);
-
-    %outFile = fullfile(outputDir, conn_dir, [prefix, '_sub', icatb_returnFileIndex(subNum), '_s', num2str(sesNum), '_FULL_conn_data.mat']);
-    %disp(['Saving file ', outFile, ' ...']);
-    %save(outFile, 'conn_matrix', '-v7.3');
-
+    prefix_lin=[prefix(1:length(prefix)-4) '-lin'];
+    outFile_lin = fullfile(outputDir, conn_dir, [prefix_lin, '_sub', icatb_returnFileIndex(subNum), '_s', num2str(sesNum), '_conn_data.mat']);
     
     if ~isfile(outFile)
         disp(['Computing connectivity matrices of subject ', num2str(subNum), ' session ', num2str(sesNum), ' ...']);    
@@ -166,15 +168,33 @@ for nDataset = 1:numOfDataSets
         tmpDat = icatb_read_data(tmpFiles, [], mask_ind);
         tmpDat = tmpDat';
         conn_matrix = icatb_calc_ENLwFC(single(tmpDat), 'nonlinear');
-        [conn_matrix, dewhiteM] = icatb_calculate_pca(conn_matrix, sesInfo.userInput.numOfPC1, 'type', 'mpowit', 'whiten', sesInfo.userInput.b_whitening_tmp);
-        disp(['Saving file ', outFile, ' ...']);
+        [conn_matrix, dewhiteM] = icatb_calculate_pca(conn_matrix, sesInfo.userInput.numOfPC1, 'type', 'mpowit', 'whiten', sesInfo.userInput.b_whitening);
         conn_matrix_ = struct('conn_matrix', conn_matrix);
-        save(outFile, '-fromstruct', conn_matrix_);
+        if (~isempty(ENFORCE_MAT_FILE_VER))
+            save(outFile, '-fromstruct', conn_matrix_, ENFORCE_MAT_FILE_VER);
+        else
+            save(outFile, '-fromstruct', conn_matrix_);
+        end        
+        disp(['Saved file ', outFile, ' ...']);  
+
+        % copy ENL to LIN version if asked for comparison
+        if isfield(sesInfo.userInput, 'b_enl2lin_sidecar')
+            if sesInfo.userInput.b_enl2lin_sidecar
+                conn_matrix_lin = icatb_calc_ENLwFC(single(tmpDat), 'linear');
+                [conn_matrix_lin, dewhiteM_lin] = icatb_calculate_pca(conn_matrix_lin, sesInfo.userInput.numOfPC1, 'type', 'mpowit', 'whiten', sesInfo.userInput.b_whitening);
+                conn_matrix_.conn_matrix_lin = conn_matrix_lin;
+                if (~isempty(ENFORCE_MAT_FILE_VER))
+                    save(outFile_lin, '-fromstruct', conn_matrix_, ENFORCE_MAT_FILE_VER);
+                else
+                    save(outFile_lin, '-fromstruct', conn_matrix_);
+                end          
+                disp(['Saved file ', outFile_lin, ' ...']);          
+            end
+        end
     else
         disp(['Loading file ' outFile]);
         load(outFile);       
     end
-
 
     disp('Done');
     fprintf('\n');

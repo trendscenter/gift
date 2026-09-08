@@ -114,7 +114,11 @@ if (useGUI)
     isComposite = dispParameters.isComposite;
     datavis = dispParameters.datavis;
     datavis_threshold = dispParameters.datavis_threshold;
-    
+else
+    datavis_threshold = 0;
+    if ~isempty(threshold)
+        datavis_threshold = threshold;
+    end
 end
 
 if (isnumeric(isComposite))

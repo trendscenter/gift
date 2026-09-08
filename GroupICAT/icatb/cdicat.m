@@ -116,7 +116,6 @@ if (~exist('sesInfo', 'var'))
     error('Selected file is not a valid parameter file');
 end
 
-
 temporal_stats_betas = [];
 
 results = results_summary_gui('num_subjects', sesInfo.numOfSub);
@@ -196,7 +195,50 @@ function run_fnc_ica_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %icatb_run_conn_ica;
-icatb_runAnalysis;
+param_file_x = handles.param_file;
+load(param_file_x)
+icatb_runAnalysis(sesInfo, 'All');
+
+if isfield(sesInfo.userInput, 'b_enl2lin_sidecar')
+    if sesInfo.userInput.b_enl2lin_sidecar
+        % Copy ENL to LIN project and run it
+        clear sesInfo;
+        [pathstr, file_name, extn] = fileparts(param_file_x);
+        load([pathstr filesep file_name(1:length(file_name)-23) '-lin_ica_parameter_info.mat']);
+        icatb_runAnalysis(sesInfo, 'All');
+        
+        % MAtch and compare components between ENL to LIN project
+        com_file1 = [pathstr filesep file_name(1:length(file_name)-23) '-enl_mean_component_ica_s_all_.nii'];
+        com_file2 = [pathstr filesep file_name(1:length(file_name)-23) '-lin_mean_component_ica_s_all_.nii'];
+
+        oc_sort = icatb_cls_greedy_sort_components([]); %initiates class
+        s_file_name_greed = oc_sort.m_greedy_simple(com_file1, com_file2); % engages greedy sort
+        
+        load(s_file_name_greed);
+        n_coms_above_04 = 0;
+        for i_corr=1:size(o.ari_ordered_pairs_table,1)
+            o.ari_ordered_pairs_table(i_corr,3) = o.ard_corrs_table(o.ari_ordered_pairs_table(i_corr,1),o.ari_ordered_pairs_table(i_corr,2));
+            if o.ari_ordered_pairs_table(i_corr,3) > 0.4
+                n_coms_above_04 = n_coms_above_04 + 1;
+            end
+        end
+        
+        T = array2table(o.ari_ordered_pairs_table, ...
+            'VariableNames', {[file_name(1:length(file_name)-23) '-enl_mean_component_ica_s_all_.nii'], [file_name(1:length(file_name)-23) '-lin_mean_component_ica_s_all_.nii'], 'Corr'});
+        
+        s_corr_file = [file_name(1:length(file_name)-23) 'ENL_vs_LIN_IC_correlations' datestr(datetime('now'),'yyyymmddHHMMSS') '.tsv'];
+        
+        writetable(T, s_corr_file, ...
+            'FileType', 'text', ...
+            'Delimiter', '\t');
+        
+        msgH = msgbox([num2str(n_coms_above_04) ' components (of ' num2str(size(o.ari_ordered_pairs_table,1)) ') matches between explicitly nonlinear components and linear components (higher correlation than 0.4). Component numbers and correlations were saved in ' s_corr_file], 'Matching Components', 'modal');
+        waitfor(msgH);
+
+    end
+end
+
+disp('Please copy the input_mancovan_2ttest.m for both non-linear or linear and then run them for comparison across groups.');
 disp('Done running Connectivity Domain Analysis');
 
 
@@ -215,8 +257,10 @@ function import_data_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-icatb_import_data_conn_ica;
+param_file = icatb_import_data_conn_ica;
 
+handles.param_file = param_file;
+guidata(hObject, handles);
 
 % --------------------------------------------------------------------
 function display_tools_Callback(hObject, eventdata, handles)

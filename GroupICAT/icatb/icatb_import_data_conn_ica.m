@@ -1,9 +1,11 @@
-function icatb_import_data_conn_ica(param_file)
+function s_out_param_file = icatb_import_data_conn_ica(param_file)
 %% Import data for running connectivity ICA
 %
 
 icatb_defaults;
 global UI_FS;
+
+s_out_param_file = '';
 
 if (~exist('param_file', 'var'))
     outputDir = icatb_selectEntry('typeEntity', 'directory', 'title', 'Select Analysis Output Directory');
@@ -33,6 +35,7 @@ else
 end
 
 handles_data.sesInfo = sesInfo;
+handles_data.s_out_param_file = '';
 
 drawnow;
 figTag = 'import_data_conn_ica';
@@ -42,7 +45,7 @@ set(graphicsHandle, 'CloseRequestFcn', @figCloseCallback);
 set(graphicsHandle, 'userdata', handles_data);
 
 % Offsets
-xOffset = 0.05; yOffset = 0.05; yPos = 0.92;
+xOffset = 0.05; yOffset = 0.035; yPos = 0.92;
 buttonHeight = 0.052; promptHeight = 0.052;
 promptWidth = 0.6;
 editTextWidth = 0.2;
@@ -162,6 +165,18 @@ popupH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style
     'position', popupTextPos, 'String', {'No', 'Yes'}, 'fontsize', UI_FS - 1, ...
     'horizontalalignment', 'left',  'tag', 'tag_white_ny', 'value', 1);
 
+% Prompt for Linear comparison
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
+promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
+    'position', promptTextPos, 'String', 'Add Linear Comparison (Y/N)', 'fontsize', UI_FS - 1, ...
+    'horizontalalignment', 'center');
+
+popupTextPos = get(promptH, 'position');
+popupTextPos(1) = popupTextPos(1) + popupTextPos(3) + xOffset;
+popupTextPos(3) = editTextWidth;
+popupH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'popup', ...
+    'position', popupTextPos, 'String', {'No', 'Yes'}, 'fontsize', UI_FS - 1, ...
+    'horizontalalignment', 'left',  'tag', 'tag_enl2lin_sidecar', 'value', 1);
 
 % Plot done
 promptTextPos(2) = promptTextPos(2) - 1.5*yOffset - promptHeight;
@@ -175,6 +190,15 @@ editTextPos(3) = buttonWidth;
 icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'pushbutton', ...
     'position', editTextPos, 'String', 'Done', 'fontsize', UI_FS - 1, 'horizontalalignment', 'center', 'callback', ...
     {@doneCallback, graphicsHandle});
+
+% Wait until Done or Close is pressed
+uiwait(graphicsHandle);
+
+if ishandle(graphicsHandle)
+    handles_data = get(graphicsHandle, 'userdata');
+    s_out_param_file = handles_data.s_out_param_file;
+    delete(graphicsHandle);
+end
 
 
 function  prefixCallback (hObject, event_data, handles)
@@ -432,6 +456,16 @@ function doneCallback(hObject, event_data, handles)
 
 handles_info = get(handles, 'userdata');
 
+handles_info.sesInfo.userInput.prefix = ...
+    [handles_info.sesInfo.userInput.prefix '-enl'];
+
+handles_info.sesInfo.userInput.lin_sidecar = true;
+
+param_dir = fileparts(handles_info.sesInfo.userInput.param_file);
+
+handles_info.sesInfo.userInput.param_file = fullfile(param_dir, ...
+    [handles_info.sesInfo.userInput.prefix '_ica_parameter_info.mat']);
+
 outputDir = handles_info.sesInfo.userInput.pwd;
 
 if isempty(handles_info.sesInfo.userInput.dataInfo)
@@ -460,6 +494,16 @@ else
     b_whitening = 1;
 end
 
+h_enl2lin_sidecar = findobj(handles, 'tag', 'tag_enl2lin_sidecar');
+n_enl2lin_sidecar = get(h_enl2lin_sidecar, 'Value');
+if n_enl2lin_sidecar == 1
+    % No is 1
+    b_enl2lin_sidecar = 0;
+else
+    % Yes is 2
+    b_enl2lin_sidecar = 1;
+end
+
 subsampH = findobj(handles, 'tag', 'subsampling_depth');
 subsampling_depth = str2num(get(subsampH, 'string'));
 
@@ -486,25 +530,24 @@ handles_info.sesInfo.userInput.dataInfo.conn_type = conn_type;
 sesInfo = handles_info.sesInfo;
 sesInfo.userInput.numOfPC1 = n_pca;
 
-sesInfo.userInput.b_whitening_tmp = b_whitening;
+sesInfo.userInput.b_whitening = b_whitening;
+sesInfo.userInput.b_enl2lin_sidecar = b_enl2lin_sidecar;
 
 disp('Saving parameters ...');
 param_file = sesInfo.userInput.param_file;
 %param_file = fullfile(outputDir, param_file); 
 save(param_file, 'sesInfo');
+handles_info.s_out_param_file = param_file;
+set(handles, 'userdata', handles_info);
 disp('Done');
 fprintf('\n');
-
-try
-    delete(handles);
-catch
-    
-end
 
 drawnow;
 
 %% Generate connectivity matrices
 icatb_gen_data_conn_ica(sesInfo);
+
+uiresume(handles);
 
 
 function figCloseCallback(hObject, event_data, handles)

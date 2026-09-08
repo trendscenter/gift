@@ -74,7 +74,18 @@ try
     else
         outputDir = sesInfo.userInput.pwd;
     end
-    
+
+    b_enl2lin_sidecar = false;
+    if isfield(sesInfo.userInput, 'b_enl2lin_sidecar')
+        if sesInfo.userInput.b_enl2lin_sidecar
+            b_enl2lin_sidecar = sesInfo.userInput.lin_sidecar;
+        end
+    end
+
+    if b_enl2lin_sidecar && strcmpi(sesInfo.userInput.modality, 'conn')
+        icatb_enlwfc_lincopy(sesInfo);
+    end
+
     drawnow;
     
     if isfield(sesInfo.userInput, 'modality')
