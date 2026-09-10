@@ -238,15 +238,23 @@ results.formatName = formatName;
 
 drawnow;
 
-giftPath = fileparts(which('gift.m'));
 
+disp('Generating summary with new MATLAB process ...');
+giftPath = fileparts(which('gift.m'));
 resultsFile = fullfile(fileparts(param_file), [sesInfo.userInput.prefix, '_tmp_results_struct.mat']);
 save(resultsFile, 'results');
 
-% Run second matlab instance (matlab is installed on system)
-disp('Generating summary with new matlab process ...');
-commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, ''')); icatb_report_generator(''', param_file, ...
-    ''', ''', resultsFile, ''');exit;', '"'];
+if ispc
+    matlabExe = fullfile(matlabroot, 'bin', 'matlab.exe');
+else
+    matlabExe = fullfile(matlabroot, 'bin', 'matlab');
+end
+
+commandStr = ['"', matlabExe, '" -nodisplay -nodesktop -nosplash -r "', ...
+    'addpath(genpath(''', giftPath, ''')); ', ...
+    'icatb_report_generator(''', param_file, ''',''', resultsFile, '''); ', ...
+    'exit;"'];
+
 [status, message] = system(commandStr);
 
 if (status ~= 0)
@@ -254,8 +262,6 @@ if (status ~= 0)
 end
 
 disp('Done');
-
-%icatb_report_generator(param_file, results);
 
 
 function selectedRegressors = selectRegressors(param_file)

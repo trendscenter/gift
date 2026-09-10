@@ -860,7 +860,7 @@ else
             tmpDataSetsToRun = dataSetsToRun(sW:eW);
             % Run separate matlab sessions in background mode
             % (Dummyscript i.e., no text required to run in linux OS)
-            commandStr = ['!matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_parICAReference(''', paramFile,  ''',[', ...
+            commandStr = ['!matlab -nodisplay -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_parICAReference(''', paramFile,  ''',[', ...
                 num2str(tmpDataSetsToRun), '],''', algorithmName, ''');exit" < "', dummyScriptPath, '" &'];
             eval(commandStr);
         end
@@ -945,7 +945,7 @@ for nF = 1:num_workers
     tmpRun = length(runs(sW:eW));
     % Run separate matlab sessions in background mode
     % (Dummyscript i.e., no text required to run in linux OS)
-    commandStr = ['!matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));try;rng(''shuffle'');catch;end;icatb_parIcassoEst(''', paramFile, ''', ''', sel_mode, ''',', ...
+    commandStr = ['!matlab -nodisplay -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));try;rng(''shuffle'');catch;end;icatb_parIcassoEst(''', paramFile, ''', ''', sel_mode, ''',', ...
         num2str(tmpRun), ',''', icassoFiles{nF}, ''');exit" < "', dummyScriptPath, '" &'];
     eval(commandStr);
 end
@@ -1016,7 +1016,7 @@ for nF = 1:num_workers
     tmpRun = length(runs(sW:eW));
     % Run separate matlab sessions in background mode
     % (Dummyscript i.e., no text required to run in linux OS)
-    commandStr = ['!matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));try;rng(''shuffle'');catch;end;icatb_parMST(''', paramFile, ''', ''', algorithmName, ''',', ...
+    commandStr = ['!matlab -nodisplay -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));try;rng(''shuffle'');catch;end;icatb_parMST(''', paramFile, ''', ''', algorithmName, ''',', ...
         num2str(tmpRun), ',''', mstFiles{nF}, ''');exit" < "', dummyScriptPath, '" &'];
     eval(commandStr);
 end

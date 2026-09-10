@@ -418,7 +418,7 @@ for nF = 1:num_workers
     tmpDataSetsToRun = dataSetsToRun(sW:eW);
     % Run separate matlab sessions in background mode
     % (Dummyscript i.e., no text required to run in linux OS)
-    commandStr = ['!matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_parBackReconstruct(''', paramFile, ''',[', ...
+    commandStr = ['!matlab -nodisplay -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_parBackReconstruct(''', paramFile, ''',[', ...
         num2str(tmpDataSetsToRun), '],', num2str(verbose), ''');exit" < "', dummyScriptPath, '" &'];
     eval(commandStr);
 end

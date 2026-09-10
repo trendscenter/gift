@@ -125,15 +125,23 @@ results.formatName = formatName;
 
 drawnow;
 
-giftPath = fileparts(which('gift.m'));
-
-resultsFile = fullfile(fileparts(param_file), [sesInfo.userInput.prefix, '_tmp_results_struct.mat']);
-save(resultsFile, 'results');
 
 % Run second matlab instance (matlab is installed on system)
 disp('Generating summary with new matlab process ...');
-commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, ''')); icatb_report_generator(''', param_file, ...
-    ''', ''', resultsFile, ''');exit;', '"'];
+giftPath = fileparts(which('gift.m'));
+resultsFile = fullfile(fileparts(param_file), [sesInfo.userInput.prefix, '_tmp_results_struct.mat']);
+save(resultsFile, 'results');
+
+if ispc
+    matlabExe = fullfile(matlabroot, 'bin', 'matlab.exe');
+else
+    matlabExe = fullfile(matlabroot, 'bin', 'matlab');
+end
+
+commandStr = ['"', matlabExe, '" -nodisplay -nodesktop -nosplash -r "', ...
+    'addpath(genpath(''', giftPath, ''')); ', ...
+    'icatb_report_generator(''', param_file, ''',''', resultsFile, '''); ', ...
+    'exit;"'];
 [status, message] = system(commandStr);
 
 if (status ~= 0)
@@ -141,43 +149,6 @@ if (status ~= 0)
 end
 
 disp('Done');
-
-
-% param_file = icatb_selectEntry('typeEntity', 'file', 'title', 'Select Parameter File', 'filter', '*ica*parameter*.mat');
-% 
-% load(param_file);
-% 
-% drawnow;
-% 
-% if (isempty(param_file))
-%     error('Parameter file is not selected for display');
-% end
-% 
-% formatName = questdlg('Select results format', 'Results format', 'HTML', 'PDF', 'HTML');
-% 
-% results.format = formatName;
-% results.formatName = formatName;
-% 
-% drawnow;
-% 
-% giftPath = fileparts(which('gift.m'));
-% 
-% resultsFile = fullfile(fileparts(param_file), [sesInfo.userInput.prefix, '_tmp_results_struct.mat']);
-% save(resultsFile, 'results');
-% 
-% % Run second matlab instance (matlab is installed on system)
-% disp('Generating summary with new matlab process ...');
-% commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, ''')); icatb_report_generator(''', param_file, ...
-%     ''', ''', resultsFile, ''');exit;', '"'];
-% [status, message] = system(commandStr);
-% 
-% if (status ~= 0)
-%     error(message);
-% end
-% 
-% disp('Done');
-
-%icatb_report_generator(param_file);
 
 % --- Executes on button press in exit.
 function exit_Callback(hObject, eventdata, handles)

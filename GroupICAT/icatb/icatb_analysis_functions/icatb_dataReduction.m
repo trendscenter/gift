@@ -568,7 +568,7 @@ else
         tmpDataSetsToRun = dataSetsToRun(sW:eW);
         % Run separate matlab sessions in background mode
         % (Dummyscript i.e., no text required to run in linux OS)
-        commandStr = ['!matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_parFirstPCA(''', paramFile,  ''',[', ...
+        commandStr = ['!matlab -nodisplay -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_parFirstPCA(''', paramFile,  ''',[', ...
             num2str(tmpDataSetsToRun), '],0);exit" < "', dummyScriptPath, '" &'];
         eval(commandStr);
     end

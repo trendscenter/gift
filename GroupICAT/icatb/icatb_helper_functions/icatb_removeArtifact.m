@@ -439,7 +439,7 @@ for nF = 1:numWorkers
     tmpDataSetsToRun = selSubjects(sW:eW);
     % Run separate matlab sessions in background mode
     % (Dummyscript i.e., no text required to run in linux OS)
-    commandStr = ['matlab -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_removeArtifact(''', paramFile, ''',''', outputDir, ''', [', ...
+    commandStr = ['matlab -nodisplay -nodesktop -nosplash -r "addpath(genpath(''', giftPath, '''));icatb_removeArtifact(''', paramFile, ''',''', outputDir, ''', [', ...
         num2str(tmpDataSetsToRun), '], [', num2str(selSessions), '], [', num2str(selComp), '], ' num2str(stopRecursive), ');exit" < "', dummyScriptPath, '"'];
     %eval(commandStr);
     process(nF) = runtime.exec(commandStr);
