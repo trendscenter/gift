@@ -186,11 +186,11 @@ if isfield(sesInfo.userInput, 'b_enl2lin_sidecar')
         s_file_name_greed = oc_sort.m_greedy_simple(com_file1, com_file2); % engages greedy sort
         
         load(s_file_name_greed);
-        n_coms_above_04 = 0;
+        n_coms_above_cutoff = 0;
         for i_corr=1:size(o.ari_ordered_pairs_table,1)
             o.ari_ordered_pairs_table(i_corr,3) = o.ard_corrs_table(o.ari_ordered_pairs_table(i_corr,1),o.ari_ordered_pairs_table(i_corr,2));
-            if o.ari_ordered_pairs_table(i_corr,3) > 0.4
-                n_coms_above_04 = n_coms_above_04 + 1;
+            if o.ari_ordered_pairs_table(i_corr,3) > sesInfo.userInput.d_braincorr_cutoff
+                n_coms_above_cutoff = n_coms_above_cutoff + 1;
             end
         end
         
@@ -203,7 +203,7 @@ if isfield(sesInfo.userInput, 'b_enl2lin_sidecar')
             'FileType', 'text', ...
             'Delimiter', '\t');
         
-        msgH = msgbox([num2str(n_coms_above_04) ' components (of ' num2str(size(o.ari_ordered_pairs_table,1)) ') matches between explicitly nonlinear components and linear components (higher correlation than 0.4). Component numbers and correlations were saved in ' s_corr_file], 'Matching Components', 'modal');
+        msgH = msgbox([num2str(n_coms_above_cutoff) ' components (of ' num2str(size(o.ari_ordered_pairs_table,1)) ') matches between explicitly nonlinear components and linear components (higher correlation than ' num2str(sesInfo.userInput.d_braincorr_cutoff) '). Component numbers and correlations were saved in ' s_corr_file], 'Matching Components', 'modal');
         waitfor(msgH);
 
     end

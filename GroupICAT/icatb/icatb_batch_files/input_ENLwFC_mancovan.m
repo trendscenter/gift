@@ -256,7 +256,7 @@ univariate_tests = ...
 %% Significance threshold
 % Statistical significance threshold used by the analysis.
 
-p_threshold = 0.1;
+p_threshold = 0.05;
 
 
 %% Repetition time (TR)
@@ -292,7 +292,7 @@ TR = 2;
 feature_params.sm_center = 'yes';
 
 feature_params.sm_mask = ...
-    '/home/cyrus/ext4max/fromSsd/Documents/trends/work/2025/misc/ENL-wFC/out082626/03/sdfsdf-enlMask.nii';
+    '/home/cyrus/ext4max/fromSsd/Documents/trends/work/2025/misc/ENL-wFC/out082626/03/prefix-enlMask.nii';
 
 feature_params.stat_threshold_maps = 'T';
 
@@ -311,7 +311,7 @@ display.structFile = ...
     fullfile(fileparts(which('gift.m')), 'icatb_templates', 'ch2bet.nii');
 
 % T-statistic threshold used when displaying spatial maps.
-display.t_threshold = 2.5;
+display.t_threshold = 2;
 
 % P-value threshold used when displaying univariate maps, spectra, etc.
 display.p_threshold = 0.05;
@@ -323,7 +323,7 @@ display.image_values = 'Positive and Negative';
 % Common options include:
 %   'fdr'
 %   'none'
-display.threshdesc = 'none';
+display.threshdesc = 'fdr';
 
 % Display FNC connectogram:
 %   1 = display

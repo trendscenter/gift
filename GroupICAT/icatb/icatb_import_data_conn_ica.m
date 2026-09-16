@@ -45,7 +45,7 @@ set(graphicsHandle, 'CloseRequestFcn', @figCloseCallback);
 set(graphicsHandle, 'userdata', handles_data);
 
 % Offsets
-xOffset = 0.05; yOffset = 0.035; yPos = 0.92;
+xOffset = 0.05; yOffset = 0.03; yPos = 0.92;
 buttonHeight = 0.052; promptHeight = 0.052;
 promptWidth = 0.6;
 editTextWidth = 0.2;
@@ -176,7 +176,25 @@ popupTextPos(1) = popupTextPos(1) + popupTextPos(3) + xOffset;
 popupTextPos(3) = editTextWidth;
 popupH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'popup', ...
     'position', popupTextPos, 'String', {'No', 'Yes'}, 'fontsize', UI_FS - 1, ...
-    'horizontalalignment', 'left',  'tag', 'tag_enl2lin_sidecar', 'value', 1);
+    'horizontalalignment', 'left',  'tag', 'tag_enl2lin_sidecar', 'value', 2);
+
+
+
+
+% Prompt
+promptTextPos(2) = promptTextPos(2) - 1.1*yOffset - promptHeight;
+promptH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'text', ...
+    'position', promptTextPos, 'String', 'Cutoff correlation between ENL and LIN brain images', 'center');
+
+% correlation cutoff between enl and lin
+editTextPos = get(promptH, 'position');
+editTextPos(1) = editTextPos(1) + editTextPos(3) + xOffset;
+editTextPos(3) = editTextWidth;
+editTextH = icatb_uicontrol('parent', graphicsHandle, 'units', 'normalized', 'style', 'edit', ...
+    'position', editTextPos, 'String', '0.8', 'fontsize', UI_FS - 1, ...
+    'horizontalalignment', 'center',  'tag', 'tag_braincorr_cutoff');
+
+
 
 % Plot done
 promptTextPos(2) = promptTextPos(2) - 1.5*yOffset - promptHeight;
@@ -484,6 +502,13 @@ if n_pca < 1
   error('Illegal number for the first eigenvalue.\n');
 end
 
+h_braincorr_cutoff = findobj(handles, 'tag', 'tag_braincorr_cutoff');
+d_braincorr_cutoff = str2num(get(h_braincorr_cutoff, 'string'));
+if d_braincorr_cutoff < -1 || d_braincorr_cutoff > 1
+  error('Braincorrelation cutoff has to be between -1 and 1');
+end
+
+
 h_white_ny = findobj(handles, 'tag', 'tag_white_ny');
 n_white_ny = get(h_white_ny, 'Value');
 if n_white_ny == 1
@@ -529,7 +554,7 @@ handles_info.sesInfo.userInput.dataInfo.conn_type = conn_type;
 
 sesInfo = handles_info.sesInfo;
 sesInfo.userInput.numOfPC1 = n_pca;
-
+sesInfo.userInput.d_braincorr_cutoff = d_braincorr_cutoff;
 sesInfo.userInput.b_whitening = b_whitening;
 sesInfo.userInput.b_enl2lin_sidecar = b_enl2lin_sidecar;
 
