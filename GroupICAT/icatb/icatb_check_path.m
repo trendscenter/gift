@@ -39,8 +39,6 @@ function checkStartup
         allDirs = strread(pathstr, '%s', 'delimiter', pathsep);
         
         if ~isempty(allDirs)
-    
-            local_addpaths_common(giftPath, allDirs); % checks that common paths are included
             
             [indices] = regexp(allDirs, 'icatb$');
             indices = good_cells(indices);
@@ -85,7 +83,7 @@ function checkReqdPaths
     
     reqdDirs = str2mat(giftPath, strcat(giftPath, filesep, str2mat('icatb_analysis_functions', 'icatb_batch_files', 'icatb_display_functions', ...
         'icatb_helpManual', 'icatb_helper_functions', 'icatb_io_data_functions', 'icatb_mex_files', 'icatb_talairach_scripts', 'icatb_spm_files', 'icatb_parallel_files', ...
-        'icatb_mancovan_files', ['toolbox', filesep, 'eegiftv1.0c'], ['toolbox', filesep, 'icasso122'], ['toolbox', filesep, 'mancovan'], ['toolbox', filesep, 'Graphical_Lasso'], ...
+        'icatb_mancovan_files', 'icatb_implementations', 'icatb_templates', 'common', ['toolbox', filesep, 'eegiftv1.0c'], ['toolbox', filesep, 'icasso122'], ['toolbox', filesep, 'mancovan'], ['toolbox', filesep, 'Graphical_Lasso'], ...
         ['toolbox', filesep, 'mi'], ['toolbox', filesep, 'noisecloud'], ['toolbox', filesep, 'nbic'], ['toolbox', filesep, 'export_fig'], ['toolbox', filesep, 'dynamic_coherence'])));
     
     pathstr = path;
@@ -102,20 +100,4 @@ function checkReqdPaths
     end
     % End for adding required paths
 
-function local_addpaths_common(s_gift_path, allDirs)
-    %icatb_ADDPATHS_COMMON Summary of this function goes here
-    % function for gift or fit to add the common folder if nonexistant
-
-    try
-        s_up1 = fileparts(s_gift_path);
-        s_root = fileparts(s_up1);
-        
-        s_prefix = [s_root filesep 'code/common'];
-        
-        if ~any(strncmp(allDirs, s_prefix, length(s_prefix)))
-           addpath(genpath(s_prefix), '-end');
-        end
-    catch
-        disp('Warning: Common dir may not have been added properly.');
-    end
 
