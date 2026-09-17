@@ -53,7 +53,7 @@ preproc_type = 1;
 
 % Scaling:
 % 0 none, 1 percent signal change, 2 Z-scores
-scaleType = 0;
+scaleType = 2;
 
 % ICA algorithm (string name or numeric, depending on your GIFT version)
 % Examples: 'infomax', 'fastica', 'moo-icar', ...
