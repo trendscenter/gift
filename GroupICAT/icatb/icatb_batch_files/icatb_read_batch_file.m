@@ -110,7 +110,7 @@ end
 sesInfo.userInput.which_analysis = which_analysis;
 
 % ICASSO Options
-if (which_analysis == 2)
+if (which_analysis == 3)
     
     icasso_opts = inputData.icasso_opts;
     sel_mode = lower(icasso_opts.sel_mode);
@@ -130,12 +130,12 @@ if (which_analysis == 2)
 end
 
 % MST options
-if (which_analysis == 3)
+if (which_analysis == 4)
     sesInfo.userInput.mst_opts = inputData.mst_opts;
 end
 
 % Cross ISI options
-if (which_analysis == 4)
+if (which_analysis == 2)
     sesInfo.userInput.cross_isi_opts = inputData.cross_isi_opts;
 end
 
@@ -945,7 +945,7 @@ end
 sesInfo.userInput.which_analysis = which_analysis;
 
 % ICASSO Options
-if (which_analysis == 2)
+if (which_analysis == 3)
     
     icasso_opts = inputData.icasso_opts;
     sel_mode = lower(icasso_opts.sel_mode);
@@ -965,12 +965,12 @@ if (which_analysis == 2)
 end
 
 % MST options
-if (which_analysis == 3)
+if (which_analysis == 4)
     sesInfo.userInput.mst_opts = inputData.mst_opts;
 end
 
 % Cross ISI options
-if (which_analysis == 4)
+if (which_analysis == 2)
     sesInfo.userInput.cross_isi_opts = inputData.cross_isi_opts;
 end
 

@@ -11,7 +11,7 @@ modalityType = 'fnc';
 % Options are 1 and 2.
 % 1 - Regular Group ICA
 % 2 - Group ICA using icasso
-which_analysis = 2;
+which_analysis = 3;
 
 
 %% ICASSO options.

@@ -8,7 +8,7 @@ modalityType = 'EEG';
 which_analysis = 1;
 
 % ICASSO options.
-% This variable will be used only when which_analysis variable is set to 2.
+% This variable will be used only when which_analysis variable is set to 3.
 icasso_opts.sel_mode = 'randinit';  % Options are 'randinit', 'bootstrap' and 'both'
 icasso_opts.num_ica_runs = 5; % Number of times ICA will be run
 % Most stable run estimate is based on these settings. 

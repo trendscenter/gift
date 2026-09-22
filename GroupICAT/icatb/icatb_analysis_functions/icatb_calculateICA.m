@@ -47,7 +47,7 @@ if (isfield(sesInfo, 'which_analysis'))
     which_analysis = sesInfo.which_analysis;
 end
 
-if (which_analysis == 2)
+if (which_analysis == 3)
     icasso_opts = struct('sel_mode', 'randinit', 'num_ica_runs', max([2, NUM_RUNS_GICA]));
     if isfield(sesInfo, 'icasso_opts')
         icasso_opts = sesInfo.icasso_opts;
@@ -74,9 +74,9 @@ end
 if (isempty(icatb_findstr(lower(algorithmName),'iva')) && ~strcmpi(algorithmName, 'moo-icar') && ~icatb_string_compare(algorithmName, 'constrained'))
     if (which_analysis == 1)
         disp('STARTING GROUP ICA STEP ');
-    elseif (which_analysis == 2)
-        disp('STARTING GROUP ICA STEP USING ICASSO');
     elseif (which_analysis == 3)
+        disp('STARTING GROUP ICA STEP USING ICASSO');
+    elseif (which_analysis == 4)
         disp('STARTING GROUP ICA STEP USING MST');
     else
         disp('STARTING GROUP ICA STEP USING Cross ISI');
@@ -310,7 +310,7 @@ if (isempty(icatb_findstr(lower(algorithmName),'iva')))
         end
         
         
-    elseif (which_analysis == 2)
+    elseif (which_analysis == 3)
         % ICASSO
         
         if (strcmpi(parallel_info.mode, 'serial') || parallelCluster)
@@ -400,7 +400,7 @@ if (isempty(icatb_findstr(lower(algorithmName),'iva')))
         clear sR;
         
         
-    elseif (which_analysis == 4)
+    elseif (which_analysis == 2)
         % Cross isi
         WR = zeros(size(data, 1), size(data, 1), sesInfo.cross_isi_opts.num_ica_runs);
         parfor nRI = 1:sesInfo.cross_isi_opts.num_ica_runs
@@ -475,13 +475,13 @@ else
     else
         
         if (useTemporalICA)
-            which_analysis = 3;
+            which_analysis = 4;
         end
         
-        if (which_analysis == 2)
+        if (which_analysis == 3)
             numRuns = icasso_opts.num_ica_runs;
             disp('ICASSO is not implemented when using IVA algorithm. Using MST instead ...');
-        elseif (which_analysis == 3)
+        elseif (which_analysis == 4)
             % MST
             numRuns =  sesInfo.mst_opts.num_ica_runs;
         else
@@ -489,7 +489,7 @@ else
             numRuns =  sesInfo.cross_isi_opts.num_ica_runs;
         end
         
-        if (which_analysis ~= 4)
+        if (which_analysis ~= 2)
             % Run IVA several times using MST
             if (strcmpi(parallel_info.mode, 'serial') || parallelCluster)
                 if (strcmpi(parallel_info.mode, 'serial'))

@@ -174,7 +174,7 @@ which_analysis = 1;
 
 
 %% ICASSO options
-% These settings are used only when which_analysis = 2.
+% These settings are used only when which_analysis = 3.
 %
 % sel_mode options:
 %   'randinit'  - Random initialization

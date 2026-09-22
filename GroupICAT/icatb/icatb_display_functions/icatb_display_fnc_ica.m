@@ -146,7 +146,7 @@ resultsInfo =[];
 drawnow;
 
 
-if (sesInfo.which_analysis == 2)
+if (sesInfo.which_analysis == 3)
     
     %% ICASSO Plots
     icassoResultsFile = fullfile(outputDir, [sesInfo.userInput.prefix, '_icasso_results.mat']);

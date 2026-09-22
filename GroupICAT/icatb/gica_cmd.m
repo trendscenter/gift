@@ -153,7 +153,7 @@ for s = 1:length(matchInds)
     elseif (strcmpi(vars{s}, '--pca'))
         pcaType = inputs{sInd:eInd};
     elseif (strcmpi(vars{s}, '--icasso'))
-        which_analysis = 2;
+        which_analysis = 3;
         tmp = inputs(sInd:eInd);
         num_ica_runs = str2num(tmp{1});
         try
@@ -162,10 +162,10 @@ for s = 1:length(matchInds)
         end
         clear tmp;
     elseif (strcmpi(vars{s}, '--mst'))
-        which_analysis = 3;
+        which_analysis = 4;
         num_ica_runs = str2num(inputs{sInd:eInd});
     elseif (strcmpi(vars{s}, '--cross_isi'))
-        which_analysis = 4;
+        which_analysis = 2;
         num_ica_runs = str2num(inputs{sInd:eInd});
     elseif (strcmpi(vars{s}, '--mask'))
         maskFile = inputs{sInd:eInd};
@@ -316,7 +316,7 @@ inputData.scaleType = scaleType;
 inputData.algoType = algoType;
 
 %% ICASSO Opts
-if (which_analysis == 2)
+if (which_analysis == 3)
     icasso_opts.num_ica_runs = max([2, num_ica_runs]);
     icasso_opts.sel_mode = selMode;
     icasso_opts.min_cluster_size = ceil(0.8*icasso_opts.num_ica_runs);
@@ -325,14 +325,14 @@ if (which_analysis == 2)
 end
 
 %% MST opts
-if (which_analysis == 3)
+if (which_analysis == 4)
     mst_opts.num_ica_runs = max([2, num_ica_runs]);
     inputData.mst_opts = mst_opts;
 end
 
 
 %% Cross ISI opts
-if (which_analysis == 4)
+if (which_analysis == 2)
     cross_isi_opts.num_ica_runs = max([2, num_ica_runs]);
     inputData.cross_isi_opts = cross_isi_opts;
 end

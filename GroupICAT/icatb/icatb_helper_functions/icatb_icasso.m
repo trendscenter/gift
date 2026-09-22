@@ -100,7 +100,7 @@ end
 % End for checking selection mode and number of ICA runs
 
 %% Set analysis type as ICASSO
-sesInfo.userInput.which_analysis = 2;
+sesInfo.userInput.which_analysis = 3;
 sesInfo.userInput.icasso_opts = icasso_opts;
 sesInfo.which_analysis = sesInfo.userInput.which_analysis;
 sesInfo.icasso_opts = sesInfo.userInput.icasso_opts;

@@ -53,7 +53,7 @@
 % catch
 % end
 % 
-% if (sesInfo.which_analysis == 2)
+% if (sesInfo.which_analysis == 3)
 %     icasso_opts = struct('sel_mode', 'randinit', 'num_ica_runs', max([2, NUM_RUNS_GICA]));
 %     if isfield(sesInfo, 'icasso_opts')
 %         icasso_opts = sesInfo.icasso_opts;
@@ -291,7 +291,7 @@
 %     clear A2;
 %     
 %     
-% elseif (which_analysis == 2)
+% elseif (which_analysis == 3)
 %     % ICASSO
 %     
 %     
@@ -361,7 +361,7 @@
 %     clear sR;
 %     
 %     
-% elseif (which_analysis == 4)
+% elseif (which_analysis == 2)
 %     % Cross isi
 %     WR = zeros(size(data, 1), size(data, 1), sesInfo.cross_isi_opts.num_ica_runs);
 %     parfor nRI = 1:sesInfo.cross_isi_opts.num_ica_runs

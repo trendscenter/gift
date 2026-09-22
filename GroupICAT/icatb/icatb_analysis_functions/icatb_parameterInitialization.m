@@ -249,19 +249,19 @@ if (isfield(sesInfo.userInput, 'which_analysis'))
 end
 sesInfo.which_analysis = which_analysis;
 
-if (which_analysis == 2)
+if (which_analysis == 3)
     if isfield(sesInfo.userInput, 'icasso_opts')
         sesInfo.icasso_opts = sesInfo.userInput.icasso_opts;
     else
         sesInfo.icasso_opts = struct('sel_mode', 'randinit', 'num_ica_runs', max([2, NUM_RUNS_GICA]));
     end
-elseif (which_analysis == 3)
+elseif (which_analysis == 4)
     if isfield(sesInfo.userInput, 'mst_opts')
         sesInfo.mst_opts = sesInfo.userInput.mst_opts;
     else
         sesInfo.mst_opts.num_ica_runs = max([2, NUM_RUNS_GICA]);
     end
-elseif (which_analysis == 4)
+elseif (which_analysis == 2)
     if isfield(sesInfo.userInput, 'cross_isi_opts')
         sesInfo.cross_isi_opts = sesInfo.userInput.cross_isi_opts;
     else
