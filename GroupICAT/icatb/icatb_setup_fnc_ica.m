@@ -237,7 +237,7 @@ selObject = get(hObject, 'value');
 handles_data.sesInfo.userInput.which_analysis = selObject;
 
 %% Open ICASSO options
-if (selObject == 2)
+if (selObject == 3)
     % ICASSO
     if (isfield(handles_data.sesInfo.userInput, 'icasso_opts'))
         icasso_opts = icatb_get_icasso_opts(handles_data.sesInfo.userInput.icasso_opts);
@@ -247,7 +247,7 @@ if (selObject == 2)
     
     handles_data.sesInfo.userInput.icasso_opts = icasso_opts;
     
-elseif (selObject == 3)
+elseif (selObject == 4)
     % MST
     
     % open input dialog box
@@ -277,7 +277,7 @@ elseif (selObject == 3)
     handles_data.sesInfo.userInput.mst_opts.num_ica_runs = num_ica_runs;
     
     
-elseif (selObject == 4)
+elseif (selObject == 2)
     % cross isi
     
     % open input dialog box

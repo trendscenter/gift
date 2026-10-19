@@ -33,7 +33,8 @@ else
 
     tempRuns = NUM_RUNS_GICA;
     if (tempRuns < 2)
-        tempRuns = 2;
+        % Set Default to 5 so 0.8 * runs can at least get to 4
+        tempRuns = 5;
     end
 
 end
