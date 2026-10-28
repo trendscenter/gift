@@ -7,7 +7,7 @@ A resorted multi-scale order Intrinsic Connectivity Network (ICN) template, crea
 #### Reference:
 
 1- [K. Jensen, J. A. Turner, V. D. Calhoun, A. Iraji. “Addressing inconsistency in functional neuroimaging: A replicable data-driven multi-scale functional atlas for canonical brain networks”, bioRxiv, 2024](https://www.biorxiv.org/content/10.1101/2024.09.09.612129v1).<br>
-2- [A. Iraji, Z. Fu, A. Faghiri, M. Duda, J. Chen, S. Rachakonda, T. DeRamus, P. Kochunov et. al. “Identifying canonical and replicable multi-scale intrinsic connectivity networks in 100k+ resting-state fMRI datasets”, Human brain mapping, 2023, https://doi.org/10.1002/hbm.26472](https://www.biorxiv.org/content/10.1101/2024.09.09.612129v1).<br>
+2- [A. Iraji, Z. Fu, A. Faghiri, M. Duda, J. Chen, S. Rachakonda, T. DeRamus, P. Kochunov et. al. “Identifying canonical and replicable multi-scale intrinsic connectivity networks in 100k+ resting-state fMRI datasets”, Human brain mapping, 2023, https://doi.org/10.1002/hbm.26472](https://doi.org/10.1002/hbm.26472).<br>
 Supplementals downloadable by clicking [here](https://trendscenter.org/trends/data/neuromark/Supp2022Iraji.zip)
 
 ![NM2.2_GM](./im/NM2_GM.webp)
