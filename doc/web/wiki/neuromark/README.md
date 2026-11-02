@@ -22,13 +22,13 @@ NeuroMark templates provide a robust decomposition of the whole brain into funct
 - Positron Emission Tomography (PET)
     - Single-scale
         - Gray Matter 
-            - <a href="./PET/Neuromark_PET-FBP_1.0_modelorder-40_2x2x2.md">Low-order</a> (Model order: 40, v1.0)
+            - <a href="./PET/Neuromark_PET-FBP_1.0_modelorder-40_2x2x2.md">Low-order</a> (Model order: 40, v1.0, Tracer: FBP)
         - White Matter + Gray Matter
-            - <a href="./PET/Neuromark_PET-FBP_WMGM_2.0_modelorder-100_3x3x3.md">High-order</a> (Model order: 100, v2.0)
+            - <a href="./PET/Neuromark_PET-FBP_WMGM_2.0_modelorder-100_3x3x3.md">High-order</a> (Model order: 100, v2.0, Tracer: FBP)
 - Single-Photon Emission Computed Tomography (SPECT)
     - Single-scale 
         - Gray Matter
-            - <a href="./SPECT/Neuromark_SPECT-TC99_1.0.md">Conventional-order</a> (Model order: 100, v1.0)
+            - <a href="./SPECT/Neuromark_SPECT-TC99_1.0.md">Conventional-order</a> (Model order: 100, v1.0, Tracer: TC99)
 - Structural MRI
     - Single-scale
         - Gray Matter
