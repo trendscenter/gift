@@ -1239,7 +1239,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
             titleStr = ['TVdFNC Cluster Centroid (', num2str(ii), ')'];
             titleStr= [titleStr, ' ', tmpStr];
             H(end+1).H = icatb_getGraphics(titleStr, 'graphics', 'dfnc_summary5', figVisible);
-            colormap(jet);
+            colormap(trd_fnc_cm_jetwhite([-1,1], 64));
             sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
             %sh = subplot(1, 2, 1);
             CLIM = max(abs(tvdfnc_centroids(:)));
@@ -1401,7 +1401,7 @@ function varargout = icatb_dfnc_results(dfncInfo, display_criteria, statsInfo)
         for ii = 1:dfncInfo.postprocess.num_clusters
             fig_title = ['Cluster Centroid (', num2str(ii), ')'];
             H(ii).H = icatb_getGraphics(fig_title, 'graphics', 'dfnc_summary3', figVisible);
-            colormap(jet);
+            colormap(trd_fnc_cm_jetwhite([-1,1], 64));
             sh = axes('units', 'normalized', 'position', [0.2, 0.2, 0.6, 0.6]);
             CLIM = max(abs(clusterInfo.Call(:)));
             CLIM = [-CLIM, CLIM];

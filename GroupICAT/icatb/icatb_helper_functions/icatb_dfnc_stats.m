@@ -30,6 +30,12 @@ else
     clear param_file;
 end
 
+if 5==dfncInfo.userInput.feature_params.inputParameters(2).options(1).value
+    % dFNC method is Filterbank (5)
+    icatb_fb_stats(dfncInfo);
+    return;
+end
+
 drawnow;
 
 

@@ -522,7 +522,13 @@ try
     delete(handles);
     drawnow;
     
-    icatb_run_dfnc(dfncInfo);
+    
+    if 5==dfncInfo.userInput.feature_params.inputParameters(2).options(1).value
+        % dFNC method is Filterbank (5)
+        icatb_fb_run(dfncInfo);
+    else
+        icatb_run_dfnc(dfncInfo);
+    end
     
 catch
     icatb_errorDialog(lasterr, 'Run dFNC Error');

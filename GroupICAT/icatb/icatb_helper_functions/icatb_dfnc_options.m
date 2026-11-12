@@ -37,7 +37,7 @@ matchedIndex = strmatch(num2str(DETRENDNUMBER), options(optionNumber).answerStri
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = matchedIndex;
 options(optionNumber).tag = 'tc_detrend'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 optionNumber = optionNumber + 1;
 % Option 2 of parameter 1
@@ -46,7 +46,7 @@ options(optionNumber).answerString = char('Yes', 'No');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'tc_despike'; options(optionNumber).answerType = 'string';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 optionNumber = optionNumber + 1;
 % Option 3 of parameter 1
@@ -55,7 +55,7 @@ options(optionNumber).answerString = '0.15';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'tc_filter'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 
 optionNumber = optionNumber + 1;
@@ -78,7 +78,7 @@ options(optionNumber).answerString =  char('No', 'Yes');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'dfnc_mn_remov_yn'; options(optionNumber).answerType = 'string';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 inputParameters(numParameters).options = options; % will be used in plotting the controls in a frame
 clear options;
@@ -90,11 +90,11 @@ inputParameters(numParameters).listString = 'Dynamic FNC';
 optionNumber = 1;
 % Option 1 of parameter 2
 options(optionNumber).promptString = 'Select dFNC method';
-options(optionNumber).answerString = char('SWPC (Correlation)', 'L1 Reg. SWPC', 'Shared Trajectory', 'SSB + SWPC');
+options(optionNumber).answerString = char('SWPC (Correlation)', 'L1 Reg. SWPC', 'Shared Trajectory', 'SSB + SWPC', 'Filterbank');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'method'; options(optionNumber).answerType = 'string';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 options(optionNumber).callback = {@L1ControlCallback};
 
 optionNumber = optionNumber + 1;
@@ -104,7 +104,7 @@ options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE;
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'wsize'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 % optionNumber = optionNumber + 1;
 % % Option 3 of parameter 2
@@ -122,7 +122,7 @@ options(optionNumber).answerString = DFNC_DEFAULTS.WINDOW_SIZE_STRAJECT;
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'wsize_tmp'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 optionNumber = optionNumber + 1;
 % Option 4 of parameter 2
@@ -131,7 +131,7 @@ options(optionNumber).answerString = '3';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 0;
 options(optionNumber).tag = 'window_alpha'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 optionNumber = optionNumber + 1;
 % Option 5 of parameter 2
@@ -140,7 +140,7 @@ options(optionNumber).answerString = '0';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 0;
 options(optionNumber).tag = 'awsc'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 optionNumber = optionNumber + 1;
 % Option 6 of parameter 2
@@ -149,7 +149,7 @@ options(optionNumber).answerString = char('No', 'Yes');
 options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'tv_dfnc'; options(optionNumber).answerType = 'string';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 
 
 
@@ -160,7 +160,7 @@ options(optionNumber).answerString = '10';
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'num_repetitions'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 options(optionNumber).callback = {@L1ControlCallback};
 options(optionNumber).enable = 'inactive';
 options(optionNumber).visible = 'off';
@@ -172,11 +172,32 @@ options(optionNumber).answerString = modulation_freq;
 options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
 options(optionNumber).tag = 'modulation_freq'; options(optionNumber).answerType = 'numeric';
 options(optionNumber).flag = 'delete';
-options(optionNumber).uiPos = [0.12 0.045];
+options(optionNumber).uiPos = [0.30 0.045];
 options(optionNumber).callback = {@L1ControlCallback};
 options(optionNumber).enable = 'inactive';
 options(optionNumber).visible = 'off';
 
+optionNumber = optionNumber + 1;
+% Option 9 of parameter 2
+options(optionNumber).promptString = 'No of Bands';
+options(optionNumber).answerString = 10;
+options(optionNumber).uiType = 'edit'; options(optionNumber).value = 1;
+options(optionNumber).tag = 'fb_bands'; options(optionNumber).answerType = 'numeric';
+options(optionNumber).flag = 'delete';
+options(optionNumber).uiPos = [0.30 0.045];
+%options(optionNumber).enable = 'inactive';
+options(optionNumber).visible = 'off';
+
+optionNumber = optionNumber + 1;
+% Option 10 of parameter 2
+options(optionNumber).promptString = 'Filter Envelope';
+options(optionNumber).answerString = char('Gaussian', 'Square', 'Tukey');
+options(optionNumber).uiType = 'popup'; options(optionNumber).value = 1;
+options(optionNumber).tag = 'fb_envelope'; options(optionNumber).answerType = 'string';
+options(optionNumber).flag = 'delete';
+options(optionNumber).uiPos = [0.30 0.045];
+%options(optionNumber).enable = 'inactive';
+options(optionNumber).visible = 'off';
 
 inputParameters(numParameters).options = options; % will be used in plotting the controls in a frame
 clear options;
@@ -376,6 +397,12 @@ prompt_aswcH = findobj(gcbf, 'tag', 'prefixawsc');
 tv_dfncH = findobj(gcbf, 'tag', 'answertv_dfnc');
 prompt_tv_dfncH = findobj(gcbf, 'tag', 'prefixtv_dfnc');
 
+fb_bandsH = findobj(gcbf, 'tag', 'answerfb_bands');
+prompt_fb_bandsH = findobj(gcbf, 'tag', 'prefixfb_bands');
+
+fb_envelopeH = findobj(gcbf, 'tag', 'answerfb_envelope');
+prompt_fb_envelopeH = findobj(gcbf, 'tag', 'prefixfb_envelope');
+
 enableval = 'inactive';
 methodSel = lower(strs{methodval});
 
@@ -402,6 +429,12 @@ set(prompt_aswcH, 'visible', 'off');
 
 set(tv_dfncH, 'visible', 'off');
 set(prompt_tv_dfncH, 'visible', 'off');
+
+set(fb_bandsH, 'visible', 'off');
+set(prompt_fb_bandsH, 'visible', 'off');
+
+set(fb_envelopeH, 'visible', 'off');
+set(prompt_fb_envelopeH, 'visible', 'off');
 
 
 if strcmpi(methodSel, 'swpc (correlation)')
@@ -440,5 +473,23 @@ if (strcmpi(methodSel, 'shared trajectory'))
     set(winSize2H, 'visible', 'on');
 end
 
+
+if strcmpi(methodSel, 'filterbank')
+    set(prompt_winSizeH, 'visible', 'on');
+    set(winSizeH, 'visible', 'on');
+
+    set(tv_dfncH, 'visible', 'on');
+    set(prompt_tv_dfncH, 'visible', 'on');
+    
+    set(aswcH, 'visible', 'on');
+    set(prompt_aswcH, 'visible', 'on');
+
+    set(fb_bandsH, 'visible', 'on');
+    set(prompt_fb_bandsH, 'visible', 'on');    
+
+    set(fb_envelopeH, 'visible', 'on');
+    set(prompt_fb_envelopeH, 'visible', 'on'); 
+
+end
 
 

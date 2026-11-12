@@ -39,6 +39,12 @@ else
     outputDir = dfncInfo.outputDir;
 end
 
+if 5==dfncInfo.userInput.feature_params.inputParameters(2).options(1).value
+    % dFNC method is Filterbank (5)
+    icatb_fb_post_process(dfncInfo, showGUI);
+    return;
+end
+
 if (isempty(outputDir))
     outputDir = pwd;
 end

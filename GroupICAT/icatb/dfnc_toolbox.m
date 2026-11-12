@@ -120,14 +120,6 @@ function setup_dfnc_Callback(hObject, eventdata, handles)
 icatb_setup_dfnc;
 
 
-% --- Executes on button press in run_dfnc.
-function run_dfnc_Callback(hObject, eventdata, handles)
-% hObject    handle to run_dfnc (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-icatb_run_dfnc;
-
 
 % --- Executes on button press in postprocess_dfnc.
 function postprocess_dfnc_Callback(hObject, eventdata, handles)

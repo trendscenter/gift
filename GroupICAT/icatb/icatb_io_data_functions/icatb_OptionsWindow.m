@@ -49,6 +49,13 @@ end
 
 % Setup figure for GUI
 [InputHandle] = icatb_getGraphics(titleFig, 'optionswindow', titleFig, figVisibility);
+% widen window
+set(InputHandle, 'Units', 'pixels');
+figPos = get(InputHandle, 'Position');
+figPos(1) = figPos(1) - 200;  % Move 200 pixels left
+figPos(3) = 1000;  % Window width in pixels
+set(InputHandle, 'Position', figPos);
+set(InputHandle, 'Units', 'normalized');
 
 % Set no menu bar for the figure
 set(InputHandle, 'Menubar', 'None', 'userdata', inputParameters);
@@ -74,7 +81,7 @@ text(xPos, yPos, titleFig, 'color', titleColor, 'FontAngle', 'italic', ...
     'fontweight', 'bold', 'fontsize', titleFont, 'HorizontalAlignment', ...
     'center', 'FontName', UI_FONTNAME, 'parent', axesH);
 
-xOffset = 0.02; yOffset = 0.032; % offsets
+xOffset = 0.02; yOffset = 0.012; % offsets
 
 % Draw OK push button
 okHeight = 0.05;
@@ -120,7 +127,7 @@ frameH = uicontrol('parent', InputHandle, 'units', 'normalized', 'style', 'frame
     'BackgroundColor', BG_COLOR, 'ForegroundColor', FONT_COLOR);
 
 uiHeight = 0.05; % height of the uicontrol
-uiWidth = (framePos(3) - 4*xOffset) / 2; % including prompt position and uicontrol position)
+uiWidth = (framePos(3) - 4*xOffset) * 0.30; % including prompt position and uicontrol position)
 
 % Draw uicontrols on frame
 intialXPosition = framePos(1) + xOffset;
