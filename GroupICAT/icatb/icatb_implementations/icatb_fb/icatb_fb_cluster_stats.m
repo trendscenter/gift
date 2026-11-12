@@ -26,7 +26,8 @@ for n = 1:length(dfncInfo.outputFiles)
     X = reshape(FBdyn, nBands*nWindows, nCorr);
     
     % Calculate distances to the 8 centroids
-    D = pdist2(X, clusterInfo.Call, 'squaredeuclidean');
+    D = sum(X.^2, 2) + sum(clusterInfo.Call.^2, 2)' - 2*(X*clusterInfo.Call');
+    D = max(D, 0); % Avoid tiny negative values from numerical errors
     
     % Assign each observation to its nearest centroid
     [~, idx] = min(D, [], 2);
