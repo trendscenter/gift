@@ -274,7 +274,7 @@ for dataSetCount = 1:numOfSub*numOfSess %1 %ce101226
     nfilters = str2num(dfncInfo.userInput.feature_params.inputParameters(2).options(9).answerString); 
     bandpass_ratio = ones(1,nfilters);
     
-    fbank_opt = fbank_design;
+    fbank_opt = icatb_fb_fbank_design;
     fbank_opt.plot_flag = 0;
     
     [all_b,all_a,all_Ws,all_n] = fbank_design(bandpass_ratio,fbank_opt);
