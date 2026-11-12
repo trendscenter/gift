@@ -277,7 +277,7 @@ for dataSetCount = 1:numOfSub*numOfSess %1 %ce101226
     fbank_opt = icatb_fb_fbank_design;
     fbank_opt.plot_flag = 0;
     
-    [all_b,all_a,all_Ws,all_n] = fbank_design(bandpass_ratio,fbank_opt);
+    [all_b,all_a,all_Ws,all_n] = icatb_fb_fbank_design(bandpass_ratio,fbank_opt);
     
     wt_mat_filt = zeros(nfilters, size(wt_mat, 1), size(wt_mat, 2));
     
