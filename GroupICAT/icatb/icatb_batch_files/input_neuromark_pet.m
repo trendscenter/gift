@@ -168,8 +168,10 @@ dummy_scans = 0;
 
 %% Analysis type
 % Options:
-%   1 - Regular group ICA
-%   2 - Group ICA using ICASSO
+% 1 - Regular Group ICA
+% 2 - Cross ISI
+% 3 - Group ICA using icasso
+% 4 - Group ICA using Minimum spanning tree (MST)
 which_analysis = 1;
 
 
