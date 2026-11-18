@@ -4,11 +4,12 @@
 <!-- PLEASE DO NOT EDIT ABOVE THIS LINE -->
 ![TReNDS](https://trendscenter.org/wp-content/uploads/2019/06/background_eeg_1.jpg)
 ### Announcements
+- 11/18/26: Please note that in October 2026, we changed the ICA stability algorithm settings. ICASSO now uses which_analysis = 3 (previously 2). Updated options: 1=Regular group ICA, 2=Cross-ISI, 3=ICASSO, 4=Minimum Spanning Tree (MST).
 - Apple Silicon! If your Apple Silicon computer (M1, M2, M3 or M4) gives you errors you may need to unquarantine your mex files by doing following from a Mac terminal:
 ```bash
 cd /my/software/folder/gift/GroupICAT/icatb && find . -iname "*.mexmaca64" -exec xattr -d com.apple.quarantine {} \; && find . -iname "*.mexmaci64" -exec xattr -d com.apple.quarantine {} \;
 ```
-- GIFT v4.0.5.14 (10/31/2024) slightly modified the dFNC and MANCOVAN processing order, now having the following steps: 1) detrending, 2) regressing out confounds, 3) despiking, 4) filtering.
+- 10/31/2024, GIFT v4.0.5.14): slightly modified the dFNC and MANCOVAN processing order, now having the following steps: 1) detrending, 2) regressing out confounds, 3) despiking, 4) filtering.
 ### Table of Contents
 1. [Introduction](#secIntro)
 2. [Download](#secDownload)
