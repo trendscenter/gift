@@ -7,9 +7,11 @@
 modalityType = 'smri';
 
 %% Type of analysis
-% Options are 1 and 2.
+% Options are 1 - 4.
 % 1 - Regular Group ICA
-% 2 - Group ICA using icasso
+% 2 - Cross ISI
+% 3 - Group ICA using icasso
+% 4 - Group ICA using Minimum spanning tree (MST)
 which_analysis = 1;
 
 %% Group PCA performance settings. Best setting for each option will be selected based on variable MAX_AVAILABLE_RAM in icatb_defaults.m. 
