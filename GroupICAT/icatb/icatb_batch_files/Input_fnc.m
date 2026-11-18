@@ -10,8 +10,10 @@ modalityType = 'fnc';
 %% Type of analysis
 % Options are 1 and 2.
 % 1 - Regular Group ICA
-% 2 - Group ICA using icasso
-which_analysis = 3;
+% 2 - Cross ISI
+% 3 - Group ICA using icasso
+% 4 - Group ICA using Minimum spanning tree (MST)
+which_analysis = 4;
 
 
 %% ICASSO options.
