@@ -10,8 +10,9 @@ modalityType = 'fMRI';
 %% Type of analysis
 % Options are 1, 2 and 3.
 % 1 - Regular Group ICA
-% 2 - Group ICA using icasso
-% 3 - Group ICA using MST
+% 2 - Cross ISI
+% 3 - Group ICA using icasso
+% 4 - Group ICA using MST
 which_analysis = 1;
 
 %% ICASSO options.
