@@ -9,10 +9,11 @@
 modalityType = 'fMRI';
 
 %% Type of stability analysis
-% Options are 1 and 2.
+% Options are 1 - 4.
 % 1 - Regular Group ICA
-% 2 - Group ICA using icasso
-% 3 - Group ICA using Minimum spanning tree (MST)
+% 2 - Cross ISI
+% 3 - Group ICA using icasso
+% 4 - Group ICA using Minimum spanning tree (MST)
 which_analysis = 1;
 
 %% ICASSO options.
